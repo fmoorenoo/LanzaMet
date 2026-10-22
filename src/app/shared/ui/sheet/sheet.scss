@@ -11,7 +11,10 @@
   border: 0;
   background: transparent;
   color: var(--c-ink);
-  overflow: hidden;
+  // `clip`, not `hidden`: a hidden overflow is still a scroll container, and
+  // the dialog's initial focus would scroll it to reach the close button while
+  // the panel is still below the screen — the sheet then jumps instead of sliding.
+  overflow: clip;
 
   &:not([open]) {
     display: none;

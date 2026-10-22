@@ -36,7 +36,7 @@
 }
 
 .graciosa {
-  fill: color-mix(in oklch, var(--c-surface), var(--c-ground) 40%);
+  fill: color-mix(in oklab, var(--c-surface), var(--c-ground) 40%);
 }
 
 // The prevailing wind, drawn as streaks that flow across the island.

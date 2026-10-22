@@ -6,6 +6,23 @@
   right: 0;
   bottom: 0;
   view-transition-name: nav;
+
+  // The capsule of light: tinted with the island's window green, lit from
+  // above, with a hairline edge and a soft green shadow beneath. Mixed in
+  // OKLab: white has no hue, and an OKLCH mix would drift towards pink.
+  --capsule-top: color-mix(in oklab, var(--c-accent) 6%, var(--c-surface));
+  --capsule-bottom: color-mix(in oklab, var(--c-accent) 14%, var(--c-surface));
+  --capsule-edge: color-mix(in oklab, var(--c-accent) 24%, transparent);
+  --capsule-light: oklch(1 0 0 / 0.85);
+  --capsule-shadow: color-mix(in oklab, var(--c-accent) 30%, transparent);
+}
+
+:host-context([data-theme='dark']) {
+  --capsule-top: color-mix(in oklab, var(--c-accent) 18%, var(--c-surface));
+  --capsule-bottom: color-mix(in oklab, var(--c-accent) 9%, var(--c-surface));
+  --capsule-edge: color-mix(in oklab, var(--c-accent) 30%, transparent);
+  --capsule-light: oklch(1 0 0 / 0.1);
+  --capsule-shadow: oklch(0 0 0 / 0.45);
 }
 
 .bar {
@@ -21,10 +38,55 @@
   display: none;
 }
 
+.tabs-wrap {
+  position: relative;
+}
+
 .tabs {
+  position: relative;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   height: var(--tabbar-h);
+}
+
+// One cell wide, so `100%` steps exactly one tab; the visible capsule is its
+// ::before, which wraps the icon and the label together.
+.capsule {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 25%;
+  height: var(--tabbar-h);
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+  transform: translate3d(calc(var(--i, 0) * 100%), 0, 0);
+  transition: opacity var(--d-fast) ease;
+
+  &::before {
+    content: '';
+    width: min(calc(100% - 0.5rem), 5rem);
+    height: calc(100% - 0.625rem);
+    border-radius: 1.125rem;
+    background: linear-gradient(180deg, var(--capsule-top), var(--capsule-bottom));
+    border: 1px solid var(--capsule-edge);
+    box-shadow:
+      inset 0 1px 0 var(--capsule-light),
+      0 1px 2px var(--capsule-shadow),
+      0 8px 18px -10px var(--capsule-shadow);
+  }
+
+  // Moving between tabs is on-screen movement: ease-in-out, kept brisk because
+  // it happens many times a day.
+  &.is-gliding {
+    transition:
+      transform 320ms var(--ease-in-out),
+      opacity var(--d-fast) ease;
+  }
+
+  &.is-hidden {
+    opacity: 0;
+  }
 }
 
 .tab {
@@ -33,18 +95,21 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 0.125rem;
+  gap: 0.1875rem;
   height: 100%;
   color: var(--c-ink-3);
   text-decoration: none;
-  font-size: 0.6875rem;
-  font-weight: 600;
-  letter-spacing: 0.01em;
-  transition: color var(--d-fast) ease;
+  transition:
+    color var(--d-fast) ease,
+    transform var(--d-press) var(--ease-out);
+
+  &:active {
+    transform: scale(0.95);
+  }
 
   &:focus-visible {
-    outline-offset: -4px;
-    border-radius: var(--r-md);
+    outline-offset: -5px;
+    border-radius: 1.125rem;
   }
 
   &.is-active {
@@ -53,27 +118,14 @@
 }
 
 .tab-icon {
-  display: grid;
-  place-items: center;
-  width: 3.5rem;
-  height: 1.875rem;
-  border-radius: var(--r-pill);
-  transition:
-    background-color var(--d-fast) ease,
-    transform var(--d-press) var(--ease-out);
+  width: 1.375rem;
+  height: 1.375rem;
+}
 
-  qth-icon {
-    width: 1.375rem;
-    height: 1.375rem;
-  }
-
-  .tab:active & {
-    transform: scale(0.92);
-  }
-
-  .is-active & {
-    background-color: var(--c-accent-soft);
-  }
+.tab-label {
+  font-size: 0.6875rem;
+  font-weight: 650;
+  letter-spacing: 0.01em;
 }
 
 @media (hover: hover) and (pointer: fine) {
@@ -90,7 +142,13 @@
   }
 }
 
-// Wide screens: a calm vertical rail.
+@media (prefers-reduced-motion: reduce) {
+  .capsule.is-gliding {
+    transition: opacity var(--d-fast) ease;
+  }
+}
+
+// Wide screens: a calm vertical rail; the capsule glides down it.
 @media (min-width: 64rem) {
   :host {
     top: 0;
@@ -141,8 +199,22 @@
 
   .tab {
     width: 5rem;
-    height: 4rem;
+    height: 4.25rem;
+  }
+
+  .tab-label {
     font-size: 0.75rem;
+  }
+
+  .capsule {
+    width: 5rem;
+    height: 4.25rem;
+    transform: translate3d(0, calc(var(--i, 0) * (100% + var(--s-2))), 0);
+
+    &::before {
+      width: calc(100% - 0.25rem);
+      height: calc(100% - 0.25rem);
+    }
   }
 
   .settings {

@@ -93,6 +93,16 @@
   animation: qth-rise 240ms var(--ease-out) both;
 }
 
+// The tab bar stays live through route changes so its capsule can glide;
+// no crossfade, or a ghost of the old capsule would linger.
+::view-transition-old(nav) {
+  display: none;
+}
+
+::view-transition-new(nav) {
+  animation: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .enter-rise,
   .enter-settle {

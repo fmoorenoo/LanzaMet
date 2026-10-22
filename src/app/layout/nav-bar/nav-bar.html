@@ -4,22 +4,31 @@
     <span class="brand-name">¿Qué tal hoy?</span>
   </a>
 
-  <ul class="tabs">
-    @for (item of items; track item.path) {
-      <li>
-        <a
-          class="tab"
-          [routerLink]="item.path"
-          routerLinkActive="is-active"
-          ariaCurrentWhenActive="page"
-          [routerLinkActiveOptions]="{ exact: item.path === '/' }"
-        >
-          <span class="tab-icon"><qth-icon [name]="item.icon" /></span>
-          <span class="tab-label">{{ item.label }}</span>
-        </a>
-      </li>
-    }
-  </ul>
+  <div class="tabs-wrap">
+    <span
+      class="capsule"
+      aria-hidden="true"
+      [class.is-gliding]="canGlide()"
+      [class.is-hidden]="capsuleIndex() < 0"
+      [style.--i]="capsuleIndex()"
+    ></span>
+    <ul class="tabs">
+      @for (item of items; track item.path) {
+        <li>
+          <a
+            class="tab"
+            [routerLink]="item.path"
+            routerLinkActive="is-active"
+            ariaCurrentWhenActive="page"
+            [routerLinkActiveOptions]="{ exact: item.path === '/' }"
+          >
+            <qth-icon class="tab-icon" [name]="item.icon" />
+            <span class="tab-label">{{ item.label }}</span>
+          </a>
+        </li>
+      }
+    </ul>
+  </div>
 
   <button type="button" class="settings" (click)="ui.openDemoPanel()">
     <qth-icon name="sliders" />
