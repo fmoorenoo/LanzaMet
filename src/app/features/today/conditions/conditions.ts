@@ -31,6 +31,7 @@ const WAVE_AMPLITUDE = [0.8, 2, 3.4, 5, 6.6];
   imports: [RouterLink, Icon],
   templateUrl: './conditions.html',
   styleUrl: './conditions.scss',
+  host: { class: 'current-conditions' },
 })
 export class Conditions {
   readonly view = input.required<ConditionsView>();

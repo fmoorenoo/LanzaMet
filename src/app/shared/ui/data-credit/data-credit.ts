@@ -39,7 +39,7 @@ const LABEL: Readonly<Record<CreditKind, string>> = {
       }
     </span>
   `,
-  host: { class: 'data-note' },
+  host: { class: 'data-note data-credit', '[attr.data-kind]': 'kind()' },
 })
 export class DataCredit {
   readonly kind = input<CreditKind>('weather');

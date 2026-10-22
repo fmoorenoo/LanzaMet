@@ -24,6 +24,8 @@ import { IconName } from '../icon/icons';
     </div>
   `,
   host: {
+    class: 'status-message',
+    '[attr.data-tone]': 'tone()',
     '[attr.role]': "tone() === 'error' ? 'alert' : 'status'",
     '[class.is-error]': "tone() === 'error'",
   },

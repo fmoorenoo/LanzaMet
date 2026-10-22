@@ -25,7 +25,12 @@ const KIND: Readonly<Record<PlanKind, { icon: IconName }>> = {
   imports: [Icon, Scene],
   templateUrl: './plan-item.html',
   styleUrl: './plan-item.scss',
-  host: { '[class.is-lead]': "variant() === 'lead'" },
+  host: {
+    class: 'plan-card',
+    '[class.is-lead]': "variant() === 'lead'",
+    '[attr.data-plan-kind]': 'plan().kind',
+    '[attr.data-location-id]': 'plan().locationId',
+  },
 })
 export class PlanItem {
   readonly plan = input.required<Recommendation>();

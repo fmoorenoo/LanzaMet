@@ -1,8 +1,8 @@
 @let v = view();
 
-<ul class="list">
-  <li class="row">
-    <span class="gauge wind" aria-hidden="true">
+<ul class="list conditions-list">
+  <li class="row condition-row" data-condition="wind">
+    <span class="gauge wind wind-gauge" aria-hidden="true">
       @for (bar of windBars; track bar) {
         <span class="bar" [class.is-on]="bar < v.wind.level" [style.--h]="0.35 + bar * 0.2"></span>
       }
@@ -22,9 +22,13 @@
     </span>
   </li>
 
-  <li class="row-wrap">
-    <a class="row is-link" routerLink="/mar">
-      <span class="gauge sea" [class.is-empty]="v.sea.status !== 'ready'" aria-hidden="true">
+  <li class="row-wrap" data-condition="sea">
+    <a class="row is-link condition-row" routerLink="/mar">
+      <span
+        class="gauge sea sea-gauge"
+        [class.is-empty]="v.sea.status !== 'ready'"
+        aria-hidden="true"
+      >
         <svg viewBox="0 0 40 28">
           <path class="sea-line" [attr.d]="wavePath()" [style.d]="wavePathCss()" />
           <path class="sea-floor" d="M2 22h36" />
@@ -59,9 +63,9 @@
     </a>
   </li>
 
-  <li class="row-wrap">
-    <a class="row is-link" routerLink="/mar">
-      <span class="gauge tide" [class.is-empty]="!v.tide.reading" aria-hidden="true">
+  <li class="row-wrap" data-condition="tide">
+    <a class="row is-link condition-row" routerLink="/mar">
+      <span class="gauge tide tide-gauge" [class.is-empty]="!v.tide.reading" aria-hidden="true">
         <span class="tide-tube">
           <span class="tide-water" [style.transform]="tideFill()"></span>
         </span>

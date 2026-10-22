@@ -1,6 +1,6 @@
 @let v = view();
 
-<div class="stage">
+<div id="weather-landscape" class="stage weather-landscape">
   @if (v) {
     <qth-scene [state]="v.scene" />
   } @else {
@@ -9,11 +9,12 @@
   <div class="shade" aria-hidden="true"></div>
 </div>
 
-<div class="inner">
-  <div class="bar">
+<div class="inner hero-content">
+  <div class="bar hero-toolbar">
     <button
+      id="location-selector-button"
       type="button"
-      class="place is-current"
+      class="place is-current location-button"
       aria-haspopup="dialog"
       (click)="ui.openLocationPicker()"
     >
@@ -22,10 +23,11 @@
       <qth-icon class="chevron" name="chevron-down" />
       <span class="visually-hidden">: cambiar de zona</span>
     </button>
-    <div class="actions">
+    <div class="actions hero-actions">
       <button
+        id="favorite-toggle"
         type="button"
-        class="hero-btn"
+        class="hero-btn favorite-toggle"
         [attr.aria-pressed]="isFavorite()"
         aria-label="Zona favorita"
         (click)="toggleFavorite()"
@@ -33,15 +35,21 @@
         <qth-icon [name]="isFavorite() ? 'star-filled' : 'star'" />
       </button>
       @if (isDemo) {
-        <button type="button" class="hero-btn demo" (click)="ui.openSettings()">
+        <button
+          id="hero-settings-button"
+          type="button"
+          class="hero-btn demo settings-button"
+          (click)="ui.openSettings()"
+        >
           <qth-icon name="sliders" />
           <span class="demo-label">Demo</span>
           <span class="visually-hidden">Datos ficticios: abrir ajustes de la demo</span>
         </button>
       } @else {
         <button
+          id="hero-settings-button"
           type="button"
-          class="hero-btn"
+          class="hero-btn settings-button"
           aria-label="Ajustes y fuentes de datos"
           (click)="ui.openSettings()"
         >
@@ -53,14 +61,24 @@
 
   <!-- While previewing an hour, its label takes the favourites' slot, so nothing below moves. -->
   @if (isPreview() && v) {
-    <p class="moment enter-fade">
+    <p id="preview-moment" class="moment preview-moment enter-fade">
       <span>{{ v.momentLabel }}</span>
       <button type="button" class="moment-reset" (click)="backToNow.emit()">Volver a ahora</button>
     </p>
   } @else if (others().length > 0) {
-    <div class="places" role="group" aria-label="Tus zonas favoritas">
+    <div
+      id="favorite-locations"
+      class="places favorite-locations"
+      role="group"
+      aria-label="Tus zonas favoritas"
+    >
       @for (place of others(); track place.id) {
-        <button type="button" class="place place--quick" (click)="selectPlace(place.id)">
+        <button
+          type="button"
+          class="place place--quick favorite-location"
+          [attr.data-location-id]="place.id"
+          (click)="selectPlace(place.id)"
+        >
           {{ place.name }}
         </button>
       }
@@ -69,15 +87,19 @@
 
   <div class="copy-wrap" aria-live="polite">
     @if (v) {
-      <div class="copy pendable" [class.is-pending]="pending()">
-        <p class="temp t-hero t-num">
+      <div class="copy hero-copy pendable" [class.is-pending]="pending()">
+        <p id="current-temperature" class="temp current-temperature t-hero t-num">
           <span class="visually-hidden">Temperatura: </span>{{ v.temperature }}°
         </p>
-        <h1 id="verdict" class="verdict t-display">{{ v.verdict.headline }}</h1>
-        <p class="sentence t-lead">{{ v.verdict.sentence }}</p>
+        <h1 id="weather-verdict" class="verdict weather-verdict t-display">
+          {{ v.verdict.headline }}
+        </h1>
+        <p id="weather-description" class="sentence weather-description t-lead">
+          {{ v.verdict.sentence }}
+        </p>
       </div>
     } @else if (error(); as message) {
-      <div class="failure">
+      <div class="failure hero-error">
         <qth-status-message
           tone="error"
           title="No sabemos qué tal está hoy"
@@ -87,7 +109,7 @@
         />
       </div>
     } @else {
-      <div class="loading" aria-label="Cargando el tiempo">
+      <div class="loading hero-loading" aria-label="Cargando el tiempo">
         <span class="skeleton bone temp-bone"></span>
         <span class="skeleton bone verdict-bone"></span>
         <span class="skeleton bone sentence-bone"></span>

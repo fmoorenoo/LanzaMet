@@ -18,6 +18,7 @@ const TOP = 72;
   selector: 'qth-tide-chart',
   templateUrl: './tide-chart.html',
   styleUrl: './tide-chart.scss',
+  host: { class: 'tide-chart' },
 })
 export class TideChart {
   readonly tide = input.required<TideForecast>();

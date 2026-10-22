@@ -10,6 +10,7 @@ import { SkyGlyph } from '../../../shared/ui/sky-glyph/sky-glyph';
   imports: [SkyGlyph],
   templateUrl: './day-list.html',
   styleUrl: './day-list.scss',
+  host: { class: 'daily-forecast-list' },
 })
 export class DayList {
   readonly days = input.required<readonly DailyForecast[]>();

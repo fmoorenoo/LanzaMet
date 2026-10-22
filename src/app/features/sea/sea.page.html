@@ -1,10 +1,11 @@
 @let tides = forecast.tides();
 @let place = location();
 
-<header class="page-head">
+<header id="sea-header" class="page-head page-header">
   <button
     type="button"
-    class="place-chip chip"
+    id="sea-location-button"
+    class="place-chip chip location-button"
     aria-haspopup="dialog"
     (click)="ui.openLocationPicker()"
   >
@@ -15,7 +16,11 @@
   </button>
 
   <div class="head-row">
-    <div class="head-text pendable" [class.is-pending]="tides.pending">
+    <div
+      id="tide-summary"
+      class="head-text tide-summary pendable"
+      [class.is-pending]="tides.pending"
+    >
       @switch (tides.status) {
         @case ('ready') {
           @if (reading(); as tide) {
@@ -38,7 +43,12 @@
     </div>
 
     @if (reading(); as tide) {
-      <div class="gauge" [class.is-rising]="tide.trend === 'subiendo'" aria-hidden="true">
+      <div
+        id="tide-gauge"
+        class="gauge tide-gauge"
+        [class.is-rising]="tide.trend === 'subiendo'"
+        aria-hidden="true"
+      >
         <span class="gauge-tube">
           <span class="gauge-water" [style.transform]="gaugeLevel()"></span>
         </span>
@@ -52,13 +62,17 @@
 
 <div class="content">
   @if (coastalWarnings().length > 0) {
-    <qth-warning-banner [warnings]="coastalWarnings()" />
+    <qth-warning-banner id="coastal-warnings" [warnings]="coastalWarnings()" />
   }
 
   @switch (tides.status) {
     @case ('ready') {
       @if (tides.data; as data) {
-        <section class="panel" aria-labelledby="curve-title">
+        <section
+          id="tide-visualization"
+          class="panel tide-visualization"
+          aria-labelledby="curve-title"
+        >
           <h2 id="curve-title" class="t-title">La marea de hoy</h2>
           @if (sun(); as s) {
             <qth-tide-chart
@@ -69,23 +83,27 @@
               [sunset]="s.sunset"
             />
           }
-          <p class="source t-micro t-faint">
+          <p id="tide-source" class="source t-micro t-faint">
             <qth-icon name="info" />
             {{ tideSource() }}
           </p>
         </section>
 
-        <section class="block" aria-labelledby="extremes-title">
+        <section id="tide-extremes" class="block tide-extremes" aria-labelledby="extremes-title">
           <h2 id="extremes-title" class="t-title">
             Pleamares y bajamares{{ data.source.official ? '' : ' (estimadas)' }}
           </h2>
           <div class="days">
             @for (day of days(); track day.label) {
-              <div class="day">
+              <div class="day tide-day">
                 <h3 class="day-label">{{ day.label }}</h3>
                 <ul class="extremes">
                   @for (e of day.extremes; track e.time) {
-                    <li class="extreme" [class.is-past]="e.isPast">
+                    <li
+                      class="extreme tide-extreme"
+                      [class.is-past]="e.isPast"
+                      [attr.data-tide]="e.kind === 'pleamar' ? 'high' : 'low'"
+                    >
                       <qth-icon [name]="e.kind === 'pleamar' ? 'tide-up' : 'tide-down'" />
                       <span class="extreme-kind">{{
                         e.kind === 'pleamar' ? 'Pleamar' : 'Bajamar'
@@ -132,7 +150,7 @@
     }
   }
 
-  <section class="block" aria-labelledby="sea-title">
+  <section id="sea-state" class="block sea-state-section" aria-labelledby="sea-title">
     <h2 id="sea-title" class="t-title">El mar en {{ place?.name }}</h2>
     @if (sea(); as s) {
       <p class="sea-state">
@@ -170,13 +188,18 @@
     }
   </section>
 
-  <section class="block" aria-labelledby="calm-title">
+  <section id="calmest-sea" class="block calmest-sea" aria-labelledby="calm-title">
     <h2 id="calm-title" class="t-title">Dónde está el mar más tranquilo</h2>
     @if (calmest().length > 0) {
-      <ol class="calm">
+      <ol class="calm calm-sea-list">
         @for (zone of calmest(); track zone.id; let i = $index) {
           <li>
-            <button type="button" class="calm-row" (click)="openDay(zone.id)">
+            <button
+              type="button"
+              class="calm-row calm-sea-row"
+              [attr.data-location-id]="zone.id"
+              (click)="openDay(zone.id)"
+            >
               <span class="calm-rank t-num">{{ i + 1 }}</span>
               <svg class="calm-wave" viewBox="0 0 48 24" aria-hidden="true">
                 <path [attr.d]="zone.path" />
@@ -202,7 +225,7 @@
     }
   </section>
 
-  <footer class="page-foot">
+  <footer id="sea-footer" class="page-foot">
     <qth-data-credit kind="sea" [updatedAt]="forecast.sea().data?.issuedAt ?? null" />
   </footer>
 </div>

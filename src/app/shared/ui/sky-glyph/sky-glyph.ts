@@ -80,6 +80,7 @@ const NIGHT: Readonly<Record<SkyCondition, readonly GlyphPart[]>> = {
 /** Two-tone weather glyph: a warm sun, a pale moon, clouds that occlude them. */
 @Component({
   selector: 'qth-sky-glyph',
+  host: { class: 'sky-glyph', '[attr.data-sky]': 'sky()' },
   template: `
     <svg
       viewBox="0 0 24 24"

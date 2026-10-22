@@ -25,6 +25,7 @@ export interface MapMarker {
   imports: [SkyGlyph],
   templateUrl: './island-map.html',
   styleUrl: './island-map.scss',
+  host: { class: 'island-map' },
 })
 export class IslandMap {
   readonly markers = input.required<readonly MapMarker[]>();

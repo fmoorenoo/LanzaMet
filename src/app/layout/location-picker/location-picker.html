@@ -1,7 +1,8 @@
 <qth-sheet heading="Elige zona" [(open)]="ui.locationPickerOpen">
-  <label class="field search">
+  <label class="field search location-search">
     <qth-icon name="search" />
     <input
+      id="location-search-input"
       type="search"
       placeholder="Busca un pueblo o municipio"
       aria-label="Buscar zona"
@@ -13,13 +14,18 @@
   </label>
 
   @if (!query() && favorites().length > 0) {
-    <section class="group" aria-labelledby="fav-title">
-      <h3 id="fav-title" class="group-title">Tus zonas</h3>
-      <div class="favorites">
+    <section
+      id="favorite-location-group"
+      class="group location-group"
+      aria-labelledby="favorite-locations-title"
+    >
+      <h3 id="favorite-locations-title" class="group-title">Tus zonas</h3>
+      <div class="favorites favorite-chips">
         @for (row of favorites(); track row.location.id) {
           <button
             type="button"
-            class="chip"
+            class="chip favorite-chip"
+            [attr.data-location-id]="row.location.id"
             [attr.aria-current]="row.isCurrent ? 'true' : null"
             (click)="choose(row.location.id)"
           >
@@ -51,11 +57,19 @@
   }
 
   @for (group of groups(); track group.area) {
-    <section class="group" [attr.aria-labelledby]="'area-' + group.area">
-      <h3 class="group-title" [id]="'area-' + group.area">{{ group.label }}</h3>
-      <ul class="rows">
+    <section
+      class="group location-group"
+      [attr.data-area]="group.slug"
+      [attr.aria-labelledby]="'location-area-' + group.slug"
+    >
+      <h3 class="group-title" [id]="'location-area-' + group.slug">{{ group.label }}</h3>
+      <ul class="rows location-list">
         @for (row of group.rows; track row.location.id) {
-          <li class="row" [class.is-current]="row.isCurrent">
+          <li
+            class="row location-option"
+            [class.is-current]="row.isCurrent"
+            [attr.data-location-id]="row.location.id"
+          >
             <button
               type="button"
               class="row-main"
@@ -84,7 +98,7 @@
             </button>
             <button
               type="button"
-              class="icon-btn star"
+              class="icon-btn star favorite-toggle"
               [class.is-on]="row.isFavorite"
               [attr.aria-pressed]="row.isFavorite"
               [attr.aria-label]="'Favorita: ' + row.location.name"

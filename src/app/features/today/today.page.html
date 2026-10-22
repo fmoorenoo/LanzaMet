@@ -10,13 +10,13 @@
   (retry)="retryAll()"
 />
 
-<div class="sheet">
+<div id="today-details" class="sheet today-sheet">
   @if (official.warnings().length > 0) {
-    <qth-warning-banner class="warnings" [warnings]="official.warnings()" />
+    <qth-warning-banner id="today-warnings" class="warnings" [warnings]="official.warnings()" />
   }
 
   @if (v && weather.error) {
-    <p class="stale" role="status">
+    <p id="stale-data-notice" class="stale stale-data-notice" role="status">
       <qth-icon name="info" />
       <span>No hemos podido actualizar. Te mostramos los últimos datos.</span>
       <button type="button" class="btn btn--quiet" (click)="forecast.retry()">Reintentar</button>
@@ -24,22 +24,24 @@
   }
 
   @if (v) {
-    <section class="block" aria-labelledby="now-title">
+    <section id="current-conditions" class="block today-section" aria-labelledby="now-title">
       <h2 id="now-title" class="visually-hidden">{{ v.momentLabel }}: viento, mar y marea</h2>
       <qth-conditions [view]="v.conditions" />
     </section>
 
-    <section class="block" aria-labelledby="hours-title">
-      <div class="section-head">
+    <section id="hourly-forecast" class="block today-section" aria-labelledby="hours-title">
+      <div class="section-head section-header">
         <h2 id="hours-title" class="t-title">Próximas horas</h2>
         @if (previewIndex() !== null) {
-          <button type="button" class="btn btn--quiet" (click)="backToNow()">Volver a ahora</button>
+          <button id="back-to-now" type="button" class="btn btn--quiet" (click)="backToNow()">
+            Volver a ahora
+          </button>
         }
       </div>
       <qth-hour-timeline [hours]="hours()" [(selected)]="previewIndex" />
     </section>
   } @else if (weather.status !== 'error' && !locations.error()) {
-    <div class="block" aria-hidden="true">
+    <div class="block today-section conditions-skeleton" aria-hidden="true">
       @for (row of [1, 2, 3]; track row) {
         <div class="skeleton-row">
           <span class="skeleton gauge-skeleton"></span>
@@ -52,10 +54,10 @@
     </div>
   }
 
-  <section class="block" aria-labelledby="plans-title">
-    <div class="section-head">
+  <section id="plan-suggestions" class="block today-section" aria-labelledby="plans-title">
+    <div class="section-head section-header">
       <h2 id="plans-title" class="t-title">¿Dónde ir hoy?</h2>
-      <a class="btn btn--quiet" routerLink="/donde-ir">Ver todo</a>
+      <a id="all-plans-link" class="btn btn--quiet" routerLink="/donde-ir">Ver todo</a>
     </div>
     @switch (island.zones().status) {
       @case ('ready') {
@@ -90,29 +92,29 @@
   </section>
 
   @if (details(); as d) {
-    <section class="block" aria-labelledby="details-title">
+    <section id="day-facts" class="block today-section" aria-labelledby="details-title">
       <h2 id="details-title" class="t-title">Hoy, en detalle</h2>
-      <dl class="facts">
-        <div class="fact">
+      <dl class="facts day-facts">
+        <div class="fact day-fact" data-fact="feels-like">
           <dt><qth-icon name="thermometer" />Sensación</dt>
           <dd>{{ d.feels }}</dd>
         </div>
-        <div class="fact">
+        <div class="fact day-fact" data-fact="uv">
           <dt><qth-icon name="sun" />Sol</dt>
           <dd>{{ d.sun }}</dd>
         </div>
         @if (d.water) {
-          <div class="fact">
+          <div class="fact day-fact" data-fact="water">
             <dt><qth-icon name="drop" />Agua</dt>
             <dd>{{ d.water }}</dd>
           </div>
         }
-        <div class="fact">
+        <div class="fact day-fact" data-fact="daylight">
           <dt><qth-icon name="sunset" />Luz</dt>
           <dd>{{ d.light }}</dd>
         </div>
         @if (observed(); as o) {
-          <div class="fact">
+          <div class="fact day-fact" data-fact="observed">
             <dt><qth-icon name="pin" />Medido</dt>
             <dd>
               {{ o.value }}
@@ -125,17 +127,18 @@
   }
 
   @if (weather.data; as forecastData) {
-    <section class="block" aria-labelledby="days-title">
+    <section id="daily-forecast" class="block today-section" aria-labelledby="days-title">
       <h2 id="days-title" class="t-title">Próximos días</h2>
       <qth-day-list [days]="forecastData.daily" [today]="todayKey()" />
     </section>
   }
 
-  <footer class="foot page-foot">
+  <footer id="today-footer" class="foot page-foot">
     <qth-data-credit kind="weather" [updatedAt]="updatedAt()" />
     <button
+      id="refresh-button"
       type="button"
-      class="btn btn--quiet"
+      class="btn btn--quiet refresh-button"
       [disabled]="forecast.isRefreshing()"
       (click)="refresh()"
     >

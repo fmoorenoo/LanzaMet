@@ -27,8 +27,10 @@ export interface HeroView {
   templateUrl: './today-hero.html',
   styleUrl: './today-hero.scss',
   host: {
+    id: 'weather-hero',
+    class: 'weather-hero',
     role: 'region',
-    'aria-labelledby': 'verdict',
+    'aria-labelledby': 'weather-verdict',
     '[class.is-ink-dark]': "view()?.scene?.ink === 'dark'",
   },
 })

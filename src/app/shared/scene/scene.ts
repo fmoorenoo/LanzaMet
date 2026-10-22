@@ -36,8 +36,14 @@ import { SceneState } from './scene-state';
   templateUrl: './scene.html',
   styleUrl: './scene.scss',
   host: {
+    class: 'weather-scene',
     'aria-hidden': 'true',
     '[class.is-mini]': "variant() === 'mini'",
+    // What the scene is drawing, readable from the browser's dev tools.
+    '[attr.data-variant]': 'variant()',
+    '[attr.data-horizon]': 'state().horizon',
+    '[attr.data-sea-level]': 'state().seaLevel',
+    '[attr.data-ink]': 'state().ink',
   },
 })
 export class Scene {

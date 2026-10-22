@@ -21,6 +21,7 @@ import { IslandMap, MapMarker } from './island-map/island-map';
   imports: [IslandMap, Scene, Icon, StatusMessage, DataCredit],
   templateUrl: './zones.page.html',
   styleUrl: './zones.page.scss',
+  host: { id: 'zones-page', class: 'page zones-page' },
 })
 export class ZonesPage {
   protected readonly island = inject(IslandStore);

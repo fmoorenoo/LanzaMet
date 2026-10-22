@@ -10,6 +10,8 @@ import { RouteTransitions } from '../route-transitions';
 import { UiStore } from '../ui.store';
 
 interface NavItem {
+  /** Stable English name for the route, exposed as `data-route`. */
+  readonly id: string;
   readonly path: string;
   readonly label: string;
   readonly icon: IconName;
@@ -31,10 +33,10 @@ export class NavBar {
   private readonly router = inject(Router);
 
   protected readonly items: readonly NavItem[] = [
-    { path: '/', label: 'Hoy', icon: 'today' },
-    { path: '/zonas', label: 'Zonas', icon: 'zones' },
-    { path: '/mar', label: 'Mar', icon: 'sea' },
-    { path: '/donde-ir', label: 'Dónde ir', icon: 'plans' },
+    { id: 'today', path: '/', label: 'Hoy', icon: 'today' },
+    { id: 'zones', path: '/zonas', label: 'Zonas', icon: 'zones' },
+    { id: 'sea', path: '/mar', label: 'Mar', icon: 'sea' },
+    { id: 'plans', path: '/donde-ir', label: 'Dónde ir', icon: 'plans' },
   ];
 
   private readonly navigations = this.router.events.pipe(

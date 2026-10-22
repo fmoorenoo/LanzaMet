@@ -18,9 +18,9 @@ import { Icon } from '../icon/icon';
   selector: 'qth-warning-banner',
   imports: [Icon],
   template: `
-    <ul class="list">
+    <ul class="list warning-list">
       @for (w of items(); track w.id) {
-        <li class="warning" [class]="'is-' + w.level">
+        <li class="warning weather-warning" [class]="'is-' + w.level" [attr.data-level]="w.level">
           <qth-icon name="alert" />
           <span class="text">
             <span class="title">Aviso {{ w.level }}: {{ w.phenomenon }}</span>
@@ -32,14 +32,18 @@ import { Icon } from '../icon/icon';
         </li>
       }
     </ul>
-    <p class="source">
+    <p class="source warning-source">
       Avisos oficiales de
       <a href="https://www.aemet.es/es/eltiempo/prediccion/avisos" target="_blank" rel="noopener"
         >AEMET</a
       >
     </p>
   `,
-  host: { role: 'region', 'aria-label': 'Avisos meteorológicos oficiales' },
+  host: {
+    class: 'warning-banner',
+    role: 'region',
+    'aria-label': 'Avisos meteorológicos oficiales',
+  },
   styles: `
     :host {
       display: grid;

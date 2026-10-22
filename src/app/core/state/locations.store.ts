@@ -16,6 +16,14 @@ export const AREA_LABELS: Readonly<Record<IslandArea, string>> = {
   oeste: 'Oeste',
 };
 
+/** English names for the coasts, used in element ids and `data-area`. */
+export const AREA_SLUGS: Readonly<Record<IslandArea, string>> = {
+  norte: 'north',
+  este: 'east',
+  sur: 'south',
+  oeste: 'west',
+};
+
 const AREA_ORDER: readonly IslandArea[] = ['sur', 'este', 'norte', 'oeste'];
 
 /** A place saved before it was retired from the catalogue becomes the one that replaced it. */
@@ -25,6 +33,7 @@ const unique = (ids: readonly LocationId[]): LocationId[] => [...new Set(ids)];
 
 export interface AreaGroup {
   readonly area: IslandArea;
+  readonly slug: string;
   readonly label: string;
   readonly locations: readonly Location[];
 }
@@ -65,6 +74,7 @@ export class LocationsStore {
   readonly byArea = computed<readonly AreaGroup[]>(() =>
     AREA_ORDER.map((area) => ({
       area,
+      slug: AREA_SLUGS[area],
       label: AREA_LABELS[area],
       locations: this.all().filter((l) => l.area === area),
     })).filter((group) => group.locations.length > 0),

@@ -1,7 +1,7 @@
-<header class="page-head">
+<header id="zones-header" class="page-head page-header">
   <h1 class="t-display">Lanzarote, zona a zona</h1>
   @if (island.summary(); as summary) {
-    <p class="t-lead t-muted lead">{{ summary }}</p>
+    <p id="island-summary" class="t-lead t-muted lead island-summary">{{ summary }}</p>
   }
 </header>
 
@@ -24,7 +24,7 @@
   }
   @default {
     <div class="layout">
-      <section class="map-block" aria-labelledby="map-title">
+      <section id="island-map" class="map-block island-map-section" aria-labelledby="map-title">
         <h2 id="map-title" class="visually-hidden">Mapa de la isla</h2>
         <qth-island-map
           [markers]="markers()"
@@ -32,7 +32,7 @@
           [windFrom]="windFrom()"
           (pick)="focusId.set($event)"
         />
-        <p class="map-legend t-micro">
+        <p id="map-legend" class="map-legend t-micro">
           <span class="legend-item"><span class="swatch good"></span>Buen día</span>
           <span class="legend-item"><span class="swatch fair"></span>Regular</span>
           <span class="legend-item"><span class="swatch poor"></span>Mejor otro plan</span>
@@ -42,7 +42,7 @@
         </p>
 
         @if (focused(); as zone) {
-          <div class="focus enter-settle" aria-live="polite">
+          <div id="zone-focus" class="focus zone-focus enter-settle" aria-live="polite">
             <div class="focus-text">
               <p class="focus-name">
                 {{ zone.name }}<span class="t-num focus-temp">{{ zone.temperature }}°</span>
@@ -51,13 +51,18 @@
               <p class="t-small t-muted">{{ zone.sentence }}</p>
             </div>
             <div class="focus-actions">
-              <button type="button" class="btn btn--primary" (click)="openDay(zone.id)">
+              <button
+                id="open-zone-day"
+                type="button"
+                class="btn btn--primary"
+                (click)="openDay(zone.id)"
+              >
                 Ver el día
                 <qth-icon name="chevron-right" />
               </button>
               <button
                 type="button"
-                class="icon-btn star"
+                class="icon-btn star favorite-toggle"
                 [class.is-on]="zone.isFavorite"
                 [attr.aria-pressed]="zone.isFavorite"
                 [attr.aria-label]="'Favorita: ' + zone.name"
@@ -70,15 +75,15 @@
         }
       </section>
 
-      <section class="list-block" aria-labelledby="list-title">
+      <section id="zone-list" class="list-block zone-list-section" aria-labelledby="list-title">
         <h2 id="list-title" class="t-title">Todas las zonas</h2>
-        <ul class="cards">
+        <ul class="cards zone-cards">
           @for (card of cards(); track card.id; let i = $index) {
-            <li class="card enter-rise" [style.--i]="i">
+            <li class="card zone-card enter-rise" [attr.data-location-id]="card.id" [style.--i]="i">
               <button type="button" class="card-main" (click)="openDay(card.id)">
                 <span class="card-art">
                   <qth-scene [state]="card.scene" variant="mini" />
-                  <span class="card-temp t-num">{{ card.temperature }}°</span>
+                  <span class="card-temp zone-temperature t-num">{{ card.temperature }}°</span>
                 </span>
                 <span class="card-text">
                   <span class="card-name">{{ card.name }}</span>
@@ -93,7 +98,7 @@
               </button>
               <button
                 type="button"
-                class="icon-btn star"
+                class="icon-btn star favorite-toggle"
                 [class.is-on]="card.isFavorite"
                 [attr.aria-pressed]="card.isFavorite"
                 [attr.aria-label]="'Favorita: ' + card.name"

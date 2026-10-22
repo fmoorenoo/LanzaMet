@@ -3,10 +3,10 @@
     <ng-container *ngComponentOutlet="demoControls" />
   }
 
-  <fieldset class="group">
+  <fieldset id="theme-selector" class="group theme-selector">
     <legend class="legend">Apariencia</legend>
     @for (option of themeOptions; track option.value) {
-      <label class="choice">
+      <label class="choice theme-option" [attr.data-theme-option]="option.value">
         <input
           type="radio"
           name="theme"
@@ -25,9 +25,9 @@
   </fieldset>
 
   @if (!isDemo) {
-    <section class="group" aria-labelledby="sources-title">
+    <section id="data-sources" class="group data-sources" aria-labelledby="sources-title">
       <h3 id="sources-title" class="legend">De dónde salen los datos</h3>
-      <ul class="sources">
+      <ul class="sources data-source-list">
         <li>
           <span class="choice-label">Previsión del tiempo</span>
           <span class="choice-hint">

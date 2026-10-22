@@ -1,4 +1,4 @@
-<div class="chart">
+<div class="chart tide-chart-canvas">
   <svg class="art" [attr.viewBox]="viewBox" preserveAspectRatio="none" aria-hidden="true">
     <defs>
       <linearGradient id="qth-tide-water" x1="0" x2="0" y1="0" y2="1">
@@ -24,7 +24,8 @@
 
   @for (label of labels(); track label.time) {
     <span
-      class="extreme"
+      class="extreme tide-chart-label"
+      [attr.data-tide]="label.kind === 'pleamar' ? 'high' : 'low'"
       [class.is-high]="label.kind === 'pleamar'"
       [style.left.%]="label.left"
       [style.top.%]="label.top"
@@ -34,12 +35,17 @@
     </span>
   }
 
-  <span class="now" [style.left.%]="nowLeft()" [style.top.%]="nowTop()" aria-hidden="true">
+  <span
+    class="now tide-now-marker"
+    [style.left.%]="nowLeft()"
+    [style.top.%]="nowTop()"
+    aria-hidden="true"
+  >
     <span class="now-dot"></span>
   </span>
 </div>
 
-<div class="ticks t-num" aria-hidden="true">
+<div class="ticks tide-chart-axis t-num" aria-hidden="true">
   @for (tick of ticks; track tick.label) {
     <span [style.left.%]="tick.left">{{ tick.label }}</span>
   }

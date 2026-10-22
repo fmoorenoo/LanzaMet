@@ -1,13 +1,13 @@
-<div class="scroller">
+<div class="scroller hour-scroller">
   <div
-    class="track"
+    class="track hour-track"
     role="group"
     aria-label="Próximas 24 horas. Usa las flechas para recorrerlas."
     [style.width.px]="width()"
     (keydown)="onKeydown($event)"
   >
     <svg
-      class="curve"
+      class="curve temperature-curve"
       [attr.viewBox]="'0 0 ' + width() + ' 60'"
       preserveAspectRatio="none"
       aria-hidden="true"
@@ -28,7 +28,9 @@
       <button
         #cell
         type="button"
-        class="cell"
+        class="cell hour-cell"
+        [attr.data-index]="cell.index"
+        [attr.data-time]="cell.time"
         [class.is-active]="cell.index === activeIndex()"
         [attr.aria-pressed]="cell.index === activeIndex()"
         [attr.aria-label]="cell.ariaLabel"
@@ -48,7 +50,7 @@
     }
   </div>
 </div>
-<p class="legend" aria-hidden="true">
+<p class="legend hour-legend" aria-hidden="true">
   <span>Toca una hora para verla arriba</span>
   <span class="legend-wind"><span class="legend-bar"></span>viento</span>
 </p>

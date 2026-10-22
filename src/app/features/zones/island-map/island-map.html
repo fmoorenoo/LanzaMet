@@ -1,7 +1,7 @@
-<div class="map" [style.aspect-ratio]="size.width + ' / ' + size.height">
+<div class="map island-map-canvas" [style.aspect-ratio]="size.width + ' / ' + size.height">
   @if (windAngle() !== null) {
     <!-- Composited: the streak layer slides with transform; nothing repaints per frame. -->
-    <div class="wind" aria-hidden="true">
+    <div class="wind wind-streaks" aria-hidden="true">
       <div class="wind-turn" [style.transform]="'rotate(' + windAngle() + 'deg)'">
         <div class="wind-track">
           <svg viewBox="0 0 2400 1000" preserveAspectRatio="none">
@@ -25,7 +25,8 @@
   @for (marker of placed(); track marker.id) {
     <button
       type="button"
-      class="marker"
+      class="marker map-marker"
+      [attr.data-location-id]="marker.id"
       [class]="'side-' + marker.side"
       [class.is-selected]="marker.id === selectedId()"
       [attr.data-mood]="marker.mood"

@@ -45,6 +45,7 @@ import { HeroView, TodayHero } from './today-hero/today-hero';
   ],
   templateUrl: './today.page.html',
   styleUrl: './today.page.scss',
+  host: { id: 'today-page', class: 'page today-page' },
 })
 export class TodayPage {
   protected readonly locations = inject(LocationsStore);

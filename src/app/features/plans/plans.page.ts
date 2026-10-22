@@ -8,9 +8,10 @@ import { StatusMessage } from '../../shared/ui/status-message/status-message';
 /** Concrete suggestions for today, the best one first and shown as a place. */
 @Component({
   selector: 'qth-plans-page',
+  host: { id: 'plans-page', class: 'page plans-page' },
   imports: [PlanItem, StatusMessage, DataCredit],
   template: `
-    <header class="page-head">
+    <header id="plans-header" class="page-head page-header">
       <h1 class="t-display">¿Dónde ir hoy?</h1>
       <p class="t-lead t-muted lead">
         @if (isDemo) {
@@ -27,11 +28,11 @@ import { StatusMessage } from '../../shared/ui/status-message/status-message';
       @switch (island.zones().status) {
         @case ('ready') {
           @if (lead(); as first) {
-            <qth-plan-item class="enter-settle" [plan]="first" variant="lead" />
+            <qth-plan-item id="lead-plan" class="enter-settle" [plan]="first" variant="lead" />
             @if (rest().length > 0) {
-              <section class="more" aria-labelledby="more-title">
+              <section id="more-plans" class="more" aria-labelledby="more-title">
                 <h2 id="more-title" class="t-title">Más ideas</h2>
-                <ul class="list">
+                <ul class="list plan-list">
                   @for (plan of rest(); track plan.id; let i = $index) {
                     <li class="enter-rise" [style.--i]="i + 1">
                       <qth-plan-item [plan]="plan" />
@@ -61,7 +62,7 @@ import { StatusMessage } from '../../shared/ui/status-message/status-message';
         }
       }
 
-      <footer class="page-foot">
+      <footer id="plans-footer" class="page-foot">
         <qth-data-credit kind="island" [updatedAt]="island.updatedAt()" />
       </footer>
     </div>

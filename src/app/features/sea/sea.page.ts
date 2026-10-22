@@ -26,6 +26,7 @@ const WAVE_AMPLITUDE = [0.8, 2, 3.4, 5, 6.6];
   imports: [Icon, StatusMessage, TideChart, DataCredit, WarningBanner],
   templateUrl: './sea.page.html',
   styleUrl: './sea.page.scss',
+  host: { id: 'sea-page', class: 'page sea-page' },
 })
 export class SeaPage {
   protected readonly ui = inject(UiStore);

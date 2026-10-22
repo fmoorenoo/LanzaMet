@@ -1,22 +1,24 @@
-<nav class="bar" aria-label="Principal">
-  <a class="brand" routerLink="/" aria-label="¿Qué tal hoy? — Inicio">
+<nav id="main-navigation" class="bar main-navigation" aria-label="Principal">
+  <a id="brand-link" class="brand brand-link" routerLink="/" aria-label="¿Qué tal hoy? — Inicio">
     <qth-brand-mark />
     <span class="brand-name">¿Qué tal hoy?</span>
   </a>
 
   <div class="tabs-wrap">
     <span
-      class="capsule"
+      id="nav-indicator"
+      class="capsule nav-indicator"
       aria-hidden="true"
       [class.is-gliding]="canGlide()"
       [class.is-hidden]="capsuleIndex() < 0"
       [style.--i]="capsuleIndex()"
     ></span>
-    <ul class="tabs">
+    <ul class="tabs nav-tabs">
       @for (item of items; track item.path) {
         <li>
           <a
-            class="tab"
+            class="tab nav-tab"
+            [attr.data-route]="item.id"
             [routerLink]="item.path"
             routerLinkActive="is-active"
             ariaCurrentWhenActive="page"
@@ -30,7 +32,12 @@
     </ul>
   </div>
 
-  <button type="button" class="settings" (click)="ui.openSettings()">
+  <button
+    id="nav-settings-button"
+    type="button"
+    class="settings settings-button"
+    (click)="ui.openSettings()"
+  >
     <qth-icon name="sliders" />
     <span>{{ isDemo ? 'Ajustes y demo' : 'Ajustes' }}</span>
   </button>

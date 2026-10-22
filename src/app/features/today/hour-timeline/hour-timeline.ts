@@ -24,6 +24,7 @@ const CURVE_RANGE = 26;
   imports: [SkyGlyph],
   templateUrl: './hour-timeline.html',
   styleUrl: './hour-timeline.scss',
+  host: { class: 'hour-timeline' },
 })
 export class HourTimeline {
   readonly hours = input.required<readonly WeatherSnapshot[]>();
@@ -51,6 +52,7 @@ export class HourTimeline {
       const temperature = Math.round(hour.temperatureC);
       return {
         index: i,
+        time: hour.time,
         label: i === 0 ? 'Ahora' : formatHourShort(date),
         dayMark: newDay ? formatWeekdayShort(date) : null,
         temperature,

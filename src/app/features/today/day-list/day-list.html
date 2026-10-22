@@ -1,6 +1,6 @@
-<ul class="days">
+<ul class="days day-list">
   @for (row of rows(); track row.date; let i = $index) {
-    <li class="day enter-rise" [style.--i]="i">
+    <li class="day day-row enter-rise" [attr.data-date]="row.date" [style.--i]="i">
       <span class="summary">
         <span class="name">{{ row.name }}</span>
         <span class="phrase">
