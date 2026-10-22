@@ -94,6 +94,7 @@
   @if (details(); as d) {
     <section id="day-facts" class="block today-section" aria-labelledby="details-title">
       <h2 id="details-title" class="t-title">Hoy, en detalle</h2>
+      <qth-sun-path id="sun-times" [reading]="daylight()" />
       <dl class="facts day-facts">
         <div class="fact day-fact" data-fact="feels-like">
           <dt><qth-icon name="thermometer" />Sensación</dt>
@@ -109,10 +110,6 @@
             <dd>{{ d.water }}</dd>
           </div>
         }
-        <div class="fact day-fact" data-fact="daylight">
-          <dt><qth-icon name="sunset" />Luz</dt>
-          <dd>{{ d.light }}</dd>
-        </div>
         @if (observed(); as o) {
           <div class="fact day-fact" data-fact="observed">
             <dt><qth-icon name="pin" />Medido</dt>

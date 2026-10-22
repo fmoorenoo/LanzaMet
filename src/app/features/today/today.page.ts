@@ -2,6 +2,7 @@ import { Component, computed, DestroyRef, effect, inject, linkedSignal } from '@
 import { RouterLink } from '@angular/router';
 import { readSea } from '../../core/insights/sea.insight';
 import { readUv } from '../../core/insights/sky.insight';
+import { drawingSunTimes, readDaylight } from '../../core/insights/sun.insight';
 import { readTide } from '../../core/insights/tide.insight';
 import { dayVerdict } from '../../core/insights/verdict.insight';
 import { fromDirection, readWind, windTrend } from '../../core/insights/wind.insight';
@@ -19,6 +20,7 @@ import { WarningBanner } from '../../shared/ui/warning-banner/warning-banner';
 import { buildScene } from '../../shared/scene/scene-state';
 import { Icon } from '../../shared/ui/icon/icon';
 import { StatusMessage } from '../../shared/ui/status-message/status-message';
+import { SunPath } from '../../shared/ui/sun-path/sun-path';
 import { Conditions, ConditionsView } from './conditions/conditions';
 import { DayList } from './day-list/day-list';
 import { HourTimeline } from './hour-timeline/hour-timeline';
@@ -42,6 +44,7 @@ import { HeroView, TodayHero } from './today-hero/today-hero';
     PlanItem,
     DataCredit,
     WarningBanner,
+    SunPath,
   ],
   templateUrl: './today.page.html',
   styleUrl: './today.page.scss',
@@ -129,8 +132,7 @@ export class TodayPage {
         weather,
         sea,
         tideLevel: tide?.level ?? null,
-        sunrise: toDate(day.sunrise),
-        sunset: toDate(day.sunset),
+        ...drawingSunTimes(day, at),
         at,
       }),
     };
@@ -181,9 +183,13 @@ export class TodayPage {
         sea?.current.waterTemperatureC != null
           ? `${Math.round(sea.current.waterTemperatureC)} °C`
           : null,
-      light: `Amanece a las ${formatTime(today.sunrise)} y anochece a las ${formatTime(today.sunset)}`,
     };
   });
+
+  /** Today's sunrise and sunset, following the place and the clock. */
+  protected readonly daylight = computed(() =>
+    readDaylight(this.forecast.weather().data?.daily ?? [], this.clock.now()),
+  );
 
   protected readonly todayKey = computed(() => islandDateKey(this.clock.now()));
   protected readonly topPlans = computed(() => this.island.recommendations().slice(0, 2));

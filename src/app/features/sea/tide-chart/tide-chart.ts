@@ -24,8 +24,9 @@ export class TideChart {
   readonly tide = input.required<TideForecast>();
   readonly dayStart = input.required<Date>();
   readonly now = input.required<Date>();
-  readonly sunrise = input.required<Date>();
-  readonly sunset = input.required<Date>();
+  /** Null when unknown: the night is then left unshaded. */
+  readonly sunrise = input<Date | null>(null);
+  readonly sunset = input<Date | null>(null);
 
   protected readonly viewBox = `0 0 ${W} ${H}`;
 
@@ -85,10 +86,15 @@ export class TideChart {
     return a.y + ((b.y - a.y) * (x - a.x)) / (b.x - a.x);
   });
 
-  protected readonly night = computed(() => ({
-    morning: Math.max(0, this.x(this.sunrise())),
-    evening: Math.min(W, this.x(this.sunset())),
-  }));
+  protected readonly night = computed(() => {
+    const sunrise = this.sunrise();
+    const sunset = this.sunset();
+    if (!sunrise || !sunset) return null;
+    return {
+      morning: Math.max(0, this.x(sunrise)),
+      evening: Math.min(W, this.x(sunset)),
+    };
+  });
 
   protected readonly labels = computed(() => {
     const start = this.dayStart().getTime();

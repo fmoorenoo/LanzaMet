@@ -6,14 +6,10 @@
         <stop offset="1" class="water-bottom" />
       </linearGradient>
     </defs>
-    <rect class="night" x="0" y="0" [attr.width]="night().morning" height="300" />
-    <rect
-      class="night"
-      [attr.x]="night().evening"
-      y="0"
-      [attr.width]="1000 - night().evening"
-      height="300"
-    />
+    @if (night(); as n) {
+      <rect class="night" x="0" y="0" [attr.width]="n.morning" height="300" />
+      <rect class="night" [attr.x]="n.evening" y="0" [attr.width]="1000 - n.evening" height="300" />
+    }
     <g class="reveal">
       <path class="water" [attr.d]="area()" fill="url(#qth-tide-water)" />
       <path class="surface" [attr.d]="line()" />

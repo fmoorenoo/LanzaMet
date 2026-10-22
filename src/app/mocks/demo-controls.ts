@@ -93,8 +93,8 @@ export class DemoControls {
   private readonly sunHours = computed(() => {
     const today = this.forecast.weather().data?.daily[0];
     return {
-      sunrise: today ? islandHour(toDate(today.sunrise)) : 8,
-      sunset: today ? islandHour(toDate(today.sunset)) : 19.3,
+      sunrise: today?.sunrise ? islandHour(toDate(today.sunrise)) : 8,
+      sunset: today?.sunset ? islandHour(toDate(today.sunset)) : 19.3,
     };
   });
 

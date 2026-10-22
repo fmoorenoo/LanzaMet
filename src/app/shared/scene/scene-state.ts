@@ -1,4 +1,5 @@
 import { seaLevelFor, SeaLevel } from '../../core/insights/sea.insight';
+import { drawingSunTimes } from '../../core/insights/sun.insight';
 import { readWind } from '../../core/insights/wind.insight';
 import {
   HorizonProfile,
@@ -238,14 +239,12 @@ function arc(progressAcross: number, height: number): { x: number; y: number } {
 
 /** A place's scene right now, for cards and previews. */
 export function zoneScene(zone: ZoneConditions, at: Date): SceneState {
-  const today = zone.weather.daily[0];
   return buildScene({
     location: zone.location,
     weather: zone.weather.current,
     sea: zone.sea?.current ?? null,
     tideLevel: null,
-    sunrise: new Date(today.sunrise),
-    sunset: new Date(today.sunset),
+    ...drawingSunTimes(zone.weather.daily[0], at),
     at,
   });
 }

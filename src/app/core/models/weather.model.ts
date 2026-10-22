@@ -39,8 +39,9 @@ export interface DailyForecast {
   readonly maxWindKmh: number;
   readonly windFromDegrees: number;
   readonly uvMax: number;
-  readonly sunrise: IsoInstant;
-  readonly sunset: IsoInstant;
+  /** Null when the provider has no value; the day is still valid without it. */
+  readonly sunrise: IsoInstant | null;
+  readonly sunset: IsoInstant | null;
 }
 
 export interface WeatherForecast {

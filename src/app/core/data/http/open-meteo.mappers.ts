@@ -186,15 +186,16 @@ function dailyForecasts(dto: ForecastDto, hourly: readonly WeatherSnapshot[]): D
     const values = [
       d.temperature_2m_max[i],
       d.temperature_2m_min[i],
-      d.sunrise[i],
-      d.sunset[i],
       d.uv_index_max[i],
       d.precipitation_probability_max[i],
       d.wind_speed_10m_max[i],
       d.wind_direction_10m_dominant[i],
     ];
     if (!allPresent(values)) return;
-    const [max, min, sunrise, sunset, uv, rainChance, wind, windFrom] = values;
+    const [max, min, uv, rainChance, wind, windFrom] = values;
+    // Sun times are optional: a day without them still has its weather.
+    const sunrise = d.sunrise[i];
+    const sunset = d.sunset[i];
     // `t` is local midnight; noon is safely inside the same island day.
     const date = islandDateKey(addHours(new Date(t * 1000), 12));
     const sky = daySky(hourly.filter((h) => islandDateKey(new Date(h.time)) === date));
@@ -208,8 +209,8 @@ function dailyForecasts(dto: ForecastDto, hourly: readonly WeatherSnapshot[]): D
       maxWindKmh: Math.round(wind),
       windFromDegrees: windFrom,
       uvMax: Math.round(uv),
-      sunrise: toIso(sunrise),
-      sunset: toIso(sunset),
+      sunrise: typeof sunrise === 'number' ? toIso(sunrise) : null,
+      sunset: typeof sunset === 'number' ? toIso(sunset) : null,
     });
   });
   return days;

@@ -52,11 +52,32 @@ describe('Open-Meteo weather mapping', () => {
     ]);
   });
 
+  const sunTime = (value: string | null) => (value ? formatTime(value) : 'missing');
+
   it('keeps sunrise in island time across the end of summer time', () => {
     // Clocks go back on Sunday 25 October: sunrise jumps from about 8:00 to about 7:00.
-    expect(formatTime(result.daily[0].sunrise)).toMatch(/^07:5\d|^08:0\d/);
-    expect(formatTime(result.daily[4].sunrise)).toMatch(/^07:0\d/);
-    expect(formatTime(result.daily[0].sunset)).toMatch(/^19:1\d/);
+    expect(sunTime(result.daily[0].sunrise)).toMatch(/^07:5\d|^08:0\d/);
+    expect(sunTime(result.daily[4].sunrise)).toMatch(/^07:0\d/);
+    expect(sunTime(result.daily[0].sunset)).toMatch(/^19:1\d/);
+  });
+
+  it('keeps a day whose sun times are missing, without making them up', () => {
+    const gap = structuredClone(forecastFixture) as unknown as {
+      daily: { sunrise: (number | null)[]; sunset: (number | null)[] };
+    };
+    gap.daily.sunrise[0] = null;
+    gap.daily.sunset[0] = null;
+    const mapped = toWeatherForecast(
+      'arrecife',
+      gap as unknown as ForecastDto,
+      dust,
+      now,
+      retrievedAt,
+    );
+    expect(mapped.daily[0].date).toBe(islandDateKey(now));
+    expect(mapped.daily[0].sunrise).toBeNull();
+    expect(mapped.daily[0].sunset).toBeNull();
+    expect(mapped.daily[1].sunrise).not.toBeNull();
   });
 
   it('normalises units: °C, whole km/h, 0–1 fractions, whole UV index', () => {

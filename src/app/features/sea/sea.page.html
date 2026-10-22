@@ -74,15 +74,14 @@
           aria-labelledby="curve-title"
         >
           <h2 id="curve-title" class="t-title">La marea de hoy</h2>
-          @if (sun(); as s) {
-            <qth-tide-chart
-              [tide]="data"
-              [dayStart]="dayStart()"
-              [now]="now()"
-              [sunrise]="s.sunrise"
-              [sunset]="s.sunset"
-            />
-          }
+          <!-- Without sun times the curve is still drawn, just without the night shaded. -->
+          <qth-tide-chart
+            [tide]="data"
+            [dayStart]="dayStart()"
+            [now]="now()"
+            [sunrise]="sun()?.sunrise ?? null"
+            [sunset]="sun()?.sunset ?? null"
+          />
           <p id="tide-source" class="source t-micro t-faint">
             <qth-icon name="info" />
             {{ tideSource() }}

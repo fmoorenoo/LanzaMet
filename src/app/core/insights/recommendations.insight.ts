@@ -192,8 +192,10 @@ export function buildRecommendations(
   const sunsetZones = zones.filter((z) => ['O', 'NO', 'SO'].includes(z.location.facing));
   let sunset: { zone: ZoneConditions; at: Date; clouds: number } | null = null;
   for (const zone of sunsetZones) {
-    const day = zone.weather.daily.find((d) => minutesBetween(now, d.sunset) > -15);
-    if (!day) continue;
+    const day = zone.weather.daily.find(
+      (d) => d.sunset !== null && minutesBetween(now, d.sunset) > -15,
+    );
+    if (!day?.sunset) continue;
     const at = toDate(day.sunset);
     const nearest = [...zone.weather.hourly].sort(
       (a, b) => Math.abs(minutesBetween(a.time, at)) - Math.abs(minutesBetween(b.time, at)),

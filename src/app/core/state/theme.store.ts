@@ -32,7 +32,9 @@ export class ThemeStore {
   readonly isDaylight = computed(() => {
     const now = this.clock.now();
     const today = this.forecast.weather().data?.daily[0];
-    if (today) return now >= toDate(today.sunrise) && now < toDate(today.sunset);
+    if (today?.sunrise && today.sunset) {
+      return now >= toDate(today.sunrise) && now < toDate(today.sunset);
+    }
     const hour = islandHour(now);
     return hour >= 7.5 && hour < 19.5;
   });

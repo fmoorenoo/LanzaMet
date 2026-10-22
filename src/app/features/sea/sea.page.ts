@@ -49,7 +49,9 @@ export class SeaPage {
 
   protected readonly sun = computed(() => {
     const today = this.forecast.weather().data?.daily[0];
-    return today ? { sunrise: toDate(today.sunrise), sunset: toDate(today.sunset) } : null;
+    return today?.sunrise && today.sunset
+      ? { sunrise: toDate(today.sunrise), sunset: toDate(today.sunset) }
+      : null;
   });
 
   protected readonly days = computed(() => {
