@@ -1,6 +1,6 @@
 # ¿Qué tal hoy?
 
-Web para entender en tres segundos cómo está el día en Lanzarote: tiempo, viento, mar, mareas y a qué zona ir. Gratuita, sin publicidad ni suscripciones.
+Web para entender en tres segundos cómo está el día en Lanzarote: tiempo, viento, mar, mareas y a qué zona ir. Gratuita, sin publicidad ni suscripciones. En español y en inglés.
 
 Desde la fase 2 muestra **datos reales**: previsión meteorológica y marítima de Open-Meteo y avisos oficiales de AEMET. Los datos simulados de la fase 1 solo existen en la build de demostración (`npm run start:demo`) y en los tests; la build de producción no los incluye.
 
@@ -103,10 +103,28 @@ Validación del 22-10-2026 en Arrecife: el modelo adelanta 24–37 min respecto 
 
 ## Pantallas
 
-- **Hoy**: escena atmosférica generada a partir de los datos (cielo según hora y nubosidad, calima, lluvia, sol o luna, horizonte de cada zona, olas según el mar y nivel del agua según la marea), veredicto, viento, mar y marea, 24 h, dónde ir, detalles (con la medida de AEMET si existe), 7 días y avisos oficiales.
+- **Hoy**: escena atmosférica generada a partir de los datos (cielo según hora y nubosidad, calima, lluvia, sol o luna, horizonte de cada zona, olas según el mar y nivel del agua según la marea), veredicto, máxima y mínima, viento, mar y marea, 24 h, dónde ir, amanecer y atardecer con el recorrido del sol, detalles (con la medida de AEMET si existe), 7 días y avisos oficiales. En escritorio la escena es una banda panorámica y el detalle va en dos columnas.
 - **Zonas**: mapa ilustrado con el estado y el viento por zona, y tarjetas con miniescena.
 - **Mar**: marea estimada, curva del día, pleamares y bajamares de hoy y mañana, oleaje, mar de fondo, agua, avisos costeros y zonas más tranquilas.
 - **Dónde ir**: recomendaciones derivadas de los datos (playa, sin viento, mar tranquilo, atardecer, paseo, olas).
+
+## Idiomas
+
+Español (por defecto) e inglés británico, cambiables al instante en **Ajustes → Idioma**, sin recargar.
+
+- **Solución propia y ligera** en `core/i18n`. Se descartó `$localize` (una build por idioma, sin cambio en tiempo de ejecución) y Transloco (claves sin comprobar en compilación sin herramientas extra, JSON cargado por HTTP y una dependencia más). Los diccionarios son TypeScript: `messages/es.ts` es la fuente y define las claves; `messages/en.ts` está tipado contra él, así que una clave que falte o sobre no compila. Un test comprueba además que cada traducción usa los mismos marcadores.
+- **Las reglas no escriben frases.** `core/insights` devuelve descriptores (`{ key, params }`) con valores crudos: números, horas, duraciones, días. `translate()` los formatea por idioma (`es-ES` / `en-GB`, siempre en hora de la isla). La lógica meteorológica es una sola para los dos idiomas.
+- **Reactivo con Signals.** `I18n.lang` es un signal; el pipe `t` y los `computed` que traducen lo leen, así que cambiar de idioma vuelve a pintar solo lo que muestra texto. `I18nTitleStrategy` traduce el título de cada ruta; `<html lang>` y la meta descripción siguen al idioma.
+- **Elección**: la del visitante se guarda en este dispositivo y manda siempre; si no ha elegido, se toma el primer idioma del navegador que la web habla; si ninguno, español.
+- Marcadores: `{nombre}` inserta un valor y `{^nombre}` lo inserta con mayúscula inicial (en español el día de la semana va en minúscula dentro de una frase).
+- **Avisos de AEMET**: el API expone el código Meteoalerta del fenómeno (`phenomenonCode`) y la descripción en inglés que publica la propia AEMET en el bloque `en-GB` del CAP (`descriptionEn`). La web nombra el fenómeno por su código en cada idioma; si AEMET no publica inglés, la descripción se muestra tal cual, en español y marcada con `lang="es"`.
+- Las etiquetas de la demo viajan en los diccionarios (≈ 2 KB de texto); su código y sus datos siguen fuera de la build de producción.
+
+## Interacción
+
+- **Scroll horizontal** (horas, favoritas, selector de zonas): con ratón, botones anterior/siguiente que solo aparecen con puntero fino y se desactivan en los extremos, y arrastre (un clic sigue siendo un clic); bordes fundidos mientras queda contenido. La rueda horizontal, el trackpad y Mayús + rueda funcionan de forma nativa. La rueda vertical no se secuestra a propósito, para no atrapar el scroll de la página. En las horas, las flechas, Inicio y Fin las recorren.
+- **Identificadores** para las herramientas del navegador: IDs en inglés para lo único (`weather-hero`, `current-temperature`, `hourly-forecast`, `tide-visualization`, `language-selector`…), clases semánticas para lo repetido y `data-*` para cada instancia (`data-location-id`, `data-index`…). Convención completa en [`docs/DESIGN.md`](docs/DESIGN.md#identificadores).
+- **Iconos**: Lucide para la interfaz, importado icono a icono, y los propios donde dan identidad. Criterios en [`docs/DESIGN.md`](docs/DESIGN.md#iconos).
 
 ## Arquitectura
 
@@ -116,12 +134,15 @@ src/app/
   core/data          puertos de datos + catálogo de zonas (locations.ts)
   core/data/http     adaptadores reales: Open-Meteo (cliente, DTO, mapeadores), AEMET vía API propio,
                      caché de respuestas, errores; fixtures con respuestas reales para los tests
-  core/insights      reglas puras: datos → lenguaje natural y recomendaciones
+  core/i18n          idiomas: diccionarios tipados (es fuente, en), traducción y formato por idioma,
+                     signal del idioma, pipe t y títulos de ruta
+  core/insights      reglas puras: datos → descriptores de texto ({ key, params }) y recomendaciones
   core/state         stores con Signals y rxResource (Forecast, Island, Official, Locations…)
   data-providers.ts  proveedores reales; la build "demo" lo sustituye por data-providers.demo.ts
   mocks/             simulador + fuentes simuladas + controles de demo (solo build demo y tests)
-  shared/            escena, iconos, hoja, aviso oficial, crédito de datos, recomendación
-  layout/            navegación, selector de zonas, ajustes
+  shared/            escena, iconos, hoja, aviso oficial, crédito de datos, recomendación,
+                     arco del sol, scroll horizontal
+  layout/            navegación, selector de zonas, selector de idioma, ajustes
   features/          today · zones · sea · plans (rutas con carga diferida)
 server/              API propio (Fetch estándar): avisos y observaciones de AEMET, con tests
 scripts/             verify-sources.ts: comprobación en vivo de todas las fuentes
@@ -145,4 +166,6 @@ Sistema documentado en [`docs/DESIGN.md`](docs/DESIGN.md). Tokens en `src/styles
 - La resolución del modelo del tiempo hace que algunas zonas compartan valores (Arrecife y Costa Teguise).
 - Los valores de «Ahora» son previsión del modelo para este momento, no medidas. La medida de AEMET («Medido») solo aparece donde hay una estación costera cerca, así que no en Famara ni El Golfo.
 - La calima se detecta con un umbral orientativo de polvo en superficie (100 µg/m³, CAMS a 45 km de resolución).
-- Revisión visual hecha en Chrome headless (390 y 1440 px); falta probar en dispositivos reales.
+- Revisión visual hecha en Chrome headless (360–1920 px); falta probar en dispositivos reales.
+- Las horas de amanecer y atardecer son las de Open-Meteo para cada zona. Si faltan, se dice y la escena se dibuja con un día nominal (7:30–19:30), solo como ilustración.
+- La descripción de un aviso solo sale en inglés si AEMET la publica así; parte de su texto libre puede venir en español.

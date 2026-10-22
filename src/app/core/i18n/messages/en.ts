@@ -306,7 +306,7 @@ export const en: Messages = {
   'conditions.tide.error.text': "We couldn't load it.",
 
   'hours.label': 'Next 24 hours. Use the arrow keys to move through them.',
-  'hours.cell': '{time}: {sky}, {temp} degrees, {wind}',
+  'hours.cellDetail': '{sky}, {wind}',
   'hours.hint': 'Choose an hour to see it in the scene',
   'hours.wind': 'wind',
   'hours.previous': 'Earlier hours',
@@ -397,7 +397,6 @@ export const en: Messages = {
   'zones.wind': 'Wind {from}',
   'zones.openDay': 'See the day',
   'zones.all': 'All places',
-  'zones.marker': '{name}: {temp} degrees, {headline}',
 
   // ── Sea ──────────────────────────────────────────────────────
   'seaPage.next': '{next}, in {until}.',

@@ -1,7 +1,6 @@
 import { Component, computed, input, output } from '@angular/core';
 import { Mood } from '../../../core/insights/verdict.insight';
 import { LocationId, SkyCondition } from '../../../core/models';
-import { TranslatePipe } from '../../../core/i18n/t.pipe';
 import { SkyGlyph } from '../../../shared/ui/sky-glyph/sky-glyph';
 import { ISLAND_PATHS, LABEL_SIDE, MAP_SIZE, project } from './island-geometry';
 
@@ -23,7 +22,7 @@ export interface MapMarker {
  */
 @Component({
   selector: 'qth-island-map',
-  imports: [SkyGlyph, TranslatePipe],
+  imports: [SkyGlyph],
   templateUrl: './island-map.html',
   styleUrl: './island-map.scss',
   host: { class: 'island-map' },

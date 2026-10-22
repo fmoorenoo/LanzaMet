@@ -61,6 +61,8 @@ Reglas:
 - Solo `transform` y `opacity`. Excepciones justificadas: los colores del cielo (`@property`, `inherits: false`), `d` en las olas y el `clip-path` de la curva de marea.
 - Pulsar algo da `scale(0.94–0.98)`. Nunca se anima desde `scale(0)` y nunca se usa `ease-in`. La salida es más rápida que la entrada.
 - Escape cierra al instante, sin animación. La hoja se arrastra para cerrarla: basta un gesto rápido (> 0,11 px/ms) o desplazarla un 30 %.
+- Las tiras horizontales funden sus bordes (`--fade-back` / `--fade-forward`, registradas con `@property` para que el fundido se anime) solo mientras queda contenido en esa dirección. Con ratón se arrastran: por debajo de 5 px es un clic, y una suelta rápida (> 0,35 px/ms) conserva algo de inercia, salvo con `prefers-reduced-motion`.
+- La píldora del selector de idioma y el sol del arco de amanecer se desplazan con `--ease-in-out` (240 ms y 900 ms); sin movimiento si se pide menos movimiento.
 - Los bucles ambientales (nubes, olas) usan WAAPI con `updatePlaybackRate`, así un cambio de viento no produce saltos. Se pausan fuera de pantalla y en pestañas ocultas.
 - Con `prefers-reduced-motion` se conservan los fundidos de color y opacidad; desaparecen los desplazamientos y los bucles.
 - Hover solo con `(hover: hover) and (pointer: fine)`.
@@ -71,10 +73,14 @@ Reglas:
 |---|---|---|
 | Escena | `shared/scene` | `full` (animada) / `mini` (tarjetas); oculta a lectores de pantalla |
 | Hoja | `shared/ui/sheet` | `<dialog>` nativo, inferior en móvil y centrada en escritorio |
-| Icono | `shared/ui/icon` | Conjunto propio en rejilla de 24, trazo 1,75 |
+| Icono | `shared/ui/icon` | Lucide para la interfaz + iconos propios de identidad; ver «Iconos» |
 | Glifo del cielo | `shared/ui/sky-glyph` | Bicolor: sol cálido, luna pálida, nubes que los tapan |
 | Mensaje de estado | `shared/ui/status-message` | Vacío (`status`) / error (`alert`) con acción de recuperación |
 | Recomendación | `shared/plans/plan-item` | Fila, o "lead" con miniescena |
+| Arco del sol | `shared/ui/sun-path` | Amanecer y atardecer reales, el tramo recorrido y cuánto queda; sin datos, lo dice |
+| Scroll horizontal | `shared/ui/horizontal-scroll` | Directiva (bordes fundidos, arrastre con ratón) + botones anterior/siguiente |
+| Selector de idioma | `layout/language-selector` | Segmentado sobre radios reales; cada idioma escrito en su lengua, sin banderas |
+| Controles sobre el cielo | `styles/_sky-controls.scss` | `.sky-chip`, `.sky-button`: toman la tinta de la escena |
 | Controles | `styles/_controls.scss` | `.btn`, `.icon-btn`, `.chip`, `.choice`, `.field`, `.skeleton`, `.pendable` |
 
 Cada sección contempla carga (esqueleto con la forma del contenido), datos, vacío (sin cobertura: se explica y se ofrece la alternativa más cercana), error (con Reintentar) y actualización (los datos anteriores siguen visibles, atenuados, mientras llegan los nuevos).
@@ -83,8 +89,24 @@ Cada sección contempla carga (esqueleto con la forma del contenido), datos, vac
 
 - **Móvil (base):** escena casi a pantalla completa con la hoja de detalle superpuesta; barra de pestañas inferior con zonas seguras. El horizonte baja en pantallas de poca altura para que el texto siempre quede sobre cielo profundo.
 - **Tableta (≥ 48 rem):** el mismo flujo con una medida de lectura más tranquila.
-- **Escritorio (≥ 64 rem):** raíl lateral; la escena queda fija a la izquierda y el detalle se desplaza a la derecha. Zonas y Mar pasan a dos columnas a partir de 72 rem.
+- **Escritorio (≥ 64 rem):** raíl lateral. En Hoy, la escena es una banda panorámica (≈ 3:1, `clamp(26rem, 54vh, 32rem)` de alto) en un contenedor de 84 rem: zona, favoritas y acciones en una línea; la temperatura junto al veredicto, con la máxima y la mínima; el cielo de la derecha queda para el sol y la luna. Debajo, «ahora» (viento, mar y marea en tres columnas desde 72 rem), las 24 horas a todo el ancho —justo bajo la escena que previsualizan— y una rejilla de dos columnas: planes y detalle a la izquierda, los siete días a la derecha. El orden del DOM y del foco es el de móvil. Zonas y Mar pasan a dos columnas a partir de 72 rem.
+
+## Iconos
+
+- **Lucide** (ISC, versión fijada) para la interfaz: chevrons, cerrar, buscar, estrella, ubicación, actualizar, ajustes, información, aviso, flechas, viento, termómetro, gota, sol, amanecer y atardecer, mapa, brújula, huellas, escudo e idiomas. Se importan uno a uno; solo los usados llegan al bundle.
+- **Propios** donde dan identidad o Lucide no tiene nada tan preciso: Hoy (el sol sobre el horizonte), el mar y las olas, la marea subiendo y bajando, la sombrilla, el bañista y el surf. Dibujados en la misma rejilla.
+- Los glifos del cielo, la marca y la escena son ilustraciones, no iconos, y no se sustituyen.
+- Rejilla de 24, trazo 1,75 para todos, extremos y uniones redondeados, color `currentColor`. Tamaño por rol: `--icon-xs` 1 rem (con texto micro) · `--icon-sm` 1,125 rem (etiquetas, chips) · `--icon-md` 1,25 rem (chevrons de fila) · `--icon-lg` 1,375 rem (pestañas, avisos, estados) · `--icon-xl` 1,5 rem (por defecto). Se alinean al centro de la línea con `inline-flex` y `gap`.
+- Un icono es decorativo salvo que lleve `label`; el texto de al lado dice lo mismo.
+
+## Identificadores
+
+Para encontrar cada pieza con las herramientas del navegador:
+
+- **IDs** en inglés y `kebab-case`, solo para lo único de cada página: `weather-hero`, `weather-landscape`, `current-temperature`, `weather-verdict`, `weather-description`, `temperature-range`, `location-selector`, `location-selector-button`, `hourly-forecast`, `current-conditions`, `sun-times`, `daily-forecast`, `tide-visualization`, `tide-extremes`, `language-selector`, `theme-selector`, `main-navigation`…
+- **Clases** semánticas y reutilizables para lo repetido (`hour-cell`, `day-row`, `zone-card`, `map-marker`, `location-option`, `plan-card`, `weather-warning`, `tide-extreme`…), añadidas junto a las clases internas cortas, que no cambian.
+- **`data-*`** para identificar cada instancia: `data-location-id`, `data-index` / `data-time` (horas), `data-date` (días), `data-plan-kind`, `data-tide` (`high` / `low`), `data-level` (avisos), `data-condition`, `data-route`, `data-area`. La escena expone lo que dibuja: `data-variant`, `data-horizon`, `data-sea-level`, `data-ink`.
 
 ## Voz
 
-Español de la isla, breve y concreto: "Mar como un plato", "Llueve, cosa rara", "El viento se está levantando". Las alturas se dan en palabras de playa ("Olas de unos 40 cm"). Cada dato dice de dónde sale: la previsión lleva su fuente y la hora de consulta en el pie de cada página; una estimación se dice como tal ("Bajamar hacia las 17:30", "Pleamares y bajamares (estimadas)"); una medida lleva su estación y su hora; un aviso oficial, su emisor. En la build de demo, los datos ficticios se declaran como tales.
+La interfaz habla español (por defecto) e inglés británico (reloj de 24 h, como en la isla). Español de la isla, breve y concreto: "Mar como un plato", "Llueve, cosa rara", "El viento se está levantando". En inglés, el mismo tono, sin traducir palabra por palabra: "Flat as a mirror", "Rain, for once", "The wind is picking up"; los nombres de lugar y "calima" no se traducen. Las alturas se dan en palabras de playa ("Olas de unos 40 cm"). Cada dato dice de dónde sale: la previsión lleva su fuente y la hora de consulta en el pie de cada página; una estimación se dice como tal ("Bajamar hacia las 17:30", "Pleamares y bajamares (estimadas)"); una medida lleva su estación y su hora; un aviso oficial, su emisor. En la build de demo, los datos ficticios se declaran como tales.

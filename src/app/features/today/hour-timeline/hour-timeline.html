@@ -45,7 +45,6 @@
         [attr.data-time]="cell.time"
         [class.is-active]="cell.index === activeIndex()"
         [attr.aria-pressed]="cell.index === activeIndex()"
-        [attr.aria-label]="cell.ariaLabel"
         [attr.tabindex]="cell.index === activeIndex() ? 0 : -1"
         (click)="choose(cell.index)"
       >
@@ -55,6 +54,8 @@
         <span class="temp t-num" [style.transform]="'translateY(' + (cell.y - 22) + 'px)'"
           >{{ cell.temperature }}°</span
         >
+        <!-- The accessible name is the visible time and temperature, plus the rest in words. -->
+        <span class="visually-hidden">, {{ cell.detail | t }}</span>
         <span class="wind" [attr.data-level]="cell.windLevel">
           <span class="wind-bar" [style.transform]="'scaleX(' + cell.windScale + ')'"></span>
         </span>

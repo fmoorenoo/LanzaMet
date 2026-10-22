@@ -5,13 +5,22 @@
 
 // On small maps the pins show the essentials (sky and temperature); the card
 // under the map names the chosen place and the list below names them all.
+// The name stays in the pin's accessible name, only out of sight.
 .name {
-  display: none;
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
 }
 
 @container (min-width: 20rem) {
   .name {
-    display: inline;
+    position: static;
+    width: auto;
+    height: auto;
+    clip-path: none;
   }
 }
 

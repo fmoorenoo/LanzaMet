@@ -33,17 +33,14 @@
       [style.left.%]="marker.left"
       [style.top.%]="marker.top"
       [attr.aria-pressed]="marker.id === selectedId()"
-      [attr.aria-label]="
-        'zones.marker'
-          | t: { name: marker.name, temp: marker.temperature, headline: marker.headline }
-      "
       (click)="pick.emit(marker.id)"
     >
       <span class="dot" aria-hidden="true"></span>
-      <span class="label" aria-hidden="true">
+      <span class="label">
         <qth-sky-glyph [sky]="marker.sky" [isDaylight]="marker.isDaylight" [decorative]="true" />
         <span class="name">{{ marker.name }}</span>
         <span class="temp t-num">{{ marker.temperature }}°</span>
+        <span class="visually-hidden">, {{ marker.headline }}</span>
       </span>
     </button>
   }

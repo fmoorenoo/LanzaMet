@@ -63,3 +63,39 @@ Interfaz completa (Hoy, Zonas, Mar, Dónde ir), escena atmosférica, sistema de 
 3. **Fuente oficial de mareas**: pedir a Puertos del Estado o al IHM acceso autorizado a sus predicciones para Arrecife; sustituiría la estimación sin cambiar la interfaz (`TideSource.official`).
 4. Probar en dispositivos reales (iOS y Android).
 5. Valorar acotar la ventana de playa al atardecer (hoy puede terminar hasta una hora después de la puesta de sol, por la resolución horaria).
+
+## Fase 3 — Interfaz, UX e idiomas (22-10-2026, rama `fase-3/interfaz-i18n`)
+
+Punto de recuperación: tag `fase-2-datos-reales`. Skills de diseño usadas: Impeccable (refinamiento sobre el sistema existente, playbook de layout y detector) y Emil Kowalski (interacciones y movimiento).
+
+### Hecho
+
+1. **Zonas unificadas**: fuera Papagayo y La Santa, que repetían las celdas del modelo de Playa Blanca y Famara. Quien las tuviera guardadas como zona o favorita pasa a esas dos (`RETIRED_LOCATIONS`). 7 zonas, 7 puntos de mar distintos.
+2. **IDs y clases** en inglés para las herramientas del navegador, con `data-*` por instancia; la escena expone lo que dibuja. Sin IDs duplicados en ninguna página.
+3. **Amanecer y atardecer** reales de Open-Meteo, por fecha de la isla y por zona, con un arco que muestra el tramo recorrido y cuánto queda. El contrato acepta horas de sol ausentes: un día sin ellas ya no se descarta ni hace fallar la previsión.
+4. **Scroll horizontal** cómodo con ratón y teclado (directiva `HorizontalScroll` + `ScrollControls`), sin secuestrar la rueda vertical.
+5. **Iconos**: Lucide 1.52.0 para la interfaz, propios para la identidad, tamaños por rol.
+6. **Bilingüe** español / inglés en tiempo de ejecución, con reglas que devuelven descriptores y formato por idioma. El API de AEMET añade `phenomenonCode` y `descriptionEn`.
+7. **Hoy en escritorio**: banda panorámica y detalle en dos columnas.
+
+### Corregido por el camino
+
+- De noche se leía «el sol calienta más de lo que parece» y «Sol intenso el resto del día»: ahora «se nota más templado de lo que marca» y «Ya sin sol hasta mañana».
+- Accesibilidad (WCAG 2.5.3): las celdas de las horas y los marcadores del mapa tenían un nombre accesible distinto del texto visible; ahora lo contienen. En mapas pequeños el nombre de la zona se ocultaba también a los lectores de pantalla.
+- Los avisos dejan el borde lateral grueso por un tinte del nivel, mezclado en OKLab (en OKLCH el ámbar viraba a verde).
+- Las etiquetas de pleamar y bajamar junto a los bordes de la gráfica se salían de ella.
+- «Toca una hora para verla arriba» pasa a «Elige una hora para verla en la escena» (vale para ratón y para la escena a la izquierda o arriba).
+
+### Validación
+
+- **Tests**: 77 de la web (antes 62; nuevos: migración de favoritas, luz del día, día sin horas de sol, diccionarios con los mismos marcadores, formato por idioma, detección y persistencia del idioma) y 17 del API (con el código del fenómeno y la descripción en inglés reales de un CAP de AEMET).
+- **Lint, formato, tipos del API y build de producción** sin errores ni avisos de presupuesto (inicial 419,6 kB, 114,3 kB transferidos). Sin código ni datos simulados en producción.
+- **Accesibilidad**: axe-core 4.14 sin violaciones en Hoy, Zonas, Mar y Dónde ir, con el selector de zonas y Ajustes abiertos, en español e inglés, tema claro y oscuro, móvil y escritorio. El contraste del texto sobre la escena no lo mide axe (fondos degradados); se mantiene el sombreado validado en la fase 1.
+- **Revisión visual** en Chrome headless a 390, 820, 1024, 1280, 1440 y 1920 px, de día y de noche, en los dos idiomas, y en la build de demo (escenario borrasca, con avisos). Probados con eventos reales de ratón los botones y el arrastre de las horas.
+- **Impeccable detect** sin hallazgos en los ficheros de interfaz cambiados.
+
+### Pendiente
+
+1. Reiniciar el API propio allí donde esté desplegado para que sirva `phenomenonCode` y `descriptionEn` (la web funciona igual sin ellos).
+2. Probar en dispositivos reales, incluido el arrastre y los botones de las tiras en tabletas con ratón.
+3. `npm audit` señala vulnerabilidades en `vite` dentro de `@angular/build` (solo herramientas de desarrollo); se resuelven al actualizar Angular CLI.

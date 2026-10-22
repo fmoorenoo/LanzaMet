@@ -1,9 +1,8 @@
-import { Component, computed, ElementRef, inject, input, model, viewChildren } from '@angular/core';
+import { Component, computed, ElementRef, input, model, viewChildren } from '@angular/core';
 import { skyPhrase } from '../../../core/insights/sky.insight';
 import { readWind } from '../../../core/insights/wind.insight';
 import { WeatherSnapshot } from '../../../core/models';
 import { msg } from '../../../core/i18n/i18n.model';
-import { I18n } from '../../../core/i18n/i18n.store';
 import { hourLabel } from '../../../core/i18n/phrases';
 import { TranslatePipe } from '../../../core/i18n/t.pipe';
 import { islandDateKey, toDate } from '../../../core/utils/time';
@@ -32,7 +31,6 @@ export class HourTimeline {
   readonly selected = model<number | null>(null);
 
   private readonly buttons = viewChildren<ElementRef<HTMLButtonElement>>('cell');
-  private readonly i18n = inject(I18n);
 
   private readonly range = computed(() => {
     const temps = this.hours().map((h) => h.temperatureC);
@@ -62,10 +60,8 @@ export class HourTimeline {
         windLevel: wind.level,
         windScale: 0.2 + wind.strength * 0.8,
         y: this.y(hour.temperatureC),
-        ariaLabel: this.i18n.t('hours.cell', {
-          time: i === 0 ? msg('common.now') : { time: date },
+        detail: msg('hours.cellDetail', {
           sky: skyPhrase(hour.sky, hour.isDaylight),
-          temp: temperature,
           wind: wind.phrase,
         }),
       };

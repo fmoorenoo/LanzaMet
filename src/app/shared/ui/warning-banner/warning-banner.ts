@@ -76,7 +76,8 @@ const PHENOMENA: Readonly<Record<string, MessageKey>> = {
       align-items: flex-start;
       padding: var(--s-3) var(--s-4);
       border-radius: var(--r-md);
-      background-color: color-mix(in oklch, var(--level) 12%, var(--c-surface-sunken));
+      // Mixed in OKLab: an OKLCH mix would swing the hue from amber through green.
+      background-color: color-mix(in oklab, var(--level) 14%, var(--c-surface-sunken));
     }
     .is-amarillo {
       --level: var(--c-fair);

@@ -307,7 +307,7 @@ export const es = {
   'conditions.tide.error.text': 'No hemos podido cargarla.',
 
   'hours.label': 'Próximas 24 horas. Usa las flechas para recorrerlas.',
-  'hours.cell': '{time}: {sky}, {temp} grados, {wind}',
+  'hours.cellDetail': '{sky}, {wind}',
   'hours.hint': 'Elige una hora para verla en la escena',
   'hours.wind': 'viento',
   'hours.previous': 'Horas anteriores',
@@ -399,7 +399,6 @@ export const es = {
   'zones.wind': 'Viento {from}',
   'zones.openDay': 'Ver el día',
   'zones.all': 'Todas las zonas',
-  'zones.marker': '{name}: {temp} grados, {headline}',
 
   // ── Sea ──────────────────────────────────────────────────────
   'seaPage.next': '{next}, dentro de {until}.',
