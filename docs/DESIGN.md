@@ -87,4 +87,4 @@ Cada sección contempla carga (esqueleto con la forma del contenido), datos, vac
 
 ## Voz
 
-Español de la isla, breve y concreto: "Mar como un plato", "Llueve, cosa rara", "El viento se está levantando". Las alturas se dan en palabras de playa ("Olas de unos 40 cm"). Los datos ficticios se declaran siempre como tales (pie de Hoy, Dónde ir, panel demo, fuente de la marea).
+Español de la isla, breve y concreto: "Mar como un plato", "Llueve, cosa rara", "El viento se está levantando". Las alturas se dan en palabras de playa ("Olas de unos 40 cm"). Cada dato dice de dónde sale: la previsión lleva su fuente y la hora de consulta en el pie de cada página; una estimación se dice como tal ("Bajamar hacia las 17:30", "Pleamares y bajamares (estimadas)"); una medida lleva su estación y su hora; un aviso oficial, su emisor. En la build de demo, los datos ficticios se declaran como tales.
