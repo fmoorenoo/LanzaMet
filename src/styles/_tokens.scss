@@ -1,0 +1,176 @@
+// Design tokens — "¿Qué tal hoy?"
+//
+// The palette is taken from the island itself: lime-washed walls (cal),
+// volcanic gravel (picón), the green of Lanzarote's traditional window frames
+// (manrique), Timanfaya's iron-oxide ochre, the Atlantic and El Golfo's lagoon.
+// Primitives are fixed; components only ever read the semantic roles below,
+// which are remapped for the night theme.
+
+:root {
+  // ── Primitives ──────────────────────────────────────────────
+  --cal-0: oklch(1 0 0);
+  --cal-50: oklch(0.984 0.004 230);
+  --cal-100: oklch(0.958 0.007 230);
+  --cal-200: oklch(0.92 0.009 230);
+
+  --picon-400: oklch(0.6 0.012 55);
+  --picon-500: oklch(0.5 0.013 55);
+  --picon-600: oklch(0.42 0.014 55);
+  --picon-800: oklch(0.28 0.012 55);
+  --picon-900: oklch(0.21 0.01 55);
+
+  --noche-900: oklch(0.17 0.02 258);
+  --noche-800: oklch(0.21 0.022 258);
+  --noche-700: oklch(0.255 0.024 258);
+
+  --manrique-300: oklch(0.82 0.1 162);
+  --manrique-500: oklch(0.5 0.1 162);
+  --manrique-600: oklch(0.43 0.09 162);
+
+  --atlantico-400: oklch(0.66 0.11 232);
+  --atlantico-500: oklch(0.52 0.13 240);
+  --atlantico-700: oklch(0.36 0.1 248);
+
+  --timanfaya-500: oklch(0.6 0.16 40);
+  --sol-400: oklch(0.85 0.15 82);
+  --charco-500: oklch(0.6 0.14 150);
+
+  // ── Semantic roles (day) ────────────────────────────────────
+  color-scheme: light;
+  --c-ground: var(--cal-50);
+  --c-surface: var(--cal-0);
+  --c-surface-sunken: var(--cal-100);
+  --c-surface-raised: var(--cal-0);
+  --c-line: oklch(0.21 0.01 55 / 0.09);
+  --c-line-strong: oklch(0.21 0.01 55 / 0.16);
+  --c-ink: var(--picon-900);
+  --c-ink-2: var(--picon-600);
+  --c-ink-3: var(--picon-500);
+  --c-accent: var(--manrique-600);
+  --c-accent-ink: oklch(0.99 0.01 162);
+  --c-accent-soft: oklch(0.43 0.09 162 / 0.1);
+  --c-focus: var(--atlantico-500);
+  --c-sea: var(--atlantico-500);
+  --c-sun: var(--sol-400);
+  --c-heat: var(--timanfaya-500);
+  --c-scrim: oklch(0.15 0.02 258 / 0.42);
+  --c-material: oklch(0.99 0.004 230 / 0.9);
+  --c-material-edge: oklch(1 0 0 / 0.6);
+
+  // Condition quality — never used alone: always paired with words or shape.
+  --c-good: oklch(0.55 0.13 152);
+  --c-fair: oklch(0.64 0.14 72);
+  --c-poor: oklch(0.56 0.17 32);
+
+  // Weather glyph inks
+  --glyph-sun: var(--sol-400);
+  --glyph-sun-edge: oklch(0.72 0.15 70);
+  --glyph-cloud-fill: var(--cal-0);
+  --glyph-rain: var(--atlantico-500);
+  --glyph-moon: oklch(0.86 0.06 95);
+
+  // ── Typography ──────────────────────────────────────────────
+  --font-sans:
+    'Bricolage Grotesque Variable', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto,
+    sans-serif;
+
+  --fs-hero: clamp(5.75rem, 26vw, 9rem);
+  --fs-display: 2rem;
+  --fs-title: 1.375rem;
+  --fs-lead: 1.125rem;
+  --fs-body: 1rem;
+  --fs-small: 0.875rem;
+  --fs-micro: 0.8125rem;
+
+  // ── Space (4px base) ────────────────────────────────────────
+  --s-1: 0.25rem;
+  --s-2: 0.5rem;
+  --s-3: 0.75rem;
+  --s-4: 1rem;
+  --s-5: 1.25rem;
+  --s-6: 1.5rem;
+  --s-8: 2rem;
+  --s-10: 2.5rem;
+  --s-12: 3rem;
+  --s-16: 4rem;
+
+  --gutter: 1.25rem;
+
+  // ── Shape (Manrique's walls are never sharp) ────────────────
+  --r-xs: 0.5rem;
+  --r-sm: 0.75rem;
+  --r-md: 1.125rem;
+  --r-lg: 1.5rem;
+  --r-xl: 2rem;
+  --r-pill: 999px;
+
+  // ── Depth ───────────────────────────────────────────────────
+  --shadow-1: 0 1px 2px oklch(0.2 0.02 250 / 0.06), 0 2px 8px oklch(0.2 0.02 250 / 0.05);
+  --shadow-2: 0 2px 6px oklch(0.2 0.02 250 / 0.06), 0 12px 32px oklch(0.2 0.02 250 / 0.1);
+  --shadow-sheet: 0 -4px 12px oklch(0.2 0.02 250 / 0.05), 0 -16px 48px oklch(0.2 0.02 250 / 0.1);
+
+  // ── Motion ──────────────────────────────────────────────────
+  // Curves are Emil Kowalski's strong variants; never the built-in keywords
+  // for anything the user is waiting on.
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
+
+  --d-press: 140ms; // pressed feedback
+  --d-fast: 180ms; // hover, colour, small toggles
+  --d-base: 240ms; // routine state changes
+  --d-sheet: 460ms; // drawers and sheets
+  --d-atmos: 900ms; // sky, sea and light changing — explanatory, so longer
+  --d-tide: 1400ms; // water level moving to a new height
+  --stagger: 40ms;
+
+  // ── Layers ──────────────────────────────────────────────────
+  --z-chrome: 20;
+  --z-sheet: 40;
+
+  // ── Layout ──────────────────────────────────────────────────
+  --tabbar-h: 4rem;
+  --rail-w: 6.5rem;
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+// ── Night theme: volcanic night, not an inverted day ──────────
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --c-ground: var(--noche-900);
+  --c-surface: var(--noche-800);
+  --c-surface-sunken: var(--noche-700);
+  --c-surface-raised: oklch(0.24 0.024 258);
+  --c-line: oklch(0.96 0.01 258 / 0.09);
+  --c-line-strong: oklch(0.96 0.01 258 / 0.16);
+  --c-ink: oklch(0.965 0.006 90);
+  --c-ink-2: oklch(0.82 0.014 258);
+  --c-ink-3: oklch(0.72 0.016 258);
+  --c-accent: var(--manrique-300);
+  --c-accent-ink: oklch(0.22 0.04 162);
+  --c-accent-soft: oklch(0.82 0.1 162 / 0.14);
+  --c-focus: var(--atlantico-400);
+  --c-sea: var(--atlantico-400);
+  --c-scrim: oklch(0.08 0.02 258 / 0.6);
+  --c-material: oklch(0.2 0.022 258 / 0.9);
+  --c-material-edge: oklch(1 0 0 / 0.08);
+
+  --c-good: oklch(0.76 0.13 152);
+  --c-fair: oklch(0.8 0.13 78);
+  --c-poor: oklch(0.72 0.15 32);
+
+  --glyph-cloud-fill: var(--noche-700);
+  --glyph-rain: var(--atlantico-400);
+
+  --shadow-1: 0 1px 2px oklch(0 0 0 / 0.3), 0 2px 8px oklch(0 0 0 / 0.2);
+  --shadow-2: 0 2px 6px oklch(0 0 0 / 0.3), 0 12px 32px oklch(0 0 0 / 0.35);
+  --shadow-sheet: 0 -4px 12px oklch(0 0 0 / 0.25), 0 -16px 48px oklch(0 0 0 / 0.35);
+}
+
+@media (min-width: 48rem) {
+  :root {
+    --gutter: 2rem;
+    --fs-display: 2.5rem;
+  }
+}

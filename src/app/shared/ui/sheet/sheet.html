@@ -1,0 +1,28 @@
+<dialog
+  #dialog
+  class="sheet"
+  [attr.aria-labelledby]="titleId"
+  (cancel)="onCancel()"
+  (close)="onNativeClose()"
+>
+  <div #panel class="panel">
+    <div
+      class="drag-zone"
+      (pointerdown)="onPointerDown($event)"
+      (pointermove)="onPointerMove($event)"
+      (pointerup)="onPointerUp($event)"
+      (pointercancel)="onPointerUp($event)"
+    >
+      <span class="grabber" aria-hidden="true"></span>
+      <header class="head">
+        <h2 class="t-title" [id]="titleId">{{ heading() }}</h2>
+        <button type="button" class="icon-btn" (click)="close()" aria-label="Cerrar">
+          <qth-icon name="close" />
+        </button>
+      </header>
+    </div>
+    <div class="body">
+      <ng-content />
+    </div>
+  </div>
+</dialog>

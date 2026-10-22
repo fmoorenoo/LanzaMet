@@ -1,0 +1,95 @@
+.intro {
+  margin-bottom: var(--s-5);
+  max-width: 40ch;
+}
+
+.group {
+  display: grid;
+  gap: var(--s-1);
+  margin: 0 0 var(--s-6);
+  padding: 0;
+  border: 0;
+  min-width: 0;
+}
+
+.legend {
+  padding: 0;
+  margin-bottom: var(--s-2);
+  font-size: var(--fs-micro);
+  font-weight: 640;
+  color: var(--c-ink-3);
+  letter-spacing: 0.01em;
+}
+
+.choice {
+  align-items: flex-start;
+
+  input {
+    margin-top: 0.125rem;
+  }
+}
+
+.choice-text {
+  display: grid;
+  gap: 0.125rem;
+}
+
+.choice-label {
+  font-weight: 600;
+}
+
+.choice-hint {
+  font-size: var(--fs-small);
+  color: var(--c-ink-2);
+}
+
+// A compact segmented control built on real radio buttons.
+.segmented {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+}
+
+.segment {
+  position: relative;
+  cursor: pointer;
+
+  input {
+    position: absolute;
+    opacity: 0;
+    inset: 0;
+    margin: 0;
+    cursor: pointer;
+  }
+
+  span {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.5rem;
+    padding: 0 var(--s-4);
+    border-radius: var(--r-pill);
+    border: 1px solid var(--c-line-strong);
+    font-size: var(--fs-small);
+    font-weight: 560;
+    transition:
+      background-color var(--d-fast) ease,
+      color var(--d-fast) ease,
+      border-color var(--d-fast) ease,
+      transform var(--d-press) var(--ease-out);
+  }
+
+  &:active span {
+    transform: scale(0.97);
+  }
+
+  input:checked + span {
+    background-color: var(--c-ink);
+    border-color: var(--c-ink);
+    color: var(--c-ground);
+  }
+
+  input:focus-visible + span {
+    outline: 2px solid var(--c-focus);
+    outline-offset: 2px;
+  }
+}

@@ -1,0 +1,108 @@
+// Motion system.
+//
+// Rules (after Emil Kowalski's animation guidelines):
+//  · Feedback 100–160ms, routine UI ≤ 300ms, sheets ~460ms, atmosphere ~900ms.
+//  · Entrances ease out, on-screen moves ease in-out, colour changes use `ease`.
+//  · Transform and opacity only, except the sky colours, which are registered
+//    custom properties so the browser can interpolate them.
+//  · Exits are faster than entrances. Nothing appears from scale(0).
+//  · Reduced motion keeps opacity and colour, drops travel and ambient loops.
+
+// Registered so gradients built from them can transition smoothly.
+@property --sky-top {
+  syntax: '<color>';
+  inherits: false;
+  initial-value: oklch(0.55 0.12 245);
+}
+@property --sky-mid {
+  syntax: '<color>';
+  inherits: false;
+  initial-value: oklch(0.7 0.1 235);
+}
+@property --sky-low {
+  syntax: '<color>';
+  inherits: false;
+  initial-value: oklch(0.86 0.06 220);
+}
+@property --sea-far {
+  syntax: '<color>';
+  inherits: false;
+  initial-value: oklch(0.55 0.1 235);
+}
+@property --sea-near {
+  syntax: '<color>';
+  inherits: false;
+  initial-value: oklch(0.42 0.1 240);
+}
+
+@keyframes qth-rise {
+  from {
+    opacity: 0;
+    transform: translateY(0.5rem);
+  }
+}
+
+@keyframes qth-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes qth-fade-out {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes qth-settle {
+  from {
+    opacity: 0;
+    filter: blur(4px);
+    transform: translateY(0.25rem);
+  }
+}
+
+@keyframes qth-shimmer {
+  to {
+    transform: translateX(100%);
+  }
+}
+
+// Entrance classes: each plays once, when its element is created.
+.enter-rise {
+  animation: qth-rise 320ms var(--ease-out) both;
+  animation-delay: calc(var(--i, 0) * var(--stagger));
+}
+
+.enter-fade {
+  animation: qth-fade-in var(--d-base) ease both;
+}
+
+.enter-settle {
+  animation: qth-settle 360ms var(--ease-out) both;
+}
+
+// ── Route transitions (View Transitions API) ─────────────────
+// Navigating between tabs happens many times a day: a quick crossfade with a
+// hint of travel, never a slide that makes you wait.
+::view-transition-old(root) {
+  animation: qth-fade-out 120ms ease both;
+}
+
+::view-transition-new(root) {
+  animation: qth-rise 240ms var(--ease-out) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .enter-rise,
+  .enter-settle {
+    animation-name: qth-fade-in;
+    animation-duration: 200ms;
+    animation-delay: 0ms;
+  }
+
+  ::view-transition-new(root) {
+    animation-name: qth-fade-in;
+    animation-duration: 160ms;
+  }
+}

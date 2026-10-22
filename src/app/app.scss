@@ -1,0 +1,39 @@
+:host {
+  display: block;
+  min-height: 100dvh;
+}
+
+.main {
+  display: block;
+  min-height: 100dvh;
+  padding-bottom: calc(var(--tabbar-h) + var(--safe-bottom));
+  outline: none;
+  // Never let one wide element zoom the whole app out on a phone.
+  // `clip` (not `hidden`) keeps sticky positioning working.
+  overflow-x: clip;
+}
+
+.skip-link {
+  position: fixed;
+  z-index: calc(var(--z-sheet) + 1);
+  top: var(--s-3);
+  left: var(--s-3);
+  padding: var(--s-3) var(--s-4);
+  border-radius: var(--r-pill);
+  background-color: var(--c-ink);
+  color: var(--c-ground);
+  font-weight: 600;
+  text-decoration: none;
+  transform: translateY(-200%);
+
+  &:focus-visible {
+    transform: none;
+  }
+}
+
+@media (min-width: 64rem) {
+  .main {
+    padding-bottom: 0;
+    padding-left: var(--rail-w);
+  }
+}

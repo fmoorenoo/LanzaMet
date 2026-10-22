@@ -1,0 +1,54 @@
+<div class="scroller">
+  <div
+    class="track"
+    role="group"
+    aria-label="Próximas 24 horas. Usa las flechas para recorrerlas."
+    [style.width.px]="width()"
+    (keydown)="onKeydown($event)"
+  >
+    <svg
+      class="curve"
+      [attr.viewBox]="'0 0 ' + width() + ' 60'"
+      preserveAspectRatio="none"
+      aria-hidden="true"
+    >
+      <path class="curve-line" [attr.d]="curve()" />
+      @for (cell of cells(); track cell.index) {
+        <circle
+          class="curve-dot"
+          [class.is-active]="cell.index === activeIndex()"
+          [attr.cx]="cell.index * 56 + 28"
+          [attr.cy]="cell.y"
+          r="3"
+        />
+      }
+    </svg>
+
+    @for (cell of cells(); track cell.index) {
+      <button
+        #cell
+        type="button"
+        class="cell"
+        [class.is-active]="cell.index === activeIndex()"
+        [attr.aria-pressed]="cell.index === activeIndex()"
+        [attr.aria-label]="cell.ariaLabel"
+        [attr.tabindex]="cell.index === activeIndex() ? 0 : -1"
+        (click)="choose(cell.index)"
+      >
+        <span class="day-mark">{{ cell.dayMark }}</span>
+        <span class="time">{{ cell.label }}</span>
+        <qth-sky-glyph [sky]="cell.sky" [isDaylight]="cell.isDaylight" [decorative]="true" />
+        <span class="temp t-num" [style.transform]="'translateY(' + (cell.y - 22) + 'px)'"
+          >{{ cell.temperature }}°</span
+        >
+        <span class="wind" [attr.data-level]="cell.windLevel">
+          <span class="wind-bar" [style.transform]="'scaleX(' + cell.windScale + ')'"></span>
+        </span>
+      </button>
+    }
+  </div>
+</div>
+<p class="legend" aria-hidden="true">
+  <span>Toca una hora para verla arriba</span>
+  <span class="legend-wind"><span class="legend-bar"></span>viento</span>
+</p>

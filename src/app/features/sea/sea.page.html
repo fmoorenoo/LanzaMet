@@ -1,0 +1,186 @@
+@let tides = forecast.tides();
+@let place = location();
+
+<header class="page-head">
+  <button
+    type="button"
+    class="place-chip chip"
+    aria-haspopup="dialog"
+    (click)="ui.openLocationPicker()"
+  >
+    <qth-icon name="pin" />
+    {{ place?.name ?? 'Lanzarote' }}
+    <qth-icon name="chevron-down" />
+    <span class="visually-hidden">: cambiar de zona</span>
+  </button>
+
+  <div class="head-row">
+    <div class="head-text pendable" [class.is-pending]="tides.pending">
+      @switch (tides.status) {
+        @case ('ready') {
+          @if (reading(); as tide) {
+            <h1 class="t-display">{{ tide.headline }}</h1>
+            <p class="t-lead t-muted">{{ tide.nextLabel }}, dentro de {{ tide.untilNext }}.</p>
+          }
+        }
+        @case ('empty') {
+          <h1 class="t-display">Sin datos de marea en {{ place?.name }}</h1>
+          <p class="t-lead t-muted">Aquí no hay mareógrafo ni un puerto de referencia cercano.</p>
+        }
+        @case ('error') {
+          <h1 class="t-display">La marea, sin datos ahora</h1>
+        }
+        @default {
+          <span class="skeleton title-skeleton"></span>
+          <span class="skeleton lead-skeleton"></span>
+        }
+      }
+    </div>
+
+    @if (reading(); as tide) {
+      <div class="gauge" [class.is-rising]="tide.trend === 'subiendo'" aria-hidden="true">
+        <span class="gauge-tube">
+          <span class="gauge-water" [style.transform]="gaugeLevel()"></span>
+        </span>
+        <span class="gauge-arrow">
+          <qth-icon [name]="tide.trend === 'subiendo' ? 'arrow-up' : 'arrow-down'" />
+        </span>
+      </div>
+    }
+  </div>
+</header>
+
+<div class="content">
+  @switch (tides.status) {
+    @case ('ready') {
+      @if (tides.data; as data) {
+        <section class="panel" aria-labelledby="curve-title">
+          <h2 id="curve-title" class="t-title">La marea de hoy</h2>
+          @if (sun(); as s) {
+            <qth-tide-chart
+              [tide]="data"
+              [dayStart]="dayStart()"
+              [now]="now()"
+              [sunrise]="s.sunrise"
+              [sunset]="s.sunset"
+            />
+          }
+          <p class="source t-micro t-faint">
+            <qth-icon name="info" />
+            {{ data.source.kind === 'station' ? 'Mareógrafo' : 'Predicción de referencia' }}:
+            {{ data.source.stationName }} · datos ficticios
+          </p>
+        </section>
+
+        <section class="block" aria-labelledby="extremes-title">
+          <h2 id="extremes-title" class="t-title">Pleamares y bajamares</h2>
+          <div class="days">
+            @for (day of days(); track day.label) {
+              <div class="day">
+                <h3 class="day-label">{{ day.label }}</h3>
+                <ul class="extremes">
+                  @for (e of day.extremes; track e.time) {
+                    <li class="extreme" [class.is-past]="e.isPast">
+                      <qth-icon [name]="e.kind === 'pleamar' ? 'tide-up' : 'tide-down'" />
+                      <span class="extreme-kind">{{
+                        e.kind === 'pleamar' ? 'Pleamar' : 'Bajamar'
+                      }}</span>
+                      <span class="extreme-time t-num">{{ e.time }}</span>
+                      <span class="extreme-height t-num">{{ e.height }} m</span>
+                    </li>
+                  }
+                </ul>
+              </div>
+            }
+          </div>
+        </section>
+      }
+    }
+    @case ('empty') {
+      <section class="block">
+        <qth-status-message
+          title="Esta zona no tiene previsión de mareas"
+          [text]="
+            nearestWithTide()
+              ? 'La más cercana con datos es ' + nearestWithTide()?.name + '.'
+              : null
+          "
+          [actionLabel]="nearestWithTide() ? 'Ver la marea en ' + nearestWithTide()?.name : null"
+          icon="waves"
+          (action)="goToNearest()"
+        />
+      </section>
+    }
+    @case ('error') {
+      <section class="block">
+        <qth-status-message
+          tone="error"
+          title="No hemos podido cargar la marea"
+          [text]="tides.error"
+          actionLabel="Reintentar"
+          (action)="forecast.retry()"
+        />
+      </section>
+    }
+    @default {
+      <div class="skeleton chart-skeleton" aria-hidden="true"></div>
+    }
+  }
+
+  <section class="block" aria-labelledby="sea-title">
+    <h2 id="sea-title" class="t-title">El mar en {{ place?.name }}</h2>
+    @if (sea(); as s) {
+      <p class="sea-state">
+        <span class="t-strong">{{ s.label }}.</span>
+        {{ s.waves }}. {{ s.water }}.
+      </p>
+    } @else if (forecast.sea().status === 'empty') {
+      <qth-status-message
+        title="Sin previsión del mar"
+        text="Esta zona aún no tiene datos marítimos."
+        icon="waves"
+      />
+    } @else if (forecast.sea().status === 'error') {
+      <qth-status-message
+        tone="error"
+        title="No hemos podido cargar el estado del mar"
+        actionLabel="Reintentar"
+        (action)="forecast.retry()"
+      />
+    } @else {
+      <span class="skeleton lead-skeleton"></span>
+    }
+  </section>
+
+  <section class="block" aria-labelledby="calm-title">
+    <h2 id="calm-title" class="t-title">Dónde está el mar más tranquilo</h2>
+    @if (calmest().length > 0) {
+      <ol class="calm">
+        @for (zone of calmest(); track zone.id; let i = $index) {
+          <li>
+            <button type="button" class="calm-row" (click)="openDay(zone.id)">
+              <span class="calm-rank t-num">{{ i + 1 }}</span>
+              <svg class="calm-wave" viewBox="0 0 48 24" aria-hidden="true">
+                <path [attr.d]="zone.path" />
+              </svg>
+              <span class="calm-text">
+                <span class="calm-name">{{ zone.name }}</span>
+                <span class="calm-sub">{{ zone.label }} · {{ zone.waves }}</span>
+              </span>
+              <qth-icon class="chevron" name="chevron-right" />
+            </button>
+          </li>
+        }
+      </ol>
+    } @else if (island.zones().status === 'error') {
+      <qth-status-message
+        tone="error"
+        title="No hemos podido comparar las zonas"
+        actionLabel="Reintentar"
+        (action)="island.retry()"
+      />
+    } @else {
+      <span class="skeleton lead-skeleton"></span>
+    }
+  </section>
+</div>

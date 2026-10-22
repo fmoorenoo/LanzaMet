@@ -1,0 +1,23 @@
+<ul class="days">
+  @for (row of rows(); track row.date; let i = $index) {
+    <li class="day enter-rise" [style.--i]="i">
+      <span class="summary">
+        <span class="name">{{ row.name }}</span>
+        <span class="phrase">
+          {{ row.phrase }}
+          @if (row.change) {
+            · <span class="change">{{ row.change }}</span>
+          }
+        </span>
+      </span>
+      <qth-sky-glyph class="glyph" [sky]="row.sky" />
+      <span class="temps t-num">
+        <span class="min"><span class="visually-hidden">mínima </span>{{ row.min }}°</span>
+        <span class="range" aria-hidden="true">
+          <span class="range-fill" [style.left.%]="row.start" [style.width.%]="row.size"></span>
+        </span>
+        <span class="max"><span class="visually-hidden">máxima </span>{{ row.max }}°</span>
+      </span>
+    </li>
+  }
+</ul>

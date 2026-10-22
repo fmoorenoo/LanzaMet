@@ -1,0 +1,105 @@
+:host {
+  display: block;
+}
+
+.plan {
+  display: grid;
+  grid-template-columns: 2.75rem 1fr;
+  gap: var(--s-4);
+  width: 100%;
+  padding: var(--s-3) 0;
+  text-align: left;
+  border-radius: var(--r-md);
+  transition: transform var(--d-press) var(--ease-out);
+
+  &:active {
+    transform: scale(0.985);
+  }
+}
+
+.mark {
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: var(--r-sm);
+  background-color: var(--c-accent-soft);
+  color: var(--c-accent);
+
+  qth-icon {
+    width: 1.375rem;
+    height: 1.375rem;
+  }
+}
+
+.copy {
+  min-width: 0;
+  display: grid;
+  gap: 0.125rem;
+}
+
+.title {
+  font-size: 1.0625rem;
+  font-weight: 640;
+  letter-spacing: -0.012em;
+}
+
+.reason {
+  font-size: var(--fs-small);
+  color: var(--c-ink-2);
+}
+
+.when {
+  margin-top: 0.125rem;
+  font-size: var(--fs-micro);
+  font-weight: 560;
+  color: var(--c-ink-3);
+}
+
+// The lead suggestion shows the place itself.
+:host(.is-lead) {
+  .plan {
+    grid-template-columns: 1fr;
+    gap: 0;
+    padding: 0;
+    overflow: hidden;
+    border-radius: var(--r-lg);
+    background-color: var(--c-surface);
+    box-shadow: var(--shadow-1);
+  }
+
+  position: relative;
+
+  .art {
+    position: relative;
+    display: block;
+    height: 9.5rem;
+  }
+
+  // The plan's mark sits on the seam between picture and words.
+  .mark {
+    position: absolute;
+    top: calc(9.5rem - 1.375rem);
+    right: var(--s-5);
+    background-color: var(--c-surface);
+    box-shadow: var(--shadow-1);
+  }
+
+  .copy {
+    padding: var(--s-4) var(--s-5) var(--s-5);
+  }
+
+  .title {
+    font-size: var(--fs-title);
+    font-weight: 660;
+    letter-spacing: -0.02em;
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .plan:hover .title {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.2em;
+  }
+}

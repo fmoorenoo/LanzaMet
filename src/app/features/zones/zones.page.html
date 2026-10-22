@@ -1,0 +1,110 @@
+<header class="page-head">
+  <h1 class="t-display">Lanzarote, zona a zona</h1>
+  @if (island.summary(); as summary) {
+    <p class="t-lead t-muted lead">{{ summary }}</p>
+  }
+</header>
+
+@switch (island.zones().status) {
+  @case ('error') {
+    <div class="pad">
+      <qth-status-message
+        tone="error"
+        title="No hemos podido cargar las zonas"
+        [text]="island.zones().error"
+        actionLabel="Reintentar"
+        (action)="island.retry()"
+      />
+    </div>
+  }
+  @case ('loading') {
+    <div class="pad loading" aria-label="Cargando zonas">
+      <div class="skeleton map-skeleton"></div>
+    </div>
+  }
+  @default {
+    <div class="layout">
+      <section class="map-block" aria-labelledby="map-title">
+        <h2 id="map-title" class="visually-hidden">Mapa de la isla</h2>
+        <qth-island-map
+          [markers]="markers()"
+          [selectedId]="focusId()"
+          [windFrom]="windFrom()"
+          (pick)="focusId.set($event)"
+        />
+        <p class="map-legend t-micro">
+          <span class="legend-item"><span class="swatch good"></span>Buen día</span>
+          <span class="legend-item"><span class="swatch fair"></span>Regular</span>
+          <span class="legend-item"><span class="swatch poor"></span>Mejor otro plan</span>
+          <span class="legend-item wind-note"
+            ><span class="streak-swatch"></span>{{ windCaption() }}</span
+          >
+        </p>
+
+        @if (focused(); as zone) {
+          <div class="focus enter-settle" aria-live="polite">
+            <div class="focus-text">
+              <p class="focus-name">
+                {{ zone.name }}<span class="t-num focus-temp">{{ zone.temperature }}°</span>
+              </p>
+              <p class="focus-headline">{{ zone.headline }}</p>
+              <p class="t-small t-muted">{{ zone.sentence }}</p>
+            </div>
+            <div class="focus-actions">
+              <button type="button" class="btn btn--primary" (click)="openDay(zone.id)">
+                Ver el día
+                <qth-icon name="chevron-right" />
+              </button>
+              <button
+                type="button"
+                class="icon-btn star"
+                [class.is-on]="zone.isFavorite"
+                [attr.aria-pressed]="zone.isFavorite"
+                [attr.aria-label]="'Favorita: ' + zone.name"
+                (click)="toggleFavorite(zone.id)"
+              >
+                <qth-icon [name]="zone.isFavorite ? 'star-filled' : 'star'" />
+              </button>
+            </div>
+          </div>
+        }
+      </section>
+
+      <section class="list-block" aria-labelledby="list-title">
+        <h2 id="list-title" class="t-title">Todas las zonas</h2>
+        <ul class="cards">
+          @for (card of cards(); track card.id; let i = $index) {
+            <li class="card enter-rise" [style.--i]="i">
+              <button type="button" class="card-main" (click)="openDay(card.id)">
+                <span class="card-art">
+                  <qth-scene [state]="card.scene" variant="mini" />
+                  <span class="card-temp t-num">{{ card.temperature }}°</span>
+                </span>
+                <span class="card-text">
+                  <span class="card-name">{{ card.name }}</span>
+                  <span class="card-headline">{{ card.headline }}</span>
+                  <span class="card-facts">
+                    {{ card.wind }}
+                    @if (card.sea) {
+                      · {{ card.sea }}
+                    }
+                  </span>
+                </span>
+              </button>
+              <button
+                type="button"
+                class="icon-btn star"
+                [class.is-on]="card.isFavorite"
+                [attr.aria-pressed]="card.isFavorite"
+                [attr.aria-label]="'Favorita: ' + card.name"
+                (click)="toggleFavorite(card.id)"
+              >
+                <qth-icon [name]="card.isFavorite ? 'star-filled' : 'star'" />
+              </button>
+            </li>
+          }
+        </ul>
+      </section>
+    </div>
+  }
+}

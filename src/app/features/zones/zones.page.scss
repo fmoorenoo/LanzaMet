@@ -1,0 +1,276 @@
+:host {
+  display: block;
+  padding-bottom: var(--s-10);
+}
+
+.page-head {
+  display: grid;
+  gap: var(--s-3);
+  padding: calc(var(--safe-top) + var(--s-8)) var(--gutter) var(--s-6);
+}
+
+.lead {
+  max-width: 34ch;
+}
+
+.pad {
+  padding: 0 var(--gutter);
+}
+
+.map-skeleton {
+  height: 26rem;
+  border-radius: var(--r-xl);
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--s-10);
+  padding: 0 var(--gutter);
+}
+
+// ── Map ───────────────────────────────────────────────────────
+.map-block {
+  display: grid;
+  gap: var(--s-4);
+  padding: var(--s-6) var(--s-4) var(--s-4);
+  border-radius: var(--r-xl);
+  // Labels near the coast never push the page wider than the screen.
+  overflow: clip;
+  // The ocean around the island, quiet enough to let the land and labels lead.
+  background:
+    radial-gradient(
+      120% 80% at 70% 20%,
+      color-mix(in oklch, var(--c-sea) 16%, transparent),
+      transparent 70%
+    ),
+    color-mix(in oklch, var(--c-sea) 9%, var(--c-ground));
+}
+
+qth-island-map {
+  width: min(100%, 30rem);
+  justify-self: center;
+  // Room for the labels that sit beside the westernmost markers.
+  padding-inline: 2.5rem;
+}
+
+.map-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2) var(--s-4);
+  color: var(--c-ink-2);
+  padding: 0 var(--s-2);
+}
+
+.legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+}
+
+.swatch {
+  width: 0.625rem;
+  height: 0.625rem;
+  border-radius: 50%;
+
+  &.good {
+    background-color: var(--c-good);
+  }
+
+  &.fair {
+    background-color: var(--c-fair);
+  }
+
+  &.poor {
+    background-color: var(--c-poor);
+  }
+}
+
+.streak-swatch {
+  width: 1rem;
+  height: 3px;
+  border-radius: var(--r-pill);
+  background-color: color-mix(in oklch, var(--c-sea) 60%, transparent);
+}
+
+.focus {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--s-4);
+  padding: var(--s-4) var(--s-5);
+  border-radius: var(--r-lg);
+  background-color: var(--c-surface);
+  box-shadow: var(--shadow-1);
+}
+
+.focus-text {
+  display: grid;
+  gap: 0.125rem;
+  min-width: 12rem;
+  flex: 1;
+}
+
+.focus-name {
+  display: flex;
+  align-items: baseline;
+  gap: var(--s-2);
+  font-size: var(--fs-title);
+  font-weight: 660;
+  letter-spacing: -0.02em;
+}
+
+.focus-temp {
+  font-weight: 400;
+  color: var(--c-ink-2);
+}
+
+.focus-headline {
+  font-weight: 600;
+}
+
+.focus-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+}
+
+.star {
+  color: var(--c-ink-3);
+
+  &.is-on {
+    color: var(--c-fair);
+  }
+}
+
+// ── Cards ─────────────────────────────────────────────────────
+.list-block {
+  display: grid;
+  gap: var(--s-4);
+}
+
+.cards {
+  display: grid;
+  gap: var(--s-3);
+}
+
+.card {
+  position: relative;
+  display: flex;
+  align-items: center;
+  border-radius: var(--r-lg);
+  background-color: var(--c-surface);
+  box-shadow: var(--shadow-1);
+
+  .star {
+    position: absolute;
+    top: var(--s-2);
+    right: var(--s-2);
+  }
+}
+
+.card-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: stretch;
+  gap: var(--s-4);
+  padding: var(--s-2);
+  text-align: left;
+  border-radius: inherit;
+  transition: transform var(--d-press) var(--ease-out);
+
+  &:active {
+    transform: scale(0.985);
+  }
+}
+
+.card-art {
+  position: relative;
+  flex: none;
+  width: 6.5rem;
+  min-height: 6.5rem;
+  border-radius: var(--r-md);
+  overflow: hidden;
+}
+
+.card-temp {
+  position: absolute;
+  left: var(--s-2);
+  top: var(--s-1);
+  font-size: 1.375rem;
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  color: oklch(0.99 0 0);
+  text-shadow: 0 1px 6px oklch(0.2 0.05 260 / 0.4);
+}
+
+.card-text {
+  display: grid;
+  align-content: center;
+  gap: 0.125rem;
+  min-width: 0;
+  padding: var(--s-2) 2.75rem var(--s-2) 0;
+}
+
+.card-name {
+  font-size: 1.0625rem;
+  font-weight: 660;
+  letter-spacing: -0.012em;
+}
+
+.card-headline {
+  font-weight: 560;
+}
+
+.card-facts {
+  font-size: var(--fs-small);
+  color: var(--c-ink-2);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .card-main:hover .card-name {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.2em;
+  }
+}
+
+@media (min-width: 48rem) {
+  .page-head {
+    padding-top: var(--s-12);
+  }
+
+  .cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+// Wide screens: map and list side by side; the map stays in view.
+@media (min-width: 72rem) {
+  .layout {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+    align-items: start;
+    padding-inline: var(--s-10);
+  }
+
+  .page-head {
+    padding-inline: var(--s-10);
+  }
+
+  .map-block {
+    position: sticky;
+    top: var(--s-6);
+  }
+
+  .cards {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (min-width: 110rem) {
+  .cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

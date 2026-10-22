@@ -1,0 +1,141 @@
+@let v = view();
+@let weather = forecast.weather();
+
+<qth-today-hero
+  [view]="heroView()"
+  [pending]="weather.pending"
+  [error]="heroError()"
+  [isPreview]="previewIndex() !== null"
+  (backToNow)="backToNow()"
+  (retry)="retryAll()"
+/>
+
+<div class="sheet">
+  @if (v && weather.error) {
+    <p class="stale" role="status">
+      <qth-icon name="info" />
+      <span>No hemos podido actualizar. Te mostramos los últimos datos.</span>
+      <button type="button" class="btn btn--quiet" (click)="forecast.retry()">Reintentar</button>
+    </p>
+  }
+
+  @if (v) {
+    <section class="block" aria-labelledby="now-title">
+      <h2 id="now-title" class="visually-hidden">{{ v.momentLabel }}: viento, mar y marea</h2>
+      <qth-conditions [view]="v.conditions" />
+    </section>
+
+    <section class="block" aria-labelledby="hours-title">
+      <div class="section-head">
+        <h2 id="hours-title" class="t-title">Próximas horas</h2>
+        @if (previewIndex() !== null) {
+          <button type="button" class="btn btn--quiet" (click)="backToNow()">Volver a ahora</button>
+        }
+      </div>
+      <qth-hour-timeline [hours]="hours()" [(selected)]="previewIndex" />
+    </section>
+  } @else if (weather.status !== 'error' && !locations.error()) {
+    <div class="block" aria-hidden="true">
+      @for (row of [1, 2, 3]; track row) {
+        <div class="skeleton-row">
+          <span class="skeleton gauge-skeleton"></span>
+          <span class="skeleton-lines">
+            <span class="skeleton line-a"></span>
+            <span class="skeleton line-b"></span>
+          </span>
+        </div>
+      }
+    </div>
+  }
+
+  <section class="block" aria-labelledby="plans-title">
+    <div class="section-head">
+      <h2 id="plans-title" class="t-title">¿Dónde ir hoy?</h2>
+      <a class="btn btn--quiet" routerLink="/donde-ir">Ver todo</a>
+    </div>
+    @switch (island.zones().status) {
+      @case ('ready') {
+        @for (plan of topPlans(); track plan.id) {
+          <qth-plan-item [plan]="plan" />
+        } @empty {
+          <qth-status-message
+            title="Hoy no hay un plan claro"
+            text="El tiempo no acompaña en ninguna zona. Echa un vistazo a los próximos días."
+          />
+        }
+      }
+      @case ('error') {
+        <qth-status-message
+          tone="error"
+          title="No hemos podido comparar las zonas"
+          [text]="island.zones().error"
+          actionLabel="Reintentar"
+          (action)="island.retry()"
+        />
+      }
+      @default {
+        <div class="skeleton-row" aria-hidden="true">
+          <span class="skeleton gauge-skeleton"></span>
+          <span class="skeleton-lines">
+            <span class="skeleton line-a"></span>
+            <span class="skeleton line-b"></span>
+          </span>
+        </div>
+      }
+    }
+  </section>
+
+  @if (details(); as d) {
+    <section class="block" aria-labelledby="details-title">
+      <h2 id="details-title" class="t-title">Hoy, en detalle</h2>
+      <dl class="facts">
+        <div class="fact">
+          <dt><qth-icon name="thermometer" />Sensación</dt>
+          <dd>{{ d.feels }}</dd>
+        </div>
+        <div class="fact">
+          <dt><qth-icon name="sun" />Sol</dt>
+          <dd>{{ d.sun }}</dd>
+        </div>
+        @if (d.water) {
+          <div class="fact">
+            <dt><qth-icon name="drop" />Agua</dt>
+            <dd>{{ d.water }}</dd>
+          </div>
+        }
+        <div class="fact">
+          <dt><qth-icon name="sunset" />Luz</dt>
+          <dd>{{ d.light }}</dd>
+        </div>
+      </dl>
+    </section>
+  }
+
+  @if (weather.data; as forecastData) {
+    <section class="block" aria-labelledby="days-title">
+      <h2 id="days-title" class="t-title">Próximos días</h2>
+      <qth-day-list [days]="forecastData.daily" [today]="todayKey()" />
+    </section>
+  }
+
+  <footer class="foot">
+    <p class="demo-note">
+      <qth-icon name="info" />
+      <span>
+        Datos ficticios de demostración
+        @if (updatedAt(); as time) {
+          · actualizados a las {{ time }}
+        }
+      </span>
+    </p>
+    <button
+      type="button"
+      class="btn btn--quiet"
+      [disabled]="forecast.isRefreshing()"
+      (click)="refresh()"
+    >
+      <qth-icon name="refresh" />
+      Actualizar
+    </button>
+  </footer>
+</div>

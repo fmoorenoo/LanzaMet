@@ -1,0 +1,46 @@
+<div class="map" [style.aspect-ratio]="size.width + ' / ' + size.height">
+  @if (windAngle() !== null) {
+    <!-- Composited: the streak layer slides with transform; nothing repaints per frame. -->
+    <div class="wind" aria-hidden="true">
+      <div class="wind-turn" [style.transform]="'rotate(' + windAngle() + 'deg)'">
+        <div class="wind-track">
+          <svg viewBox="0 0 2400 1000" preserveAspectRatio="none">
+            @for (y of streaks; track y; let i = $index) {
+              <path
+                class="streak"
+                [attr.d]="'M0 ' + y + 'H2400'"
+                [style.stroke-dashoffset]="-i * 110"
+              />
+            }
+          </svg>
+        </div>
+      </div>
+    </div>
+  }
+  <svg class="art" [attr.viewBox]="'0 0 ' + size.width + ' ' + size.height" aria-hidden="true">
+    <path class="island graciosa" [attr.d]="paths.graciosa" />
+    <path class="island" [attr.d]="paths.lanzarote" />
+  </svg>
+
+  @for (marker of placed(); track marker.id) {
+    <button
+      type="button"
+      class="marker"
+      [class]="'side-' + marker.side"
+      [class.is-selected]="marker.id === selectedId()"
+      [attr.data-mood]="marker.mood"
+      [style.left.%]="marker.left"
+      [style.top.%]="marker.top"
+      [attr.aria-pressed]="marker.id === selectedId()"
+      [attr.aria-label]="marker.name + ': ' + marker.temperature + ' grados, ' + marker.headline"
+      (click)="pick.emit(marker.id)"
+    >
+      <span class="dot" aria-hidden="true"></span>
+      <span class="label" aria-hidden="true">
+        <qth-sky-glyph [sky]="marker.sky" [isDaylight]="marker.isDaylight" [decorative]="true" />
+        <span class="name">{{ marker.name }}</span>
+        <span class="temp t-num">{{ marker.temperature }}°</span>
+      </span>
+    </button>
+  }
+</div>

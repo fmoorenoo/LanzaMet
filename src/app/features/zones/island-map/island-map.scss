@@ -1,0 +1,202 @@
+:host {
+  display: block;
+  container-type: inline-size;
+}
+
+// On small maps the pins show the essentials (sky and temperature); the card
+// under the map names the chosen place and the list below names them all.
+.name {
+  display: none;
+}
+
+@container (min-width: 20rem) {
+  .name {
+    display: inline;
+  }
+}
+
+.map {
+  position: relative;
+  width: 100%;
+}
+
+.art {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.island {
+  fill: var(--c-surface);
+  stroke: var(--c-line-strong);
+  stroke-width: 2;
+  stroke-linejoin: round;
+}
+
+.graciosa {
+  fill: color-mix(in oklch, var(--c-surface), var(--c-ground) 40%);
+}
+
+// The prevailing wind, drawn as streaks that flow across the island.
+.wind {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+// Oversized so the rotated layer still covers the whole box.
+.wind-turn {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 170%;
+  height: 170%;
+  translate: -50% -50%;
+}
+
+.wind-track {
+  width: 200%;
+  height: 100%;
+  animation: flow 20s linear infinite;
+
+  svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+}
+
+// -50% is exactly four dash periods (4 × 300 units), so the loop is seamless.
+@keyframes flow {
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+.streak {
+  fill: none;
+  stroke: color-mix(in oklch, var(--c-sea) 40%, transparent);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-dasharray: 80 220;
+  vector-effect: non-scaling-stroke;
+}
+
+// ── Markers: real buttons on top of the drawing ───────────────
+.marker {
+  position: absolute;
+  width: 2.75rem;
+  height: 2.75rem;
+  translate: -50% -50%;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  z-index: 1;
+
+  &.is-selected {
+    z-index: 2;
+  }
+
+  &:focus-visible {
+    outline-offset: 0;
+  }
+}
+
+.dot {
+  width: 0.875rem;
+  height: 0.875rem;
+  border-radius: 50%;
+  background-color: var(--c-ink-3);
+  box-shadow:
+    0 0 0 3px var(--c-surface),
+    0 1px 4px oklch(0.2 0.02 250 / 0.3);
+  transition: transform var(--d-base) var(--ease-out);
+
+  [data-mood='radiante'] &,
+  [data-mood='bueno'] & {
+    background-color: var(--c-good);
+  }
+
+  [data-mood='regular'] & {
+    background-color: var(--c-fair);
+  }
+
+  [data-mood='malo'] & {
+    background-color: var(--c-poor);
+  }
+
+  .is-selected & {
+    transform: scale(1.35);
+  }
+}
+
+.label {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.1875rem 0.5rem 0.1875rem 0.3125rem;
+  border-radius: var(--r-pill);
+  background-color: var(--c-surface-raised);
+  box-shadow: var(--shadow-1);
+  white-space: nowrap;
+  font-size: 0.75rem;
+  font-weight: 600;
+  transition:
+    background-color var(--d-fast) ease,
+    color var(--d-fast) ease,
+    transform var(--d-press) var(--ease-out);
+
+  qth-sky-glyph {
+    width: 1.125rem;
+    height: 1.125rem;
+    color: var(--c-ink-2);
+  }
+
+  .is-selected & {
+    background-color: var(--c-ink);
+    color: var(--c-ground);
+
+    qth-sky-glyph {
+      color: var(--c-ground);
+    }
+  }
+
+  .marker:active & {
+    transform: scale(0.96);
+  }
+}
+
+.temp {
+  font-weight: 700;
+}
+
+.side-right .label {
+  left: calc(50% + 0.75rem);
+}
+
+.side-left .label {
+  right: calc(50% + 0.75rem);
+}
+
+.side-below .label,
+.side-above .label {
+  left: 50%;
+  translate: -50% 0;
+}
+
+.side-below .label {
+  top: calc(50% + 0.75rem);
+}
+
+.side-above .label {
+  bottom: calc(50% + 0.75rem);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wind-track {
+    animation: none;
+  }
+}

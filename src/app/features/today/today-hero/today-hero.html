@@ -1,0 +1,86 @@
+@let v = view();
+
+<div class="stage">
+  @if (v) {
+    <qth-scene [state]="v.scene" />
+  } @else {
+    <div class="stage-placeholder"></div>
+  }
+  <div class="shade" aria-hidden="true"></div>
+</div>
+
+<div class="inner">
+  <div class="bar">
+    <button
+      type="button"
+      class="place is-current"
+      aria-haspopup="dialog"
+      (click)="ui.openLocationPicker()"
+    >
+      <qth-icon name="pin" />
+      <span class="place-name">{{ current()?.name ?? 'Lanzarote' }}</span>
+      <qth-icon class="chevron" name="chevron-down" />
+      <span class="visually-hidden">: cambiar de zona</span>
+    </button>
+    <div class="actions">
+      <button
+        type="button"
+        class="hero-btn"
+        [attr.aria-pressed]="isFavorite()"
+        aria-label="Zona favorita"
+        (click)="toggleFavorite()"
+      >
+        <qth-icon [name]="isFavorite() ? 'star-filled' : 'star'" />
+      </button>
+      <button type="button" class="hero-btn demo" (click)="ui.openDemoPanel()">
+        <qth-icon name="sliders" />
+        <span class="demo-label">Demo</span>
+        <span class="visually-hidden">Datos ficticios: abrir ajustes de la demo</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- While previewing an hour, its label takes the favourites' slot, so nothing below moves. -->
+  @if (isPreview() && v) {
+    <p class="moment enter-fade">
+      <span>{{ v.momentLabel }}</span>
+      <button type="button" class="moment-reset" (click)="backToNow.emit()">Volver a ahora</button>
+    </p>
+  } @else if (others().length > 0) {
+    <div class="places" role="group" aria-label="Tus zonas favoritas">
+      @for (place of others(); track place.id) {
+        <button type="button" class="place place--quick" (click)="selectPlace(place.id)">
+          {{ place.name }}
+        </button>
+      }
+    </div>
+  }
+
+  <div class="copy-wrap" aria-live="polite">
+    @if (v) {
+      <div class="copy pendable" [class.is-pending]="pending()">
+        <p class="temp t-hero t-num">
+          <span class="visually-hidden">Temperatura: </span>{{ v.temperature }}°
+        </p>
+        <h1 id="verdict" class="verdict t-display">{{ v.verdict.headline }}</h1>
+        <p class="sentence t-lead">{{ v.verdict.sentence }}</p>
+      </div>
+    } @else if (error(); as message) {
+      <div class="failure">
+        <qth-status-message
+          tone="error"
+          title="No sabemos qué tal está hoy"
+          [text]="message"
+          actionLabel="Reintentar"
+          (action)="retry.emit()"
+        />
+      </div>
+    } @else {
+      <div class="loading" aria-label="Cargando el tiempo">
+        <span class="skeleton bone temp-bone"></span>
+        <span class="skeleton bone verdict-bone"></span>
+        <span class="skeleton bone sentence-bone"></span>
+      </div>
+    }
+  </div>
+</div>

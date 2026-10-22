@@ -1,0 +1,328 @@
+:host {
+  display: block;
+  padding-bottom: var(--s-10);
+}
+
+.page-head {
+  display: grid;
+  gap: var(--s-5);
+  padding: calc(var(--safe-top) + var(--s-6)) var(--gutter) var(--s-6);
+}
+
+.place-chip {
+  justify-self: start;
+  padding-inline: var(--s-3) var(--s-4);
+}
+
+.head-row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--s-5);
+  max-width: 40rem;
+}
+
+.head-text {
+  display: grid;
+  gap: var(--s-2);
+  min-width: 0;
+
+  h1 {
+    max-width: 14ch;
+  }
+}
+
+.title-skeleton {
+  width: 16rem;
+  height: 2.25rem;
+}
+
+.lead-skeleton {
+  display: block;
+  width: 14rem;
+  height: 1.1rem;
+}
+
+// A tide gauge: how full the water is, and which way it is moving.
+.gauge {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+}
+
+.gauge-tube {
+  position: relative;
+  width: 2.75rem;
+  height: 6.5rem;
+  overflow: hidden;
+  border-radius: var(--r-pill);
+  background-color: var(--c-surface-sunken);
+  box-shadow: inset 0 0 0 1px var(--c-line);
+}
+
+.gauge-water {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, var(--atlantico-400), var(--atlantico-500));
+  transition: transform var(--d-tide) var(--ease-in-out);
+}
+
+.gauge-arrow {
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  color: var(--c-sea);
+  // The arrow drifts the way the water is going: up when rising, down when falling.
+  animation: drift-down 1.8s var(--ease-in-out) infinite;
+
+  .is-rising & {
+    animation-name: drift-up;
+  }
+}
+
+@keyframes drift-up {
+  0% {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  40%,
+  60% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+}
+
+@keyframes drift-down {
+  0% {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  40%,
+  60% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+
+.content {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--s-10);
+  padding: 0 var(--gutter);
+}
+
+.panel {
+  display: grid;
+  gap: var(--s-6);
+  padding: var(--s-5) var(--s-4) var(--s-4);
+  border-radius: var(--r-xl);
+  background-color: var(--c-surface);
+  box-shadow: var(--shadow-1);
+
+  h2 {
+    padding-inline: var(--s-1);
+  }
+}
+
+.chart-skeleton {
+  height: 16rem;
+  border-radius: var(--r-xl);
+}
+
+.source {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  padding-inline: var(--s-1);
+
+  qth-icon {
+    width: 1rem;
+    height: 1rem;
+  }
+}
+
+.block {
+  display: grid;
+  gap: var(--s-4);
+}
+
+.days {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--s-6);
+}
+
+.day-label {
+  margin-bottom: var(--s-2);
+  font-size: var(--fs-small);
+  font-weight: 640;
+  color: var(--c-ink-2);
+}
+
+.extremes {
+  display: grid;
+}
+
+.extreme {
+  display: grid;
+  grid-template-columns: 1.375rem 1fr auto;
+  grid-template-areas:
+    'icon kind time'
+    'icon height height';
+  column-gap: var(--s-2);
+  align-items: center;
+  padding: var(--s-2) 0;
+  border-top: 1px solid var(--c-line);
+
+  qth-icon {
+    grid-area: icon;
+    width: 1.25rem;
+    height: 1.25rem;
+    color: var(--c-sea);
+  }
+
+  &.is-past {
+    color: var(--c-ink-3);
+
+    qth-icon {
+      color: var(--c-ink-3);
+    }
+  }
+}
+
+.extreme-kind {
+  grid-area: kind;
+  font-weight: 600;
+}
+
+.extreme-time {
+  grid-area: time;
+  font-weight: 640;
+}
+
+.extreme-height {
+  grid-area: height;
+  font-size: var(--fs-micro);
+  color: var(--c-ink-3);
+}
+
+.sea-state {
+  max-width: 36ch;
+  font-size: var(--fs-lead);
+}
+
+.calm {
+  display: grid;
+}
+
+.calm-row {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  width: 100%;
+  min-height: 3.75rem;
+  padding: var(--s-2) 0;
+  text-align: left;
+  border-top: 1px solid var(--c-line);
+  transition: transform var(--d-press) var(--ease-out);
+
+  &:active {
+    transform: scale(0.985);
+  }
+}
+
+.calm-rank {
+  width: 1.25rem;
+  font-weight: 700;
+  color: var(--c-ink-3);
+}
+
+.calm-wave {
+  width: 3rem;
+  height: 1.5rem;
+  flex: none;
+  overflow: visible;
+
+  path {
+    fill: none;
+    stroke: var(--c-sea);
+    stroke-width: 2;
+    stroke-linecap: round;
+  }
+}
+
+.calm-text {
+  flex: 1;
+  min-width: 0;
+  display: grid;
+}
+
+.calm-name {
+  font-weight: 620;
+}
+
+.calm-sub {
+  font-size: var(--fs-small);
+  color: var(--c-ink-2);
+}
+
+.chevron {
+  width: 1.25rem;
+  height: 1.25rem;
+  color: var(--c-ink-3);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .calm-row:hover .calm-name {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.2em;
+  }
+}
+
+@media (min-width: 48rem) {
+  .page-head,
+  .content {
+    max-width: 52rem;
+    margin-inline: auto;
+  }
+
+  .page-head {
+    padding-top: var(--s-12);
+  }
+}
+
+@media (min-width: 72rem) {
+  .content {
+    max-width: 72rem;
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+    align-items: start;
+    column-gap: var(--s-10);
+  }
+
+  .page-head {
+    max-width: 72rem;
+  }
+
+  .panel {
+    grid-row: span 2;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gauge-arrow {
+    animation: none;
+  }
+
+  .gauge-water {
+    transition-duration: 0ms;
+  }
+}

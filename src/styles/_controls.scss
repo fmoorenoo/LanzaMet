@@ -1,0 +1,281 @@
+// Shared control vocabulary. Applied to native elements so semantics,
+// keyboard behaviour and focus come from the platform.
+
+// ── Buttons ───────────────────────────────────────────────────
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--s-2);
+  min-height: 2.75rem;
+  padding: 0 var(--s-5);
+  border-radius: var(--r-pill);
+  font-size: 0.9375rem;
+  font-weight: 620;
+  letter-spacing: -0.005em;
+  text-decoration: none;
+  white-space: nowrap;
+  background-color: var(--c-surface-sunken);
+  color: var(--c-ink);
+  transition:
+    transform var(--d-press) var(--ease-out),
+    background-color var(--d-fast) ease,
+    color var(--d-fast) ease;
+
+  &:active {
+    transform: scale(0.97);
+  }
+
+  &:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  qth-icon {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+}
+
+.btn--primary {
+  background-color: var(--c-accent);
+  color: var(--c-accent-ink);
+}
+
+.btn--quiet {
+  background-color: transparent;
+  color: var(--c-accent);
+  padding-inline: var(--s-3);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .btn:hover:not(:disabled) {
+    background-color: color-mix(in oklch, var(--c-surface-sunken), var(--c-ink) 6%);
+  }
+
+  .btn--primary:hover:not(:disabled) {
+    background-color: color-mix(in oklch, var(--c-accent), var(--c-ink) 12%);
+  }
+
+  .btn--quiet:hover:not(:disabled) {
+    background-color: var(--c-accent-soft);
+  }
+}
+
+// ── Icon buttons ──────────────────────────────────────────────
+.icon-btn {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  flex: none;
+  border-radius: var(--r-pill);
+  color: var(--c-ink-2);
+  transition:
+    transform var(--d-press) var(--ease-out),
+    background-color var(--d-fast) ease,
+    color var(--d-fast) ease;
+
+  &:active {
+    transform: scale(0.94);
+  }
+
+  qth-icon {
+    width: 1.375rem;
+    height: 1.375rem;
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .icon-btn:hover {
+    background-color: var(--c-surface-sunken);
+    color: var(--c-ink);
+  }
+}
+
+// ── Chips (filters, favourites, quick switches) ───────────────
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  min-height: 2.25rem;
+  padding: 0 var(--s-4);
+  border-radius: var(--r-pill);
+  border: 1px solid var(--c-line-strong);
+  background-color: var(--c-surface);
+  color: var(--c-ink);
+  font-size: var(--fs-small);
+  font-weight: 560;
+  white-space: nowrap;
+  text-decoration: none;
+  transition:
+    transform var(--d-press) var(--ease-out),
+    background-color var(--d-fast) ease,
+    border-color var(--d-fast) ease,
+    color var(--d-fast) ease;
+
+  &:active {
+    transform: scale(0.97);
+  }
+
+  &[aria-pressed='true'],
+  &[aria-current='true'] {
+    background-color: var(--c-ink);
+    border-color: var(--c-ink);
+    color: var(--c-ground);
+  }
+
+  qth-icon,
+  qth-sky-glyph {
+    width: 1.125rem;
+    height: 1.125rem;
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .chip:hover:not([aria-pressed='true'], [aria-current='true']) {
+    border-color: var(--c-ink-3);
+  }
+}
+
+// ── Choice lists (radio / checkbox rows) ──────────────────────
+.choice {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  min-height: 3rem;
+  padding: var(--s-2) var(--s-3);
+  border-radius: var(--r-sm);
+  cursor: pointer;
+  transition: background-color var(--d-fast) ease;
+
+  input {
+    flex: none;
+    width: 1.25rem;
+    height: 1.25rem;
+    margin: 0;
+    accent-color: var(--c-accent);
+  }
+
+  &:has(input:checked) {
+    background-color: var(--c-accent-soft);
+  }
+
+  &:has(input:focus-visible) {
+    outline: 2px solid var(--c-focus);
+    outline-offset: 2px;
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .choice:hover:not(:has(input:checked)) {
+    background-color: var(--c-surface-sunken);
+  }
+}
+
+// ── Text fields ───────────────────────────────────────────────
+.field {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  min-height: 2.875rem;
+  padding: 0 var(--s-4);
+  border-radius: var(--r-pill);
+  background-color: var(--c-surface-sunken);
+  color: var(--c-ink-2);
+  transition: box-shadow var(--d-fast) ease;
+
+  &:focus-within {
+    box-shadow: 0 0 0 2px var(--c-focus);
+  }
+
+  input {
+    flex: 1;
+    min-width: 0;
+    border: 0;
+    background: none;
+    outline: none;
+    color: var(--c-ink);
+
+    &::placeholder {
+      color: var(--c-ink-3);
+      opacity: 1;
+    }
+
+    &::-webkit-search-cancel-button {
+      display: none;
+    }
+  }
+
+  qth-icon {
+    width: 1.25rem;
+    height: 1.25rem;
+    flex: none;
+  }
+}
+
+// ── Loading placeholders ──────────────────────────────────────
+// Shaped like the content they stand in for; a slow sweep says "working".
+.skeleton {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--r-xs);
+  background-color: var(--c-surface-sunken);
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    transform: translateX(-100%);
+    background: linear-gradient(
+      90deg,
+      transparent,
+      color-mix(in oklch, var(--c-surface), transparent 40%),
+      transparent
+    );
+    animation: qth-shimmer 1.4s linear infinite;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton::after {
+    animation: none;
+  }
+}
+
+// Content that is being replaced: still readable, clearly not final.
+// The blur bridges the old and new values so the swap reads as one change.
+.pendable {
+  transition:
+    opacity var(--d-base) ease,
+    filter var(--d-base) ease;
+}
+
+.pendable.is-pending {
+  opacity: 0.55;
+  filter: blur(1.5px);
+}
+
+// ── Section rhythm ────────────────────────────────────────────
+.section-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--s-4);
+}
+
+.demo-note {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  color: var(--c-ink-3);
+  font-size: var(--fs-micro);
+  font-weight: 520;
+
+  qth-icon {
+    width: 1rem;
+    height: 1rem;
+  }
+}

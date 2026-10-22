@@ -1,0 +1,173 @@
+:host {
+  display: block;
+  min-width: 0;
+}
+
+// Native horizontal scroll with snapping: the browser's physics, not ours.
+.scroller {
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x proximity;
+  scrollbar-width: none;
+  margin: 0 calc(var(--gutter) * -1);
+  padding: 0 var(--gutter);
+  scroll-padding-inline: var(--gutter);
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.track {
+  position: relative;
+  display: flex;
+}
+
+// The curve sits behind the temperatures; each cell's label rides on it.
+.curve {
+  position: absolute;
+  left: 0;
+  // Row offsets above the temperature band + label height, minus the curve's top margin.
+  top: 5.1875rem;
+  width: 100%;
+  height: 60px;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.curve-line {
+  fill: none;
+  stroke: var(--c-line-strong);
+  stroke-width: 1.5;
+  vector-effect: non-scaling-stroke;
+  stroke-linejoin: round;
+}
+
+.curve-dot {
+  fill: var(--c-surface);
+  stroke: var(--c-ink-3);
+  stroke-width: 1.5;
+  vector-effect: non-scaling-stroke;
+  transition:
+    fill var(--d-fast) ease,
+    stroke var(--d-fast) ease;
+
+  &.is-active {
+    fill: var(--c-accent);
+    stroke: var(--c-accent);
+  }
+}
+
+.cell {
+  position: relative;
+  flex: none;
+  display: grid;
+  grid-template-rows: 1rem 1.25rem 2rem 3.75rem 0.5rem;
+  justify-items: center;
+  align-items: center;
+  width: 56px;
+  padding: var(--s-2) 0 var(--s-3);
+  border-radius: var(--r-md);
+  scroll-snap-align: start;
+  transition:
+    background-color var(--d-fast) ease,
+    transform var(--d-press) var(--ease-out);
+
+  &:active {
+    transform: scale(0.96);
+  }
+
+  &:focus-visible {
+    outline-offset: -2px;
+  }
+
+  &.is-active {
+    background-color: var(--c-accent-soft);
+  }
+
+  qth-sky-glyph {
+    width: 1.625rem;
+    height: 1.625rem;
+    color: var(--c-ink-2);
+  }
+}
+
+.day-mark {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  color: var(--c-accent);
+}
+
+.time {
+  font-size: var(--fs-micro);
+  font-weight: 560;
+  color: var(--c-ink-2);
+  font-variant-numeric: tabular-nums;
+
+  .is-active & {
+    color: var(--c-ink);
+    font-weight: 680;
+  }
+}
+
+.temp {
+  align-self: start;
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  transition: transform var(--d-base) var(--ease-out);
+}
+
+.wind {
+  width: 70%;
+  height: 0.25rem;
+  border-radius: var(--r-pill);
+  background-color: var(--c-line);
+  overflow: hidden;
+}
+
+.wind-bar {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background-color: var(--c-ink-3);
+  transform-origin: left;
+
+  [data-level='2'] & {
+    background-color: var(--c-fair);
+  }
+
+  [data-level='3'] &,
+  [data-level='4'] & {
+    background-color: var(--c-poor);
+  }
+}
+
+.legend {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-4);
+  margin-top: var(--s-2);
+  font-size: var(--fs-micro);
+  color: var(--c-ink-3);
+}
+
+.legend-wind {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+}
+
+.legend-bar {
+  width: 1.25rem;
+  height: 0.25rem;
+  border-radius: var(--r-pill);
+  background: linear-gradient(90deg, var(--c-ink-3), var(--c-fair), var(--c-poor));
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .cell:hover:not(.is-active) {
+    background-color: var(--c-surface-sunken);
+  }
+}

@@ -1,0 +1,103 @@
+@let s = state();
+
+<div
+  class="sky"
+  [style.--sky-top]="s.sky.top"
+  [style.--sky-mid]="s.sky.mid"
+  [style.--sky-low]="s.sky.low"
+></div>
+
+<svg class="stars" viewBox="0 0 100 100" preserveAspectRatio="none" [style.opacity]="s.stars">
+  @for (star of stars; track $index) {
+    <circle [attr.cx]="star[0]" [attr.cy]="star[1]" [attr.r]="star[2]" />
+  }
+</svg>
+
+<div class="track sun-track" [style.transform]="sunTransform()" [style.opacity]="s.sun.visible">
+  <div class="sun" [style.color]="s.sun.color" [class.is-low]="s.sun.lowSun"></div>
+</div>
+
+<div class="track moon-track" [style.transform]="moonTransform()" [style.opacity]="s.moon.visible">
+  <div class="moon"></div>
+</div>
+
+<div class="clouds" [style.color]="s.cloud">
+  @for (cloud of clouds; track $index) {
+    <div
+      #cloudTrack
+      class="cloud-track"
+      [style.top.%]="cloud.top"
+      [style.transform]="'translate3d(' + cloud.rest + '%, 0, 0)'"
+      [style.opacity]="cloudOpacity($index, cloud.layer)"
+    >
+      <svg class="cloud" viewBox="0 0 200 80" [style.width.%]="cloud.width">
+        <path [attr.d]="cloudPath" />
+      </svg>
+    </div>
+  }
+</div>
+
+<svg class="land" viewBox="0 0 1200 150" preserveAspectRatio="xMidYMax slice">
+  <path class="land-far" [attr.d]="horizon().far" [style.fill]="s.land.far" />
+  <path class="land-near" [attr.d]="horizon().near" [style.fill]="s.land.near" />
+</svg>
+
+<div class="haze" [style.opacity]="s.haze"></div>
+
+<div class="sea" [style.--sea-far]="s.sea.far" [style.--sea-near]="s.sea.near">
+  <div
+    class="track glint-track"
+    [style.transform]="glint().transform"
+    [style.opacity]="glint().opacity"
+  >
+    <div class="glint" [style.color]="glint().color"></div>
+  </div>
+
+  <div class="swell swell--far">
+    <div #waveTrack class="swell-track">
+      <svg viewBox="0 0 2400 100" preserveAspectRatio="none">
+        <path
+          [attr.d]="waves()[0].body"
+          [style.d]="cssPath(waves()[0].body)"
+          [style.fill]="s.sea.swellFar"
+        />
+      </svg>
+    </div>
+  </div>
+
+  <div class="swell swell--mid">
+    <div #waveTrack class="swell-track">
+      <svg viewBox="0 0 2400 100" preserveAspectRatio="none">
+        <path
+          [attr.d]="waves()[1].body"
+          [style.d]="cssPath(waves()[1].body)"
+          [style.fill]="s.sea.swellMid"
+        />
+      </svg>
+    </div>
+  </div>
+
+  <svg class="shore" viewBox="0 0 100 100" preserveAspectRatio="none">
+    <path [attr.d]="shore()" [style.fill]="s.shore" />
+  </svg>
+
+  <div class="swell swell--front" [style.transform]="tideTransform()">
+    <div #waveTrack class="swell-track">
+      <svg viewBox="0 0 2400 100" preserveAspectRatio="none">
+        <path
+          [attr.d]="waves()[2].body"
+          [style.d]="cssPath(waves()[2].body)"
+          [style.fill]="s.sea.shallow"
+        />
+        <path
+          class="foam"
+          [attr.d]="waves()[2].crest"
+          [style.d]="cssPath(waves()[2].crest)"
+          [style.opacity]="s.sea.foam"
+        />
+      </svg>
+    </div>
+  </div>
+</div>
+
+<div class="rain" [class.is-on]="s.rain"></div>

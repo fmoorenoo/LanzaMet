@@ -1,0 +1,128 @@
+.search {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  margin-bottom: var(--s-5);
+  box-shadow: 0 0 0 var(--s-2) var(--c-surface);
+}
+
+.group {
+  display: grid;
+  gap: var(--s-2);
+  margin-bottom: var(--s-6);
+}
+
+.group-title {
+  font-size: var(--fs-micro);
+  font-weight: 640;
+  color: var(--c-ink-3);
+  letter-spacing: 0.01em;
+}
+
+.favorites {
+  display: flex;
+  gap: var(--s-2);
+  overflow-x: auto;
+  scrollbar-width: none;
+  margin: 0 calc(var(--gutter) * -1);
+  padding: var(--s-1) var(--gutter);
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.chip-temp {
+  color: inherit;
+  opacity: 0.7;
+}
+
+.rows {
+  display: grid;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: var(--s-1);
+  border-radius: var(--r-md);
+  transition: background-color var(--d-fast) ease;
+
+  &.is-current {
+    background-color: var(--c-accent-soft);
+  }
+}
+
+.row-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  min-height: 3.75rem;
+  padding: var(--s-2) var(--s-2) var(--s-2) var(--s-3);
+  border-radius: var(--r-md);
+  text-align: left;
+  transition: transform var(--d-press) var(--ease-out);
+
+  &:active {
+    transform: scale(0.985);
+  }
+}
+
+.row-glyph {
+  display: grid;
+  place-items: center;
+  width: 2.25rem;
+  color: var(--c-ink-2);
+
+  qth-sky-glyph {
+    width: 2rem;
+    height: 2rem;
+  }
+}
+
+.glyph-skeleton {
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 50%;
+}
+
+.row-text {
+  flex: 1;
+  min-width: 0;
+  display: grid;
+}
+
+.row-name {
+  font-weight: 620;
+  letter-spacing: -0.01em;
+}
+
+.row-sub {
+  font-size: var(--fs-small);
+  color: var(--c-ink-2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.row-temp {
+  font-size: 1.25rem;
+  font-weight: 450;
+  letter-spacing: -0.02em;
+}
+
+.star {
+  color: var(--c-ink-3);
+
+  &.is-on {
+    color: var(--c-fair);
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .row:not(.is-current):hover {
+    background-color: var(--c-surface-sunken);
+  }
+}

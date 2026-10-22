@@ -1,0 +1,101 @@
+import { Component, computed, ElementRef, input, model, viewChildren } from '@angular/core';
+import { skyPhrase } from '../../../core/insights/sky.insight';
+import { readWind } from '../../../core/insights/wind.insight';
+import { WeatherSnapshot } from '../../../core/models';
+import {
+  formatHourShort,
+  formatTime,
+  formatWeekdayShort,
+  islandDateKey,
+  toDate,
+} from '../../../core/utils/time';
+import { SkyGlyph } from '../../../shared/ui/sky-glyph/sky-glyph';
+
+const CELL = 56;
+const CURVE_TOP = 22;
+const CURVE_RANGE = 26;
+
+/**
+ * The next 24 hours as a landscape of temperature, with the wind underneath.
+ * Choosing an hour previews it in the scene above; arrow keys walk the hours.
+ */
+@Component({
+  selector: 'qth-hour-timeline',
+  imports: [SkyGlyph],
+  templateUrl: './hour-timeline.html',
+  styleUrl: './hour-timeline.scss',
+})
+export class HourTimeline {
+  readonly hours = input.required<readonly WeatherSnapshot[]>();
+  /** Index of the previewed hour; null means "now". */
+  readonly selected = model<number | null>(null);
+
+  private readonly buttons = viewChildren<ElementRef<HTMLButtonElement>>('cell');
+
+  private readonly range = computed(() => {
+    const temps = this.hours().map((h) => h.temperatureC);
+    return { min: Math.min(...temps), max: Math.max(...temps) };
+  });
+
+  private y(temperature: number): number {
+    const { min, max } = this.range();
+    const t = max === min ? 0.5 : (temperature - min) / (max - min);
+    return CURVE_TOP + (1 - t) * CURVE_RANGE;
+  }
+
+  protected readonly cells = computed(() =>
+    this.hours().map((hour, i, all) => {
+      const date = toDate(hour.time);
+      const newDay = i > 0 && islandDateKey(date) !== islandDateKey(toDate(all[i - 1].time));
+      const wind = readWind(hour.wind);
+      const temperature = Math.round(hour.temperatureC);
+      return {
+        index: i,
+        label: i === 0 ? 'Ahora' : formatHourShort(date),
+        dayMark: newDay ? formatWeekdayShort(date) : null,
+        temperature,
+        sky: hour.sky,
+        isDaylight: hour.isDaylight,
+        windLevel: wind.level,
+        windScale: 0.2 + wind.strength * 0.8,
+        y: this.y(hour.temperatureC),
+        ariaLabel: `${i === 0 ? 'Ahora' : formatTime(date)}: ${skyPhrase(hour.sky, hour.isDaylight)}, ${temperature} grados, ${wind.phrase}`,
+      };
+    }),
+  );
+
+  protected readonly width = computed(() => this.hours().length * CELL);
+
+  protected readonly curve = computed(() =>
+    this.cells()
+      .map((c, i) => `${i === 0 ? 'M' : 'L'}${c.index * CELL + CELL / 2} ${c.y.toFixed(1)}`)
+      .join(''),
+  );
+
+  protected readonly activeIndex = computed(() => this.selected() ?? 0);
+
+  protected choose(index: number): void {
+    this.selected.set(index === 0 ? null : index);
+  }
+
+  protected onKeydown(event: KeyboardEvent): void {
+    const last = this.hours().length - 1;
+    const current = this.activeIndex();
+    const next =
+      event.key === 'ArrowRight'
+        ? Math.min(last, current + 1)
+        : event.key === 'ArrowLeft'
+          ? Math.max(0, current - 1)
+          : event.key === 'Home'
+            ? 0
+            : event.key === 'End'
+              ? last
+              : null;
+    if (next === null) return;
+    event.preventDefault();
+    this.choose(next);
+    const button = this.buttons()[next]?.nativeElement;
+    button?.focus();
+    button?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+  }
+}

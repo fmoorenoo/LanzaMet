@@ -1,0 +1,94 @@
+@let v = view();
+
+<ul class="list">
+  <li class="row">
+    <span class="gauge wind" aria-hidden="true">
+      @for (bar of windBars; track bar) {
+        <span class="bar" [class.is-on]="bar < v.wind.level" [style.--h]="0.35 + bar * 0.2"></span>
+      }
+    </span>
+    <span class="text">
+      <span class="title">{{ v.wind.label }} {{ v.wind.from }}</span>
+      <span class="sub">
+        {{ v.wind.detail }}
+        @if (windTrendText(); as trend) {
+          · <span class="trend">{{ trend }}</span>
+        }
+        @if (v.wind.isTradeWind) {
+          · alisio
+        }
+      </span>
+    </span>
+  </li>
+
+  <li class="row-wrap">
+    <a class="row is-link" routerLink="/mar">
+      <span class="gauge sea" [class.is-empty]="v.sea.status !== 'ready'" aria-hidden="true">
+        <svg viewBox="0 0 40 28">
+          <path class="sea-line" [attr.d]="wavePath()" [style.d]="wavePathCss()" />
+          <path class="sea-floor" d="M2 22h36" />
+        </svg>
+      </span>
+      <span class="text pendable" [class.is-pending]="v.sea.pending">
+        @switch (v.sea.status) {
+          @case ('ready') {
+            <span class="title">{{ v.sea.reading?.label }}</span>
+            <span class="sub">{{ v.sea.reading?.waves }} · {{ v.sea.reading?.water }}</span>
+          }
+          @case ('empty') {
+            <span class="title">Sin previsión del mar</span>
+            <span class="sub">Esta zona aún no tiene datos marítimos.</span>
+          }
+          @case ('error') {
+            <span class="title">El mar, sin datos ahora</span>
+            <span class="sub">No hemos podido cargarlos.</span>
+          }
+          @default {
+            <span class="skeleton line-title"></span>
+            <span class="skeleton line-sub"></span>
+          }
+        }
+      </span>
+      <qth-icon class="chevron" name="chevron-right" />
+    </a>
+  </li>
+
+  <li class="row-wrap">
+    <a class="row is-link" routerLink="/mar">
+      <span class="gauge tide" [class.is-empty]="!v.tide.reading" aria-hidden="true">
+        <span class="tide-tube">
+          <span class="tide-water" [style.transform]="tideFill()"></span>
+        </span>
+        @if (v.tide.reading; as tide) {
+          <qth-icon
+            class="tide-arrow"
+            [name]="tide.trend === 'subiendo' ? 'arrow-up' : 'arrow-down'"
+          />
+        }
+      </span>
+      <span class="text pendable" [class.is-pending]="v.tide.pending">
+        @switch (v.tide.status) {
+          @case ('ready') {
+            @if (v.tide.reading; as tide) {
+              <span class="title">{{ tide.headline }}</span>
+              <span class="sub">{{ tide.nextLabel }} · en {{ tide.untilNext }}</span>
+            }
+          }
+          @case ('empty') {
+            <span class="title">Sin datos de marea</span>
+            <span class="sub">No hay mareógrafo ni referencia cercana para esta zona.</span>
+          }
+          @case ('error') {
+            <span class="title">La marea, sin datos ahora</span>
+            <span class="sub">No hemos podido cargarla.</span>
+          }
+          @default {
+            <span class="skeleton line-title"></span>
+            <span class="skeleton line-sub"></span>
+          }
+        }
+      </span>
+      <qth-icon class="chevron" name="chevron-right" />
+    </a>
+  </li>
+</ul>

@@ -1,0 +1,28 @@
+<nav class="bar" aria-label="Principal">
+  <a class="brand" routerLink="/" aria-label="¿Qué tal hoy? — Inicio">
+    <qth-brand-mark />
+    <span class="brand-name">¿Qué tal hoy?</span>
+  </a>
+
+  <ul class="tabs">
+    @for (item of items; track item.path) {
+      <li>
+        <a
+          class="tab"
+          [routerLink]="item.path"
+          routerLinkActive="is-active"
+          ariaCurrentWhenActive="page"
+          [routerLinkActiveOptions]="{ exact: item.path === '/' }"
+        >
+          <span class="tab-icon"><qth-icon [name]="item.icon" /></span>
+          <span class="tab-label">{{ item.label }}</span>
+        </a>
+      </li>
+    }
+  </ul>
+
+  <button type="button" class="settings" (click)="ui.openDemoPanel()">
+    <qth-icon name="sliders" />
+    <span>Ajustes y demo</span>
+  </button>
+</nav>
