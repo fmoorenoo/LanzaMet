@@ -2,7 +2,7 @@ import { ApplicationConfig, inject, provideBrowserGlobalErrorListeners } from '@
 import { provideRouter, withInMemoryScrolling, withViewTransitions } from '@angular/router';
 import { routes } from './app.routes';
 import { RouteTransitions } from './layout/route-transitions';
-import { provideMockDataSources } from './mocks/mock-data-sources';
+import { provideDataSources } from './data-providers';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -15,7 +15,7 @@ export const appConfig: ApplicationConfig = {
       }),
       withInMemoryScrolling({ scrollPositionRestoration: 'top' }),
     ),
-    // Phase 1: simulated data. Replace with HTTP-backed sources in phase 2.
-    provideMockDataSources(),
+    // Real providers; the demo build swaps them for simulated data.
+    provideDataSources(),
   ],
 };

@@ -3,7 +3,8 @@
   "version": 1,
   "cli": {
     "packageManager": "npm",
-    "schematicCollections": ["angular-eslint"]
+    "schematicCollections": ["angular-eslint"],
+    "analytics": false
   },
   "newProjectRoot": "projects",
   "projects": {
@@ -52,6 +53,17 @@
               "optimization": false,
               "extractLicenses": false,
               "sourceMap": true
+            },
+            "demo": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "fileReplacements": [
+                {
+                  "replace": "src/app/data-providers.ts",
+                  "with": "src/app/data-providers.demo.ts"
+                }
+              ]
             }
           },
           "defaultConfiguration": "production"
@@ -64,6 +76,9 @@
             },
             "development": {
               "buildTarget": "que-tal-hoy:build:development"
+            },
+            "demo": {
+              "buildTarget": "que-tal-hoy:build:demo"
             }
           },
           "defaultConfiguration": "development"

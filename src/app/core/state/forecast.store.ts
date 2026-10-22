@@ -21,7 +21,11 @@ export class ForecastStore {
   private readonly params = computed(() => {
     const location = this.locations.selected();
     if (!location) return undefined;
-    return { id: location.id, hour: this.clock.hourKey(), version: this.refreshStore.version() };
+    return {
+      id: location.id,
+      beat: this.clock.quarterKey(),
+      version: this.refreshStore.version(),
+    };
   });
 
   private readonly isCurrent = (data: { locationId: string }) =>

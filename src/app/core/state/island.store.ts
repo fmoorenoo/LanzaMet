@@ -26,7 +26,7 @@ export class IslandStore {
     params: () => {
       const all = this.locations.all();
       if (all.length === 0) return undefined;
-      return { all, hour: this.clock.hourKey(), version: this.refreshStore.version() };
+      return { all, beat: this.clock.quarterKey(), version: this.refreshStore.version() };
     },
     stream: ({ params }) =>
       forkJoin(
@@ -42,6 +42,9 @@ export class IslandStore {
   readonly zones = sectionState<readonly ZoneConditions[]>(this.resource);
 
   private readonly list = computed(() => this.zones().data ?? []);
+
+  /** When the island-wide forecast was fetched. */
+  readonly updatedAt = computed(() => this.list()[0]?.weather.issuedAt ?? null);
 
   readonly summary = computed(() => islandSummary(this.list()));
 

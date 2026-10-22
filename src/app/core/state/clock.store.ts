@@ -21,6 +21,12 @@ export class ClockStore {
   /** Changes once per hour; data is refreshed on this beat. */
   readonly hourKey = computed(() => Math.floor(this.now().getTime() / TIME.HOUR));
 
+  /**
+   * Changes every quarter of an hour: the beat data is re-read on. Each
+   * response's own cache lifetime decides whether that reaches the network.
+   */
+  readonly quarterKey = computed(() => Math.floor(this.now().getTime() / (15 * TIME.MINUTE)));
+
   constructor() {
     const timer = setInterval(() => this.realNow.set(new Date()), 30_000);
     inject(DestroyRef).onDestroy(() => clearInterval(timer));
