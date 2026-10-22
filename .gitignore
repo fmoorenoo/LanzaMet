@@ -49,3 +49,8 @@ CLAUDE.md
 .claude/
 a.txt
 a.tst
+
+# Secrets (AEMET_API_KEY…): never committed
+.dev.vars
+.env
+.env.*

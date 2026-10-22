@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+  <channel>
+    <title>AEMET - Avisos de fenómenos meteorológicos adversos - Canarias</title>
+    <link>https://www.aemet.es/es/eltiempo/prediccion/avisos?k=coo</link>
+    <description>Avisos de fenómenos meteorológicos adversos según el Plan Meteoalerta de la Agencia Estatal de Meteorología (AEMET) para Canarias.</description>
+    <language>es</language>
+    <copyright>https://www.aemet.es/es/nota_legal</copyright>
+    <pubDate>2026-10-22T00:37:34+00:00</pubDate>
+    <lastBuildDate>2026-10-22T00:37:34+00:00</lastBuildDate>
+    <image>
+      <url>https://www.aemet.es/imagenes/gif/logo_AEMET_web.gif</url>
+    </image>
+    <item>
+      <title>Estado completo de avisos para Canarias</title>
+      <description>Fichero tar.gz que contiene todos los avisos para Canarias de 01:37 22-10-2026 WEST (UTC+1) a 23:59 24-10-2026 WEST (UTC+1).</description>
+      <link>https://www.aemet.es/documentos_d/eltiempo/prediccion/avisos/cap/Z_CAP_C_LEMM_20261022003734_AFAC65.tar.gz</link>
+      <guid>Z_CAP_C_LEMM_20261022003734_AFAC65.tar.gz</guid>
+      <pubDate>2026-10-22T00:37:34+00:00</pubDate>
+    </item>
+    <item>
+      <title>Aviso. Nivel naranja. Lluvias. Norte de Gran Canaria</title>
+      <description>Aviso de precipitación acumulada en una hora de nivel naranja de 01:00 22-10-2026 WEST (UTC+1) a 05:59 22-10-2026 WEST (UTC+1).</description>
+      <link>https://www.aemet.es/documentos_d/eltiempo/prediccion/avisos/cap/Z_CAP_C_LEMM_20261022003734_AFAZ659001PRP12205.xml</link>
+      <guid>Z_CAP_C_LEMM_20261022003734_AFAZ659001PRP12205.xml</guid>
+      <pubDate>2026-10-22T00:37:34+00:00</pubDate>
+    </item>
+    <item>
+      <title>Aviso. Nivel amarillo. Lluvias. Este, sur y oeste de Gran Canaria</title>
+      <description>Aviso de precipitación acumulada en una hora de nivel amarillo de 01:00 22-10-2026 WEST (UTC+1) a 05:59 22-10-2026 WEST (UTC+1).</description>
+      <link>https://www.aemet.es/documentos_d/eltiempo/prediccion/avisos/cap/Z_CAP_C_LEMM_20261022003734_AFAZ659004PRP12205.xml</link>
+      <guid>Z_CAP_C_LEMM_20261022003734_AFAZ659004PRP12205.xml</guid>
+      <pubDate>2026-10-22T00:37:34+00:00</pubDate>
+    </item>
+    <item>
+      <title>Aviso. Nivel amarillo. Lluvias. Norte de Tenerife</title>
+      <description>Aviso de precipitación acumulada en una hora de nivel amarillo de 01:00 22-10-2026 WEST (UTC+1) a 05:59 22-10-2026 WEST (UTC+1).</description>
+      <link>https://www.aemet.es/documentos_d/eltiempo/prediccion/avisos/cap/Z_CAP_C_LEMM_20261022003734_AFAZ659601PRP12205.xml</link>
+      <guid>Z_CAP_C_LEMM_20261022003734_AFAZ659601PRP12205.xml</guid>
+      <pubDate>2026-10-22T00:37:34+00:00</pubDate>
+    </item>
+    <item>
+      <title>Aviso. Nivel amarillo. Lluvias. Área metropolitana de Tenerife</title>
+      <description>Aviso de precipitación acumulada en una hora de nivel amarillo de 01:00 22-10-2026 WEST (UTC+1) a 05:59 22-10-2026 WEST (UTC+1).</description>
+      <link>https://www.aemet.es/documentos_d/eltiempo/prediccion/avisos/cap/Z_CAP_C_LEMM_20261022003734_AFAZ659602PRP12205.xml</link>
+      <guid>Z_CAP_C_LEMM_20261022003734_AFAZ659602PRP12205.xml</guid>
+      <pubDate>2026-10-22T00:37:34+00:00</pubDate>
+    </item>
+    <item>
+      <title>Aviso. Nivel amarillo. Lluvias. Este, sur y oeste de Tenerife</title>
+      <description>Aviso de precipitación acumulada en una hora de nivel amarillo de 01:00 22-10-2026 WEST (UTC+1) a 05:59 22-10-2026 WEST (UTC+1).</description>
+      <link>https://www.aemet.es/documentos_d/eltiempo/prediccion/avisos/cap/Z_CAP_C_LEMM_20261022003734_AFAZ659603PRP12205.xml</link>
+      <guid>Z_CAP_C_LEMM_20261022003734_AFAZ659603PRP12205.xml</guid>
+      <pubDate>2026-10-22T00:37:34+00:00</pubDate>
+    </item>
+    <item>
+      <title>Aviso. Nivel naranja. Lluvias. Este de La Palma</title>
+      <description>Aviso de precipitación acumulada en una hora de nivel naranja de 01:00 22-10-2026 WEST (UTC+1) a 17:59 22-10-2026 WEST (UTC+1).</description>
+      <link>https://www.aemet.es/documentos_d/eltiempo/prediccion/avisos/cap/Z_CAP_C_LEMM_20261021092932_AFAZ659303PRP12217.xml</link>
+      <guid>Z_CAP_C_LEMM_20261021092932_AFAZ659303PRP12217.xml</guid>
+      <pubDate>2026-10-21T09:29:32+00:00</pubDate>
+    </item>
+    <item>
+      <title>Aviso. Nivel naranja. Lluvias. La Gomera</title>
+      <description>Aviso de precipitación acumulada en una hora de nivel naranja de 01:00 22-10-2026 WEST (UTC+1) a 17:59 22-10-2026 WEST (UTC+1).</description>
+      <link>https://www.aemet.es/documentos_d/eltiempo/prediccion/avisos/cap/Z_CAP_C_LEMM_20261021092932_AFAZ659401PRP12217.xml</link>
+      <guid>Z_CAP_C_LEMM_20261021092932_AFAZ659401PRP12217.xml</guid>
+      <pubDate>2026-10-21T09:29:32+00:00</pubDate>
+    </item>
+    <item>
+      <title>Aviso. Nivel naranja. Lluvias. El Hierro</title>
+      <description>Aviso de precipitación acumulada en una hora de nivel naranja de 01:00 22-10-2026 WEST (UTC+1) a 17:59 22-10-2026 WEST (UTC+1).</description>
+      <link>https://www.aemet.es/documentos_d/eltiempo/prediccion/avisos/cap/Z_CAP_C_LEMM_20261021092932_AFAZ659501PRP12217.xml</link>
+      <guid>Z_CAP_C_LEMM_20261021092932_AFAZ659501PRP12217.xml</guid>
+      <pubDate>2026-10-21T09:29:32+00:00</pubDate>
+    </item>
+    <item>
+      <title>Aviso. Nivel naranja. Lluvias. Este de La Palma</title>
+      <description>Aviso de precipitación acumulada en 12 horas de nivel naranja de 01:00 22-10-2026 WEST (UTC+1) a 17:59 22-10-2026 WEST (UTC+1).</description>
+      <link>https://www.aemet.es/documentos_d/eltiempo/prediccion/avisos/cap/Z_CAP_C_LEMM_20261021092932_AFAZ659303PRP22217.xml</link>
+      <guid>Z_CAP_C_LEMM_20261021092932_AFAZ659303PRP22217.xml</guid>
+      <pubDate>2026-10-21T09:29:32+00:00</pubDate>
+    </item>
+    <item>
+      <title>Aviso. Nivel amarillo. Lluvias. Cumbres de La Palma</title>
+      <description>Aviso de precipitación acumulada en una hora de nivel amarillo de 01:00 22-10-2026 WEST (UTC+1) a 17:59 22-10-2026 WEST (UTC+1).</description>
+      <link>https://www.aemet.es/documentos_d/eltiempo/prediccion/avisos/cap/Z_CAP_C_LEMM_20261021092932_AFAZ659302PRP12217.xml</link>
+      <guid>Z_CAP_C_LEMM_20261021092932_AFAZ659302PRP12217.xml</guid>
+      <pubDate>2026-10-21T09:29:32+00:00</pubDate>
+    </item>
+    <item>
+      <title>Aviso. Nivel amarillo. Lluvias. Oeste de La Palma</title>
+      <description>Aviso de precipitación acumulada en una hora de nivel amarillo de 01:00 22-10-2026 WEST (UTC+1) a 17:59 22-10-2026 WEST (UTC+1).</description>
+      <link>https://www.aemet.es/documentos_d/eltiempo/prediccion/avisos/cap/Z_CAP_C_LEMM_20261021092932_AFAZ659304PRP12217.xml</link>
+      <guid>Z_CAP_C_LEMM_20261021092932_AFAZ659304PRP12217.xml</guid>
+      <pubDate>2026-10-21T09:29:32+00:00</pubDate>
+    </item>
+  </channel>
+</rss>

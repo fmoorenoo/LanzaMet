@@ -1,8 +1,14 @@
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { firstValueFrom, forkJoin } from 'rxjs';
+import { firstValueFrom, forkJoin, Observable } from 'rxjs';
 import { DataRefreshStore } from '../../state/data-refresh.store';
-import { DataSourceError, MarineSource, WeatherSource } from '../data-sources';
+import {
+  DataSourceError,
+  MarineSource,
+  ObservationSource,
+  WarningSource,
+  WeatherSource,
+} from '../data-sources';
 import { LOCATIONS } from '../locations';
 import dustFixture from './fixtures/dust-arrecife.json';
 import forecastFixture from './fixtures/forecast-arrecife.json';
@@ -132,5 +138,87 @@ describe('Open-Meteo sources', () => {
     // Famara and La Santa read the same model cell, so they get the same sea.
     expect(famara?.current).toEqual(laSanta?.current);
     expect(tide?.source.official).toBe(false);
+  });
+});
+
+describe('Official AEMET sources', () => {
+  afterEach(() => vi.useRealTimers());
+
+  async function ask<T>(
+    source: () => Observable<T>,
+    respond?: (http: HttpTestingController) => void,
+  ) {
+    const http = TestBed.inject(HttpTestingController);
+    const result = firstValueFrom(source());
+    respond?.(http);
+    return result;
+  }
+
+  it('says "unavailable" without a request when the app has no API', async () => {
+    const http = setUp(null);
+    expect(await firstValueFrom(TestBed.inject(WarningSource).active())).toBeNull();
+    http.verify();
+  });
+
+  it('says "unavailable" when the API is not deployed on this host', async () => {
+    setUp();
+    const result = await ask(
+      () => TestBed.inject(WarningSource).active(),
+      (http) => http.expectOne('/api/avisos').flush('Not found', { status: 404, statusText: 'NF' }),
+    );
+    expect(result).toBeNull();
+  });
+
+  it('says "unavailable" when observations have no AEMET key yet', async () => {
+    setUp();
+    const result = await ask(
+      () => TestBed.inject(ObservationSource).latest(),
+      (http) =>
+        http
+          .expectOne('/api/observaciones')
+          .flush(
+            { service: 'que-tal-hoy-api', error: 'not_configured' },
+            { status: 503, statusText: 'Unavailable' },
+          ),
+    );
+    expect(result).toBeNull();
+  });
+
+  it('reads warnings and ignores malformed entries', async () => {
+    setUp();
+    const warning = {
+      id: 'x',
+      level: 'amarillo',
+      phenomenon: 'Costeros',
+      coastal: true,
+      area: 'Costa - Lanzarote',
+      onset: '2026-10-22T12:00:00Z',
+      expires: '2026-10-22T22:59:59Z',
+      description: 'Mar combinada del norte de 3 a 4 metros.',
+      url: 'https://www.aemet.es/es/eltiempo/prediccion/avisos',
+    };
+    const result = await ask(
+      () => TestBed.inject(WarningSource).active(),
+      (http) =>
+        http.expectOne('/api/avisos').flush({
+          service: 'que-tal-hoy-api',
+          warnings: [warning, { id: 'broken' }],
+          publishedAt: '2026-10-22T10:00:00Z',
+          retrievedAt: '2026-10-22T14:00:00Z',
+        }),
+    );
+    expect(result?.warnings).toEqual([warning]);
+  });
+
+  it('reports a real failure of the API as an error, not as "no warnings"', async () => {
+    setUp();
+    const result = ask(
+      () => TestBed.inject(WarningSource).active(),
+      (http) =>
+        http
+          .expectOne('/api/avisos')
+          .flush({ service: 'que-tal-hoy-api' }, { status: 500, statusText: 'Error' }),
+    );
+    await expect(result).rejects.toBeInstanceOf(DataSourceError);
   });
 });
