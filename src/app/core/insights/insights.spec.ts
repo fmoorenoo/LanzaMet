@@ -128,6 +128,17 @@ describe('verdict', () => {
     expect(verdict.sentence).toBe('Sol y brisa suave en Puerto del Carmen.');
   });
 
+  it('does not invite to the beach while the sea is unknown', () => {
+    const verdict = dayVerdict({
+      location: puertoDelCarmen,
+      weather: sunnyCalm,
+      upcoming: [sunnyCalm, sunnyCalm],
+      sea: null,
+      dayWord: 'Hoy',
+    });
+    expect(verdict.headline).toBe('Buen día para salir');
+  });
+
   it('warns when the wind is picking up', () => {
     const windy = { ...sunnyCalm, wind: { speedKmh: 32, gustKmh: 44, fromDegrees: 30 } };
     const verdict = dayVerdict({

@@ -62,6 +62,21 @@ describe('recommendations', () => {
     expect(kinds).toContain('resguardo');
   });
 
+  it('holds back sea plans while a coastal warning is in force', () => {
+    const zones: ZoneConditions[] = LOCATIONS_SEED.map((location) => ({
+      location,
+      weather: simulateWeather({ location, scenario: 'calma', now }),
+      sea: simulateSea({ location, scenario: 'calma', now }),
+    }));
+    const calm = buildRecommendations(zones, now);
+    const warned = buildRecommendations(zones, now, { coastalWarning: true });
+    expect(calm.map((r) => r.kind)).toContain('mar-calmo');
+    expect(warned.map((r) => r.kind)).not.toContain('mar-calmo');
+    expect(warned.map((r) => r.kind)).not.toContain('olas');
+    const beach = warned.find((r) => r.kind === 'playa');
+    if (beach) expect(beach.reason).toContain('aviso costero');
+  });
+
   it('has nothing to suggest without data', () => {
     expect(buildRecommendations([], now)).toEqual([]);
   });

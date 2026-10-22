@@ -20,10 +20,17 @@ import { beachScore } from './verdict.insight';
 import { readWind } from './wind.insight';
 
 /*
- * Turns island-wide conditions into a handful of concrete suggestions.
- * In this phase it runs over simulated data; the same rules can run over real
- * forecasts, or move to a backend, without changing the Recommendation contract.
+ * Turns island-wide conditions into a handful of concrete suggestions. They
+ * read the forecast, they don't certify anything: wording stays on what the
+ * models say, and sea plans are dropped while an official coastal warning is
+ * in force. The same rules could move to a backend without changing the
+ * Recommendation contract.
  */
+
+export interface RecommendationContext {
+  /** An official warning for the coastal waters is in force. */
+  readonly coastalWarning: boolean;
+}
 
 interface HourPoint {
   readonly time: Date;
@@ -108,6 +115,7 @@ function walkScore(p: HourPoint): number {
 export function buildRecommendations(
   zones: readonly ZoneConditions[],
   now: Date,
+  context: RecommendationContext = { coastalWarning: false },
 ): Recommendation[] {
   if (zones.length === 0) return [];
   const recommendations: Recommendation[] = [];
@@ -130,7 +138,7 @@ export function buildRecommendations(
       kind: 'playa',
       locationId: beach.zone.location.id,
       title: `Playa en ${beach.zone.location.name}`,
-      reason: `${skyPhrase(mid.weather.sky, true)}, ${readWind(mid.weather.wind).phrase}${sea}.`,
+      reason: `${skyPhrase(mid.weather.sky, true)}, ${readWind(mid.weather.wind).phrase}${sea}.${context.coastalWarning ? ' Hay aviso costero: báñate solo en zonas vigiladas.' : ''}`,
       window: toTimeWindow(beach.window),
       score: 0.7 + 0.3 * beach.window.average,
     });
@@ -166,13 +174,15 @@ export function buildRecommendations(
     .filter((z) => z.sea)
     .sort((a, b) => (a.sea?.current.waveHeightM ?? 9) - (b.sea?.current.waveHeightM ?? 9));
   const calmSea = withSea.find((z) => !used.has(z.location.id));
-  if (isDaytime && calmSea?.sea && calmSea.sea.current.waveHeightM <= 0.8) {
+  // Sea plans wait while there is an official coastal warning.
+  const seaPlans = isDaytime && !context.coastalWarning;
+  if (seaPlans && calmSea?.sea && calmSea.sea.current.waveHeightM <= 0.8) {
     recommendations.push({
       id: 'mar-calmo',
       kind: 'mar-calmo',
       locationId: calmSea.location.id,
       title: `Mar tranquilo en ${calmSea.location.name}`,
-      reason: `${describeWaves(calmSea.sea.current.waveHeightM)}: buen sitio para nadar.`,
+      reason: `${describeWaves(calmSea.sea.current.waveHeightM)} según la previsión: el mar más tranquilo de la isla.`,
       score: 0.7 + (0.8 - calmSea.sea.current.waveHeightM) * 0.2,
     });
     used.add(calmSea.location.id);
@@ -254,7 +264,7 @@ export function buildRecommendations(
       return h >= 1.2 && h <= 3 && z.weather.current.wind.speedKmh < 38;
     })
     .sort((a, b) => (b.sea?.current.waveHeightM ?? 0) - (a.sea?.current.waveHeightM ?? 0))[0];
-  if (isDaytime && surf?.sea) {
+  if (seaPlans && surf?.sea) {
     recommendations.push({
       id: 'olas',
       kind: 'olas',

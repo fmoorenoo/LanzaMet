@@ -8,6 +8,7 @@ import { LocationId, ZoneConditions } from '../models';
 import { ClockStore } from './clock.store';
 import { DataRefreshStore } from './data-refresh.store';
 import { LocationsStore } from './locations.store';
+import { OfficialStore } from './official.store';
 import { sectionState } from './section-state';
 
 /**
@@ -21,6 +22,7 @@ export class IslandStore {
   private readonly refreshStore = inject(DataRefreshStore);
   private readonly weatherSource = inject(WeatherSource);
   private readonly marineSource = inject(MarineSource);
+  private readonly official = inject(OfficialStore);
 
   private readonly resource = rxResource({
     params: () => {
@@ -48,7 +50,11 @@ export class IslandStore {
 
   readonly summary = computed(() => islandSummary(this.list()));
 
-  readonly recommendations = computed(() => buildRecommendations(this.list(), this.clock.now()));
+  readonly recommendations = computed(() =>
+    buildRecommendations(this.list(), this.clock.now(), {
+      coastalWarning: this.official.hasCoastalWarning(),
+    }),
+  );
 
   zone(id: LocationId): ZoneConditions | undefined {
     return this.list().find((z) => z.location.id === id);

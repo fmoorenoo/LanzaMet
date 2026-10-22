@@ -122,8 +122,12 @@ export function dayVerdict(input: VerdictInput): Verdict {
     };
   }
 
-  if (score >= 0.8 && bathingSpot) {
+  // Never invite to the beach without knowing what the sea is doing.
+  if (score >= 0.8 && bathingSpot && sea) {
     return { headline: `${dayWord} apetece playa`, sentence: plain, mood: 'radiante' };
+  }
+  if (score >= 0.8 && bathingSpot) {
+    return { headline: 'Buen día para salir', sentence: plain, mood: 'bueno' };
   }
   if (score >= 0.8) {
     return {
