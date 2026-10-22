@@ -174,3 +174,18 @@
     transition-duration: 0ms;
   }
 }
+
+// Wide screens: wind, sea and tide side by side, right under the scene.
+@media (min-width: 72rem) {
+  .list {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    column-gap: var(--s-6);
+  }
+
+  .row-wrap + .row-wrap,
+  .row + .row-wrap {
+    padding-left: var(--s-6);
+    border-top: 0;
+    border-left: 1px solid var(--c-line);
+  }
+}

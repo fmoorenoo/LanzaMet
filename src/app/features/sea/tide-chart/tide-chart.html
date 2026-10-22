@@ -23,6 +23,8 @@
       class="extreme tide-chart-label"
       [attr.data-tide]="label.kind === 'pleamar' ? 'high' : 'low'"
       [class.is-high]="label.kind === 'pleamar'"
+      [class.is-start]="label.left < 14"
+      [class.is-end]="label.left > 86"
       [style.left.%]="label.left"
       [style.top.%]="label.top"
     >

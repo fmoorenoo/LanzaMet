@@ -259,7 +259,7 @@ export const es = {
   // ── Today ────────────────────────────────────────────────────
   'today.region': 'El tiempo ahora',
   'today.temperature': 'Temperatura: ',
-  'today.todayRange': 'Máxima {max}°, mínima {min}°',
+  'today.todayRange': 'Máxima {max}° · mínima {min}°',
   'today.favoriteToggle': 'Zona favorita',
   'today.favorites': 'Tus zonas favoritas',
   'today.previousFavorites': 'Zonas favoritas anteriores',

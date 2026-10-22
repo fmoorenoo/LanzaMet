@@ -259,7 +259,7 @@ export const en: Messages = {
   // ── Today ────────────────────────────────────────────────────
   'today.region': 'The weather now',
   'today.temperature': 'Temperature: ',
-  'today.todayRange': 'High {max}°, low {min}°',
+  'today.todayRange': 'High {max}° · low {min}°',
   'today.favoriteToggle': 'Favourite place',
   'today.favorites': 'Your favourite places',
   'today.previousFavorites': 'Previous favourite places',

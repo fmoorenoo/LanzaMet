@@ -14,7 +14,7 @@
     <button
       id="location-selector-button"
       type="button"
-      class="place is-current location-button"
+      class="sky-chip place is-current location-button"
       aria-haspopup="dialog"
       (click)="ui.openLocationPicker()"
     >
@@ -27,7 +27,7 @@
       <button
         id="favorite-toggle"
         type="button"
-        class="hero-btn favorite-toggle"
+        class="sky-button favorite-toggle"
         [attr.aria-pressed]="isFavorite()"
         [attr.aria-label]="'today.favoriteToggle' | t"
         (click)="toggleFavorite()"
@@ -38,7 +38,7 @@
         <button
           id="hero-settings-button"
           type="button"
-          class="hero-btn demo settings-button"
+          class="sky-button demo settings-button"
           (click)="ui.openSettings()"
         >
           <qth-icon name="sliders" />
@@ -49,7 +49,7 @@
         <button
           id="hero-settings-button"
           type="button"
-          class="hero-btn settings-button"
+          class="sky-button settings-button"
           [attr.aria-label]="'today.settings' | t"
           (click)="ui.openSettings()"
         >
@@ -80,7 +80,7 @@
         @for (place of others(); track place.id) {
           <button
             type="button"
-            class="place place--quick favorite-location"
+            class="sky-chip place--quick favorite-location"
             [attr.data-location-id]="place.id"
             (click)="selectPlace(place.id)"
           >
@@ -104,12 +104,17 @@
           <span class="visually-hidden">{{ 'today.temperature' | t }}</span
           >{{ v.temperature }}°
         </p>
-        <h1 id="weather-verdict" class="verdict weather-verdict t-display">
-          {{ v.verdict.headline | t }}
-        </h1>
-        <p id="weather-description" class="sentence weather-description t-lead">
-          {{ v.verdict.sentence | t }}
-        </p>
+        <div class="copy-text">
+          <h1 id="weather-verdict" class="verdict weather-verdict t-display">
+            {{ v.verdict.headline | t }}
+          </h1>
+          <p id="weather-description" class="sentence weather-description t-lead">
+            {{ v.verdict.sentence | t }}
+          </p>
+          <p id="temperature-range" class="range temperature-range t-num">
+            {{ 'today.todayRange' | t: { max: v.range.max, min: v.range.min } }}
+          </p>
+        </div>
       </div>
     } @else if (error(); as message) {
       <div class="failure hero-error">

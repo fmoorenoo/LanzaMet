@@ -136,19 +136,53 @@
   }
 }
 
-// Desktop: scene on the left (sticky, see the hero), detail on the right.
+// Desktop: the panorama above, the detail below in two columns. "Now" and
+// the hours run the full width, so a previewed hour is seen in the scene
+// right above it; plans and today's detail sit beside the week. DOM order
+// (and so focus and reading order) is the same as on a phone.
 @media (min-width: 64rem) {
   :host {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(26rem, 36rem);
-    align-items: start;
+    display: block;
+    max-width: 84rem;
+    margin-inline: auto;
   }
 
   .sheet {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-auto-flow: row dense;
+    gap: var(--s-10) var(--s-12);
     margin-top: 0;
-    padding: var(--s-10) var(--s-10) var(--s-12);
+    padding: var(--s-8) var(--s-12) var(--s-12);
     background-color: transparent;
     border-radius: 0;
     box-shadow: none;
+
+    > * {
+      grid-column: 1 / -1;
+      align-content: start;
+    }
+
+    > #plan-suggestions,
+    > #day-facts {
+      grid-column: 1;
+    }
+
+    > #daily-forecast {
+      grid-column: 2;
+      grid-row: span 2;
+    }
+  }
+
+  .warnings,
+  .stale {
+    margin-top: 0;
+  }
+
+  // Side-by-side sections start on the same line, with or without an action.
+  .section-head,
+  .block > .t-title {
+    display: flex;
+    align-items: center;
+    min-height: 2.5rem;
   }
 }

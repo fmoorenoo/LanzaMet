@@ -99,18 +99,30 @@
   }
 }
 
+// Centred on its point, except near the edges, where it hangs inwards.
 .extreme {
+  --x: -50%;
   position: absolute;
   display: grid;
   justify-items: center;
-  translate: -50% calc(100% + 0.5rem);
+  translate: var(--x) calc(100% + 0.5rem);
   font-size: 0.75rem;
   font-weight: 600;
   white-space: nowrap;
   color: var(--c-ink-2);
 
   &.is-high {
-    translate: -50% calc(-100% - 0.5rem);
+    translate: var(--x) calc(-100% - 0.5rem);
+  }
+
+  &.is-start {
+    --x: -1rem;
+    justify-items: start;
+  }
+
+  &.is-end {
+    --x: calc(-100% + 1rem);
+    justify-items: end;
   }
 }
 
