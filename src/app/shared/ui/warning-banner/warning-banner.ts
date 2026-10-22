@@ -71,8 +71,8 @@ import { Icon } from '../icon/icon';
     }
     qth-icon {
       flex: none;
-      width: 1.375rem;
-      height: 1.375rem;
+      width: var(--icon-lg);
+      height: var(--icon-lg);
       color: var(--level);
     }
     .text {

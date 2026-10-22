@@ -39,8 +39,8 @@ import { IconName } from '../icon/icons';
       background-color: var(--c-surface-sunken);
     }
     .mark {
-      width: 1.375rem;
-      height: 1.375rem;
+      width: var(--icon-lg);
+      height: var(--icon-lg);
       color: var(--c-ink-3);
       margin-top: 1px;
     }

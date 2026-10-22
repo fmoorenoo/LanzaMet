@@ -1,109 +1,117 @@
+import {
+  ArrowDown,
+  ArrowUp,
+  Check,
+  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
+  Compass,
+  Droplet,
+  Footprints,
+  type IconNode,
+  Info,
+  Languages,
+  Map as MapIcon,
+  MapPin,
+  RefreshCw,
+  Search,
+  Shield,
+  SlidersHorizontal,
+  Star,
+  Sun,
+  Sunrise,
+  Sunset,
+  Thermometer,
+  TriangleAlert,
+  Wind,
+  X,
+} from 'lucide';
+
 /*
- * Authored icon set: 24px grid, 1.75 stroke, round caps and joins.
- * Each icon is a list of path data; `fill` paths are painted solid.
+ * One icon system on a 24px grid with round caps and joins, drawn at a 1.75
+ * stroke (see Icon).
+ *
+ *  · Interface icons come from Lucide (ISC licence), imported one by one so
+ *    only the icons used here reach the bundle.
+ *  · The app's own icons stay where they carry its identity or Lucide has
+ *    nothing as precise: "Hoy" (the sun over the horizon), the sea and its
+ *    waves, the tide rising and falling, the beach parasol, the swimmer and
+ *    the surfer. They are drawn to Lucide's grid and stroke.
+ *
+ * The weather glyphs (SkyGlyph), the brand mark and the scene are separate
+ * illustrations and never come from here.
  */
 
-export interface IconPath {
-  readonly d: string;
-  readonly fill?: boolean;
+export type IconShape = IconNode[number];
+
+export interface IconDefinition {
+  readonly shapes: readonly IconShape[];
+  /** Painted solid instead of outlined (a chosen star). */
+  readonly filled?: boolean;
 }
+
+const path = (d: string): IconShape => ['path', { d }];
 
 const WAVE_ROW = (y: number) =>
   `M2 ${y}c1.7 0 2.3-1.5 4-1.5s2.3 1.5 4 1.5 2.3-1.5 4-1.5 2.3 1.5 4 1.5 2.3-1.5 4-1.5`;
 
-const STAR =
-  'M12 3.6l2.55 5.2 5.75.84-4.16 4.05.98 5.72L12 16.72l-5.12 2.69.98-5.72L3.7 9.64l5.75-.84L12 3.6z';
+const lucide = (shapes: IconNode): IconDefinition => ({ shapes });
+const own = (...d: string[]): IconDefinition => ({ shapes: d.map(path) });
 
 export const ICONS = {
   // Navigation
-  today: [
-    { d: 'M3 16.5h18' },
-    { d: 'M7.5 16.5a4.5 4.5 0 0 1 9 0' },
-    { d: 'M12 9.5V7.5M7.4 11.9 6 10.5M16.6 11.9l1.4-1.4' },
-    { d: 'M6.5 20h11' },
-  ],
-  zones: [{ d: 'M9 4.5 3.5 6.5v13l5.5-2 6 2 5.5-2v-13l-5.5 2-6-2z' }, { d: 'M9 4.5v13M15 6.5v13' }],
-  sea: [{ d: WAVE_ROW(7.5) }, { d: WAVE_ROW(12.5) }, { d: WAVE_ROW(17.5) }],
-  plans: [
-    { d: 'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18z' },
-    { d: 'M15.6 8.4 13.4 13.4 8.4 15.6 10.6 10.6z' },
-  ],
+  today: own(
+    'M3 16.5h18',
+    'M7.5 16.5a4.5 4.5 0 0 1 9 0',
+    'M12 9.5V7.5M7.4 11.9 6 10.5M16.6 11.9l1.4-1.4',
+    'M6.5 20h11',
+  ),
+  zones: lucide(MapIcon),
+  sea: own(WAVE_ROW(7.5), WAVE_ROW(12.5), WAVE_ROW(17.5)),
+  plans: lucide(Compass),
 
   // Interface
-  'chevron-down': [{ d: 'M6.5 9.5 12 15l5.5-5.5' }],
-  'chevron-right': [{ d: 'M9.5 6.5 15 12l-5.5 5.5' }],
-  'chevron-left': [{ d: 'M14.5 6.5 9 12l5.5 5.5' }],
-  close: [{ d: 'M6.5 6.5l11 11M17.5 6.5l-11 11' }],
-  search: [{ d: 'M10.5 4a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13z' }, { d: 'M20 20l-4.8-4.8' }],
-  star: [{ d: STAR }],
-  'star-filled': [{ d: STAR, fill: true }],
-  pin: [
-    { d: 'M12 21s-6.5-5.6-6.5-10.5a6.5 6.5 0 1 1 13 0C18.5 15.4 12 21 12 21z' },
-    { d: 'M12 8.25a2.25 2.25 0 1 0 0 4.5 2.25 2.25 0 0 0 0-4.5z' },
-  ],
-  refresh: [{ d: 'M19.5 12A7.5 7.5 0 1 1 17 6.4' }, { d: 'M19.5 4.5v4h-4' }],
-  sliders: [{ d: 'M4 7.5h9M17 7.5h3M4 16.5h3M11 16.5h9' }, { d: 'M15 5.5v4M9 14.5v4' }],
-  info: [
-    { d: 'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18z' },
-    { d: 'M12 11v5' },
-    { d: 'M12 7.6a.9.9 0 1 0 0 1.8.9.9 0 0 0 0-1.8z', fill: true },
-  ],
-  alert: [
-    { d: 'M10.3 4.4 2.9 17.3A2 2 0 0 0 4.6 20.3h14.8a2 2 0 0 0 1.7-3L13.7 4.4a2 2 0 0 0-3.4 0z' },
-    { d: 'M12 9.5v4.5' },
-    { d: 'M12 16.2a.9.9 0 1 0 0 1.8.9.9 0 0 0 0-1.8z', fill: true },
-  ],
-  'arrow-up': [{ d: 'M12 19V5.5M6.5 11 12 5.5l5.5 5.5' }],
-  'arrow-down': [{ d: 'M12 5v13.5M6.5 13l5.5 5.5 5.5-5.5' }],
+  'chevron-down': lucide(ChevronDown),
+  'chevron-right': lucide(ChevronRight),
+  'chevron-left': lucide(ChevronLeft),
+  close: lucide(X),
+  search: lucide(Search),
+  star: lucide(Star),
+  'star-filled': { shapes: Star, filled: true },
+  pin: lucide(MapPin),
+  refresh: lucide(RefreshCw),
+  sliders: lucide(SlidersHorizontal),
+  info: lucide(Info),
+  alert: lucide(TriangleAlert),
+  'arrow-up': lucide(ArrowUp),
+  'arrow-down': lucide(ArrowDown),
+  languages: lucide(Languages),
+  check: lucide(Check),
 
   // Conditions
-  wind: [
-    { d: 'M3 8.5h10.5a2.5 2.5 0 1 0-2.5-2.5' },
-    { d: 'M3 12.5h15a2.5 2.5 0 1 1-2.5 2.5' },
-    { d: 'M3 16.5h7' },
-  ],
-  waves: [{ d: WAVE_ROW(10) }, { d: WAVE_ROW(15.5) }],
-  'tide-up': [{ d: WAVE_ROW(18) }, { d: 'M12 13.5V4.5M8.5 8 12 4.5 15.5 8' }],
-  'tide-down': [{ d: WAVE_ROW(18) }, { d: 'M12 4.5v9M8.5 10l3.5 3.5 3.5-3.5' }],
-  sunrise: [
-    { d: 'M3 18h18' },
-    { d: 'M7 18a5 5 0 0 1 10 0' },
-    { d: 'M12 9V3.5M9.5 6 12 3.5 14.5 6' },
-  ],
-  sunset: [
-    { d: 'M3 18h18' },
-    { d: 'M7 18a5 5 0 0 1 10 0' },
-    { d: 'M12 3.5V9M9.5 6.5 12 9l2.5-2.5' },
-  ],
-  thermometer: [{ d: 'M10 13.8V5.5a2 2 0 1 1 4 0v8.3a4 4 0 1 1-4 0z' }, { d: 'M12 10v6.5' }],
-  drop: [{ d: 'M12 3.5S6 10 6 14a6 6 0 0 0 12 0c0-4-6-10.5-6-10.5z' }],
-  sun: [
-    { d: 'M12 7.5a4.5 4.5 0 1 0 0 9 4.5 4.5 0 0 0 0-9z' },
-    {
-      d: 'M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4',
-    },
-  ],
+  wind: lucide(Wind),
+  waves: own(WAVE_ROW(10), WAVE_ROW(15.5)),
+  'tide-up': own(WAVE_ROW(18), 'M12 13.5V4.5M8.5 8 12 4.5 15.5 8'),
+  'tide-down': own(WAVE_ROW(18), 'M12 4.5v9M8.5 10l3.5 3.5 3.5-3.5'),
+  sunrise: lucide(Sunrise),
+  sunset: lucide(Sunset),
+  thermometer: lucide(Thermometer),
+  drop: lucide(Droplet),
+  sun: lucide(Sun),
 
   // Plans
-  beach: [{ d: 'M3.5 12a8.5 8.5 0 0 1 17 0z' }, { d: 'M12 12v8' }, { d: 'M5 20.5h14' }],
-  shelter: [{ d: 'M12 3.5 5 6v5.5c0 4.2 3 7.6 7 9 4-1.4 7-4.8 7-9V6l-7-2.5z' }],
-  swim: [
-    { d: 'M16 5.2a1.8 1.8 0 1 0 0 3.6 1.8 1.8 0 0 0 0-3.6z' },
-    { d: 'M4.5 13l4.5-3.5 3 3 4-2.2' },
-    { d: WAVE_ROW(17.5) },
-  ],
-  walk: [
-    { d: 'M8 3.8c1.5 0 2.4 1.6 2.4 3.9S9.5 11.2 8 11.2 5.6 10 5.6 7.7 6.5 3.8 8 3.8z' },
-    { d: 'M6.2 13.8h3.6v1.3a1.8 1.8 0 0 1-3.6 0z' },
-    { d: 'M16 8.8c1.5 0 2.4 1.6 2.4 3.9s-.9 3.5-2.4 3.5-2.4-1.2-2.4-3.5.9-3.9 2.4-3.9z' },
-    { d: 'M14.2 18.8h3.6v.4a1.8 1.8 0 0 1-3.6 0z' },
-  ],
-  surf: [
-    {
-      d: 'M3 17c3.2 0 5-2.4 6.4-5.6C10.9 8 12.8 5 17 5c2.3 0 3.8 1.5 3.8 3.4 0 1.8-1.4 3.1-3.1 3.1-1.4 0-2.4-1-2.4-2.3',
-    },
-    { d: 'M3 20.5h18' },
-  ],
-} as const satisfies Record<string, readonly IconPath[]>;
+  beach: own('M3.5 12a8.5 8.5 0 0 1 17 0z', 'M12 12v8', 'M5 20.5h14'),
+  shelter: lucide(Shield),
+  swim: own(
+    'M16 5.2a1.8 1.8 0 1 0 0 3.6 1.8 1.8 0 0 0 0-3.6z',
+    'M4.5 13l4.5-3.5 3 3 4-2.2',
+    WAVE_ROW(17.5),
+  ),
+  walk: lucide(Footprints),
+  surf: own(
+    'M3 17c3.2 0 5-2.4 6.4-5.6C10.9 8 12.8 5 17 5c2.3 0 3.8 1.5 3.8 3.4 0 1.8-1.4 3.1-3.1 3.1-1.4 0-2.4-1-2.4-2.3',
+    'M3 20.5h18',
+  ),
+} as const satisfies Record<string, IconDefinition>;
 
 export type IconName = keyof typeof ICONS;

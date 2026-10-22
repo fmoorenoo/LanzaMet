@@ -118,8 +118,8 @@
 }
 
 .tab-icon {
-  width: 1.375rem;
-  height: 1.375rem;
+  width: var(--icon-lg);
+  height: var(--icon-lg);
 }
 
 .tab-label {
@@ -238,8 +238,8 @@
     }
 
     qth-icon {
-      width: 1.375rem;
-      height: 1.375rem;
+      width: var(--icon-lg);
+      height: var(--icon-lg);
     }
   }
 

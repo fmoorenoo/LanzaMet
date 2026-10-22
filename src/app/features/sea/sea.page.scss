@@ -145,8 +145,8 @@
 
   qth-icon {
     flex: none;
-    width: 1rem;
-    height: 1rem;
+    width: var(--icon-xs);
+    height: var(--icon-xs);
     margin-top: 0.1em;
   }
 }
@@ -192,8 +192,8 @@ qth-warning-banner,
 
   qth-icon {
     grid-area: icon;
-    width: 1.25rem;
-    height: 1.25rem;
+    width: var(--icon-md);
+    height: var(--icon-md);
     color: var(--c-sea);
   }
 
@@ -283,8 +283,8 @@ qth-warning-banner,
 }
 
 .chevron {
-  width: 1.25rem;
-  height: 1.25rem;
+  width: var(--icon-md);
+  height: var(--icon-md);
   color: var(--c-ink-3);
 }
 
