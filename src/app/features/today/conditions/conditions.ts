@@ -18,7 +18,8 @@ export interface ConditionsView {
     readonly status: SectionStatus;
     readonly reading: TideReading | null;
     readonly pending: boolean;
-    readonly source: string | null;
+    /** True when the tide comes from a model, not an official prediction. */
+    readonly estimated: boolean;
   };
 }
 

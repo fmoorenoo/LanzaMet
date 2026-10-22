@@ -8,7 +8,8 @@
       }
     </span>
     <span class="text">
-      <span class="title">{{ v.wind.label }} {{ v.wind.from }}</span>
+      <!-- Without wind there is no direction worth naming. -->
+      <span class="title">{{ v.wind.label }}{{ v.wind.level > 0 ? ' ' + v.wind.from : '' }}</span>
       <span class="sub">
         {{ v.wind.detail }}
         @if (windTrendText(); as trend) {
@@ -33,7 +34,12 @@
         @switch (v.sea.status) {
           @case ('ready') {
             <span class="title">{{ v.sea.reading?.label }}</span>
-            <span class="sub">{{ v.sea.reading?.waves }} · {{ v.sea.reading?.water }}</span>
+            <span class="sub">
+              {{ v.sea.reading?.waves }}
+              @if (v.sea.reading?.water; as water) {
+                · {{ water }}
+              }
+            </span>
           }
           @case ('empty') {
             <span class="title">Sin previsión del mar</span>
@@ -71,12 +77,17 @@
           @case ('ready') {
             @if (v.tide.reading; as tide) {
               <span class="title">{{ tide.headline }}</span>
-              <span class="sub">{{ tide.nextLabel }} · en {{ tide.untilNext }}</span>
+              <span class="sub">
+                {{ tide.nextLabel }} · en {{ tide.untilNext }}
+                @if (v.tide.estimated) {
+                  · estimación
+                }
+              </span>
             }
           }
           @case ('empty') {
             <span class="title">Sin datos de marea</span>
-            <span class="sub">No hay mareógrafo ni referencia cercana para esta zona.</span>
+            <span class="sub">No hay previsión ni estimación de marea para esta zona.</span>
           }
           @case ('error') {
             <span class="title">La marea, sin datos ahora</span>

@@ -266,7 +266,7 @@
   gap: var(--s-4);
 }
 
-.demo-note {
+.data-note {
   display: inline-flex;
   align-items: center;
   gap: var(--s-2);
@@ -278,4 +278,16 @@
     width: 1rem;
     height: 1rem;
   }
+}
+
+// The credit line that closes a page.
+.page-foot {
+  padding-top: var(--s-4);
+  border-top: 1px solid var(--c-line);
+}
+
+.data-note a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
 }

@@ -4,15 +4,18 @@ import { readSea } from '../../core/insights/sea.insight';
 import { readUv } from '../../core/insights/sky.insight';
 import { readTide } from '../../core/insights/tide.insight';
 import { dayVerdict } from '../../core/insights/verdict.insight';
-import { readWind, windTrend } from '../../core/insights/wind.insight';
+import { fromDirection, readWind, windTrend } from '../../core/insights/wind.insight';
 import { ClockStore } from '../../core/state/clock.store';
 import { DataRefreshStore } from '../../core/state/data-refresh.store';
 import { ForecastStore } from '../../core/state/forecast.store';
 import { IslandStore } from '../../core/state/island.store';
 import { LocationsStore } from '../../core/state/locations.store';
+import { OfficialStore } from '../../core/state/official.store';
 import { ThemeStore } from '../../core/state/theme.store';
 import { addHours, formatTime, islandDateKey, toDate } from '../../core/utils/time';
 import { PlanItem } from '../../shared/plans/plan-item';
+import { DataCredit } from '../../shared/ui/data-credit/data-credit';
+import { WarningBanner } from '../../shared/ui/warning-banner/warning-banner';
 import { buildScene } from '../../shared/scene/scene-state';
 import { Icon } from '../../shared/ui/icon/icon';
 import { StatusMessage } from '../../shared/ui/status-message/status-message';
@@ -37,6 +40,8 @@ import { HeroView, TodayHero } from './today-hero/today-hero';
     HourTimeline,
     DayList,
     PlanItem,
+    DataCredit,
+    WarningBanner,
   ],
   templateUrl: './today.page.html',
   styleUrl: './today.page.scss',
@@ -45,6 +50,7 @@ export class TodayPage {
   protected readonly locations = inject(LocationsStore);
   protected readonly forecast = inject(ForecastStore);
   protected readonly island = inject(IslandStore);
+  protected readonly official = inject(OfficialStore);
   private readonly clock = inject(ClockStore);
   private readonly refreshStore = inject(DataRefreshStore);
   private readonly theme = inject(ThemeStore);
@@ -101,7 +107,7 @@ export class TodayPage {
         status: tides && !tide ? 'empty' : this.forecast.tides().status,
         reading: tide,
         pending: this.forecast.tides().pending,
-        source: tides?.source.name ?? null,
+        estimated: tides ? !tides.source.official : false,
       },
     };
 
@@ -180,9 +186,27 @@ export class TodayPage {
 
   protected readonly todayKey = computed(() => islandDateKey(this.clock.now()));
   protected readonly topPlans = computed(() => this.island.recommendations().slice(0, 2));
-  protected readonly updatedAt = computed(() => {
-    const issued = this.forecast.weather().data?.issuedAt;
-    return issued ? formatTime(issued) : null;
+  protected readonly updatedAt = computed(() => this.forecast.weather().data?.issuedAt ?? null);
+
+  /** What a nearby station actually measured — an observation, not the forecast. */
+  protected readonly observed = computed(() => {
+    const location = this.location();
+    const reading = location ? this.official.nearestObservation(location.position) : null;
+    if (!reading) return null;
+    const parts: string[] = [];
+    if (reading.temperatureC !== null) parts.push(`${Math.round(reading.temperatureC)} °C`);
+    if (reading.windKmh !== null) {
+      parts.push(
+        reading.windKmh < 3 || reading.windFromDegrees === null
+          ? 'sin apenas viento'
+          : `viento ${fromDirection(reading.windFromDegrees)} a ${Math.round(reading.windKmh)} km/h`,
+      );
+    }
+    if (parts.length === 0) return null;
+    return {
+      value: parts.join(' y '),
+      source: `${reading.stationName} (AEMET), a las ${formatTime(reading.time)}`,
+    };
   });
 
   constructor() {

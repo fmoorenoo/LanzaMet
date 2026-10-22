@@ -25,7 +25,7 @@
         }
         @case ('empty') {
           <h1 class="t-display">Sin datos de marea en {{ place?.name }}</h1>
-          <p class="t-lead t-muted">Aquí no hay mareógrafo ni un puerto de referencia cercano.</p>
+          <p class="t-lead t-muted">No hay previsión ni estimación de marea para esta zona.</p>
         }
         @case ('error') {
           <h1 class="t-display">La marea, sin datos ahora</h1>
@@ -51,6 +51,10 @@
 </header>
 
 <div class="content">
+  @if (coastalWarnings().length > 0) {
+    <qth-warning-banner [warnings]="coastalWarnings()" />
+  }
+
   @switch (tides.status) {
     @case ('ready') {
       @if (tides.data; as data) {
@@ -67,13 +71,14 @@
           }
           <p class="source t-micro t-faint">
             <qth-icon name="info" />
-            {{ data.source.kind === 'station' ? 'Mareógrafo' : 'Predicción de referencia' }}:
-            {{ data.source.name }} · datos ficticios
+            {{ tideSource() }}
           </p>
         </section>
 
         <section class="block" aria-labelledby="extremes-title">
-          <h2 id="extremes-title" class="t-title">Pleamares y bajamares</h2>
+          <h2 id="extremes-title" class="t-title">
+            Pleamares y bajamares{{ data.source.official ? '' : ' (estimadas)' }}
+          </h2>
           <div class="days">
             @for (day of days(); track day.label) {
               <div class="day">
@@ -132,12 +137,25 @@
     @if (sea(); as s) {
       <p class="sea-state">
         <span class="t-strong">{{ s.label }}.</span>
-        {{ s.waves }}. {{ s.water }}.
+        {{ s.waves }}.
+        @if (s.swell) {
+          {{ s.swell }}.
+        }
+        @if (s.water) {
+          {{ s.water }}.
+        }
       </p>
+      @if (s.offshoreKm !== null) {
+        <p class="source t-micro t-faint">
+          <qth-icon name="info" />
+          Previsión del modelo en mar abierto, a unos {{ s.offshoreKm }} km de la zona. En la orilla
+          las olas pueden ser distintas.
+        </p>
+      }
     } @else if (forecast.sea().status === 'empty') {
       <qth-status-message
         title="Sin previsión del mar"
-        text="Esta zona aún no tiene datos marítimos."
+        text="El modelo marítimo no tiene datos para esta zona."
         icon="waves"
       />
     } @else if (forecast.sea().status === 'error') {
@@ -183,4 +201,8 @@
       <span class="skeleton lead-skeleton"></span>
     }
   </section>
+
+  <footer class="page-foot">
+    <qth-data-credit kind="sea" [updatedAt]="forecast.sea().data?.issuedAt ?? null" />
+  </footer>
 </div>

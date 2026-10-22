@@ -3,7 +3,7 @@
 
 <qth-today-hero
   [view]="heroView()"
-  [pending]="weather.pending"
+  [pending]="weather.pending || forecast.sea().status === 'loading'"
   [error]="heroError()"
   [isPreview]="previewIndex() !== null"
   (backToNow)="backToNow()"
@@ -11,6 +11,10 @@
 />
 
 <div class="sheet">
+  @if (official.warnings().length > 0) {
+    <qth-warning-banner class="warnings" [warnings]="official.warnings()" />
+  }
+
   @if (v && weather.error) {
     <p class="stale" role="status">
       <qth-icon name="info" />
@@ -107,6 +111,15 @@
           <dt><qth-icon name="sunset" />Luz</dt>
           <dd>{{ d.light }}</dd>
         </div>
+        @if (observed(); as o) {
+          <div class="fact">
+            <dt><qth-icon name="pin" />Medido</dt>
+            <dd>
+              {{ o.value }}
+              <span class="fact-source">{{ o.source }}</span>
+            </dd>
+          </div>
+        }
       </dl>
     </section>
   }
@@ -118,16 +131,8 @@
     </section>
   }
 
-  <footer class="foot">
-    <p class="demo-note">
-      <qth-icon name="info" />
-      <span>
-        Datos ficticios de demostración
-        @if (updatedAt(); as time) {
-          · actualizados a las {{ time }}
-        }
-      </span>
-    </p>
+  <footer class="foot page-foot">
+    <qth-data-credit kind="weather" [updatedAt]="updatedAt()" />
     <button
       type="button"
       class="btn btn--quiet"

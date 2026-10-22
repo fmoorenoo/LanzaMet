@@ -1,30 +1,29 @@
 import { Component, computed, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { describeWaves, readSea, seaLevelFor } from '../../core/insights/sea.insight';
-import { extremesBetween, readTide } from '../../core/insights/tide.insight';
-import { Location, LocationId } from '../../core/models';
+import { extremesBetween, formatTideHeight, readTide } from '../../core/insights/tide.insight';
+import { DATA_MODE } from '../../core/data/http/data-config';
+import { LocationId } from '../../core/models';
 import { ClockStore } from '../../core/state/clock.store';
 import { ForecastStore } from '../../core/state/forecast.store';
 import { IslandStore } from '../../core/state/island.store';
 import { LocationsStore } from '../../core/state/locations.store';
+import { OfficialStore } from '../../core/state/official.store';
+import { distanceKm } from '../../core/utils/geo';
 import { formatTime, islandDayStart, toDate } from '../../core/utils/time';
 import { UiStore } from '../../layout/ui.store';
+import { DataCredit } from '../../shared/ui/data-credit/data-credit';
 import { Icon } from '../../shared/ui/icon/icon';
 import { StatusMessage } from '../../shared/ui/status-message/status-message';
+import { WarningBanner } from '../../shared/ui/warning-banner/warning-banner';
 import { TideChart } from './tide-chart/tide-chart';
 
 const WAVE_AMPLITUDE = [0.8, 2, 3.4, 5, 6.6];
 
-function distanceKm(a: Location, b: Location): number {
-  const dLat = (a.position.latitude - b.position.latitude) * 111;
-  const dLon = (a.position.longitude - b.position.longitude) * 111 * Math.cos((29 * Math.PI) / 180);
-  return Math.hypot(dLat, dLon);
-}
-
 /** The ocean: is the tide coming in or going out, and where is the water calm? */
 @Component({
   selector: 'qth-sea-page',
-  imports: [Icon, StatusMessage, TideChart],
+  imports: [Icon, StatusMessage, TideChart, DataCredit, WarningBanner],
   templateUrl: './sea.page.html',
   styleUrl: './sea.page.scss',
 })
@@ -33,6 +32,8 @@ export class SeaPage {
   protected readonly forecast = inject(ForecastStore);
   protected readonly island = inject(IslandStore);
   protected readonly locations = inject(LocationsStore);
+  protected readonly official = inject(OfficialStore);
+  private readonly isDemo = inject(DATA_MODE) === 'demo';
   private readonly clock = inject(ClockStore);
   private readonly router = inject(Router);
 
@@ -62,10 +63,7 @@ export class SeaPage {
       extremes: extremesBetween(tides, day.start, day.end).map((e) => ({
         kind: e.kind,
         time: formatTime(e.time),
-        height: e.heightM.toLocaleString('es-ES', {
-          minimumFractionDigits: 1,
-          maximumFractionDigits: 1,
-        }),
+        height: formatTideHeight(e.heightM, tides.datum),
         isPast: toDate(e.time) < now,
       })),
     }));
@@ -78,8 +76,30 @@ export class SeaPage {
 
   protected readonly sea = computed(() => {
     const data = this.forecast.sea().data;
-    return data ? readSea(data.current) : null;
+    const here = this.location();
+    if (!data) return null;
+    return {
+      ...readSea(data.current),
+      /** Marine models describe open water, not the shoreline; say how far out. */
+      offshoreKm: here ? Math.round(distanceKm(here.position, data.point)) : null,
+    };
   });
+
+  /** Where the tide comes from, said plainly — an estimate is never passed off as official. */
+  protected readonly tideSource = computed(() => {
+    const tides = this.forecast.tides().data;
+    if (!tides) return null;
+    const { source } = tides;
+    const origin = source.official
+      ? `${source.kind === 'station' ? 'Mareógrafo' : 'Predicción de referencia'}: ${source.name}.`
+      : `Estimación del ${source.name.charAt(0).toLocaleLowerCase('es-ES')}${source.name.slice(1)}. No es una tabla oficial ni sirve para navegar.`;
+    const datum = tides.datum === 'mean-sea-level' ? ' Alturas sobre el nivel medio del mar.' : '';
+    return `${origin}${datum}${this.isDemo ? ' Datos ficticios.' : ''}`;
+  });
+
+  protected readonly coastalWarnings = computed(() =>
+    this.official.warnings().filter((w) => w.coastal),
+  );
 
   /** Places ordered from calmest to roughest water. */
   protected readonly calmest = computed(() =>
@@ -108,7 +128,9 @@ export class SeaPage {
       this.locations
         .all()
         .filter((l) => l.coverage.tide.kind !== 'none')
-        .sort((a, b) => distanceKm(here, a) - distanceKm(here, b))[0] ?? null
+        .sort(
+          (a, b) => distanceKm(here.position, a.position) - distanceKm(here.position, b.position),
+        )[0] ?? null
     );
   });
 

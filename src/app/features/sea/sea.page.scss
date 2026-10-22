@@ -139,14 +139,22 @@
 
 .source {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: var(--s-2);
   padding-inline: var(--s-1);
 
   qth-icon {
+    flex: none;
     width: 1rem;
     height: 1rem;
+    margin-top: 0.1em;
   }
+}
+
+// Warnings and the credit span both columns on wide screens.
+qth-warning-banner,
+.page-foot {
+  grid-column: 1 / -1;
 }
 
 .block {

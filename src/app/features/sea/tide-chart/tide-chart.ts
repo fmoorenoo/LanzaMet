@@ -1,5 +1,6 @@
 import { Component, computed, input } from '@angular/core';
 import { TideForecast } from '../../../core/models';
+import { formatTideHeight } from '../../../core/insights/tide.insight';
 import { formatTime, TIME, toDate } from '../../../core/utils/time';
 
 const W = 1000;
@@ -31,12 +32,21 @@ export class TideChart {
     return ((t.getTime() - this.dayStart().getTime()) / (24 * TIME.HOUR)) * W;
   }
 
-  private readonly maxHeight = computed(() =>
-    Math.max(2.8, ...this.tide().extremes.map((e) => e.heightM + 0.2)),
-  );
+  /**
+   * Vertical range. Heights on a chart datum start at zero; around mean sea
+   * level the water goes both ways, so the range follows the extremes.
+   */
+  private readonly range = computed(() => {
+    const heights = this.tide().extremes.map((e) => e.heightM);
+    if (this.tide().datum === 'chart') {
+      return { min: 0, max: Math.max(2.8, ...heights.map((h) => h + 0.2)) };
+    }
+    return { min: Math.min(...heights) - 0.2, max: Math.max(...heights) + 0.2 };
+  });
 
   private y(heightM: number): number {
-    return FLOOR - (heightM / this.maxHeight()) * (FLOOR - TOP);
+    const { min, max } = this.range();
+    return FLOOR - ((heightM - min) / (max - min)) * (FLOOR - TOP);
   }
 
   private readonly points = computed(() => {
@@ -90,10 +100,7 @@ export class TideChart {
       .map((e) => ({
         kind: e.kind,
         time: formatTime(e.time),
-        height: e.heightM.toLocaleString('es-ES', {
-          minimumFractionDigits: 1,
-          maximumFractionDigits: 1,
-        }),
+        height: formatTideHeight(e.heightM, this.tide().datum),
         left: (this.x(toDate(e.time)) / W) * 100,
         top: (this.y(e.heightM) / H) * 100,
       }));

@@ -1,17 +1,25 @@
 import { Component, computed, inject } from '@angular/core';
+import { DATA_MODE } from '../../core/data/http/data-config';
 import { IslandStore } from '../../core/state/island.store';
 import { PlanItem } from '../../shared/plans/plan-item';
+import { DataCredit } from '../../shared/ui/data-credit/data-credit';
 import { StatusMessage } from '../../shared/ui/status-message/status-message';
 
 /** Concrete suggestions for today, the best one first and shown as a place. */
 @Component({
   selector: 'qth-plans-page',
-  imports: [PlanItem, StatusMessage],
+  imports: [PlanItem, StatusMessage, DataCredit],
   template: `
     <header class="page-head">
       <h1 class="t-display">¿Dónde ir hoy?</h1>
       <p class="t-lead t-muted lead">
-        Sugerencias según el tiempo de cada zona. En esta versión son ejemplos con datos ficticios.
+        @if (isDemo) {
+          Sugerencias según el tiempo de cada zona. En esta versión son ejemplos con datos
+          ficticios.
+        } @else {
+          Sugerencias según la previsión de cada zona. Son orientativas, no una garantía: en el mar,
+          haz caso a las banderas y a los socorristas.
+        }
       </p>
     </header>
 
@@ -35,7 +43,7 @@ import { StatusMessage } from '../../shared/ui/status-message/status-message';
           } @else {
             <qth-status-message
               title="Hoy no hay un plan claro"
-              text="El tiempo no acompaña en ninguna zona. Prueba mañana, o cambia el escenario de la demo."
+              text="El tiempo no acompaña en ninguna zona. Echa un vistazo a los próximos días."
             />
           }
         }
@@ -52,6 +60,10 @@ import { StatusMessage } from '../../shared/ui/status-message/status-message';
           <div class="skeleton lead-skeleton" aria-label="Cargando sugerencias"></div>
         }
       }
+
+      <footer class="page-foot">
+        <qth-data-credit kind="island" [updatedAt]="island.updatedAt()" />
+      </footer>
     </div>
   `,
   styles: `
@@ -79,6 +91,9 @@ import { StatusMessage } from '../../shared/ui/status-message/status-message';
     }
     .list li + li {
       border-top: 1px solid var(--c-line);
+    }
+    .page-foot {
+      grid-column: 1 / -1;
     }
     .lead-skeleton {
       height: 16rem;
@@ -108,6 +123,7 @@ import { StatusMessage } from '../../shared/ui/status-message/status-message';
 })
 export class PlansPage {
   protected readonly island = inject(IslandStore);
+  protected readonly isDemo = inject(DATA_MODE) === 'demo';
 
   protected readonly lead = computed(() => this.island.recommendations()[0] ?? null);
   protected readonly rest = computed(() => this.island.recommendations().slice(1));
