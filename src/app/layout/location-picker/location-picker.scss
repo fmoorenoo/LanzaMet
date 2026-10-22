@@ -12,6 +12,14 @@
   margin-bottom: var(--s-6);
 }
 
+.group-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-3);
+  min-height: 2.25rem;
+}
+
 .group-title {
   font-size: var(--fs-micro);
   font-weight: 640;

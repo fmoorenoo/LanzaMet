@@ -3,6 +3,19 @@
   min-width: 0;
 }
 
+.timeline-head {
+  align-items: center;
+  min-height: 2.5rem;
+  margin-bottom: var(--s-3);
+}
+
+.head-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  margin-left: auto;
+}
+
 // Native horizontal scroll with snapping: the browser's physics, not ours.
 .scroller {
   overflow-x: auto;

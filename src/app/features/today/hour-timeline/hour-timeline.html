@@ -1,4 +1,16 @@
-<div class="scroller hour-scroller">
+<div class="section-head section-header timeline-head">
+  <ng-content select="[timelineTitle]" />
+  <div class="head-actions">
+    <ng-content select="[timelineAction]" />
+    <qth-scroll-controls
+      [scroller]="scroll"
+      backLabel="Horas anteriores"
+      forwardLabel="Horas siguientes"
+    />
+  </div>
+</div>
+
+<div class="scroller hour-scroller" qthHorizontalScroll #scroll="horizontalScroll">
   <div
     class="track hour-track"
     role="group"

@@ -32,6 +32,7 @@ export const ICONS = {
   // Interface
   'chevron-down': [{ d: 'M6.5 9.5 12 15l5.5-5.5' }],
   'chevron-right': [{ d: 'M9.5 6.5 15 12l-5.5 5.5' }],
+  'chevron-left': [{ d: 'M14.5 6.5 9 12l5.5 5.5' }],
   close: [{ d: 'M6.5 6.5l11 11M17.5 6.5l-11 11' }],
   search: [{ d: 'M10.5 4a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13z' }, { d: 'M20 20l-4.8-4.8' }],
   star: [{ d: STAR }],

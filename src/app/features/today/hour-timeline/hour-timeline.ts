@@ -9,6 +9,8 @@ import {
   islandDateKey,
   toDate,
 } from '../../../core/utils/time';
+import { HorizontalScroll } from '../../../shared/ui/horizontal-scroll/horizontal-scroll';
+import { ScrollControls } from '../../../shared/ui/horizontal-scroll/scroll-controls';
 import { SkyGlyph } from '../../../shared/ui/sky-glyph/sky-glyph';
 
 const CELL = 56;
@@ -21,7 +23,7 @@ const CURVE_RANGE = 26;
  */
 @Component({
   selector: 'qth-hour-timeline',
-  imports: [SkyGlyph],
+  imports: [SkyGlyph, HorizontalScroll, ScrollControls],
   templateUrl: './hour-timeline.html',
   styleUrl: './hour-timeline.scss',
   host: { class: 'hour-timeline' },

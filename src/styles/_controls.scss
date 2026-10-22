@@ -291,3 +291,50 @@
   text-decoration: underline;
   text-underline-offset: 0.15em;
 }
+
+// ── Horizontal scrollers (see HorizontalScroll) ──────────────────
+// The edges fade only while there is more to see in that direction.
+@property --fade-back {
+  syntax: '<length>';
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --fade-forward {
+  syntax: '<length>';
+  inherits: false;
+  initial-value: 0px;
+}
+
+.h-scroll {
+  --fade-size: 2rem;
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    #000 var(--fade-back),
+    #000 calc(100% - var(--fade-forward)),
+    transparent
+  );
+  transition:
+    --fade-back var(--d-base) ease,
+    --fade-forward var(--d-base) ease;
+
+  &.can-scroll-back {
+    --fade-back: var(--fade-size);
+  }
+
+  &.can-scroll-forward {
+    --fade-forward: var(--fade-size);
+  }
+
+  // While a mouse drags it, snapping waits and nothing gets selected.
+  &.is-dragging {
+    cursor: grabbing;
+    scroll-snap-type: none;
+    user-select: none;
+
+    * {
+      cursor: grabbing;
+    }
+  }
+}

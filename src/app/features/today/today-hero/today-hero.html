@@ -66,22 +66,32 @@
       <button type="button" class="moment-reset" (click)="backToNow.emit()">Volver a ahora</button>
     </p>
   } @else if (others().length > 0) {
-    <div
-      id="favorite-locations"
-      class="places favorite-locations"
-      role="group"
-      aria-label="Tus zonas favoritas"
-    >
-      @for (place of others(); track place.id) {
-        <button
-          type="button"
-          class="place place--quick favorite-location"
-          [attr.data-location-id]="place.id"
-          (click)="selectPlace(place.id)"
-        >
-          {{ place.name }}
-        </button>
-      }
+    <div class="places-row">
+      <div
+        id="favorite-locations"
+        class="places favorite-locations"
+        role="group"
+        aria-label="Tus zonas favoritas"
+        qthHorizontalScroll
+        #placesScroll="horizontalScroll"
+      >
+        @for (place of others(); track place.id) {
+          <button
+            type="button"
+            class="place place--quick favorite-location"
+            [attr.data-location-id]="place.id"
+            (click)="selectPlace(place.id)"
+          >
+            {{ place.name }}
+          </button>
+        }
+      </div>
+      <qth-scroll-controls
+        class="places-controls"
+        [scroller]="placesScroll"
+        backLabel="Zonas favoritas anteriores"
+        forwardLabel="Más zonas favoritas"
+      />
     </div>
   }
 

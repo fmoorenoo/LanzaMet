@@ -30,15 +30,20 @@
     </section>
 
     <section id="hourly-forecast" class="block today-section" aria-labelledby="hours-title">
-      <div class="section-head section-header">
-        <h2 id="hours-title" class="t-title">Próximas horas</h2>
+      <qth-hour-timeline [hours]="hours()" [(selected)]="previewIndex">
+        <h2 timelineTitle id="hours-title" class="t-title">Próximas horas</h2>
         @if (previewIndex() !== null) {
-          <button id="back-to-now" type="button" class="btn btn--quiet" (click)="backToNow()">
+          <button
+            timelineAction
+            id="back-to-now"
+            type="button"
+            class="btn btn--quiet"
+            (click)="backToNow()"
+          >
             Volver a ahora
           </button>
         }
-      </div>
-      <qth-hour-timeline [hours]="hours()" [(selected)]="previewIndex" />
+      </qth-hour-timeline>
     </section>
   } @else if (weather.status !== 'error' && !locations.error()) {
     <div class="block today-section conditions-skeleton" aria-hidden="true">

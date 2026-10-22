@@ -19,8 +19,15 @@
       class="group location-group"
       aria-labelledby="favorite-locations-title"
     >
-      <h3 id="favorite-locations-title" class="group-title">Tus zonas</h3>
-      <div class="favorites favorite-chips">
+      <div class="group-head">
+        <h3 id="favorite-locations-title" class="group-title">Tus zonas</h3>
+        <qth-scroll-controls
+          [scroller]="favoriteScroll"
+          backLabel="Zonas anteriores"
+          forwardLabel="Más zonas favoritas"
+        />
+      </div>
+      <div class="favorites favorite-chips" qthHorizontalScroll #favoriteScroll="horizontalScroll">
         @for (row of favorites(); track row.location.id) {
           <button
             type="button"

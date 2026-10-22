@@ -3,6 +3,8 @@ import { zoneHeadline } from '../../core/insights/island.insight';
 import { Location, LocationId, SkyCondition } from '../../core/models';
 import { IslandStore } from '../../core/state/island.store';
 import { LocationsStore } from '../../core/state/locations.store';
+import { HorizontalScroll } from '../../shared/ui/horizontal-scroll/horizontal-scroll';
+import { ScrollControls } from '../../shared/ui/horizontal-scroll/scroll-controls';
 import { Icon } from '../../shared/ui/icon/icon';
 import { Sheet } from '../../shared/ui/sheet/sheet';
 import { SkyGlyph } from '../../shared/ui/sky-glyph/sky-glyph';
@@ -28,7 +30,7 @@ const normalise = (text: string) =>
 /** Fast, visual place switcher: favourites first, then the island by coast. */
 @Component({
   selector: 'qth-location-picker',
-  imports: [Sheet, Icon, SkyGlyph, StatusMessage],
+  imports: [Sheet, Icon, SkyGlyph, StatusMessage, HorizontalScroll, ScrollControls],
   templateUrl: './location-picker.html',
   styleUrl: './location-picker.scss',
 })

@@ -6,6 +6,8 @@ import { LocationsStore } from '../../../core/state/locations.store';
 import { UiStore } from '../../../layout/ui.store';
 import { Scene } from '../../../shared/scene/scene';
 import { SceneState } from '../../../shared/scene/scene-state';
+import { HorizontalScroll } from '../../../shared/ui/horizontal-scroll/horizontal-scroll';
+import { ScrollControls } from '../../../shared/ui/horizontal-scroll/scroll-controls';
 import { Icon } from '../../../shared/ui/icon/icon';
 import { StatusMessage } from '../../../shared/ui/status-message/status-message';
 
@@ -23,7 +25,7 @@ export interface HeroView {
  */
 @Component({
   selector: 'qth-today-hero',
-  imports: [Scene, Icon, StatusMessage],
+  imports: [Scene, Icon, StatusMessage, HorizontalScroll, ScrollControls],
   templateUrl: './today-hero.html',
   styleUrl: './today-hero.scss',
   host: {
