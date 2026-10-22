@@ -1,12 +1,19 @@
 import { Observable } from 'rxjs';
-import { Location, LocationId, SeaForecast, TideForecast, WeatherForecast } from '../models';
+import {
+  Location,
+  LocationId,
+  SeaForecast,
+  StationObservation,
+  TideForecast,
+  WarningBulletin,
+  WeatherForecast,
+} from '../models';
 
 /*
  * Data ports. The UI and the stores only ever depend on these abstract
- * classes; `provideMockDataSources()` binds them to simulated data today, and a
- * future `provideHttpDataSources()` can bind them to real providers (a weather
- * API, a tide service, a marine model or an own backend) without touching any
- * component. Implementations map provider DTOs into these domain contracts.
+ * classes; `provideDataSources()` binds them to real providers (see
+ * `core/data/http`) or, in the demo build, to simulated data. Implementations
+ * map provider DTOs into these domain contracts.
  */
 
 export abstract class LocationSource {
@@ -22,6 +29,16 @@ export abstract class MarineSource {
   abstract sea(locationId: LocationId): Observable<SeaForecast | null>;
   /** Emits `null` when there is no tide prediction for the place. */
   abstract tides(locationId: LocationId): Observable<TideForecast | null>;
+}
+
+export abstract class WarningSource {
+  /** Active official warnings for the island; `null` when the service is not available here. */
+  abstract active(): Observable<WarningBulletin | null>;
+}
+
+export abstract class ObservationSource {
+  /** Latest reading of each station on the island; `null` when the service is not available here. */
+  abstract latest(): Observable<readonly StationObservation[] | null>;
 }
 
 /** Raised by sources when a provider fails; the message is safe to show. */

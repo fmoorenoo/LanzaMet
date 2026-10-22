@@ -1,4 +1,4 @@
-import { TideExtreme, TideForecast, TideKind } from '../models';
+import { TideDatum, TideExtreme, TideForecast, TideKind } from '../models';
 import { clamp } from '../utils/math';
 import { formatDuration, formatTime, toDate } from '../utils/time';
 
@@ -75,13 +75,27 @@ export function readTide(tide: TideForecast, at: Date): TideReading | null {
     trend,
     atExtreme,
     headline,
-    nextLabel: `${next.kind === 'pleamar' ? 'Pleamar' : 'Bajamar'} a las ${formatTime(next.time)}`,
+    // An estimate never gets an exact-sounding time.
+    nextLabel: `${next.kind === 'pleamar' ? 'Pleamar' : 'Bajamar'} ${tide.source.official ? 'a las' : 'hacia las'} ${formatTime(next.time)}`,
     untilNext: formatDuration(untilNextMs),
     previous,
     next,
     heightM,
     level: high === low ? 0.5 : clamp((heightM - low) / (high - low)),
   };
+}
+
+/**
+ * "2,4" on a chart datum; "+0,5" / "−1,1" around mean sea level, where the
+ * sign is the information.
+ */
+export function formatTideHeight(heightM: number, datum: TideDatum): string {
+  const text = Math.abs(heightM).toLocaleString('es-ES', {
+    minimumFractionDigits: 1,
+    maximumFractionDigits: 1,
+  });
+  if (datum === 'chart') return heightM < 0 ? `−${text}` : text;
+  return `${heightM < 0 ? '−' : '+'}${text}`;
 }
 
 /** Extremes that fall within [from, to). */

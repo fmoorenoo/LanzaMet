@@ -5,6 +5,7 @@ import {
   SeaSnapshot,
   SkyCondition,
   TideForecast,
+  TideSource,
   WeatherForecast,
   WeatherSnapshot,
 } from '../../core/models';
@@ -245,23 +246,31 @@ function seaAt(ctx: Context, at: Date): SeaSnapshot {
   const windSea = Math.pow(wind.speedKmh / 40, 2) * 0.6 * exposure(ctx.location, wind.fromDegrees);
   const height = (swell + windSea) * (1 + 0.06 * noise(ctx, at, 's'));
   const water = WATER_C_BY_MONTH[at.getUTCMonth()] + ctx.traits.waterOffsetC;
+  const period = Math.round(6 + s.swellM * 2.2);
+  const swellFrom = Math.round(s.swellFrom);
 
   return {
     time: at.toISOString(),
     waveHeightM: Math.round(height * 10) / 10,
-    wavePeriodS: Math.round(6 + s.swellM * 2.2),
-    swellFromDegrees: Math.round(s.swellFrom),
+    wavePeriodS: period,
+    waveFromDegrees: swell >= windSea ? swellFrom : wind.fromDegrees,
+    swell:
+      swell >= 0.1
+        ? { heightM: Math.round(swell * 10) / 10, periodS: period, fromDegrees: swellFrom }
+        : null,
     waterTemperatureC: Math.round(water * 10) / 10,
   };
 }
 
 export function simulateSea(input: SimulationInput): SeaForecast | null {
-  if (!input.location.coverage.sea) return null;
+  const point = input.location.coverage.sea;
+  if (!point) return null;
   const ctx = contextFor(input);
   const currentHour = new Date(Math.floor(input.now.getTime() / TIME.HOUR) * TIME.HOUR);
   return {
     locationId: input.location.id,
     issuedAt: currentHour.toISOString(),
+    point,
     current: seaAt(ctx, input.now),
     hourly: Array.from({ length: HOURLY_STEPS }, (_, i) => seaAt(ctx, addHours(currentHour, i))),
   };
@@ -270,12 +279,17 @@ export function simulateSea(input: SimulationInput): SeaForecast | null {
 export function simulateTides(input: SimulationInput): TideForecast | null {
   const coverage = input.location.coverage.tide;
   if (coverage.kind === 'none') return null;
+  const source: TideSource =
+    coverage.kind === 'model'
+      ? { kind: 'model', name: 'Simulación', official: false }
+      : { kind: coverage.kind, name: coverage.stationName, official: false };
   const ctx = contextFor(input);
   const from = ctx.dayZero.getTime();
   const delay = ctx.traits.tideDelayMin;
   return {
     locationId: input.location.id,
-    source: { kind: coverage.kind, stationName: coverage.stationName },
+    source,
+    datum: 'chart',
     extremes: tideExtremes(from - 7 * TIME.HOUR, from + 72 * TIME.HOUR, delay),
     series: tideSeries(from, from + 30 * TIME.HOUR, 15, delay),
   };

@@ -45,6 +45,7 @@ export interface DailyForecast {
 
 export interface WeatherForecast {
   readonly locationId: LocationId;
+  /** When this forecast was retrieved from the provider. */
   readonly issuedAt: IsoInstant;
   readonly current: WeatherSnapshot;
   /** Hourly steps starting at the current hour (≥ 24 entries). */

@@ -1,4 +1,5 @@
-import { SeaSnapshot } from '../models';
+import { SeaSnapshot, WaveComponent } from '../models';
+import { fromDirection } from './wind.insight';
 
 export type SeaLevel = 0 | 1 | 2 | 3 | 4;
 
@@ -10,8 +11,10 @@ export interface SeaReading {
   readonly phrase: string;
   /** "Olas de unos 40 cm" */
   readonly waves: string;
-  /** "Agua a 22 °C" */
-  readonly water: string;
+  /** "Agua a 22 °C", or null when the provider has no value. */
+  readonly water: string | null;
+  /** "Mar de fondo del noroeste, 1,1 m cada 11 s", or null when there is none to speak of. */
+  readonly swell: string | null;
 }
 
 const LEVELS: readonly { max: number; label: string }[] = [
@@ -35,6 +38,19 @@ export function describeWaves(waveHeightM: number): string {
   return `Olas de ${metres} m`;
 }
 
+/** Swell lower than this is not worth naming. */
+const MIN_SWELL_M = 0.2;
+
+/** "Mar de fondo del noroeste, 1,1 m cada 11 s" */
+export function describeSwell(swell: WaveComponent | null): string | null {
+  if (!swell || swell.heightM < MIN_SWELL_M) return null;
+  const metres = swell.heightM.toLocaleString('es-ES', {
+    minimumFractionDigits: 1,
+    maximumFractionDigits: 1,
+  });
+  return `Mar de fondo ${fromDirection(swell.fromDegrees)}, ${metres} m cada ${Math.round(swell.periodS)} s`;
+}
+
 export function readSea(sea: SeaSnapshot): SeaReading {
   const level = seaLevelFor(sea.waveHeightM);
   const label = LEVELS[level].label;
@@ -43,6 +59,7 @@ export function readSea(sea: SeaSnapshot): SeaReading {
     label,
     phrase: label.charAt(0).toLocaleLowerCase('es-ES') + label.slice(1),
     waves: describeWaves(sea.waveHeightM),
-    water: `Agua a ${Math.round(sea.waterTemperatureC)} °C`,
+    water: sea.waterTemperatureC === null ? null : `Agua a ${Math.round(sea.waterTemperatureC)} °C`,
+    swell: describeSwell(sea.swell),
   };
 }

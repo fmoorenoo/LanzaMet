@@ -1,6 +1,6 @@
 import { TideForecast, WeatherSnapshot } from '../models';
-import { describeWaves, readSea } from './sea.insight';
-import { readTide } from './tide.insight';
+import { describeSwell, describeWaves, readSea } from './sea.insight';
+import { formatTideHeight, readTide } from './tide.insight';
 import { beachScore, dayVerdict } from './verdict.insight';
 import { readWind, toCardinal } from './wind.insight';
 import { LOCATIONS_SEED } from '../../mocks/seed/locations.seed';
@@ -19,7 +19,8 @@ const sunnyCalm: WeatherSnapshot = {
 
 const tide: TideForecast = {
   locationId: 'arrecife',
-  source: { kind: 'station', stationName: 'Puerto de Arrecife' },
+  source: { kind: 'station', name: 'Puerto de Arrecife', official: true },
+  datum: 'chart',
   extremes: [
     { kind: 'pleamar', time: '2026-10-22T10:20:00.000Z', heightM: 2.4 },
     { kind: 'bajamar', time: '2026-10-22T16:40:00.000Z', heightM: 0.3 },
@@ -53,11 +54,21 @@ describe('sea', () => {
       time: '',
       waveHeightM: 0.2,
       wavePeriodS: 7,
-      swellFromDegrees: 330,
+      waveFromDegrees: 330,
+      swell: null,
       waterTemperatureC: 22.4,
     };
     expect(readSea(sea).label).toBe('Mar como un plato');
     expect(readSea(sea).water).toBe('Agua a 22 °C');
+    expect(readSea({ ...sea, waterTemperatureC: null }).water).toBeNull();
+  });
+
+  it('names the swell with its direction, height and period', () => {
+    expect(describeSwell({ heightM: 1.14, periodS: 11.2, fromDegrees: 340 })).toBe(
+      'Mar de fondo del norte, 1,1 m cada 11 s',
+    );
+    expect(describeSwell({ heightM: 0.1, periodS: 6, fromDegrees: 30 })).toBeNull();
+    expect(describeSwell(null)).toBeNull();
   });
 });
 
@@ -72,6 +83,22 @@ describe('tide', () => {
 
   it('calls a high tide when it is close to it', () => {
     expect(readTide(tide, new Date('2026-10-22T10:35:00Z'))?.headline).toBe('Marea alta ahora');
+  });
+
+  it('never gives an estimate an exact-sounding time', () => {
+    const estimate = {
+      ...tide,
+      source: { kind: 'model' as const, name: 'Modelo', official: false },
+    };
+    expect(readTide(estimate, new Date('2026-10-22T13:30:00Z'))?.nextLabel).toBe(
+      'Bajamar hacia las 17:40',
+    );
+  });
+
+  it('signs heights around mean sea level', () => {
+    expect(formatTideHeight(0.54, 'mean-sea-level')).toBe('+0,5');
+    expect(formatTideHeight(-1.12, 'mean-sea-level')).toBe('−1,1');
+    expect(formatTideHeight(2.4, 'chart')).toBe('2,4');
   });
 
   it('returns null outside the predicted range', () => {
@@ -91,7 +118,8 @@ describe('verdict', () => {
         time: '',
         waveHeightM: 0.3,
         wavePeriodS: 7,
-        swellFromDegrees: 330,
+        waveFromDegrees: 330,
+        swell: null,
         waterTemperatureC: 22,
       },
       dayWord: 'Hoy',

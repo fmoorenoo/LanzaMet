@@ -101,7 +101,7 @@ export class TodayPage {
         status: tides && !tide ? 'empty' : this.forecast.tides().status,
         reading: tide,
         pending: this.forecast.tides().pending,
-        source: tides?.source.stationName ?? null,
+        source: tides?.source.name ?? null,
       },
     };
 
@@ -170,7 +170,10 @@ export class TodayPage {
       sun: strongSun.length
         ? `${uv.label} de ${formatTime(strongSun[0].time)} a ${formatTime(addHours(toDate(strongSun[strongSun.length - 1].time), 1))}. Protégete.`
         : `${uv.label} el resto del día.`,
-      water: sea ? `${Math.round(sea.current.waterTemperatureC)} °C` : null,
+      water:
+        sea?.current.waterTemperatureC != null
+          ? `${Math.round(sea.current.waterTemperatureC)} °C`
+          : null,
       light: `Amanece a las ${formatTime(today.sunrise)} y anochece a las ${formatTime(today.sunset)}`,
     };
   });

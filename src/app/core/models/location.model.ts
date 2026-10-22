@@ -18,16 +18,23 @@ export interface GeoPoint {
 }
 
 /**
- * Not every place will have a tide gauge or marine model behind it once real
- * providers are wired in. Coverage is explicit so the UI can say so honestly.
+ * Where a place's tide comes from. A tide gauge or an official reference port
+ * gives predictions that can be shown as such; a numerical model only gives
+ * an estimate, and the interface has to say so.
  */
 export type TideCoverage =
   | { readonly kind: 'station'; readonly stationName: string }
   | { readonly kind: 'reference'; readonly stationName: string }
+  | { readonly kind: 'model' }
   | { readonly kind: 'none' };
 
 export interface DataCoverage {
-  readonly sea: boolean;
+  /**
+   * Open-water point the marine forecast is read at, or null when there is
+   * none. Marine models mask the cells that touch the coast, so this is the
+   * nearest sea cell on the side the place faces, not the place itself.
+   */
+  readonly sea: GeoPoint | null;
   readonly tide: TideCoverage;
 }
 
