@@ -18,7 +18,7 @@ npm run start:demo   # web con datos simulados (escenarios, hora y red ajustable
 npm test             # tests unitarios de la web (Vitest)
 npm run test:api     # tests del API (node:test, con ficheros reales de AEMET)
 npm run typecheck:api
-npm run verify:sources  # comprueba en vivo todas las fuentes para las 9 zonas
+npm run verify:sources  # comprueba en vivo todas las fuentes para las 7 zonas
 npm run lint
 npm run build        # build de producción en dist/
 ```
@@ -54,15 +54,13 @@ El tiempo se pide en las coordenadas de cada zona. Para el mar no sirve: el mode
 |---|---|---|---|---|
 | Puerto del Carmen | 28,921 / −13,668 | 28,946 / −13,681 | 28,875 / −13,625 | 7 km |
 | Arrecife | 28,963 / −13,548 | 28,983 / −13,538 ¹ | 28,875 / −13,542 | 10 km |
-| Playa Blanca | 28,863 / −13,830 | 28,876 / −13,769 ² | 28,875 / −13,792 ² | 4 km |
+| Playa Blanca | 28,863 / −13,830 | 28,876 / −13,769 | 28,875 / −13,792 | 4 km |
 | Costa Teguise | 29,001 / −13,491 | 28,983 / −13,538 ¹ | 28,958 / −13,375 | 12 km |
-| Famara | 29,116 / −13,557 | 29,120 / −13,604 ³ | 29,208 / −13,708 ³ | 18 km |
+| Famara | 29,116 / −13,557 | 29,120 / −13,604 | 29,208 / −13,708 | 18 km |
 | Órzola | 29,223 / −13,450 | 29,218 / −13,469 | 29,292 / −13,458 | 8 km |
-| La Santa | 29,112 / −13,655 | 29,120 / −13,604 ³ | 29,208 / −13,708 ³ | 12 km |
 | El Golfo | 28,979 / −13,832 | 28,952 / −13,828 | 28,958 / −13,875 | 5 km |
-| Papagayo | 28,846 / −13,787 | 28,876 / −13,769 ² | 28,875 / −13,792 ² | 3 km |
 
-¹ ² ³ Zonas que comparten celda: el modelo no las distingue y muestran los mismos valores (salvo el ajuste de temperatura por altitud). No se inventan diferencias. La pantalla Mar indica a cuántos kilómetros está el punto de mar abierto y que en la orilla las olas pueden ser distintas.
+¹ Zonas que comparten celda: el modelo no las distingue y muestran los mismos valores (salvo el ajuste de temperatura por altitud). No se inventan diferencias. Por eso, en la fase 3 se retiraron **Papagayo** y **La Santa**, que repetían las celdas de Playa Blanca y Famara: quien las tuviera guardadas como zona o favorita pasa a Playa Blanca y Famara (`RETIRED_LOCATIONS`). La pantalla Mar indica a cuántos kilómetros está el punto de mar abierto y que en la orilla las olas pueden ser distintas.
 
 ### Mareas: estimación, no tabla oficial
 
@@ -84,12 +82,12 @@ Validación del 22-10-2026 en Arrecife: el modelo adelanta 24–37 min respecto 
 
 - **Avisos**: funcionan sin clave. El API propio lee el RSS oficial de Canarias (`CAP_AFAC65_RSS.xml`, ~7 KB) y el paquete «estado completo» que enlaza (`.tar.gz`, ~8 KB, un CAP 1.2 por aviso). Se queda con los niveles amarillo, naranja y rojo de las zonas 659101 y 659101C que no hayan caducado, en español y sin cancelaciones. El navegador no puede leer esos ficheros (AEMET no envía CORS).
 - **Observaciones**: funcionan con clave, verificadas contra el API real el 22-10-2026. El API pide una a una las **7 estaciones de AEMET en Lanzarote** (OpenData solo acepta una estación por petición): C018J Tías-Las Vegas (376 m), C019V Yaiza-Playa Blanca (6 m), C029O Aeropuerto (14 m), C029R Arrecife-Granja Cabildo (108 m), C038N Haría (277 m), C048W Tinajo (275 m) y C839X La Graciosa (19 m). Cada estación ocupa ~5 KB y se procesa en ~0,3 ms; el listado nacional (`todas`) son 3,4 MB y ~270 ms, por eso no se usa. Las horas llegan en UTC (`+0000`) y el viento en m/s, que se pasa a km/h.
-- **Qué estación representa a cada zona**: solo una estación baja (≤ 150 m), a 10 km como máximo y con lectura de las últimas 3 h. Las estaciones de interior no describen la costa; Haría, por ejemplo, está detrás del Risco de Famara. Por eso Famara, La Santa y El Golfo no muestran «Medido»: mejor nada que una lectura de otro sitio. Puerto del Carmen usa el Aeropuerto; Arrecife y Costa Teguise, Granja Cabildo; Playa Blanca y Papagayo, Playa Blanca; Órzola, La Graciosa.
+- **Qué estación representa a cada zona**: solo una estación baja (≤ 150 m), a 10 km como máximo y con lectura de las últimas 3 h. Las estaciones de interior no describen la costa; Haría, por ejemplo, está detrás del Risco de Famara. Por eso Famara y El Golfo no muestran «Medido»: mejor nada que una lectura de otro sitio. Puerto del Carmen usa el Aeropuerto; Arrecife y Costa Teguise, Granja Cabildo; Playa Blanca, Playa Blanca; Órzola, La Graciosa.
 - **Clave**: gratuita en <https://opendata.aemet.es/centrodedescargas/altaUsuario>. En local va en `server/.dev.vars`, una sola línea `AEMET_API_KEY=…`. Git ignora ese archivo y lo leen tanto `npm run api` como `wrangler dev`. En producción se guarda como secreto del servidor, nunca en el frontend. `http://localhost:8787/api/salud` dice si hay clave sin revelarla.
 
 ## Caché y actualización
 
-- **Una petición por fuente para toda la isla.** Open-Meteo admite listas de coordenadas: las 9 zonas cuestan 3 peticiones (tiempo, mar con 7 puntos distintos y polvo), por muchas pantallas que las usen. Las peticiones simultáneas se comparten (`ResponseCache`).
+- **Una petición por fuente para toda la isla.** Open-Meteo admite listas de coordenadas: las 7 zonas cuestan 3 peticiones (tiempo, mar con 7 puntos distintos y polvo), por muchas pantallas que las usen. Las peticiones simultáneas se comparten (`ResponseCache`).
 - **Caducidad según el modelo**: tiempo 30 min, mar 60 min, polvo 3 h, avisos 10 min, observaciones 20 min. Las respuestas de Open-Meteo se guardan en `localStorage`, así que recargar dentro de ese plazo no pide nada.
 - **Actualización automática**: los stores se revisan cada 15 min (`ClockStore.quarterKey`) y la caché decide si eso llega a la red. «Actualizar» vuelve a pedir lo que tenga más de 1 min.
 - **API propio**: guarda cada respuesta en memoria (10–20 min). Si AEMET falla, sirve la copia anterior de hasta 2 h marcada con `stale: true`. Solo atiende rutas fijas (`/api/avisos`, `/api/observaciones`, `/api/salud`): no es un proxy abierto.
@@ -144,7 +142,7 @@ Sistema documentado en [`docs/DESIGN.md`](docs/DESIGN.md). Tokens en `src/styles
 
 - Marea solo estimada (ver arriba); no sirve para navegar ni para actividades que dependan de la hora exacta.
 - El oleaje es de mar abierto, a 3–18 km de cada zona, y no describe la rompiente en la orilla.
-- La resolución del modelo del tiempo hace que algunas zonas compartan valores (Arrecife y Costa Teguise; Famara y La Santa; Playa Blanca y Papagayo).
-- Los valores de «Ahora» son previsión del modelo para este momento, no medidas. La medida de AEMET («Medido») solo aparece donde hay una estación costera cerca, así que no en Famara, La Santa ni El Golfo.
+- La resolución del modelo del tiempo hace que algunas zonas compartan valores (Arrecife y Costa Teguise).
+- Los valores de «Ahora» son previsión del modelo para este momento, no medidas. La medida de AEMET («Medido») solo aparece donde hay una estación costera cerca, así que no en Famara ni El Golfo.
 - La calima se detecta con un umbral orientativo de polvo en superficie (100 µg/m³, CAMS a 45 km de resolución).
 - Revisión visual hecha en Chrome headless (390 y 1440 px); falta probar en dispositivos reales.

@@ -20,9 +20,7 @@ const PLACES = [
   { id: 'costa-teguise', at: [29.0005, -13.4905], sea: [28.958333, -13.375] },
   { id: 'famara', at: [29.1155, -13.5565], sea: [29.208333, -13.708333] },
   { id: 'orzola', at: [29.2228, -13.4497], sea: [29.291667, -13.458333] },
-  { id: 'la-santa', at: [29.1117, -13.6545], sea: [29.208333, -13.708333] },
   { id: 'el-golfo', at: [28.979, -13.832], sea: [28.958333, -13.875] },
-  { id: 'papagayo', at: [28.8455, -13.787], sea: [28.875, -13.791667] },
 ] as const;
 
 const COMMON = 'timezone=Atlantic%2FCanary&timeformat=unixtime';

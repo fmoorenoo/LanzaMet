@@ -1,6 +1,7 @@
 import { computed, inject, Service, signal } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { LocationSource } from '../data/data-sources';
+import { RETIRED_LOCATIONS } from '../data/locations';
 import { IslandArea, Location, LocationId } from '../models';
 import { isString, isStringArray, readStored, writeStored } from '../utils/storage';
 import { errorMessage } from './section-state';
@@ -16,6 +17,11 @@ export const AREA_LABELS: Readonly<Record<IslandArea, string>> = {
 };
 
 const AREA_ORDER: readonly IslandArea[] = ['sur', 'este', 'norte', 'oeste'];
+
+/** A place saved before it was retired from the catalogue becomes the one that replaced it. */
+const current = (id: LocationId): LocationId => RETIRED_LOCATIONS[id] ?? id;
+
+const unique = (ids: readonly LocationId[]): LocationId[] => [...new Set(ids)];
 
 export interface AreaGroup {
   readonly area: IslandArea;
@@ -38,10 +44,10 @@ export class LocationsStore {
   );
 
   private readonly selectedId = signal<LocationId>(
-    readStored('selected', isString) ?? DEFAULT_LOCATION,
+    current(readStored('selected', isString) ?? DEFAULT_LOCATION),
   );
   private readonly favoriteIds = signal<readonly LocationId[]>(
-    readStored('favorites', isStringArray) ?? DEFAULT_FAVORITES,
+    unique((readStored('favorites', isStringArray) ?? DEFAULT_FAVORITES).map(current)),
   );
 
   /** Falls back to the first known place if a stored id no longer exists. */

@@ -1,4 +1,4 @@
-import { GeoPoint, Location } from '../models';
+import { GeoPoint, Location, LocationId } from '../models';
 
 /*
  * The places the app knows. Coordinates are the town or beach itself; the
@@ -12,6 +12,10 @@ import { GeoPoint, Location } from '../models';
  * open-water cell on the side its coast faces, checked against the grid on
  * 2026-10-22. Places that share a cell get the same sea, because the model
  * cannot tell them apart.
+ *
+ * Papagayo and La Santa were dropped in phase 3: they read the same model
+ * cells as Playa Blanca and Famara, so they only repeated those forecasts.
+ * Visitors who had them saved are moved to those places (`RETIRED_LOCATIONS`).
  */
 
 /** Centres of the marine model's 1/12° cells around the island. */
@@ -105,19 +109,6 @@ export const LOCATIONS: readonly Location[] = [
     coverage: { sea: SEA.north, tide: { kind: 'model' } },
   },
   {
-    id: 'la-santa',
-    name: 'La Santa',
-    municipality: 'Tinajo',
-    area: 'oeste',
-    kind: 'pueblo',
-    summary: 'Costa de lava abierta al Atlántico, con olas de las serias.',
-    position: { latitude: 29.1117, longitude: -13.6545 },
-    facing: 'NO',
-    horizon: 'volcanes',
-    shore: 'roca',
-    coverage: { sea: SEA.northwest, tide: { kind: 'model' } },
-  },
-  {
     id: 'el-golfo',
     name: 'El Golfo',
     municipality: 'Yaiza',
@@ -130,17 +121,10 @@ export const LOCATIONS: readonly Location[] = [
     shore: 'arena-negra',
     coverage: { sea: SEA.west, tide: { kind: 'model' } },
   },
-  {
-    id: 'papagayo',
-    name: 'Papagayo',
-    municipality: 'Yaiza',
-    area: 'sur',
-    kind: 'playa',
-    summary: 'Calas doradas entre acantilados, dentro de un espacio protegido.',
-    position: { latitude: 28.8455, longitude: -13.787 },
-    facing: 'S',
-    horizon: 'fuerteventura',
-    shore: 'arena-dorada',
-    coverage: { sea: SEA.bocaina, tide: { kind: 'model' } },
-  },
 ];
+
+/** Places no longer in the catalogue, and the one that now stands for each. */
+export const RETIRED_LOCATIONS: Readonly<Record<string, LocationId>> = {
+  papagayo: 'playa-blanca',
+  'la-santa': 'famara',
+};

@@ -47,14 +47,12 @@ describe('representative observation', () => {
     expect(pick('arrecife')).toBe('C029R');
     expect(pick('costa-teguise')).toBe('C029R');
     expect(pick('playa-blanca')).toBe('C019V');
-    expect(pick('papagayo')).toBe('C019V');
     expect(pick('orzola')).toBe('C839X');
   });
 
   it('says nothing rather than borrowing a station from the hills or the far side', () => {
     // Haría (277 m) sits behind the Risco; Tinajo is 275 m up; the rest are over 10 km away.
     expect(pick('famara')).toBeNull();
-    expect(pick('la-santa')).toBeNull();
     expect(pick('el-golfo')).toBeNull();
   });
 

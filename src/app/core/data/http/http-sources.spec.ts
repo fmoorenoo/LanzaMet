@@ -51,7 +51,9 @@ describe('Open-Meteo sources', () => {
     const dust = http.expectOne((r) => r.url.startsWith('https://air-quality-api.open-meteo.com/'));
     expect(forecast.request.url).toContain('timezone=Atlantic%2FCanary');
     expect(forecast.request.url).toContain('timeformat=unixtime');
-    expect(forecast.request.url.split('latitude=')[1].split('&')[0].split('%2C').length).toBe(9);
+    expect(forecast.request.url.split('latitude=')[1].split('&')[0].split('%2C').length).toBe(
+      LOCATIONS.length,
+    );
     forecast.flush(forEveryPlace(forecastFixture));
     dust.flush(forEveryPlace(dustFixture));
 
@@ -125,7 +127,7 @@ describe('Open-Meteo sources', () => {
   it('asks the sea once per distinct sea point and shares it with the tide', async () => {
     const marine = TestBed.inject(MarineSource);
     const both = firstValueFrom(
-      forkJoin([marine.sea('famara'), marine.sea('la-santa'), marine.tides('arrecife')]),
+      forkJoin([marine.sea('famara'), marine.sea('el-golfo'), marine.tides('arrecife')]),
     );
     const request = http.expectOne((r) => r.url.startsWith('https://marine-api.open-meteo.com/'));
     const points = request.request.url.split('latitude=')[1].split('&')[0].split('%2C');
@@ -134,9 +136,10 @@ describe('Open-Meteo sources', () => {
     expect(request.request.url).toContain('past_days=1');
     request.flush(points.map(() => marineFixture));
 
-    const [famara, laSanta, tide] = await both;
-    // Famara and La Santa read the same model cell, so they get the same sea.
-    expect(famara?.current).toEqual(laSanta?.current);
+    const [famara, golfo, tide] = await both;
+    // Every place reads its own open-water cell, from that single response.
+    expect(famara?.point).toBeDefined();
+    expect(golfo?.point).toBeDefined();
     expect(tide?.source.official).toBe(false);
   });
 });

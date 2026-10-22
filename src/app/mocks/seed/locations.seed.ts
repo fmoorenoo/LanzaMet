@@ -13,7 +13,7 @@ const reference: DataCoverage['tide'] = { kind: 'reference', stationName: ARRECI
 
 const DEMO_COVERAGE: Readonly<Record<LocationId, Partial<DataCoverage>>> = {
   arrecife: { tide: { kind: 'station', stationName: ARRECIFE_PORT } },
-  'la-santa': { tide: { kind: 'none' } },
+  orzola: { tide: { kind: 'none' } },
   'el-golfo': { sea: null, tide: { kind: 'none' } },
 };
 
@@ -84,14 +84,6 @@ export const CLIMATE_TRAITS: Readonly<Record<LocationId, ClimateTraits>> = {
     tideDelayMin: 6,
     waterOffsetC: -0.5,
   },
-  'la-santa': {
-    windFactor: 1.05,
-    cloudiness: 0.2,
-    temperatureOffsetC: -0.8,
-    swellFactor: 1.3,
-    tideDelayMin: 16,
-    waterOffsetC: -0.4,
-  },
   'el-golfo': {
     windFactor: 1,
     cloudiness: 0.06,
@@ -99,13 +91,5 @@ export const CLIMATE_TRAITS: Readonly<Record<LocationId, ClimateTraits>> = {
     swellFactor: 1.1,
     tideDelayMin: 18,
     waterOffsetC: 0.1,
-  },
-  papagayo: {
-    windFactor: 0.9,
-    cloudiness: 0.02,
-    temperatureOffsetC: 0.7,
-    swellFactor: 0.85,
-    tideDelayMin: 8,
-    waterOffsetC: 0.4,
   },
 };

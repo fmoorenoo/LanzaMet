@@ -109,10 +109,8 @@ export const ISLAND_PATHS = {
 export const LABEL_SIDE: Readonly<Record<string, 'left' | 'right' | 'below' | 'above'>> = {
   orzola: 'left',
   famara: 'right',
-  'la-santa': 'left',
   'el-golfo': 'left',
   'playa-blanca': 'left',
-  papagayo: 'right',
   'puerto-del-carmen': 'left',
   arrecife: 'below',
   'costa-teguise': 'right',

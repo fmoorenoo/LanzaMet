@@ -35,7 +35,7 @@ describe('simulator', () => {
 
   it('respects missing coverage', () => {
     expect(simulateSea({ location: byId('el-golfo'), scenario: 'alisio', now })).toBeNull();
-    expect(simulateTides({ location: byId('la-santa'), scenario: 'alisio', now })).toBeNull();
+    expect(simulateTides({ location: byId('orzola'), scenario: 'alisio', now })).toBeNull();
   });
 
   it('alternates highs and lows about six hours apart', () => {

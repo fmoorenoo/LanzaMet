@@ -12,7 +12,7 @@ export interface Recommendation {
   readonly id: string;
   readonly kind: PlanKind;
   readonly locationId: LocationId;
-  /** Short, plain-language headline: "Playa en Papagayo". */
+  /** Short, plain-language headline: "Playa en Playa Blanca". */
   readonly title: string;
   /** Why, in one sentence. */
   readonly reason: string;
