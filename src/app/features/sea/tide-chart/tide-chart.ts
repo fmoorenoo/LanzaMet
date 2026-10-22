@@ -1,7 +1,9 @@
 import { Component, computed, input } from '@angular/core';
 import { TideForecast } from '../../../core/models';
-import { formatTideHeight } from '../../../core/insights/tide.insight';
-import { formatTime, TIME, toDate } from '../../../core/utils/time';
+import { msg } from '../../../core/i18n/i18n.model';
+import { TranslatePipe } from '../../../core/i18n/t.pipe';
+import { tideHeight } from '../../../core/insights/tide.insight';
+import { TIME, toDate } from '../../../core/utils/time';
 
 const W = 1000;
 const H = 300;
@@ -16,6 +18,7 @@ const TOP = 72;
  */
 @Component({
   selector: 'qth-tide-chart',
+  imports: [TranslatePipe],
   templateUrl: './tide-chart.html',
   styleUrl: './tide-chart.scss',
   host: { class: 'tide-chart' },
@@ -106,8 +109,9 @@ export class TideChart {
       })
       .map((e) => ({
         kind: e.kind,
-        time: formatTime(e.time),
-        height: formatTideHeight(e.heightM, this.tide().datum),
+        name: msg(`tide.kind.${e.kind}`),
+        time: e.time,
+        height: tideHeight(e.heightM, this.tide().datum),
         left: (this.x(toDate(e.time)) / W) * 100,
         top: (this.y(e.heightM) / H) * 100,
       }));

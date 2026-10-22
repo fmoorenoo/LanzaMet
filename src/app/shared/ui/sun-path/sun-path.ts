@@ -1,6 +1,9 @@
-import { Component, computed, input } from '@angular/core';
+import { Component, computed, inject, input } from '@angular/core';
+import { msg } from '../../../core/i18n/i18n.model';
+import { I18n } from '../../../core/i18n/i18n.store';
+import { TranslatePipe } from '../../../core/i18n/t.pipe';
 import { DaylightReading } from '../../../core/insights/sun.insight';
-import { formatDuration, formatTime } from '../../../core/utils/time';
+import { formatTime } from '../../../core/utils/time';
 import { Icon } from '../icon/icon';
 
 // The sun's path: half an ellipse standing on the horizon.
@@ -23,12 +26,12 @@ const fixed = (n: number) => n.toFixed(1);
  */
 @Component({
   selector: 'qth-sun-path',
-  imports: [Icon],
+  imports: [Icon, TranslatePipe],
   template: `
     @if (view(); as v) {
       <div class="sun-row">
         <p class="sun-time" data-event="sunrise">
-          <span class="sun-label"><qth-icon name="sunrise" />Amanecer</span>
+          <span class="sun-label"><qth-icon name="sunrise" />{{ 'sun.sunrise' | t }}</span>
           <time class="sun-clock t-num" [attr.datetime]="v.sunriseIso">{{ v.sunrise }}</time>
         </p>
 
@@ -47,25 +50,26 @@ const fixed = (n: number) => n.toFixed(1);
         </svg>
 
         <p class="sun-time" data-event="sunset">
-          <span class="sun-label">Atardecer<qth-icon name="sunset" /></span>
+          <span class="sun-label">{{ 'sun.sunset' | t }}<qth-icon name="sunset" /></span>
           <time class="sun-clock t-num" [attr.datetime]="v.sunsetIso">{{ v.sunset }}</time>
         </p>
       </div>
 
       <p class="sun-status">
-        {{ v.status }}<span class="sun-length"> · {{ v.dayLength }} de luz</span>
+        {{ v.status | t
+        }}<span class="sun-length"> · {{ 'sun.dayLength' | t: { duration: v.dayLength } }}</span>
       </p>
     } @else {
       <p class="sun-missing">
         <qth-icon name="sunset" />
-        Hoy no tenemos la hora de amanecer ni de atardecer para esta zona.
+        {{ 'sun.missing' | t }}
       </p>
     }
   `,
   host: {
     class: 'sun-path',
     role: 'group',
-    'aria-label': 'Amanecer y atardecer',
+    '[attr.aria-label]': 'label()',
     '[attr.data-phase]': 'reading()?.phase ?? "unknown"',
   },
   styles: `
@@ -200,6 +204,9 @@ const fixed = (n: number) => n.toFixed(1);
 export class SunPath {
   readonly reading = input<DaylightReading | null>(null);
 
+  private readonly i18n = inject(I18n);
+  protected readonly label = computed(() => this.i18n.t('sun.label'));
+
   protected readonly base = BASE;
   protected readonly track = `${START}A${RX} ${RY} 0 0 1 ${CX + RX} ${BASE}`;
 
@@ -220,13 +227,13 @@ export class SunPath {
       sun: r.phase === 'day' ? `translate(${fixed(point.x)}px, ${fixed(point.y)}px)` : null,
       status:
         r.phase === 'before-sunrise'
-          ? `Amanece dentro de ${formatDuration(r.untilMs)}`
+          ? msg('sun.untilSunrise', { duration: { duration: r.untilMs } })
           : r.phase === 'day'
-            ? `Quedan ${formatDuration(r.untilMs)} de sol`
+            ? msg('sun.untilSunset', { duration: { duration: r.untilMs } })
             : r.nextSunrise
-              ? `Mañana amanece a las ${formatTime(r.nextSunrise)}`
-              : 'El sol ya se ha puesto',
-      dayLength: formatDuration(r.dayLengthMs),
+              ? msg('sun.tomorrow', { time: { time: r.nextSunrise } })
+              : msg('sun.down'),
+      dayLength: { duration: r.dayLengthMs },
     };
   });
 }

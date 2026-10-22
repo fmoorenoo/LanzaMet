@@ -1,5 +1,6 @@
 import { Component, computed, inject } from '@angular/core';
 import { DATA_MODE } from '../../core/data/http/data-config';
+import { TranslatePipe } from '../../core/i18n/t.pipe';
 import { IslandStore } from '../../core/state/island.store';
 import { PlanItem } from '../../shared/plans/plan-item';
 import { DataCredit } from '../../shared/ui/data-credit/data-credit';
@@ -9,18 +10,12 @@ import { StatusMessage } from '../../shared/ui/status-message/status-message';
 @Component({
   selector: 'qth-plans-page',
   host: { id: 'plans-page', class: 'page plans-page' },
-  imports: [PlanItem, StatusMessage, DataCredit],
+  imports: [PlanItem, StatusMessage, DataCredit, TranslatePipe],
   template: `
     <header id="plans-header" class="page-head page-header">
-      <h1 class="t-display">¿Dónde ir hoy?</h1>
+      <h1 class="t-display">{{ 'route.plans' | t }}</h1>
       <p class="t-lead t-muted lead">
-        @if (isDemo) {
-          Sugerencias según el tiempo de cada zona. En esta versión son ejemplos con datos
-          ficticios.
-        } @else {
-          Sugerencias según la previsión de cada zona. Son orientativas, no una garantía: en el mar,
-          haz caso a las banderas y a los socorristas.
-        }
+        {{ (isDemo ? 'plans.leadDemo' : 'plans.lead') | t }}
       </p>
     </header>
 
@@ -31,7 +26,7 @@ import { StatusMessage } from '../../shared/ui/status-message/status-message';
             <qth-plan-item id="lead-plan" class="enter-settle" [plan]="first" variant="lead" />
             @if (rest().length > 0) {
               <section id="more-plans" class="more" aria-labelledby="more-title">
-                <h2 id="more-title" class="t-title">Más ideas</h2>
+                <h2 id="more-title" class="t-title">{{ 'plans.more' | t }}</h2>
                 <ul class="list plan-list">
                   @for (plan of rest(); track plan.id; let i = $index) {
                     <li class="enter-rise" [style.--i]="i + 1">
@@ -42,23 +37,20 @@ import { StatusMessage } from '../../shared/ui/status-message/status-message';
               </section>
             }
           } @else {
-            <qth-status-message
-              title="Hoy no hay un plan claro"
-              text="El tiempo no acompaña en ninguna zona. Echa un vistazo a los próximos días."
-            />
+            <qth-status-message [title]="'today.noPlan' | t" [text]="'today.noPlan.text' | t" />
           }
         }
         @case ('error') {
           <qth-status-message
             tone="error"
-            title="No hemos podido comparar las zonas"
-            [text]="island.zones().error"
-            actionLabel="Reintentar"
+            [title]="'today.compareFailed' | t"
+            [text]="island.zones().error | t"
+            [actionLabel]="'common.retry' | t"
             (action)="island.retry()"
           />
         }
         @default {
-          <div class="skeleton lead-skeleton" aria-label="Cargando sugerencias"></div>
+          <div class="skeleton lead-skeleton" [attr.aria-label]="'plans.loading' | t"></div>
         }
       }
 

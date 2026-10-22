@@ -2,6 +2,7 @@ import { inject, Service, untracked } from '@angular/core';
 import { map, Observable, of } from 'rxjs';
 import { Location, LocationId, SeaForecast, TideForecast, WeatherForecast } from '../../models';
 import { ClockStore } from '../../state/clock.store';
+import { msg } from '../../i18n/i18n.model';
 import { DataSourceError, LocationSource, MarineSource, WeatherSource } from '../data-sources';
 import { IslandSea, OpenMeteoClient, samePoint } from './open-meteo.client';
 import { toSeaForecast, toTideForecast, toWeatherForecast } from './open-meteo.mappers';
@@ -22,7 +23,7 @@ export class CatalogueLocationSource extends LocationSource {
 
 function placeIndex(locations: readonly Location[], id: LocationId): number {
   const index = locations.findIndex((l) => l.id === id);
-  if (index === -1) throw new DataSourceError('No tenemos datos de esa zona.', false);
+  if (index === -1) throw new DataSourceError(msg('error.unknownPlace'), false);
   return index;
 }
 

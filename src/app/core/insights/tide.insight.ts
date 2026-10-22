@@ -1,6 +1,7 @@
+import { Formatted, msg, Msg } from '../i18n/i18n.model';
 import { TideDatum, TideExtreme, TideForecast, TideKind } from '../models';
 import { clamp } from '../utils/math';
-import { formatDuration, formatTime, toDate } from '../utils/time';
+import { toDate } from '../utils/time';
 
 export type TideTrend = 'subiendo' | 'bajando';
 
@@ -9,11 +10,11 @@ export interface TideReading {
   /** Set when within ~40 minutes of a high or low. */
   readonly atExtreme: TideKind | null;
   /** "La marea está bajando" */
-  readonly headline: string;
+  readonly headline: Msg;
   /** "Bajamar a las 16:40" */
-  readonly nextLabel: string;
-  /** "2 h 10 min" */
-  readonly untilNext: string;
+  readonly nextLabel: Msg;
+  /** Until the next high or low, formatted as "2 h 10 min". */
+  readonly untilNext: Formatted;
   readonly previous: TideExtreme;
   readonly next: TideExtreme;
   readonly heightM: number;
@@ -64,20 +65,18 @@ export function readTide(tide: TideForecast, at: Date): TideReading | null {
   const low = Math.min(previous.heightM, next.heightM);
   const high = Math.max(previous.heightM, next.heightM);
 
-  const headline =
-    atExtreme === 'pleamar'
-      ? 'Marea alta ahora'
-      : atExtreme === 'bajamar'
-        ? 'Marea baja ahora'
-        : `La marea está ${trend}`;
+  const headline = atExtreme ? msg(`tide.now.${atExtreme}`) : msg(`tide.${trend}`);
 
   return {
     trend,
     atExtreme,
     headline,
     // An estimate never gets an exact-sounding time.
-    nextLabel: `${next.kind === 'pleamar' ? 'Pleamar' : 'Bajamar'} ${tide.source.official ? 'a las' : 'hacia las'} ${formatTime(next.time)}`,
-    untilNext: formatDuration(untilNextMs),
+    nextLabel: msg(tide.source.official ? 'tide.next.at' : 'tide.next.around', {
+      kind: msg(`tide.kind.${next.kind}`),
+      time: { time: next.time },
+    }),
+    untilNext: { duration: untilNextMs },
     previous,
     next,
     heightM,
@@ -89,13 +88,10 @@ export function readTide(tide: TideForecast, at: Date): TideReading | null {
  * "2,4" on a chart datum; "+0,5" / "−1,1" around mean sea level, where the
  * sign is the information.
  */
-export function formatTideHeight(heightM: number, datum: TideDatum): string {
-  const text = Math.abs(heightM).toLocaleString('es-ES', {
-    minimumFractionDigits: 1,
-    maximumFractionDigits: 1,
+export function tideHeight(heightM: number, datum: TideDatum): Msg {
+  return msg('common.metres', {
+    value: { decimal: heightM, digits: 1, sign: datum === 'chart' ? 'negative' : 'always' },
   });
-  if (datum === 'chart') return heightM < 0 ? `−${text}` : text;
-  return `${heightM < 0 ? '−' : '+'}${text}`;
 }
 
 /** Extremes that fall within [from, to). */

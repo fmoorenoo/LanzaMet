@@ -1,7 +1,7 @@
-<nav id="main-navigation" class="bar main-navigation" aria-label="Principal">
-  <a id="brand-link" class="brand brand-link" routerLink="/" aria-label="¿Qué tal hoy? — Inicio">
+<nav id="main-navigation" class="bar main-navigation" [attr.aria-label]="'nav.label' | t">
+  <a id="brand-link" class="brand brand-link" routerLink="/" [attr.aria-label]="'app.home' | t">
     <qth-brand-mark />
-    <span class="brand-name">¿Qué tal hoy?</span>
+    <span class="brand-name">{{ 'app.brand' | t }}</span>
   </a>
 
   <div class="tabs-wrap">
@@ -25,7 +25,7 @@
             [routerLinkActiveOptions]="{ exact: item.path === '/' }"
           >
             <qth-icon class="tab-icon" [name]="item.icon" />
-            <span class="tab-label">{{ item.label }}</span>
+            <span class="tab-label">{{ item.label | t }}</span>
           </a>
         </li>
       }
@@ -39,6 +39,6 @@
     (click)="ui.openSettings()"
   >
     <qth-icon name="sliders" />
-    <span>{{ isDemo ? 'Ajustes y demo' : 'Ajustes' }}</span>
+    <span>{{ (isDemo ? 'nav.settingsDemo' : 'nav.settings') | t }}</span>
   </button>
 </nav>

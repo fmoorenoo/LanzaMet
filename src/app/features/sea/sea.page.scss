@@ -144,7 +144,6 @@
   padding-inline: var(--s-1);
 
   qth-icon {
-    flex: none;
     width: var(--icon-xs);
     height: var(--icon-xs);
     margin-top: 0.1em;
@@ -201,7 +200,7 @@ qth-warning-banner,
     color: var(--c-ink-3);
 
     qth-icon {
-      color: var(--c-ink-3);
+      color: inherit;
     }
   }
 }

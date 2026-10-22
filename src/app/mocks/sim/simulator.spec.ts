@@ -1,3 +1,4 @@
+import { translate } from '../../core/i18n/translate';
 import { buildRecommendations } from '../../core/insights/recommendations.insight';
 import { ZoneConditions } from '../../core/models';
 import { LOCATIONS_SEED } from '../seed/locations.seed';
@@ -74,7 +75,10 @@ describe('recommendations', () => {
     expect(warned.map((r) => r.kind)).not.toContain('mar-calmo');
     expect(warned.map((r) => r.kind)).not.toContain('olas');
     const beach = warned.find((r) => r.kind === 'playa');
-    if (beach) expect(beach.reason).toContain('aviso costero');
+    if (beach) {
+      expect(translate(beach.reason, 'es')).toContain('aviso costero');
+      expect(translate(beach.reason, 'en')).toContain('coastal warning');
+    }
   });
 
   it('has nothing to suggest without data', () => {

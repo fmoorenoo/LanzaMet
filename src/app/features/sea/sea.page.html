@@ -10,9 +10,9 @@
     (click)="ui.openLocationPicker()"
   >
     <qth-icon name="pin" />
-    {{ place?.name ?? 'Lanzarote' }}
+    {{ place?.name ?? ('common.lanzarote' | t) }}
     <qth-icon name="chevron-down" />
-    <span class="visually-hidden">: cambiar de zona</span>
+    <span class="visually-hidden">{{ 'common.changePlace' | t }}</span>
   </button>
 
   <div class="head-row">
@@ -24,16 +24,18 @@
       @switch (tides.status) {
         @case ('ready') {
           @if (reading(); as tide) {
-            <h1 class="t-display">{{ tide.headline }}</h1>
-            <p class="t-lead t-muted">{{ tide.nextLabel }}, dentro de {{ tide.untilNext }}.</p>
+            <h1 class="t-display">{{ tide.headline | t }}</h1>
+            <p class="t-lead t-muted">
+              {{ 'seaPage.next' | t: { next: tide.nextLabel, until: tide.untilNext } }}
+            </p>
           }
         }
         @case ('empty') {
-          <h1 class="t-display">Sin datos de marea en {{ place?.name }}</h1>
-          <p class="t-lead t-muted">No hay previsión ni estimación de marea para esta zona.</p>
+          <h1 class="t-display">{{ 'seaPage.noTide.title' | t: { place: place?.name ?? '' } }}</h1>
+          <p class="t-lead t-muted">{{ 'seaPage.noTide.text' | t }}</p>
         }
         @case ('error') {
-          <h1 class="t-display">La marea, sin datos ahora</h1>
+          <h1 class="t-display">{{ 'seaPage.tideError' | t }}</h1>
         }
         @default {
           <span class="skeleton title-skeleton"></span>
@@ -73,7 +75,7 @@
           class="panel tide-visualization"
           aria-labelledby="curve-title"
         >
-          <h2 id="curve-title" class="t-title">La marea de hoy</h2>
+          <h2 id="curve-title" class="t-title">{{ 'seaPage.curve' | t }}</h2>
           <!-- Without sun times the curve is still drawn, just without the night shaded. -->
           <qth-tide-chart
             [tide]="data"
@@ -84,18 +86,20 @@
           />
           <p id="tide-source" class="source t-micro t-faint">
             <qth-icon name="info" />
-            {{ tideSource() }}
+            @for (part of tideSource(); track $index) {
+              {{ part | t }}
+            }
           </p>
         </section>
 
         <section id="tide-extremes" class="block tide-extremes" aria-labelledby="extremes-title">
           <h2 id="extremes-title" class="t-title">
-            Pleamares y bajamares{{ data.source.official ? '' : ' (estimadas)' }}
+            {{ (data.source.official ? 'seaPage.extremes' : 'seaPage.extremesEstimated') | t }}
           </h2>
           <div class="days">
-            @for (day of days(); track day.label) {
+            @for (day of days(); track day.id) {
               <div class="day tide-day">
-                <h3 class="day-label">{{ day.label }}</h3>
+                <h3 class="day-label">{{ day.label | t }}</h3>
                 <ul class="extremes">
                   @for (e of day.extremes; track e.time) {
                     <li
@@ -104,11 +108,11 @@
                       [attr.data-tide]="e.kind === 'pleamar' ? 'high' : 'low'"
                     >
                       <qth-icon [name]="e.kind === 'pleamar' ? 'tide-up' : 'tide-down'" />
-                      <span class="extreme-kind">{{
-                        e.kind === 'pleamar' ? 'Pleamar' : 'Bajamar'
+                      <span class="extreme-kind">{{ e.name | t }}</span>
+                      <span class="extreme-time t-num">{{
+                        'common.value' | t: { value: { time: e.time } }
                       }}</span>
-                      <span class="extreme-time t-num">{{ e.time }}</span>
-                      <span class="extreme-height t-num">{{ e.height }} m</span>
+                      <span class="extreme-height t-num">{{ e.height | t }}</span>
                     </li>
                   }
                 </ul>
@@ -121,13 +125,17 @@
     @case ('empty') {
       <section class="block">
         <qth-status-message
-          title="Esta zona no tiene previsión de mareas"
+          [title]="'seaPage.noTideHere' | t"
           [text]="
             nearestWithTide()
-              ? 'La más cercana con datos es ' + nearestWithTide()?.name + '.'
+              ? ('seaPage.nearest' | t: { place: nearestWithTide()?.name ?? '' })
               : null
           "
-          [actionLabel]="nearestWithTide() ? 'Ver la marea en ' + nearestWithTide()?.name : null"
+          [actionLabel]="
+            nearestWithTide()
+              ? ('seaPage.goNearest' | t: { place: nearestWithTide()?.name ?? '' })
+              : null
+          "
           icon="waves"
           (action)="goToNearest()"
         />
@@ -137,9 +145,9 @@
       <section class="block">
         <qth-status-message
           tone="error"
-          title="No hemos podido cargar la marea"
-          [text]="tides.error"
-          actionLabel="Reintentar"
+          [title]="'seaPage.tideLoadError' | t"
+          [text]="tides.error | t"
+          [actionLabel]="'common.retry' | t"
           (action)="forecast.retry()"
         />
       </section>
@@ -150,36 +158,37 @@
   }
 
   <section id="sea-state" class="block sea-state-section" aria-labelledby="sea-title">
-    <h2 id="sea-title" class="t-title">El mar en {{ place?.name }}</h2>
+    <h2 id="sea-title" class="t-title">
+      {{ 'seaPage.seaTitle' | t: { place: place?.name ?? '' } }}
+    </h2>
     @if (sea(); as s) {
       <p class="sea-state">
-        <span class="t-strong">{{ s.label }}.</span>
-        {{ s.waves }}.
+        <span class="t-strong">{{ s.label | t }}.</span>
+        {{ s.waves | t }}.
         @if (s.swell) {
-          {{ s.swell }}.
+          {{ s.swell | t }}.
         }
         @if (s.water) {
-          {{ s.water }}.
+          {{ s.water | t }}.
         }
       </p>
       @if (s.offshoreKm !== null) {
         <p class="source t-micro t-faint">
           <qth-icon name="info" />
-          Previsión del modelo en mar abierto, a unos {{ s.offshoreKm }} km de la zona. En la orilla
-          las olas pueden ser distintas.
+          {{ 'seaPage.offshore' | t: { km: s.offshoreKm } }}
         </p>
       }
     } @else if (forecast.sea().status === 'empty') {
       <qth-status-message
-        title="Sin previsión del mar"
-        text="El modelo marítimo no tiene datos para esta zona."
+        [title]="'seaPage.seaNone' | t"
+        [text]="'seaPage.seaNone.text' | t"
         icon="waves"
       />
     } @else if (forecast.sea().status === 'error') {
       <qth-status-message
         tone="error"
-        title="No hemos podido cargar el estado del mar"
-        actionLabel="Reintentar"
+        [title]="'seaPage.seaError' | t"
+        [actionLabel]="'common.retry' | t"
         (action)="forecast.retry()"
       />
     } @else {
@@ -188,7 +197,7 @@
   </section>
 
   <section id="calmest-sea" class="block calmest-sea" aria-labelledby="calm-title">
-    <h2 id="calm-title" class="t-title">Dónde está el mar más tranquilo</h2>
+    <h2 id="calm-title" class="t-title">{{ 'seaPage.calmest' | t }}</h2>
     @if (calmest().length > 0) {
       <ol class="calm calm-sea-list">
         @for (zone of calmest(); track zone.id; let i = $index) {
@@ -205,7 +214,7 @@
               </svg>
               <span class="calm-text">
                 <span class="calm-name">{{ zone.name }}</span>
-                <span class="calm-sub">{{ zone.label }} · {{ zone.waves }}</span>
+                <span class="calm-sub">{{ zone.label | t }} · {{ zone.waves | t }}</span>
               </span>
               <qth-icon class="chevron" name="chevron-right" />
             </button>
@@ -215,8 +224,8 @@
     } @else if (island.zones().status === 'error') {
       <qth-status-message
         tone="error"
-        title="No hemos podido comparar las zonas"
-        actionLabel="Reintentar"
+        [title]="'today.compareFailed' | t"
+        [actionLabel]="'common.retry' | t"
         (action)="island.retry()"
       />
     } @else {

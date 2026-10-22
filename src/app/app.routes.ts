@@ -1,26 +1,28 @@
 import { Routes } from '@angular/router';
+import { MessageKey } from './core/i18n/i18n.model';
 
-const BRAND = '¿Qué tal hoy?';
+/** Titles are message keys; I18nTitleStrategy writes them in the visitor's language. */
+const title = (key: MessageKey) => key;
 
 export const routes: Routes = [
   {
     path: '',
-    title: `Hoy en Lanzarote · ${BRAND}`,
+    title: title('route.today'),
     loadComponent: () => import('./features/today/today.page').then((m) => m.TodayPage),
   },
   {
     path: 'zonas',
-    title: `Zonas · ${BRAND}`,
+    title: title('route.zones'),
     loadComponent: () => import('./features/zones/zones.page').then((m) => m.ZonesPage),
   },
   {
     path: 'mar',
-    title: `Mar y mareas · ${BRAND}`,
+    title: title('route.sea'),
     loadComponent: () => import('./features/sea/sea.page').then((m) => m.SeaPage),
   },
   {
     path: 'donde-ir',
-    title: `¿Dónde ir hoy? · ${BRAND}`,
+    title: title('route.plans'),
     loadComponent: () => import('./features/plans/plans.page').then((m) => m.PlansPage),
   },
   { path: '**', redirectTo: '' },

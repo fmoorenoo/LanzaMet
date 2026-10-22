@@ -33,7 +33,10 @@
       [style.left.%]="marker.left"
       [style.top.%]="marker.top"
       [attr.aria-pressed]="marker.id === selectedId()"
-      [attr.aria-label]="marker.name + ': ' + marker.temperature + ' grados, ' + marker.headline"
+      [attr.aria-label]="
+        'zones.marker'
+          | t: { name: marker.name, temp: marker.temperature, headline: marker.headline }
+      "
       (click)="pick.emit(marker.id)"
     >
       <span class="dot" aria-hidden="true"></span>

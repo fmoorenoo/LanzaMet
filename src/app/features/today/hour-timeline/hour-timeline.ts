@@ -1,14 +1,12 @@
-import { Component, computed, ElementRef, input, model, viewChildren } from '@angular/core';
+import { Component, computed, ElementRef, inject, input, model, viewChildren } from '@angular/core';
 import { skyPhrase } from '../../../core/insights/sky.insight';
 import { readWind } from '../../../core/insights/wind.insight';
 import { WeatherSnapshot } from '../../../core/models';
-import {
-  formatHourShort,
-  formatTime,
-  formatWeekdayShort,
-  islandDateKey,
-  toDate,
-} from '../../../core/utils/time';
+import { msg } from '../../../core/i18n/i18n.model';
+import { I18n } from '../../../core/i18n/i18n.store';
+import { hourLabel } from '../../../core/i18n/phrases';
+import { TranslatePipe } from '../../../core/i18n/t.pipe';
+import { islandDateKey, toDate } from '../../../core/utils/time';
 import { HorizontalScroll } from '../../../shared/ui/horizontal-scroll/horizontal-scroll';
 import { ScrollControls } from '../../../shared/ui/horizontal-scroll/scroll-controls';
 import { SkyGlyph } from '../../../shared/ui/sky-glyph/sky-glyph';
@@ -23,7 +21,7 @@ const CURVE_RANGE = 26;
  */
 @Component({
   selector: 'qth-hour-timeline',
-  imports: [SkyGlyph, HorizontalScroll, ScrollControls],
+  imports: [SkyGlyph, HorizontalScroll, ScrollControls, TranslatePipe],
   templateUrl: './hour-timeline.html',
   styleUrl: './hour-timeline.scss',
   host: { class: 'hour-timeline' },
@@ -34,6 +32,7 @@ export class HourTimeline {
   readonly selected = model<number | null>(null);
 
   private readonly buttons = viewChildren<ElementRef<HTMLButtonElement>>('cell');
+  private readonly i18n = inject(I18n);
 
   private readonly range = computed(() => {
     const temps = this.hours().map((h) => h.temperatureC);
@@ -55,15 +54,20 @@ export class HourTimeline {
       return {
         index: i,
         time: hour.time,
-        label: i === 0 ? 'Ahora' : formatHourShort(date),
-        dayMark: newDay ? formatWeekdayShort(date) : null,
+        label: i === 0 ? msg('common.now') : hourLabel(date),
+        dayMark: newDay ? msg('common.value', { value: { weekday: date, style: 'short' } }) : null,
         temperature,
         sky: hour.sky,
         isDaylight: hour.isDaylight,
         windLevel: wind.level,
         windScale: 0.2 + wind.strength * 0.8,
         y: this.y(hour.temperatureC),
-        ariaLabel: `${i === 0 ? 'Ahora' : formatTime(date)}: ${skyPhrase(hour.sky, hour.isDaylight)}, ${temperature} grados, ${wind.phrase}`,
+        ariaLabel: this.i18n.t('hours.cell', {
+          time: i === 0 ? msg('common.now') : { time: date },
+          sky: skyPhrase(hour.sky, hour.isDaylight),
+          temp: temperature,
+          wind: wind.phrase,
+        }),
       };
     }),
   );

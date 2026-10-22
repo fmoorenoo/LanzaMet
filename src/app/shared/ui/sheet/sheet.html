@@ -20,7 +20,7 @@
           type="button"
           class="icon-btn sheet-close-button"
           (click)="close()"
-          aria-label="Cerrar"
+          [attr.aria-label]="'common.close' | t"
         >
           <qth-icon name="close" />
         </button>

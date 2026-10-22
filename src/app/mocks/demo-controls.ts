@@ -1,4 +1,5 @@
 import { Component, computed, inject, signal } from '@angular/core';
+import { TranslatePipe } from '../core/i18n/t.pipe';
 import { ClockStore } from '../core/state/clock.store';
 import { ForecastStore } from '../core/state/forecast.store';
 import { islandHour, toDate } from '../core/utils/time';
@@ -14,14 +15,12 @@ type TimeOption = 'ahora' | 'amanecer' | 'mediodia' | 'atardecer' | 'noche';
  */
 @Component({
   selector: 'qth-demo-controls',
+  imports: [TranslatePipe],
   template: `
-    <p class="intro t-small t-muted">
-      Esta versión usa datos ficticios. Cambia el escenario o la hora para ver cómo responde la
-      interfaz a otros días en la isla.
-    </p>
+    <p class="intro t-small t-muted">{{ 'demo.intro' | t }}</p>
 
     <fieldset class="group">
-      <legend class="legend">Escenario</legend>
+      <legend class="legend">{{ 'demo.scenario' | t }}</legend>
       @for (scenario of scenarios; track scenario.id) {
         <label class="choice">
           <input
@@ -32,15 +31,15 @@ type TimeOption = 'ahora' | 'amanecer' | 'mediodia' | 'atardecer' | 'noche';
             (change)="setScenario(scenario.id)"
           />
           <span class="choice-text">
-            <span class="choice-label">{{ scenario.name }}</span>
-            <span class="choice-hint">{{ scenario.description }}</span>
+            <span class="choice-label">{{ scenario.name | t }}</span>
+            <span class="choice-hint">{{ scenario.text | t }}</span>
           </span>
         </label>
       }
     </fieldset>
 
     <fieldset class="group">
-      <legend class="legend">Hora en la isla</legend>
+      <legend class="legend">{{ 'demo.time' | t }}</legend>
       <div class="segmented" role="presentation">
         @for (option of timeOptions(); track option.value) {
           <label class="segment">
@@ -51,26 +50,26 @@ type TimeOption = 'ahora' | 'amanecer' | 'mediodia' | 'atardecer' | 'noche';
               [checked]="timeOption() === option.value"
               (change)="setTime(option.value)"
             />
-            <span>{{ option.label }}</span>
+            <span>{{ option.label | t }}</span>
           </label>
         }
       </div>
     </fieldset>
 
     <fieldset class="group">
-      <legend class="legend">Simular la conexión</legend>
+      <legend class="legend">{{ 'demo.network' | t }}</legend>
       <label class="choice">
         <input type="checkbox" [checked]="demo.slowNetwork()" (change)="setSlowNetwork($event)" />
         <span class="choice-text">
-          <span class="choice-label">Conexión lenta</span>
-          <span class="choice-hint">Para ver los estados de carga.</span>
+          <span class="choice-label">{{ 'demo.slow' | t }}</span>
+          <span class="choice-hint">{{ 'demo.slow.hint' | t }}</span>
         </span>
       </label>
       <label class="choice">
         <input type="checkbox" [checked]="demo.failRequests()" (change)="setFailRequests($event)" />
         <span class="choice-text">
-          <span class="choice-label">Fallo del servicio</span>
-          <span class="choice-hint">Para ver cómo se avisa de un error.</span>
+          <span class="choice-label">{{ 'demo.fail' | t }}</span>
+          <span class="choice-hint">{{ 'demo.fail.hint' | t }}</span>
         </span>
       </label>
     </fieldset>
@@ -87,7 +86,11 @@ export class DemoControls {
   private readonly clock = inject(ClockStore);
   private readonly forecast = inject(ForecastStore);
 
-  protected readonly scenarios = SCENARIOS;
+  protected readonly scenarios = SCENARIOS.map(({ id }) => ({
+    id,
+    name: `demo.scenario.${id}` as const,
+    text: `demo.scenario.${id}.text` as const,
+  }));
   protected readonly timeOption = signal<TimeOption>('ahora');
 
   private readonly sunHours = computed(() => {
@@ -101,11 +104,11 @@ export class DemoControls {
   protected readonly timeOptions = computed(() => {
     const { sunrise, sunset } = this.sunHours();
     return [
-      { value: 'ahora' as const, label: 'Ahora', hour: null },
-      { value: 'amanecer' as const, label: 'Amanecer', hour: sunrise + 0.15 },
-      { value: 'mediodia' as const, label: 'Mediodía', hour: 13.5 },
-      { value: 'atardecer' as const, label: 'Atardecer', hour: sunset - 0.1 },
-      { value: 'noche' as const, label: 'Noche', hour: 22.5 },
+      { value: 'ahora' as const, label: 'demo.time.now' as const, hour: null },
+      { value: 'amanecer' as const, label: 'demo.time.sunrise' as const, hour: sunrise + 0.15 },
+      { value: 'mediodia' as const, label: 'demo.time.noon' as const, hour: 13.5 },
+      { value: 'atardecer' as const, label: 'demo.time.sunset' as const, hour: sunset - 0.1 },
+      { value: 'noche' as const, label: 'demo.time.night' as const, hour: 22.5 },
     ];
   });
 

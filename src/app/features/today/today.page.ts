@@ -1,5 +1,7 @@
 import { Component, computed, DestroyRef, effect, inject, linkedSignal } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { msg, Msg } from '../../core/i18n/i18n.model';
+import { TranslatePipe } from '../../core/i18n/t.pipe';
 import { readSea } from '../../core/insights/sea.insight';
 import { readUv } from '../../core/insights/sky.insight';
 import { drawingSunTimes, readDaylight } from '../../core/insights/sun.insight';
@@ -13,7 +15,7 @@ import { IslandStore } from '../../core/state/island.store';
 import { LocationsStore } from '../../core/state/locations.store';
 import { OfficialStore } from '../../core/state/official.store';
 import { ThemeStore } from '../../core/state/theme.store';
-import { addHours, formatTime, islandDateKey, toDate } from '../../core/utils/time';
+import { addHours, islandDateKey, toDate } from '../../core/utils/time';
 import { PlanItem } from '../../shared/plans/plan-item';
 import { DataCredit } from '../../shared/ui/data-credit/data-credit';
 import { WarningBanner } from '../../shared/ui/warning-banner/warning-banner';
@@ -45,6 +47,7 @@ import { HeroView, TodayHero } from './today-hero/today-hero';
     DataCredit,
     WarningBanner,
     SunPath,
+    TranslatePipe,
   ],
   templateUrl: './today.page.html',
   styleUrl: './today.page.scss',
@@ -115,18 +118,20 @@ export class TodayPage {
       },
     };
 
+    const dayName = msg(isToday ? 'day.today' : 'day.tomorrow');
     return {
       temperature: Math.round(weather.temperatureC),
+      range: { max: day.maxC, min: day.minC },
       verdict: dayVerdict({
         location,
         weather,
         upcoming,
         sea,
-        dayWord: isToday ? 'Hoy' : 'Mañana',
+        day: isToday ? 'today' : 'tomorrow',
       }),
       conditions,
       momentLabel:
-        index === null ? 'Ahora' : `${isToday ? 'Hoy' : 'Mañana'} a las ${formatTime(at)}`,
+        index === null ? msg('common.now') : msg('time.at', { day: dayName, time: { time: at } }),
       scene: buildScene({
         location,
         weather,
@@ -144,6 +149,7 @@ export class TodayPage {
       ? {
           scene: v.scene,
           temperature: v.temperature,
+          range: v.range,
           verdict: v.verdict,
           momentLabel: v.momentLabel,
         }
@@ -155,6 +161,11 @@ export class TodayPage {
     if (weather.status === 'error') return weather.error;
     return this.locations.error();
   });
+
+  /** Today's sunrise and sunset, following the place and the clock. */
+  protected readonly daylight = computed(() =>
+    readDaylight(this.forecast.weather().data?.daily ?? [], this.clock.now()),
+  );
 
   /** Secondary facts, in sentences rather than metrics. */
   protected readonly details = computed(() => {
@@ -169,27 +180,33 @@ export class TodayPage {
     const feels = Math.round(current.feelsLikeC);
     const actual = Math.round(current.temperatureC);
     const sea = this.forecast.sea().data;
+    // Warmer than it reads: in daylight that is the sun, at night only the air.
+    const warmer = current.isDaylight ? 'fact.feels.sun' : 'fact.feels.mild';
+    const sunHasSet = this.daylight()?.phase === 'after-sunset';
+    let sun: Msg;
+    if (strongSun.length > 0) {
+      sun = msg('fact.uv.window', {
+        uv: uv.label,
+        from: { time: strongSun[0].time },
+        to: { time: addHours(toDate(strongSun[strongSun.length - 1].time), 1) },
+      });
+    } else {
+      sun = sunHasSet ? msg('fact.uv.night') : msg('fact.uv.rest', { uv: uv.label });
+    }
     return {
-      feels:
-        feels === actual
-          ? `${feels} °C, lo que marca el termómetro`
-          : feels > actual
-            ? `${feels} °C: el sol calienta más de lo que parece`
-            : `${feels} °C: el viento refresca`,
-      sun: strongSun.length
-        ? `${uv.label} de ${formatTime(strongSun[0].time)} a ${formatTime(addHours(toDate(strongSun[strongSun.length - 1].time), 1))}. Protégete.`
-        : `${uv.label} el resto del día.`,
+      feels: msg(
+        feels === actual ? 'fact.feels.same' : feels > actual ? warmer : 'fact.feels.wind',
+        {
+          temp: feels,
+        },
+      ),
+      sun,
       water:
         sea?.current.waterTemperatureC != null
-          ? `${Math.round(sea.current.waterTemperatureC)} °C`
+          ? msg('common.celsius', { value: Math.round(sea.current.waterTemperatureC) })
           : null,
     };
   });
-
-  /** Today's sunrise and sunset, following the place and the clock. */
-  protected readonly daylight = computed(() =>
-    readDaylight(this.forecast.weather().data?.daily ?? [], this.clock.now()),
-  );
 
   protected readonly todayKey = computed(() => islandDateKey(this.clock.now()));
   protected readonly topPlans = computed(() => this.island.recommendations().slice(0, 2));
@@ -200,19 +217,27 @@ export class TodayPage {
     const location = this.location();
     const reading = location ? this.official.nearestObservation(location.position) : null;
     if (!reading) return null;
-    const parts: string[] = [];
-    if (reading.temperatureC !== null) parts.push(`${Math.round(reading.temperatureC)} °C`);
+    const parts: Msg[] = [];
+    if (reading.temperatureC !== null) {
+      parts.push(msg('common.celsius', { value: Math.round(reading.temperatureC) }));
+    }
     if (reading.windKmh !== null) {
       parts.push(
         reading.windKmh < 3 || reading.windFromDegrees === null
-          ? 'sin apenas viento'
-          : `viento ${fromDirection(reading.windFromDegrees)} a ${Math.round(reading.windKmh)} km/h`,
+          ? msg('fact.observed.calm')
+          : msg('fact.observed.wind', {
+              from: fromDirection(reading.windFromDegrees),
+              speed: Math.round(reading.windKmh),
+            }),
       );
     }
     if (parts.length === 0) return null;
     return {
-      value: parts.join(' y '),
-      source: `${reading.stationName} (AEMET), a las ${formatTime(reading.time)}`,
+      value: parts.length === 2 ? msg('common.and', { a: parts[0], b: parts[1] }) : parts[0],
+      source: msg('fact.observed.source', {
+        station: reading.stationName,
+        time: { time: reading.time },
+      }),
     };
   });
 

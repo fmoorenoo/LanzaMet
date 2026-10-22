@@ -1,10 +1,15 @@
-<qth-sheet [heading]="isDemo ? 'Ajustes y demo' : 'Ajustes'" [(open)]="ui.settingsOpen">
+<qth-sheet
+  [heading]="(isDemo ? 'settings.titleDemo' : 'settings.title') | t"
+  [(open)]="ui.settingsOpen"
+>
+  <qth-language-selector id="language-selector" />
+
   @if (demoControls) {
     <ng-container *ngComponentOutlet="demoControls" />
   }
 
   <fieldset id="theme-selector" class="group theme-selector">
-    <legend class="legend">Apariencia</legend>
+    <legend class="legend">{{ 'settings.appearance' | t }}</legend>
     @for (option of themeOptions; track option.value) {
       <label class="choice theme-option" [attr.data-theme-option]="option.value">
         <input
@@ -15,9 +20,9 @@
           (change)="setTheme(option.value)"
         />
         <span class="choice-text">
-          <span class="choice-label">{{ option.label }}</span>
+          <span class="choice-label">{{ option.label | t }}</span>
           @if (option.hint) {
-            <span class="choice-hint">{{ option.hint }}</span>
+            <span class="choice-hint">{{ option.hint | t }}</span>
           }
         </span>
       </label>
@@ -26,49 +31,42 @@
 
   @if (!isDemo) {
     <section id="data-sources" class="group data-sources" aria-labelledby="sources-title">
-      <h3 id="sources-title" class="legend">De dónde salen los datos</h3>
+      <h3 id="sources-title" class="legend">{{ 'settings.sources' | t }}</h3>
       <ul class="sources data-source-list">
-        <li>
-          <span class="choice-label">Previsión del tiempo</span>
+        <li data-source="forecast">
+          <span class="choice-label">{{ 'settings.source.forecast' | t }}</span>
           <span class="choice-hint">
             <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a>,
-            modelo DWD ICON. Licencia CC BY 4.0. Se actualiza cada 30 minutos.
+            {{ 'settings.source.forecast.text' | t }}
           </span>
         </li>
-        <li>
-          <span class="choice-label">Oleaje, agua y marea</span>
-          <span class="choice-hint">
-            Open-Meteo Marine, modelos de Météo-France, en mar abierto frente a cada zona. La marea
-            es una estimación del modelo, no una tabla oficial: no sirve para navegar.
-          </span>
+        <li data-source="marine">
+          <span class="choice-label">{{ 'settings.source.sea' | t }}</span>
+          <span class="choice-hint">{{ 'settings.source.sea.text' | t }}</span>
         </li>
-        <li>
-          <span class="choice-label">Calima</span>
-          <span class="choice-hint">
-            Polvo en suspensión de Copernicus CAMS, vía Open-Meteo. Contiene información modificada
-            del Copernicus Atmosphere Monitoring Service.
-          </span>
+        <li data-source="dust">
+          <span class="choice-label">{{ 'settings.source.dust' | t }}</span>
+          <span class="choice-hint">{{ 'settings.source.dust.text' | t }}</span>
         </li>
-        <li>
-          <span class="choice-label">Avisos oficiales</span>
+        <li data-source="warnings">
+          <span class="choice-label">{{ 'settings.source.warnings' | t }}</span>
           <span class="choice-hint">
             <a
               href="https://www.aemet.es/es/eltiempo/prediccion/avisos"
               target="_blank"
               rel="noopener"
               >AEMET</a
-            >, Plan Meteoalerta. {{ warningsStatus() }}.
+            >, {{ 'settings.source.warnings.text' | t: { status: warningsStatus() } }}
           </span>
         </li>
-        <li>
-          <span class="choice-label">Medidas de estaciones</span>
-          <span class="choice-hint">AEMET OpenData. {{ observationsStatus() }}.</span>
+        <li data-source="observations">
+          <span class="choice-label">{{ 'settings.source.observations' | t }}</span>
+          <span class="choice-hint">
+            {{ 'settings.source.observations.text' | t: { status: observationsStatus() } }}
+          </span>
         </li>
       </ul>
-      <p class="choice-hint">
-        Son previsiones y avisos, no garantías: antes de bañarte o salir al mar, mira las banderas y
-        sigue las indicaciones de socorristas y autoridades.
-      </p>
+      <p class="choice-hint">{{ 'settings.disclaimer' | t }}</p>
     </section>
   }
 </qth-sheet>

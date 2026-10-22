@@ -44,8 +44,6 @@ export interface Location {
   readonly municipality: string;
   readonly area: IslandArea;
   readonly kind: PlaceKind;
-  /** One plain sentence about the place, written for visitors. */
-  readonly summary: string;
   readonly position: GeoPoint;
   /** Direction the coast faces — what the wind and the sunset hit. */
   readonly facing: CardinalDirection;

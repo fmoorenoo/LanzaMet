@@ -2,6 +2,7 @@ import { computed, inject, Service, signal } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { LocationSource } from '../data/data-sources';
 import { RETIRED_LOCATIONS } from '../data/locations';
+import { MessageKey } from '../i18n/i18n.model';
 import { IslandArea, Location, LocationId } from '../models';
 import { isString, isStringArray, readStored, writeStored } from '../utils/storage';
 import { errorMessage } from './section-state';
@@ -9,11 +10,11 @@ import { errorMessage } from './section-state';
 const DEFAULT_LOCATION: LocationId = 'puerto-del-carmen';
 const DEFAULT_FAVORITES: readonly LocationId[] = ['puerto-del-carmen', 'famara', 'playa-blanca'];
 
-export const AREA_LABELS: Readonly<Record<IslandArea, string>> = {
-  norte: 'Norte',
-  este: 'Este',
-  sur: 'Sur',
-  oeste: 'Oeste',
+export const AREA_LABELS: Readonly<Record<IslandArea, MessageKey>> = {
+  norte: 'area.norte',
+  este: 'area.este',
+  sur: 'area.sur',
+  oeste: 'area.oeste',
 };
 
 /** English names for the coasts, used in element ids and `data-area`. */
@@ -34,7 +35,7 @@ const unique = (ids: readonly LocationId[]): LocationId[] => [...new Set(ids)];
 export interface AreaGroup {
   readonly area: IslandArea;
   readonly slug: string;
-  readonly label: string;
+  readonly label: MessageKey;
   readonly locations: readonly Location[];
 }
 

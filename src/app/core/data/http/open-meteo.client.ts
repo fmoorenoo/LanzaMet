@@ -3,6 +3,7 @@ import { inject, Service } from '@angular/core';
 import { catchError, forkJoin, map, Observable, of } from 'rxjs';
 import { GeoPoint, Location } from '../../models';
 import { ISLAND_TIME_ZONE, TIME } from '../../utils/time';
+import { MessageKey, msg } from '../../i18n/i18n.model';
 import { DataSourceError } from '../data-sources';
 import { LOCATIONS } from '../locations';
 import { resilient } from './http-errors';
@@ -156,12 +157,7 @@ export class OpenMeteoClient {
     const forecast = this.cache.get(
       'om-forecast',
       this.forecastUrl,
-      () =>
-        this.fetchList<ForecastDto>(
-          this.forecastUrl,
-          this.locations.length,
-          'el servicio meteorológico',
-        ),
+      () => this.fetchList<ForecastDto>(this.forecastUrl, this.locations.length, 'service.weather'),
       { ttlMs: FORECAST_TTL, persist: true },
     );
     // Both requests run side by side; dust only adds calima on top of the forecast.
@@ -178,8 +174,7 @@ export class OpenMeteoClient {
       .get(
         'om-marine',
         this.marineUrl,
-        () =>
-          this.fetchList<MarineDto>(this.marineUrl, this.seaPoints.length, 'el servicio marítimo'),
+        () => this.fetchList<MarineDto>(this.marineUrl, this.seaPoints.length, 'service.sea'),
         { ttlMs: MARINE_TTL, persist: true },
       )
       .pipe(
@@ -195,12 +190,7 @@ export class OpenMeteoClient {
       .get(
         'om-dust',
         this.dustUrl,
-        () =>
-          this.fetchList<AirQualityDto>(
-            this.dustUrl,
-            this.locations.length,
-            'el servicio de calidad del aire',
-          ),
+        () => this.fetchList<AirQualityDto>(this.dustUrl, this.locations.length, 'service.air'),
         { ttlMs: DUST_TTL, persist: true },
       )
       .pipe(
@@ -209,15 +199,22 @@ export class OpenMeteoClient {
       );
   }
 
-  private fetchList<T>(url: string, expected: number, service: string): Observable<readonly T[]> {
+  private fetchList<T>(
+    url: string,
+    expected: number,
+    service: MessageKey,
+  ): Observable<readonly T[]> {
     return this.http.get<T | readonly T[]>(url).pipe(
       map((body) => {
-        if (isProviderError(body)) throw new DataSourceError(`${service}: ${body.reason}`, false);
+        if (isProviderError(body)) {
+          throw new DataSourceError(
+            msg('error.provider', { service: msg(service), reason: body.reason }),
+            false,
+          );
+        }
         const list = asList(body);
         if (list.length !== expected) {
-          throw new DataSourceError(
-            `La respuesta de ${service} no corresponde a las zonas pedidas.`,
-          );
+          throw new DataSourceError(msg('error.mismatch', { service: msg(service) }));
         }
         return list;
       }),

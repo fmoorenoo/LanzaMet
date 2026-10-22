@@ -1,3 +1,4 @@
+import { msg } from '../i18n/i18n.model';
 import {
   Recommendation,
   SeaSnapshot,
@@ -6,14 +7,7 @@ import {
   ZoneConditions,
 } from '../models';
 import { clamp } from '../utils/math';
-import {
-  addHours,
-  formatTime,
-  islandDateKey,
-  islandHour,
-  minutesBetween,
-  toDate,
-} from '../utils/time';
+import { addHours, islandDateKey, islandHour, minutesBetween, toDate } from '../utils/time';
 import { describeWaves, readSea } from './sea.insight';
 import { skyPhrase } from './sky.insight';
 import { beachScore } from './verdict.insight';
@@ -132,13 +126,17 @@ export function buildRecommendations(
   }
   if (beach) {
     const mid = middle(beach.window.points);
-    const sea = mid.sea ? ` y ${readSea(mid.sea).phrase}` : '';
+    const sky = skyPhrase(mid.weather.sky, true);
+    const wind = readWind(mid.weather.wind).phrase;
+    const reason = mid.sea
+      ? msg('plan.beach.reasonSea', { sky, wind, sea: readSea(mid.sea).phrase })
+      : msg('plan.beach.reason', { sky, wind });
     recommendations.push({
       id: 'playa',
       kind: 'playa',
       locationId: beach.zone.location.id,
-      title: `Playa en ${beach.zone.location.name}`,
-      reason: `${skyPhrase(mid.weather.sky, true)}, ${readWind(mid.weather.wind).phrase}${sea}.${context.coastalWarning ? ' Hay aviso costero: báñate solo en zonas vigiladas.' : ''}`,
+      title: msg('plan.beach.title', { place: beach.zone.location.name }),
+      reason: context.coastalWarning ? msg('plan.beach.warning', { reason }) : reason,
       window: toTimeWindow(beach.window),
       score: 0.7 + 0.3 * beach.window.average,
     });
@@ -161,8 +159,13 @@ export function buildRecommendations(
         id: 'resguardo',
         kind: 'resguardo',
         locationId: pick.location.id,
-        title: `Sin viento en ${pick.location.name}`,
-        reason: `El viento ${wind.from} apenas llega: ${pick.weather.current.wind.speedKmh} km/h, frente a ${windiest.weather.current.wind.speedKmh} en ${windiest.location.name}.`,
+        title: msg('plan.shelter.title', { place: pick.location.name }),
+        reason: msg('plan.shelter.reason', {
+          from: wind.from,
+          here: pick.weather.current.wind.speedKmh,
+          there: windiest.weather.current.wind.speedKmh,
+          windiest: windiest.location.name,
+        }),
         score: 0.72 + clamp(gap / 60) * 0.2,
       });
       used.add(pick.location.id);
@@ -181,8 +184,10 @@ export function buildRecommendations(
       id: 'mar-calmo',
       kind: 'mar-calmo',
       locationId: calmSea.location.id,
-      title: `Mar tranquilo en ${calmSea.location.name}`,
-      reason: `${describeWaves(calmSea.sea.current.waveHeightM)} según la previsión: el mar más tranquilo de la isla.`,
+      title: msg('plan.calmSea.title', { place: calmSea.location.name }),
+      reason: msg('plan.calmSea.reason', {
+        waves: describeWaves(calmSea.sea.current.waveHeightM),
+      }),
       score: 0.7 + (0.8 - calmSea.sea.current.waveHeightM) * 0.2,
     });
     used.add(calmSea.location.id);
@@ -210,8 +215,10 @@ export function buildRecommendations(
       id: 'atardecer',
       kind: 'atardecer',
       locationId: sunset.zone.location.id,
-      title: `Atardecer en ${sunset.zone.location.name}`,
-      reason: `El sol se pone a las ${formatTime(sunset.at)}${sunset.clouds < 0.3 ? ' con el horizonte despejado' : ' entre algunas nubes'}.`,
+      title: msg('plan.sunset.title', { place: sunset.zone.location.name }),
+      reason: msg(sunset.clouds < 0.3 ? 'plan.sunset.clear' : 'plan.sunset.clouds', {
+        time: { time: sunset.at },
+      }),
       window: {
         from: addHours(sunset.at, -0.75).toISOString(),
         to: addHours(sunset.at, 0.25).toISOString(),
@@ -249,10 +256,8 @@ export function buildRecommendations(
       id: 'paseo',
       kind: 'paseo',
       locationId: walk.zone.location.id,
-      title: `Paseo por ${walk.zone.location.name}`,
-      reason: morning
-        ? `A primera hora, con ${temp} °C y el sol todavía suave.`
-        : `Con ${temp} °C y el sol ya bajo, se camina a gusto.`,
+      title: msg('plan.walk.title', { place: walk.zone.location.name }),
+      reason: msg(morning ? 'plan.walk.morning' : 'plan.walk.evening', { temp }),
       window: toTimeWindow(walk.window),
       score: 0.6,
     });
@@ -271,8 +276,11 @@ export function buildRecommendations(
       id: 'olas',
       kind: 'olas',
       locationId: surf.location.id,
-      title: `Olas en ${surf.location.name}`,
-      reason: `${describeWaves(surf.sea.current.waveHeightM)} y viento ${readWind(surf.weather.current.wind).from}: para quien ya sabe surfear.`,
+      title: msg('plan.surf.title', { place: surf.location.name }),
+      reason: msg('plan.surf.reason', {
+        waves: describeWaves(surf.sea.current.waveHeightM),
+        from: readWind(surf.weather.current.wind).from,
+      }),
       score: 0.58,
     });
   }

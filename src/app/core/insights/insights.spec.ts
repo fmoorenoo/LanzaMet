@@ -1,9 +1,15 @@
+import { Lang, MessageKey, Msg } from '../i18n/i18n.model';
+import { translate } from '../i18n/translate';
 import { TideForecast, WeatherSnapshot } from '../models';
 import { describeSwell, describeWaves, readSea } from './sea.insight';
-import { formatTideHeight, readTide } from './tide.insight';
+import { readTide, tideHeight } from './tide.insight';
 import { beachScore, dayVerdict } from './verdict.insight';
 import { readWind, toCardinal } from './wind.insight';
 import { LOCATIONS_SEED } from '../../mocks/seed/locations.seed';
+
+/** The rules return descriptors; read them in a language to check the words. */
+const es = (text: Msg | MessageKey | null | undefined) => (text ? translate(text, 'es') : null);
+const inLang = (lang: Lang, text: Msg | null | undefined) => (text ? translate(text, lang) : null);
 
 const sunnyCalm: WeatherSnapshot = {
   time: '2026-10-22T13:00:00.000Z',
@@ -37,16 +43,18 @@ describe('wind', () => {
   });
 
   it('reads speed as words people use', () => {
-    expect(readWind({ speedKmh: 12, gustKmh: 18, fromDegrees: 30 }).label).toBe('Brisa suave');
-    expect(readWind({ speedKmh: 38, gustKmh: 50, fromDegrees: 30 }).label).toBe('Viento fuerte');
+    expect(es(readWind({ speedKmh: 12, gustKmh: 18, fromDegrees: 30 }).label)).toBe('Brisa suave');
+    expect(es(readWind({ speedKmh: 38, gustKmh: 50, fromDegrees: 30 }).label)).toBe(
+      'Viento fuerte',
+    );
     expect(readWind({ speedKmh: 22, gustKmh: 30, fromDegrees: 30 }).isTradeWind).toBe(true);
   });
 });
 
 describe('sea', () => {
   it('describes waves in centimetres and metres', () => {
-    expect(describeWaves(0.42)).toBe('Olas de unos 40 cm');
-    expect(describeWaves(1.6)).toBe('Olas de 1,5 m');
+    expect(es(describeWaves(0.42))).toBe('Olas de unos 40 cm');
+    expect(es(describeWaves(1.6))).toBe('Olas de 1,5 m');
   });
 
   it('labels the state of the sea', () => {
@@ -58,13 +66,13 @@ describe('sea', () => {
       swell: null,
       waterTemperatureC: 22.4,
     };
-    expect(readSea(sea).label).toBe('Mar como un plato');
-    expect(readSea(sea).water).toBe('Agua a 22 °C');
+    expect(es(readSea(sea).label)).toBe('Mar como un plato');
+    expect(es(readSea(sea).water)).toBe('Agua a 22 °C');
     expect(readSea({ ...sea, waterTemperatureC: null }).water).toBeNull();
   });
 
   it('names the swell with its direction, height and period', () => {
-    expect(describeSwell({ heightM: 1.14, periodS: 11.2, fromDegrees: 340 })).toBe(
+    expect(es(describeSwell({ heightM: 1.14, periodS: 11.2, fromDegrees: 340 }))).toBe(
       'Mar de fondo del norte, 1,1 m cada 11 s',
     );
     expect(describeSwell({ heightM: 0.1, periodS: 6, fromDegrees: 30 })).toBeNull();
@@ -76,13 +84,15 @@ describe('tide', () => {
   it('knows the tide is falling between a high and a low', () => {
     const reading = readTide(tide, new Date('2026-10-22T13:30:00Z'));
     expect(reading?.trend).toBe('bajando');
-    expect(reading?.headline).toBe('La marea está bajando');
-    expect(reading?.nextLabel).toBe('Bajamar a las 17:40');
-    expect(reading?.untilNext).toBe('3 h 10 min');
+    expect(es(reading?.headline)).toBe('La marea está bajando');
+    expect(es(reading?.nextLabel)).toBe('Bajamar a las 17:40');
+    expect(es(reading && { key: 'common.value', params: { value: reading.untilNext } })).toBe(
+      '3 h 10 min',
+    );
   });
 
   it('calls a high tide when it is close to it', () => {
-    expect(readTide(tide, new Date('2026-10-22T10:35:00Z'))?.headline).toBe('Marea alta ahora');
+    expect(es(readTide(tide, new Date('2026-10-22T10:35:00Z'))?.headline)).toBe('Marea alta ahora');
   });
 
   it('never gives an estimate an exact-sounding time', () => {
@@ -90,15 +100,16 @@ describe('tide', () => {
       ...tide,
       source: { kind: 'model' as const, name: 'Modelo', official: false },
     };
-    expect(readTide(estimate, new Date('2026-10-22T13:30:00Z'))?.nextLabel).toBe(
+    expect(es(readTide(estimate, new Date('2026-10-22T13:30:00Z'))?.nextLabel)).toBe(
       'Bajamar hacia las 17:40',
     );
   });
 
   it('signs heights around mean sea level', () => {
-    expect(formatTideHeight(0.54, 'mean-sea-level')).toBe('+0,5');
-    expect(formatTideHeight(-1.12, 'mean-sea-level')).toBe('−1,1');
-    expect(formatTideHeight(2.4, 'chart')).toBe('2,4');
+    expect(es(tideHeight(0.54, 'mean-sea-level'))).toBe('+0,5 m');
+    expect(es(tideHeight(-1.12, 'mean-sea-level'))).toBe('−1,1 m');
+    expect(es(tideHeight(2.4, 'chart'))).toBe('2,4 m');
+    expect(inLang('en', tideHeight(0.54, 'mean-sea-level'))).toBe('+0.5 m');
   });
 
   it('returns null outside the predicted range', () => {
@@ -122,10 +133,15 @@ describe('verdict', () => {
         swell: null,
         waterTemperatureC: 22,
       },
-      dayWord: 'Hoy',
+      day: 'today',
     });
-    expect(verdict.headline).toBe('Hoy apetece playa');
-    expect(verdict.sentence).toBe('Sol y brisa suave en Puerto del Carmen.');
+    expect(es(verdict.headline)).toBe('Hoy apetece playa');
+    expect(es(verdict.sentence)).toBe('Sol y brisa suave en Puerto del Carmen.');
+    // Same rule, same data, other language.
+    expect(inLang('en', verdict.headline)).toBe('A beach day today');
+    expect(inLang('en', verdict.sentence)).toBe(
+      'Sunshine with a light breeze in Puerto del Carmen.',
+    );
   });
 
   it('does not invite to the beach while the sea is unknown', () => {
@@ -134,9 +150,9 @@ describe('verdict', () => {
       weather: sunnyCalm,
       upcoming: [sunnyCalm, sunnyCalm],
       sea: null,
-      dayWord: 'Hoy',
+      day: 'today',
     });
-    expect(verdict.headline).toBe('Buen día para salir');
+    expect(es(verdict.headline)).toBe('Buen día para salir');
   });
 
   it('warns when the wind is picking up', () => {
@@ -146,9 +162,10 @@ describe('verdict', () => {
       weather: sunnyCalm,
       upcoming: [sunnyCalm, windy, windy],
       sea: null,
-      dayWord: 'Hoy',
+      day: 'today',
     });
-    expect(verdict.headline).toBe('El viento se está levantando');
+    expect(es(verdict.headline)).toBe('El viento se está levantando');
+    expect(inLang('en', verdict.headline)).toBe('The wind is picking up');
   });
 
   it('scores no beach at night', () => {

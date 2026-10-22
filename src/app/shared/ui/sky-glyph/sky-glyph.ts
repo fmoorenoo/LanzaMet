@@ -1,4 +1,5 @@
-import { Component, computed, input } from '@angular/core';
+import { Component, computed, inject, input } from '@angular/core';
+import { I18n } from '../../../core/i18n/i18n.store';
 import { skyLabel } from '../../../core/insights/sky.insight';
 import { SkyCondition } from '../../../core/models';
 
@@ -150,5 +151,6 @@ export class SkyGlyph {
   readonly decorative = input(false);
 
   protected readonly parts = computed(() => (this.isDaylight() ? DAY : NIGHT)[this.sky()]);
-  protected readonly label = computed(() => skyLabel(this.sky(), this.isDaylight()));
+  private readonly i18n = inject(I18n);
+  protected readonly label = computed(() => this.i18n.t(skyLabel(this.sky(), this.isDaylight())));
 }

@@ -1,4 +1,6 @@
 import { Component, computed, inject, signal } from '@angular/core';
+import { Msg } from '../../core/i18n/i18n.model';
+import { TranslatePipe } from '../../core/i18n/t.pipe';
 import { zoneHeadline } from '../../core/insights/island.insight';
 import { Location, LocationId, SkyCondition } from '../../core/models';
 import { IslandStore } from '../../core/state/island.store';
@@ -16,7 +18,7 @@ interface PlaceRow {
   readonly isCurrent: boolean;
   readonly isFavorite: boolean;
   readonly temperature: number | null;
-  readonly headline: string | null;
+  readonly headline: Msg | null;
   readonly sky: { readonly condition: SkyCondition; readonly isDaylight: boolean } | null;
 }
 
@@ -30,7 +32,7 @@ const normalise = (text: string) =>
 /** Fast, visual place switcher: favourites first, then the island by coast. */
 @Component({
   selector: 'qth-location-picker',
-  imports: [Sheet, Icon, SkyGlyph, StatusMessage, HorizontalScroll, ScrollControls],
+  imports: [Sheet, Icon, SkyGlyph, StatusMessage, HorizontalScroll, ScrollControls, TranslatePipe],
   templateUrl: './location-picker.html',
   styleUrl: './location-picker.scss',
 })

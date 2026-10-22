@@ -1,15 +1,16 @@
 import { Component, computed, inject, input } from '@angular/core';
 import { DATA_MODE } from '../../../core/data/http/data-config';
+import { MessageKey } from '../../../core/i18n/i18n.model';
+import { TranslatePipe } from '../../../core/i18n/t.pipe';
 import { IsoInstant } from '../../../core/models';
-import { formatTime } from '../../../core/utils/time';
 import { Icon } from '../icon/icon';
 
 export type CreditKind = 'weather' | 'sea' | 'island';
 
-const LABEL: Readonly<Record<CreditKind, string>> = {
-  weather: 'Previsión del modelo DWD ICON, de',
-  sea: 'Oleaje y marea estimada de modelos de Météo-France, vía',
-  island: 'Previsión de cada zona, de',
+const LABEL: Readonly<Record<CreditKind, MessageKey>> = {
+  weather: 'credit.weather',
+  sea: 'credit.sea',
+  island: 'credit.island',
 };
 
 /**
@@ -18,24 +19,19 @@ const LABEL: Readonly<Record<CreditKind, string>> = {
  */
 @Component({
   selector: 'qth-data-credit',
-  imports: [Icon],
+  imports: [Icon, TranslatePipe],
   template: `
     <qth-icon name="info" />
     <span>
       @if (isDemo) {
-        Datos ficticios de demostración
+        {{ 'credit.demo' | t }}
       } @else {
-        {{ label() }}
+        {{ label() | t }}
         <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a>
-        (<a
-          href="https://creativecommons.org/licenses/by/4.0/deed.es"
-          target="_blank"
-          rel="noopener"
-          >CC BY 4.0</a
-        >)
+        (<a [href]="'credit.licenceUrl' | t" target="_blank" rel="noopener">CC BY 4.0</a>)
       }
-      @if (time(); as t) {
-        · consultada a las {{ t }}
+      @if (updatedAt(); as at) {
+        {{ 'credit.fetched' | t: { time: { time: at } } }}
       }
     </span>
   `,
@@ -47,8 +43,4 @@ export class DataCredit {
 
   protected readonly isDemo = inject(DATA_MODE) === 'demo';
   protected readonly label = computed(() => LABEL[this.kind()]);
-  protected readonly time = computed(() => {
-    const at = this.updatedAt();
-    return at ? formatTime(at) : null;
-  });
 }

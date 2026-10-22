@@ -50,11 +50,14 @@ describe('AEMET CAP archive', () => {
     const rain = warnings.find((w) => w.level === 'naranja');
     assert.ok(rain);
     assert.equal(rain.phenomenon, 'Lluvias');
+    assert.equal(rain.phenomenonCode, 'PR');
     assert.equal(rain.area, 'Norte de Gran Canaria');
     assert.equal(rain.coastal, false);
     assert.equal(rain.onset, '2026-10-22T00:00:00.000Z');
     assert.equal(rain.expires, '2026-10-22T04:59:59.000Z');
     assert.match(rain.description, /40 mm/);
+    // AEMET's own English block for the same warning.
+    assert.match(rain.descriptionEn ?? '', /accumulated precipitation/i);
   });
 
   it('reports nothing for Lanzarote that day: its CAP entries are all green', async () => {
@@ -67,7 +70,7 @@ describe('AEMET CAP archive', () => {
     assert.deepEqual(north, []);
   });
 
-  it('reads a coastal warning for Lanzarote, keeping only the Spanish text', async () => {
+  it('reads a coastal warning for Lanzarote from the Spanish block, with its code', async () => {
     // A real island-wide coastal CAP (green; it lists "Costa - Lanzarote"), raised to yellow.
     const source = (await files()).find((f) => f.name.includes('COCO'));
     assert.ok(source);
@@ -79,6 +82,7 @@ describe('AEMET CAP archive', () => {
     assert.equal(warnings[0].area, 'Costa - Lanzarote');
     assert.equal(warnings[0].coastal, true);
     assert.equal(warnings[0].phenomenon, 'Costeros');
+    assert.equal(warnings[0].phenomenonCode, 'CO');
     assert.equal(warnings[0].level, 'amarillo');
   });
 

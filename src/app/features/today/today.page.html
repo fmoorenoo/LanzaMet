@@ -18,20 +18,24 @@
   @if (v && weather.error) {
     <p id="stale-data-notice" class="stale stale-data-notice" role="status">
       <qth-icon name="info" />
-      <span>No hemos podido actualizar. Te mostramos los últimos datos.</span>
-      <button type="button" class="btn btn--quiet" (click)="forecast.retry()">Reintentar</button>
+      <span>{{ 'today.stale' | t }}</span>
+      <button type="button" class="btn btn--quiet" (click)="forecast.retry()">
+        {{ 'common.retry' | t }}
+      </button>
     </p>
   }
 
   @if (v) {
     <section id="current-conditions" class="block today-section" aria-labelledby="now-title">
-      <h2 id="now-title" class="visually-hidden">{{ v.momentLabel }}: viento, mar y marea</h2>
+      <h2 id="now-title" class="visually-hidden">
+        {{ 'today.nowTitle' | t: { moment: v.momentLabel } }}
+      </h2>
       <qth-conditions [view]="v.conditions" />
     </section>
 
     <section id="hourly-forecast" class="block today-section" aria-labelledby="hours-title">
       <qth-hour-timeline [hours]="hours()" [(selected)]="previewIndex">
-        <h2 timelineTitle id="hours-title" class="t-title">Próximas horas</h2>
+        <h2 timelineTitle id="hours-title" class="t-title">{{ 'today.hours' | t }}</h2>
         @if (previewIndex() !== null) {
           <button
             timelineAction
@@ -40,7 +44,7 @@
             class="btn btn--quiet"
             (click)="backToNow()"
           >
-            Volver a ahora
+            {{ 'common.backToNow' | t }}
           </button>
         }
       </qth-hour-timeline>
@@ -61,26 +65,25 @@
 
   <section id="plan-suggestions" class="block today-section" aria-labelledby="plans-title">
     <div class="section-head section-header">
-      <h2 id="plans-title" class="t-title">¿Dónde ir hoy?</h2>
-      <a id="all-plans-link" class="btn btn--quiet" routerLink="/donde-ir">Ver todo</a>
+      <h2 id="plans-title" class="t-title">{{ 'today.plans' | t }}</h2>
+      <a id="all-plans-link" class="btn btn--quiet" routerLink="/donde-ir">
+        {{ 'common.seeAll' | t }}
+      </a>
     </div>
     @switch (island.zones().status) {
       @case ('ready') {
         @for (plan of topPlans(); track plan.id) {
           <qth-plan-item [plan]="plan" />
         } @empty {
-          <qth-status-message
-            title="Hoy no hay un plan claro"
-            text="El tiempo no acompaña en ninguna zona. Echa un vistazo a los próximos días."
-          />
+          <qth-status-message [title]="'today.noPlan' | t" [text]="'today.noPlan.text' | t" />
         }
       }
       @case ('error') {
         <qth-status-message
           tone="error"
-          title="No hemos podido comparar las zonas"
-          [text]="island.zones().error"
-          actionLabel="Reintentar"
+          [title]="'today.compareFailed' | t"
+          [text]="island.zones().error | t"
+          [actionLabel]="'common.retry' | t"
           (action)="island.retry()"
         />
       }
@@ -98,29 +101,29 @@
 
   @if (details(); as d) {
     <section id="day-facts" class="block today-section" aria-labelledby="details-title">
-      <h2 id="details-title" class="t-title">Hoy, en detalle</h2>
+      <h2 id="details-title" class="t-title">{{ 'today.details' | t }}</h2>
       <qth-sun-path id="sun-times" [reading]="daylight()" />
       <dl class="facts day-facts">
         <div class="fact day-fact" data-fact="feels-like">
-          <dt><qth-icon name="thermometer" />Sensación</dt>
-          <dd>{{ d.feels }}</dd>
+          <dt><qth-icon name="thermometer" />{{ 'fact.feels' | t }}</dt>
+          <dd>{{ d.feels | t }}</dd>
         </div>
         <div class="fact day-fact" data-fact="uv">
-          <dt><qth-icon name="sun" />Sol</dt>
-          <dd>{{ d.sun }}</dd>
+          <dt><qth-icon name="sun" />{{ 'fact.uv' | t }}</dt>
+          <dd>{{ d.sun | t }}</dd>
         </div>
         @if (d.water) {
           <div class="fact day-fact" data-fact="water">
-            <dt><qth-icon name="drop" />Agua</dt>
-            <dd>{{ d.water }}</dd>
+            <dt><qth-icon name="drop" />{{ 'fact.water' | t }}</dt>
+            <dd>{{ d.water | t }}</dd>
           </div>
         }
         @if (observed(); as o) {
           <div class="fact day-fact" data-fact="observed">
-            <dt><qth-icon name="pin" />Medido</dt>
+            <dt><qth-icon name="pin" />{{ 'fact.observed' | t }}</dt>
             <dd>
-              {{ o.value }}
-              <span class="fact-source">{{ o.source }}</span>
+              {{ o.value | t }}
+              <span class="fact-source">{{ o.source | t }}</span>
             </dd>
           </div>
         }
@@ -130,7 +133,7 @@
 
   @if (weather.data; as forecastData) {
     <section id="daily-forecast" class="block today-section" aria-labelledby="days-title">
-      <h2 id="days-title" class="t-title">Próximos días</h2>
+      <h2 id="days-title" class="t-title">{{ 'today.days' | t }}</h2>
       <qth-day-list [days]="forecastData.daily" [today]="todayKey()" />
     </section>
   }
@@ -145,7 +148,7 @@
       (click)="refresh()"
     >
       <qth-icon name="refresh" />
-      Actualizar
+      {{ 'common.refresh' | t }}
     </button>
   </footer>
 </div>

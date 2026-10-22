@@ -1,3 +1,4 @@
+import { msg, Msg } from '../i18n/i18n.model';
 import { CardinalDirection, WeatherSnapshot, Wind } from '../models';
 import { clamp } from '../utils/math';
 
@@ -12,17 +13,6 @@ export const DIRECTION_DEGREES: Readonly<Record<CardinalDirection, number>> = {
   NO: 315,
 };
 
-const DIRECTION_NAMES: Readonly<Record<CardinalDirection, string>> = {
-  N: 'norte',
-  NE: 'nordeste',
-  E: 'este',
-  SE: 'sureste',
-  S: 'sur',
-  SO: 'suroeste',
-  O: 'oeste',
-  NO: 'noroeste',
-};
-
 const ORDER: readonly CardinalDirection[] = ['N', 'NE', 'E', 'SE', 'S', 'SO', 'O', 'NO'];
 
 export function toCardinal(degrees: number): CardinalDirection {
@@ -30,8 +20,8 @@ export function toCardinal(degrees: number): CardinalDirection {
 }
 
 /** "del nordeste" */
-export function fromDirection(degrees: number): string {
-  return `del ${DIRECTION_NAMES[toCardinal(degrees)]}`;
+export function fromDirection(degrees: number): Msg {
+  return msg('wind.from', { dir: msg(`dir.${toCardinal(degrees)}`) });
 }
 
 export type WindLevel = 0 | 1 | 2 | 3 | 4;
@@ -39,41 +29,43 @@ export type WindLevel = 0 | 1 | 2 | 3 | 4;
 export interface WindReading {
   readonly level: WindLevel;
   /** "Brisa suave" */
-  readonly label: string;
+  readonly label: Msg;
   /** For sentences: "brisa suave" */
-  readonly phrase: string;
+  readonly phrase: Msg;
   /** "del nordeste" */
-  readonly from: string;
+  readonly from: Msg;
+  /** "Brisa suave del nordeste" */
+  readonly labelFrom: Msg;
   readonly direction: CardinalDirection;
   /** The north-easterly trade wind that shapes Lanzarote's weather. */
   readonly isTradeWind: boolean;
   /** "14 km/h, rachas de 25" */
-  readonly detail: string;
+  readonly detail: Msg;
   /** 0–1, drives how fast things drift in the scene. */
   readonly strength: number;
 }
 
-const LEVELS: readonly { max: number; label: string; phrase: string }[] = [
-  { max: 6, label: 'Sin viento', phrase: 'sin apenas viento' },
-  { max: 20, label: 'Brisa suave', phrase: 'brisa suave' },
-  { max: 30, label: 'Viento moderado', phrase: 'viento moderado' },
-  { max: 45, label: 'Viento fuerte', phrase: 'viento fuerte' },
-  { max: Infinity, label: 'Viento muy fuerte', phrase: 'viento muy fuerte' },
-];
+/** Upper speed (km/h, exclusive) of each level, from "no wind" to "very strong". */
+const LEVEL_MAX: readonly number[] = [6, 20, 30, 45, Infinity];
 
 export function readWind(wind: Wind): WindReading {
-  const index = LEVELS.findIndex((l) => wind.speedKmh < l.max);
+  const index = LEVEL_MAX.findIndex((max) => wind.speedKmh < max);
   const level = (index === -1 ? 4 : index) as WindLevel;
   const direction = toCardinal(wind.fromDegrees);
-  const gustText = wind.gustKmh >= wind.speedKmh + 6 ? `, rachas de ${wind.gustKmh}` : '';
+  const label = msg(`wind.level.${level}.label`);
+  const from = fromDirection(wind.fromDegrees);
   return {
     level,
-    label: LEVELS[level].label,
-    phrase: LEVELS[level].phrase,
-    from: fromDirection(wind.fromDegrees),
+    label,
+    phrase: msg(`wind.level.${level}.phrase`),
+    from,
+    labelFrom: msg('wind.labelFrom', { label, from }),
     direction,
     isTradeWind: (direction === 'N' || direction === 'NE') && wind.speedKmh >= 15,
-    detail: `${wind.speedKmh} km/h${gustText}`,
+    detail:
+      wind.gustKmh >= wind.speedKmh + 6
+        ? msg('wind.detailGusts', { speed: wind.speedKmh, gust: wind.gustKmh })
+        : msg('wind.detail', { speed: wind.speedKmh }),
     strength: clamp(wind.speedKmh / 50),
   };
 }

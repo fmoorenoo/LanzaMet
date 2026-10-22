@@ -1,5 +1,7 @@
 import { Component, computed, inject, input, output } from '@angular/core';
 import { DATA_MODE } from '../../../core/data/http/data-config';
+import { Msg } from '../../../core/i18n/i18n.model';
+import { TranslatePipe } from '../../../core/i18n/t.pipe';
 import { Verdict } from '../../../core/insights/verdict.insight';
 import { LocationId } from '../../../core/models';
 import { LocationsStore } from '../../../core/state/locations.store';
@@ -14,8 +16,10 @@ import { StatusMessage } from '../../../shared/ui/status-message/status-message'
 export interface HeroView {
   readonly scene: SceneState;
   readonly temperature: number;
+  /** The day's forecast high and low, °C. */
+  readonly range: { readonly max: number; readonly min: number };
   readonly verdict: Verdict;
-  readonly momentLabel: string;
+  readonly momentLabel: Msg;
 }
 
 /**
@@ -25,7 +29,7 @@ export interface HeroView {
  */
 @Component({
   selector: 'qth-today-hero',
-  imports: [Scene, Icon, StatusMessage, HorizontalScroll, ScrollControls],
+  imports: [Scene, Icon, StatusMessage, HorizontalScroll, ScrollControls, TranslatePipe],
   templateUrl: './today-hero.html',
   styleUrl: './today-hero.scss',
   host: {
@@ -41,7 +45,7 @@ export class TodayHero {
   /** A newer request is in flight: the words soften until it lands. */
   readonly pending = input(false);
   /** Set when there is nothing to show because loading failed. */
-  readonly error = input<string | null>(null);
+  readonly error = input<Msg | null>(null);
   readonly isPreview = input(false);
 
   readonly backToNow = output<void>();

@@ -13,8 +13,10 @@ export type WarningLevel = 'amarillo' | 'naranja' | 'rojo';
 export interface WeatherWarning {
   readonly id: string;
   readonly level: WarningLevel;
-  /** "Costeros", "Lluvias", "Vientos"… as the issuer names it. */
+  /** "Costeros", "Lluvias", "Vientos"… as the issuer names it (in Spanish). */
   readonly phenomenon: string;
+  /** Meteoalerta code ("CO", "PR", "VI"…): lets the interface name it in any language. */
+  readonly phenomenonCode?: string | null;
   /** True when it applies to the coastal waters rather than the land. */
   readonly coastal: boolean;
   /** "Costa - Lanzarote" */
@@ -23,6 +25,8 @@ export interface WeatherWarning {
   readonly expires: IsoInstant;
   /** One sentence from the issuer: "Mar combinada del norte de 3 a 4 metros." */
   readonly description: string;
+  /** The issuer's own English version of the description, when it publishes one. */
+  readonly descriptionEn?: string | null;
   readonly url: string;
 }
 

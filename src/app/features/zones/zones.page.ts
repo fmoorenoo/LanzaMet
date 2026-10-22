@@ -1,5 +1,8 @@
 import { Component, computed, inject, linkedSignal } from '@angular/core';
 import { Router } from '@angular/router';
+import { msg } from '../../core/i18n/i18n.model';
+import { I18n } from '../../core/i18n/i18n.store';
+import { TranslatePipe } from '../../core/i18n/t.pipe';
 import { zoneHeadline } from '../../core/insights/island.insight';
 import { readSea } from '../../core/insights/sea.insight';
 import { dayVerdict } from '../../core/insights/verdict.insight';
@@ -18,7 +21,7 @@ import { IslandMap, MapMarker } from './island-map/island-map';
 /** The whole island at a glance: where it blows, where it shines, where to go. */
 @Component({
   selector: 'qth-zones-page',
-  imports: [IslandMap, Scene, Icon, StatusMessage, DataCredit],
+  imports: [IslandMap, Scene, Icon, StatusMessage, DataCredit, TranslatePipe],
   templateUrl: './zones.page.html',
   styleUrl: './zones.page.scss',
   host: { id: 'zones-page', class: 'page zones-page' },
@@ -28,6 +31,7 @@ export class ZonesPage {
   protected readonly locations = inject(LocationsStore);
   private readonly clock = inject(ClockStore);
   private readonly router = inject(Router);
+  private readonly i18n = inject(I18n);
 
   /** The place highlighted on the map; starts on the one being followed. */
   protected readonly focusId = linkedSignal<LocationId | null>(
@@ -42,7 +46,7 @@ export class ZonesPage {
       weather: zone.weather.current,
       upcoming: zone.weather.hourly,
       sea: zone.sea?.current ?? null,
-      dayWord: 'Hoy',
+      day: 'today',
     });
   }
 
@@ -56,7 +60,8 @@ export class ZonesPage {
       sky: zone.weather.current.sky,
       isDaylight: zone.weather.current.isDaylight,
       mood: this.verdictFor(zone).mood,
-      headline: zoneHeadline(zone),
+      // Spoken by the marker's accessible name, so it is plain text.
+      headline: this.i18n.t(zoneHeadline(zone)),
     })),
   );
 
@@ -75,8 +80,10 @@ export class ZonesPage {
   protected readonly windCaption = computed(() => {
     const zones = this.zones();
     const from = this.windFrom();
-    if (from === null || zones.length === 0) return 'Sin apenas viento en la isla';
-    return `Viento ${readWind({ speedKmh: 20, gustKmh: 20, fromDegrees: from }).from}`;
+    if (from === null || zones.length === 0) return msg('zones.calm');
+    return msg('zones.wind', {
+      from: readWind({ speedKmh: 20, gustKmh: 20, fromDegrees: from }).from,
+    });
   });
 
   protected readonly cards = computed(() => {
@@ -87,7 +94,6 @@ export class ZonesPage {
         id: zone.location.id,
         name: zone.location.name,
         municipality: zone.location.municipality,
-        summary: zone.location.summary,
         temperature: Math.round(zone.weather.current.temperatureC),
         headline: verdict.headline,
         sentence: verdict.sentence,

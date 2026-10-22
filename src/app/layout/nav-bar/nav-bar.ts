@@ -3,6 +3,8 @@ import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { delay, filter, map, take } from 'rxjs';
 import { DATA_MODE } from '../../core/data/http/data-config';
+import { MessageKey } from '../../core/i18n/i18n.model';
+import { TranslatePipe } from '../../core/i18n/t.pipe';
 import { Icon } from '../../shared/ui/icon/icon';
 import { IconName } from '../../shared/ui/icon/icons';
 import { BrandMark } from '../brand-mark/brand-mark';
@@ -13,7 +15,7 @@ interface NavItem {
   /** Stable English name for the route, exposed as `data-route`. */
   readonly id: string;
   readonly path: string;
-  readonly label: string;
+  readonly label: MessageKey;
   readonly icon: IconName;
 }
 
@@ -23,7 +25,7 @@ interface NavItem {
  */
 @Component({
   selector: 'qth-nav-bar',
-  imports: [RouterLink, RouterLinkActive, Icon, BrandMark],
+  imports: [RouterLink, RouterLinkActive, Icon, BrandMark, TranslatePipe],
   templateUrl: './nav-bar.html',
   styleUrl: './nav-bar.scss',
 })
@@ -33,10 +35,10 @@ export class NavBar {
   private readonly router = inject(Router);
 
   protected readonly items: readonly NavItem[] = [
-    { id: 'today', path: '/', label: 'Hoy', icon: 'today' },
-    { id: 'zones', path: '/zonas', label: 'Zonas', icon: 'zones' },
-    { id: 'sea', path: '/mar', label: 'Mar', icon: 'sea' },
-    { id: 'plans', path: '/donde-ir', label: 'Dónde ir', icon: 'plans' },
+    { id: 'today', path: '/', label: 'nav.today', icon: 'today' },
+    { id: 'zones', path: '/zonas', label: 'nav.zones', icon: 'zones' },
+    { id: 'sea', path: '/mar', label: 'nav.sea', icon: 'sea' },
+    { id: 'plans', path: '/donde-ir', label: 'nav.plans', icon: 'plans' },
   ];
 
   private readonly navigations = this.router.events.pipe(

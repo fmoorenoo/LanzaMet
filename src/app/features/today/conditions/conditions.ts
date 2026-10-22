@@ -1,5 +1,7 @@
 import { Component, computed, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { msg } from '../../../core/i18n/i18n.model';
+import { TranslatePipe } from '../../../core/i18n/t.pipe';
 import { SeaReading } from '../../../core/insights/sea.insight';
 import { TideReading } from '../../../core/insights/tide.insight';
 import { Trend, WindReading } from '../../../core/insights/wind.insight';
@@ -28,7 +30,7 @@ const WAVE_AMPLITUDE = [0.8, 2, 3.4, 5, 6.6];
 /** Wind, sea and tide — each as a word first, a number second, and a tiny gauge. */
 @Component({
   selector: 'qth-conditions',
-  imports: [RouterLink, Icon],
+  imports: [RouterLink, Icon, TranslatePipe],
   templateUrl: './conditions.html',
   styleUrl: './conditions.scss',
   host: { class: 'current-conditions' },
@@ -39,14 +41,8 @@ export class Conditions {
   protected readonly windBars = [0, 1, 2, 3];
 
   protected readonly windTrendText = computed(() => {
-    switch (this.view().windTrend) {
-      case 'sube':
-        return 'va a más';
-      case 'baja':
-        return 'va a menos';
-      default:
-        return null;
-    }
+    const trend = this.view().windTrend;
+    return trend === 'estable' ? null : msg(`wind.trend.${trend}`);
   });
 
   protected readonly wavePath = computed(() => {

@@ -4,8 +4,8 @@
     <ng-content select="[timelineAction]" />
     <qth-scroll-controls
       [scroller]="scroll"
-      backLabel="Horas anteriores"
-      forwardLabel="Horas siguientes"
+      [backLabel]="'hours.previous' | t"
+      [forwardLabel]="'hours.next' | t"
     />
   </div>
 </div>
@@ -14,7 +14,7 @@
   <div
     class="track hour-track"
     role="group"
-    aria-label="Próximas 24 horas. Usa las flechas para recorrerlas."
+    [attr.aria-label]="'hours.label' | t"
     [style.width.px]="width()"
     (keydown)="onKeydown($event)"
   >
@@ -49,8 +49,8 @@
         [attr.tabindex]="cell.index === activeIndex() ? 0 : -1"
         (click)="choose(cell.index)"
       >
-        <span class="day-mark">{{ cell.dayMark }}</span>
-        <span class="time">{{ cell.label }}</span>
+        <span class="day-mark">{{ cell.dayMark | t }}</span>
+        <span class="time">{{ cell.label | t }}</span>
         <qth-sky-glyph [sky]="cell.sky" [isDaylight]="cell.isDaylight" [decorative]="true" />
         <span class="temp t-num" [style.transform]="'translateY(' + (cell.y - 22) + 'px)'"
           >{{ cell.temperature }}°</span
@@ -63,6 +63,6 @@
   </div>
 </div>
 <p class="legend hour-legend" aria-hidden="true">
-  <span>Toca una hora para verla arriba</span>
-  <span class="legend-wind"><span class="legend-bar"></span>viento</span>
+  <span>{{ 'hours.hint' | t }}</span>
+  <span class="legend-wind"><span class="legend-bar"></span>{{ 'hours.wind' | t }}</span>
 </p>

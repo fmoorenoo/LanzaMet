@@ -1,16 +1,26 @@
 import { NgComponentOutlet } from '@angular/common';
 import { Component, computed, inject } from '@angular/core';
 import { DATA_MODE } from '../../core/data/http/data-config';
+import { msg, MessageKey } from '../../core/i18n/i18n.model';
+import { TranslatePipe } from '../../core/i18n/t.pipe';
 import { OfficialStore } from '../../core/state/official.store';
+import { SectionStatus } from '../../core/state/section-state';
 import { ThemePreference, ThemeStore } from '../../core/state/theme.store';
 import { Sheet } from '../../shared/ui/sheet/sheet';
+import { LanguageSelector } from '../language-selector/language-selector';
 import { UiStore } from '../ui.store';
 import { DEMO_CONTROLS } from './demo-controls.token';
 
-/** Appearance, where the data comes from, and — in the demo build — the demo's controls. */
+const STATUS: Readonly<Record<Exclude<SectionStatus, 'empty'>, MessageKey>> = {
+  ready: 'settings.status.ready',
+  error: 'settings.status.error',
+  loading: 'settings.status.checking',
+};
+
+/** Language, appearance, where the data comes from and — in the demo build — the demo's controls. */
 @Component({
   selector: 'qth-settings-panel',
-  imports: [Sheet, NgComponentOutlet],
+  imports: [Sheet, NgComponentOutlet, TranslatePipe, LanguageSelector],
   templateUrl: './settings-panel.html',
   styleUrl: './settings-panel.scss',
 })
@@ -24,32 +34,22 @@ export class SettingsPanel {
 
   protected readonly themeOptions: readonly {
     value: ThemePreference;
-    label: string;
-    hint: string;
+    label: MessageKey;
+    hint: MessageKey | null;
   }[] = [
-    {
-      value: 'auto',
-      label: 'Según la hora',
-      hint: 'De día claro, de noche oscuro, con el sol de la zona.',
-    },
-    { value: 'light', label: 'Siempre claro', hint: '' },
-    { value: 'dark', label: 'Siempre oscuro', hint: '' },
+    { value: 'auto', label: 'settings.theme.auto', hint: 'settings.theme.auto.hint' },
+    { value: 'light', label: 'settings.theme.light', hint: null },
+    { value: 'dark', label: 'settings.theme.dark', hint: null },
   ];
 
   protected readonly warningsStatus = computed(() => {
-    const state = this.official.bulletin();
-    if (state.status === 'ready') return 'Conectado';
-    if (state.status === 'error') return 'Sin conexión ahora';
-    if (state.status === 'empty') return 'No disponible en esta instalación';
-    return 'Comprobando…';
+    const status = this.official.bulletin().status;
+    return msg(status === 'empty' ? 'settings.status.unavailable' : STATUS[status]);
   });
 
   protected readonly observationsStatus = computed(() => {
-    const state = this.official.observations();
-    if (state.status === 'ready') return 'Conectado';
-    if (state.status === 'error') return 'Sin conexión ahora';
-    if (state.status === 'empty') return 'Pendiente de credenciales de AEMET';
-    return 'Comprobando…';
+    const status = this.official.observations().status;
+    return msg(status === 'empty' ? 'settings.status.noKey' : STATUS[status]);
   });
 
   protected setTheme(preference: ThemePreference): void {

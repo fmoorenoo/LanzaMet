@@ -1,4 +1,5 @@
 import { Observable } from 'rxjs';
+import { Msg } from '../i18n/i18n.model';
 import {
   Location,
   LocationId,
@@ -41,13 +42,16 @@ export abstract class ObservationSource {
   abstract latest(): Observable<readonly StationObservation[] | null>;
 }
 
-/** Raised by sources when a provider fails; the message is safe to show. */
+/**
+ * Raised by sources when a provider fails. `detail` is safe to show and is
+ * written in whichever language the visitor reads (see core/i18n).
+ */
 export class DataSourceError extends Error {
   constructor(
-    message: string,
+    readonly detail: Msg,
     readonly retryable = true,
   ) {
-    super(message);
+    super(detail.key);
     this.name = 'DataSourceError';
   }
 }

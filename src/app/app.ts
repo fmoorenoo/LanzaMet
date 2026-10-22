@@ -1,5 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { I18n } from './core/i18n/i18n.store';
+import { TranslatePipe } from './core/i18n/t.pipe';
 import { ThemeStore } from './core/state/theme.store';
 import { LocationPicker } from './layout/location-picker/location-picker';
 import { NavBar } from './layout/nav-bar/nav-bar';
@@ -7,13 +9,15 @@ import { SettingsPanel } from './layout/settings-panel/settings-panel';
 
 @Component({
   selector: 'qth-root',
-  imports: [RouterOutlet, NavBar, LocationPicker, SettingsPanel],
+  imports: [RouterOutlet, NavBar, LocationPicker, SettingsPanel, TranslatePipe],
   templateUrl: './app.html',
   styleUrl: './app.scss',
 })
 export class App {
   constructor() {
-    // Day/night theming follows the sun from the first frame.
+    // Day/night theming follows the sun from the first frame…
     inject(ThemeStore);
+    // …and the document speaks the visitor's language from the first frame too.
+    inject(I18n);
   }
 }

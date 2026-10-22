@@ -15,11 +15,13 @@ export function simulateWarnings(input: Omit<SimulationInput, 'location'>): Weat
     id: 'demo-costeros',
     level: 'amarillo',
     phenomenon: 'Costeros',
+    phenomenonCode: 'CO',
     coastal: true,
     area: 'Costa - Lanzarote',
     onset: dayStart.toISOString(),
     expires: until,
     description: 'Mar combinada del norte de 3 a 4 metros (simulado).',
+    descriptionEn: 'Combined northerly sea of 3 to 4 metres (simulated).',
     url: 'https://www.aemet.es/es/eltiempo/prediccion/avisos',
   };
   switch (input.scenario) {
@@ -30,9 +32,11 @@ export function simulateWarnings(input: Omit<SimulationInput, 'location'>): Weat
           ...coastal,
           id: 'demo-lluvias',
           phenomenon: 'Lluvias',
+          phenomenonCode: 'PR',
           coastal: false,
           area: 'Lanzarote',
           description: 'Precipitación acumulada en una hora: 15 mm (simulado).',
+          descriptionEn: 'One-hour accumulated precipitation: 15 mm (simulated).',
         },
       ];
     case 'ventoso':
@@ -48,7 +52,7 @@ export function simulateObservation(input: SimulationInput): StationObservation 
   const now = simulateWeather({ ...input, now: hour }).current;
   return {
     stationId: 'DEMO',
-    stationName: 'Estación de demostración',
+    stationName: 'Demo',
     position: location.position,
     altitudeM: 10,
     time: hour.toISOString(),

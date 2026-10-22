@@ -14,6 +14,7 @@ import {
   WarningSource,
   WeatherSource,
 } from '../core/data/data-sources';
+import { MessageKey, msg } from '../core/i18n/i18n.model';
 import { DATA_MODE, DataMode } from '../core/data/http/data-config';
 import {
   Location,
@@ -44,7 +45,7 @@ class MockRequests {
   private readonly clock = inject(ClockStore);
 
   respond<T>(
-    serviceName: string,
+    service: MessageKey,
     produce: (input: Omit<SimulationInput, 'location'>) => T,
   ): Observable<T> {
     return defer(() => {
@@ -52,7 +53,7 @@ class MockRequests {
       if (untracked(this.demo.failRequests)) {
         return timer(latency).pipe(
           switchMap(() =>
-            throwError(() => new DataSourceError(`No hemos podido conectar con ${serviceName}.`)),
+            throwError(() => new DataSourceError(msg('error.connect', { service: msg(service) }))),
           ),
         );
       }
@@ -64,7 +65,7 @@ class MockRequests {
 
 function findLocation(id: LocationId): Location {
   const location = LOCATIONS_SEED.find((l) => l.id === id);
-  if (!location) throw new DataSourceError('No tenemos datos de esa zona.', false);
+  if (!location) throw new DataSourceError(msg('error.unknownPlace'), false);
   return location;
 }
 
@@ -73,7 +74,7 @@ class MockLocationSource extends LocationSource {
   private readonly requests = inject(MockRequests);
 
   list(): Observable<readonly Location[]> {
-    return this.requests.respond('el listado de zonas', () => LOCATIONS_SEED);
+    return this.requests.respond('service.places', () => LOCATIONS_SEED);
   }
 }
 
@@ -82,7 +83,7 @@ class MockWeatherSource extends WeatherSource {
   private readonly requests = inject(MockRequests);
 
   forecast(locationId: LocationId): Observable<WeatherForecast> {
-    return this.requests.respond('el servicio del tiempo', (input) =>
+    return this.requests.respond('service.weather', (input) =>
       simulateWeather({ ...input, location: findLocation(locationId) }),
     );
   }
@@ -93,13 +94,13 @@ class MockMarineSource extends MarineSource {
   private readonly requests = inject(MockRequests);
 
   sea(locationId: LocationId): Observable<SeaForecast | null> {
-    return this.requests.respond('el servicio marítimo', (input) =>
+    return this.requests.respond('service.sea', (input) =>
       simulateSea({ ...input, location: findLocation(locationId) }),
     );
   }
 
   tides(locationId: LocationId): Observable<TideForecast | null> {
-    return this.requests.respond('el servicio de mareas', (input) =>
+    return this.requests.respond('service.tides', (input) =>
       simulateTides({ ...input, location: findLocation(locationId) }),
     );
   }
@@ -110,7 +111,7 @@ class MockWarningSource extends WarningSource {
   private readonly requests = inject(MockRequests);
 
   active(): Observable<WarningBulletin | null> {
-    return this.requests.respond('el servicio de avisos', (input) => ({
+    return this.requests.respond('service.warnings', (input) => ({
       warnings: simulateWarnings(input),
       publishedAt: input.now.toISOString(),
       retrievedAt: input.now.toISOString(),
@@ -123,7 +124,7 @@ class MockObservationSource extends ObservationSource {
   private readonly requests = inject(MockRequests);
 
   latest(): Observable<readonly StationObservation[] | null> {
-    return this.requests.respond('el servicio de observación', (input) => [
+    return this.requests.respond('service.observations', (input) => [
       simulateObservation({ ...input, location: findLocation('arrecife') }),
     ]);
   }

@@ -13,6 +13,7 @@ import {
   WeatherSnapshot,
 } from '../../models';
 import { addHours, islandDateKey, islandHour, TIME } from '../../utils/time';
+import { msg } from '../../i18n/i18n.model';
 import { DataSourceError } from '../data-sources';
 import { AirQualityDto, ForecastDto, MarineDto } from './open-meteo.dto';
 
@@ -233,7 +234,7 @@ export function toWeatherForecast(
     .slice(0, DAYS);
 
   if (!current || hourly.length < 24 || daily[0]?.date !== today) {
-    throw new DataSourceError('La previsión ha llegado incompleta. Prueba de nuevo en un rato.');
+    throw new DataSourceError(msg('error.incomplete'));
   }
   return { locationId, issuedAt: retrievedAt.toISOString(), current, hourly, daily };
 }
@@ -339,7 +340,7 @@ export function findTideExtremes(series: readonly TidePoint[]): TideExtreme[] {
 
 export const MODEL_TIDE_SOURCE = {
   kind: 'model',
-  name: 'Modelo oceánico Météo-France SMOC (Open-Meteo)',
+  name: 'Météo-France SMOC (Open-Meteo)',
   official: false,
 } as const;
 

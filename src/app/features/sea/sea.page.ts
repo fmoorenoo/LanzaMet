@@ -1,7 +1,9 @@
 import { Component, computed, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { describeWaves, readSea, seaLevelFor } from '../../core/insights/sea.insight';
-import { extremesBetween, formatTideHeight, readTide } from '../../core/insights/tide.insight';
+import { msg, Msg } from '../../core/i18n/i18n.model';
+import { TranslatePipe } from '../../core/i18n/t.pipe';
+import { extremesBetween, readTide, tideHeight } from '../../core/insights/tide.insight';
 import { DATA_MODE } from '../../core/data/http/data-config';
 import { LocationId } from '../../core/models';
 import { ClockStore } from '../../core/state/clock.store';
@@ -10,7 +12,7 @@ import { IslandStore } from '../../core/state/island.store';
 import { LocationsStore } from '../../core/state/locations.store';
 import { OfficialStore } from '../../core/state/official.store';
 import { distanceKm } from '../../core/utils/geo';
-import { formatTime, islandDayStart, toDate } from '../../core/utils/time';
+import { islandDayStart, toDate } from '../../core/utils/time';
 import { UiStore } from '../../layout/ui.store';
 import { DataCredit } from '../../shared/ui/data-credit/data-credit';
 import { Icon } from '../../shared/ui/icon/icon';
@@ -23,7 +25,7 @@ const WAVE_AMPLITUDE = [0.8, 2, 3.4, 5, 6.6];
 /** The ocean: is the tide coming in or going out, and where is the water calm? */
 @Component({
   selector: 'qth-sea-page',
-  imports: [Icon, StatusMessage, TideChart, DataCredit, WarningBanner],
+  imports: [Icon, StatusMessage, TideChart, DataCredit, WarningBanner, TranslatePipe],
   templateUrl: './sea.page.html',
   styleUrl: './sea.page.scss',
   host: { id: 'sea-page', class: 'page sea-page' },
@@ -59,14 +61,26 @@ export class SeaPage {
     if (!tides) return [];
     const now = this.clock.now();
     return [
-      { label: 'Hoy', start: islandDayStart(now, 0), end: islandDayStart(now, 1) },
-      { label: 'Mañana', start: islandDayStart(now, 1), end: islandDayStart(now, 2) },
+      {
+        id: 'today',
+        label: msg('day.today'),
+        start: islandDayStart(now, 0),
+        end: islandDayStart(now, 1),
+      },
+      {
+        id: 'tomorrow',
+        label: msg('day.tomorrow'),
+        start: islandDayStart(now, 1),
+        end: islandDayStart(now, 2),
+      },
     ].map((day) => ({
+      id: day.id,
       label: day.label,
       extremes: extremesBetween(tides, day.start, day.end).map((e) => ({
         kind: e.kind,
-        time: formatTime(e.time),
-        height: formatTideHeight(e.heightM, tides.datum),
+        name: msg(`tide.kind.${e.kind}`),
+        time: e.time,
+        height: tideHeight(e.heightM, tides.datum),
         isPast: toDate(e.time) < now,
       })),
     }));
@@ -89,15 +103,20 @@ export class SeaPage {
   });
 
   /** Where the tide comes from, said plainly — an estimate is never passed off as official. */
-  protected readonly tideSource = computed(() => {
+  protected readonly tideSource = computed<Msg[]>(() => {
     const tides = this.forecast.tides().data;
-    if (!tides) return null;
+    if (!tides) return [];
     const { source } = tides;
     const origin = source.official
-      ? `${source.kind === 'station' ? 'Mareógrafo' : 'Predicción de referencia'}: ${source.name}.`
-      : `Estimación del ${source.name.charAt(0).toLocaleLowerCase('es-ES')}${source.name.slice(1)}. No es una tabla oficial ni sirve para navegar.`;
-    const datum = tides.datum === 'mean-sea-level' ? ' Alturas sobre el nivel medio del mar.' : '';
-    return `${origin}${datum}${this.isDemo ? ' Datos ficticios.' : ''}`;
+      ? msg(source.kind === 'station' ? 'seaPage.source.station' : 'seaPage.source.reference', {
+          name: source.name,
+        })
+      : msg('seaPage.source.model', { name: source.name });
+    return [
+      origin,
+      ...(tides.datum === 'mean-sea-level' ? [msg('seaPage.source.datum')] : []),
+      ...(this.isDemo ? [msg('seaPage.source.demo')] : []),
+    ];
   });
 
   protected readonly coastalWarnings = computed(() =>

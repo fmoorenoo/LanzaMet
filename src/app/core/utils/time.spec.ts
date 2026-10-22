@@ -1,6 +1,5 @@
 import {
   atIslandHour,
-  formatDuration,
   formatTime,
   islandDateKey,
   islandDayStart,
@@ -31,11 +30,5 @@ describe('island time', () => {
   it('pins an island hour to the right instant', () => {
     const pinned = atIslandHour(new Date('2026-10-22T10:00:00Z'), 20.5);
     expect(formatTime(pinned)).toBe('20:30');
-  });
-
-  it('describes durations in plain words', () => {
-    expect(formatDuration(45 * 60_000)).toBe('45 min');
-    expect(formatDuration(130 * 60_000)).toBe('2 h 10 min');
-    expect(formatDuration(60_000)).toBe('un momento');
   });
 });

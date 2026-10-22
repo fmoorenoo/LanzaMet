@@ -1,3 +1,4 @@
+import type { Msg } from '../i18n/i18n.model';
 import { LocationId } from './location.model';
 import { IsoInstant } from './weather.model';
 
@@ -13,9 +14,9 @@ export interface Recommendation {
   readonly kind: PlanKind;
   readonly locationId: LocationId;
   /** Short, plain-language headline: "Playa en Playa Blanca". */
-  readonly title: string;
+  readonly title: Msg;
   /** Why, in one sentence. */
-  readonly reason: string;
+  readonly reason: Msg;
   readonly window?: TimeWindow;
   /** 0–1, used for ordering only. */
   readonly score: number;

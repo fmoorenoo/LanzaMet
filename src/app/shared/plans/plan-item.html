@@ -8,8 +8,8 @@
     <qth-icon [name]="kind().icon" />
   </span>
   <span class="copy plan-copy">
-    <span class="title plan-title">{{ plan().title }}</span>
-    <span class="reason plan-reason">{{ plan().reason }}</span>
-    <span class="when plan-window t-num">{{ when() }}</span>
+    <span class="title plan-title">{{ plan().title | t }}</span>
+    <span class="reason plan-reason">{{ plan().reason | t }}</span>
+    <span class="when plan-window t-num">{{ when() | t }}</span>
   </span>
 </button>

@@ -26,8 +26,10 @@
       [style.left.%]="label.left"
       [style.top.%]="label.top"
     >
-      <span class="extreme-kind">{{ label.kind === 'pleamar' ? 'Pleamar' : 'Bajamar' }}</span>
-      <span class="t-num">{{ label.time }} · {{ label.height }} m</span>
+      <span class="extreme-kind">{{ label.name | t }}</span>
+      <span class="t-num"
+        >{{ 'common.value' | t: { value: { time: label.time } } }} · {{ label.height | t }}</span
+      >
     </span>
   }
 

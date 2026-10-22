@@ -1,46 +1,33 @@
+import { msg, Msg } from '../i18n/i18n.model';
 import { SkyCondition } from '../models';
 
-const DAY_PHRASE: Readonly<Record<SkyCondition, string>> = {
-  despejado: 'Sol',
-  'poco-nuboso': 'Sol entre nubes',
-  nuboso: 'Nubes y claros',
-  cubierto: 'Cielo cubierto',
-  calima: 'Calima',
-  lluvia: 'Chubascos',
-};
-
-const NIGHT_PHRASE: Readonly<Record<SkyCondition, string>> = {
-  despejado: 'Cielo despejado',
-  'poco-nuboso': 'Algunas nubes',
-  nuboso: 'Nubes y claros',
-  cubierto: 'Cielo cubierto',
-  calima: 'Calima',
-  lluvia: 'Chubascos',
-};
-
 /** How the sky reads right now: "Sol entre nubes". */
-export function skyPhrase(sky: SkyCondition, isDaylight: boolean): string {
-  return (isDaylight ? DAY_PHRASE : NIGHT_PHRASE)[sky];
+export function skyPhrase(sky: SkyCondition, isDaylight: boolean): Msg {
+  return msg(isDaylight ? `sky.day.${sky}` : `sky.night.${sky}`);
 }
 
 /** Accessible name for a weather glyph. */
-export function skyLabel(sky: SkyCondition, isDaylight: boolean): string {
+export function skyLabel(sky: SkyCondition, isDaylight: boolean): Msg {
   return skyPhrase(sky, isDaylight);
 }
 
-export type UvBand = 'bajo' | 'moderado' | 'alto' | 'muy alto' | 'extremo';
+export type UvBand = 'bajo' | 'moderado' | 'alto' | 'muy-alto' | 'extremo';
 
 export interface UvReading {
   readonly band: UvBand;
   /** "Sol muy intenso" */
-  readonly label: string;
+  readonly label: Msg;
   readonly needsProtection: boolean;
 }
 
+function uv(band: UvBand, needsProtection: boolean): UvReading {
+  return { band, label: msg(`uv.${band}`), needsProtection };
+}
+
 export function readUv(uvIndex: number): UvReading {
-  if (uvIndex <= 2) return { band: 'bajo', label: 'Sol suave', needsProtection: false };
-  if (uvIndex <= 5) return { band: 'moderado', label: 'Sol moderado', needsProtection: true };
-  if (uvIndex <= 7) return { band: 'alto', label: 'Sol intenso', needsProtection: true };
-  if (uvIndex <= 10) return { band: 'muy alto', label: 'Sol muy intenso', needsProtection: true };
-  return { band: 'extremo', label: 'Sol extremo', needsProtection: true };
+  if (uvIndex <= 2) return uv('bajo', false);
+  if (uvIndex <= 5) return uv('moderado', true);
+  if (uvIndex <= 7) return uv('alto', true);
+  if (uvIndex <= 10) return uv('muy-alto', true);
+  return uv('extremo', true);
 }

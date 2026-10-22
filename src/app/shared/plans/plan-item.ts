@@ -4,7 +4,9 @@ import { PlanKind, Recommendation } from '../../core/models';
 import { ClockStore } from '../../core/state/clock.store';
 import { IslandStore } from '../../core/state/island.store';
 import { LocationsStore } from '../../core/state/locations.store';
-import { formatWindow } from '../../core/utils/time';
+import { msg } from '../../core/i18n/i18n.model';
+import { timeWindow } from '../../core/i18n/phrases';
+import { TranslatePipe } from '../../core/i18n/t.pipe';
 import { Scene } from '../scene/scene';
 import { zoneScene } from '../scene/scene-state';
 import { Icon } from '../ui/icon/icon';
@@ -22,7 +24,7 @@ const KIND: Readonly<Record<PlanKind, { icon: IconName }>> = {
 /** One suggestion. Choosing it opens that place's day. */
 @Component({
   selector: 'qth-plan-item',
-  imports: [Icon, Scene],
+  imports: [Icon, Scene, TranslatePipe],
   templateUrl: './plan-item.html',
   styleUrl: './plan-item.scss',
   host: {
@@ -45,7 +47,7 @@ export class PlanItem {
 
   protected readonly when = computed(() => {
     const window = this.plan().window;
-    return window ? formatWindow(window.from, window.to, this.clock.now()) : 'Ahora mismo';
+    return window ? timeWindow(window.from, window.to, this.clock.now()) : msg('common.rightNow');
   });
 
   protected readonly scene = computed(() => {

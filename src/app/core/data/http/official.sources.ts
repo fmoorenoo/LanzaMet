@@ -4,6 +4,7 @@ import { catchError, map, Observable, of, throwError } from 'rxjs';
 import { StationObservation, WarningBulletin, WeatherWarning } from '../../models';
 import { TIME } from '../../utils/time';
 import { ObservationSource, WarningSource } from '../data-sources';
+import { MessageKey } from '../../i18n/i18n.model';
 import { DATA_CONFIG } from './data-config';
 import { resilient } from './http-errors';
 import { ResponseCache } from './response-cache';
@@ -33,6 +34,9 @@ const isRecord = (value: unknown): value is Record<string, unknown> =>
 const isString = (value: unknown): value is string => typeof value === 'string';
 const isNumberOrNull = (value: unknown): value is number | null =>
   value === null || typeof value === 'number';
+/** Fields added later by the API: absent on older deployments, so optional. */
+const isOptionalText = (value: unknown): boolean =>
+  value === undefined || value === null || typeof value === 'string';
 
 function isWarning(value: unknown): value is WeatherWarning {
   return (
@@ -45,6 +49,8 @@ function isWarning(value: unknown): value is WeatherWarning {
     isString(value['onset']) &&
     isString(value['expires']) &&
     isString(value['description']) &&
+    isOptionalText(value['descriptionEn']) &&
+    isOptionalText(value['phenomenonCode']) &&
     isString(value['url'])
   );
 }
@@ -76,7 +82,7 @@ class OfficialApi {
    * GET `path` on the app's API. Resolves to `UNAVAILABLE` when there is no
    * such API here (not configured, not deployed, or without credentials).
    */
-  get(path: string, ttlMs: number, service: string): Observable<unknown> {
+  get(path: string, ttlMs: number, service: MessageKey): Observable<unknown> {
     const base = this.config.proxyUrl;
     if (base === null) return of(UNAVAILABLE);
     const url = `${base.replace(/\/$/, '')}/${path}`;
@@ -111,7 +117,7 @@ export class AemetWarningSource extends WarningSource {
   private readonly api = inject(OfficialApi);
 
   active(): Observable<WarningBulletin | null> {
-    return this.api.get('avisos', WARNINGS_TTL, 'el servicio de avisos de AEMET').pipe(
+    return this.api.get('avisos', WARNINGS_TTL, 'service.warnings').pipe(
       map((body: unknown) => {
         if (body === UNAVAILABLE || !isRecord(body)) return null;
         const warnings = Array.isArray(body['warnings']) ? body['warnings'].filter(isWarning) : [];
@@ -132,16 +138,14 @@ export class AemetObservationSource extends ObservationSource {
   private readonly api = inject(OfficialApi);
 
   latest(): Observable<readonly StationObservation[] | null> {
-    return this.api
-      .get('observaciones', OBSERVATIONS_TTL, 'el servicio de observación de AEMET')
-      .pipe(
-        map((body: unknown) => {
-          if (body === UNAVAILABLE || !isRecord(body)) return null;
-          return Array.isArray(body['observations'])
-            ? body['observations'].filter(isObservation)
-            : [];
-        }),
-      );
+    return this.api.get('observaciones', OBSERVATIONS_TTL, 'service.observations').pipe(
+      map((body: unknown) => {
+        if (body === UNAVAILABLE || !isRecord(body)) return null;
+        return Array.isArray(body['observations'])
+          ? body['observations'].filter(isObservation)
+          : [];
+      }),
+    );
   }
 }
 

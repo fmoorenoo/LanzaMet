@@ -24,9 +24,8 @@ export interface ScenarioDay {
 }
 
 export interface Scenario {
+  /** Named in the dictionaries as `demo.scenario.<id>` and `demo.scenario.<id>.text`. */
   readonly id: ScenarioId;
-  readonly name: string;
-  readonly description: string;
   readonly days: readonly ScenarioDay[];
 }
 
@@ -35,8 +34,6 @@ const day = (d: ScenarioDay): ScenarioDay => d;
 export const SCENARIOS: readonly Scenario[] = [
   {
     id: 'alisio',
-    name: 'Alisio de otoño',
-    description: 'Sol, alisio del nordeste y olas en el norte. El sur, en calma.',
     days: [
       day({
         maxC: 25.5,
@@ -119,8 +116,6 @@ export const SCENARIOS: readonly Scenario[] = [
   },
   {
     id: 'calma',
-    name: 'Calma chicha',
-    description: 'Sin apenas viento, mar como un plato y calor. Día de playa en toda la isla.',
     days: [
       day({
         maxC: 27,
@@ -203,8 +198,6 @@ export const SCENARIOS: readonly Scenario[] = [
   },
   {
     id: 'ventoso',
-    name: 'Alisio fuerte',
-    description: 'Viento fuerte del nordeste y mar movido. Toca buscar abrigo en el sur.',
     days: [
       day({
         maxC: 23,
@@ -287,8 +280,6 @@ export const SCENARIOS: readonly Scenario[] = [
   },
   {
     id: 'calima',
-    name: 'Calima',
-    description: 'Polvo del Sáhara, cielo blanquecino y calor seco con viento del este.',
     days: [
       day({
         maxC: 32,
@@ -371,8 +362,6 @@ export const SCENARIOS: readonly Scenario[] = [
   },
   {
     id: 'borrasca',
-    name: 'Borrasca del suroeste',
-    description: 'Nubes, chubascos y viento del suroeste: esta vez el sur se lleva el oleaje.',
     days: [
       day({
         maxC: 20.5,

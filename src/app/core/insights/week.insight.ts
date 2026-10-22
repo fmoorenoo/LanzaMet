@@ -1,8 +1,9 @@
+import { msg, Msg } from '../i18n/i18n.model';
 import { DailyForecast } from '../models';
 import { readWind } from './wind.insight';
 
 /** A day in a few words: "Sol y viento fuerte". */
-export function dayPhrase(day: DailyForecast): string {
+export function dayPhrase(day: DailyForecast): Msg {
   const wind = readWind({
     speedKmh: day.maxWindKmh,
     gustKmh: day.maxWindKmh,
@@ -10,30 +11,30 @@ export function dayPhrase(day: DailyForecast): string {
   });
   switch (day.sky) {
     case 'lluvia':
-      return 'Chubascos';
+      return msg('week.rain');
     case 'calima':
-      return day.maxC >= 30 ? 'Calima y calor' : 'Calima';
+      return msg(day.maxC >= 30 ? 'week.calimaHeat' : 'week.calima');
     case 'cubierto':
-      return 'Cubierto';
+      return msg('week.overcast');
     case 'nuboso':
-      return wind.level >= 3 ? 'Nubes y viento' : 'Nubes y claros';
+      return msg(wind.level >= 3 ? 'week.cloudWind' : 'week.cloudSun');
     default:
-      if (wind.level >= 3) return 'Sol y viento fuerte';
-      if (wind.level === 2) return 'Sol y algo de viento';
-      return day.sky === 'despejado' ? 'Sol y brisa' : 'Sol entre nubes';
+      if (wind.level >= 3) return msg('week.sunStrongWind');
+      if (wind.level === 2) return msg('week.sunSomeWind');
+      return msg(day.sky === 'despejado' ? 'week.sunBreeze' : 'week.sunClouds');
   }
 }
 
 /** What changes compared with the day before, if anything worth saying. */
-export function dayChange(previous: DailyForecast | undefined, day: DailyForecast): string | null {
+export function dayChange(previous: DailyForecast | undefined, day: DailyForecast): Msg | null {
   if (!previous) return null;
-  if (day.sky === 'lluvia' && previous.sky !== 'lluvia') return 'Llega la lluvia';
-  if (day.sky === 'calima' && previous.sky !== 'calima') return 'Llega la calima';
-  if (previous.sky === 'calima' && day.sky !== 'calima') return 'Se va la calima';
-  if (previous.sky === 'lluvia' && day.sky !== 'lluvia') return 'Vuelve el sol';
-  if (day.maxWindKmh - previous.maxWindKmh >= 8) return 'Más viento';
-  if (previous.maxWindKmh - day.maxWindKmh >= 8) return 'Amaina el viento';
-  if (day.maxC - previous.maxC >= 3) return 'Más calor';
-  if (previous.maxC - day.maxC >= 3) return 'Refresca';
+  if (day.sky === 'lluvia' && previous.sky !== 'lluvia') return msg('week.change.rainArrives');
+  if (day.sky === 'calima' && previous.sky !== 'calima') return msg('week.change.calimaArrives');
+  if (previous.sky === 'calima' && day.sky !== 'calima') return msg('week.change.calimaLeaves');
+  if (previous.sky === 'lluvia' && day.sky !== 'lluvia') return msg('week.change.sunReturns');
+  if (day.maxWindKmh - previous.maxWindKmh >= 8) return msg('week.change.moreWind');
+  if (previous.maxWindKmh - day.maxWindKmh >= 8) return msg('week.change.lessWind');
+  if (day.maxC - previous.maxC >= 3) return msg('week.change.warmer');
+  if (previous.maxC - day.maxC >= 3) return msg('week.change.cooler');
   return null;
 }

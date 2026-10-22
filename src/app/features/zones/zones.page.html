@@ -1,7 +1,7 @@
 <header id="zones-header" class="page-head page-header">
-  <h1 class="t-display">Lanzarote, zona a zona</h1>
+  <h1 class="t-display">{{ 'zones.title' | t }}</h1>
   @if (island.summary(); as summary) {
-    <p id="island-summary" class="t-lead t-muted lead island-summary">{{ summary }}</p>
+    <p id="island-summary" class="t-lead t-muted lead island-summary">{{ summary | t }}</p>
   }
 </header>
 
@@ -10,22 +10,22 @@
     <div class="pad">
       <qth-status-message
         tone="error"
-        title="No hemos podido cargar las zonas"
-        [text]="island.zones().error"
-        actionLabel="Reintentar"
+        [title]="'zones.error' | t"
+        [text]="island.zones().error | t"
+        [actionLabel]="'common.retry' | t"
         (action)="island.retry()"
       />
     </div>
   }
   @case ('loading') {
-    <div class="pad loading" aria-label="Cargando zonas">
+    <div class="pad loading" [attr.aria-label]="'zones.loading' | t">
       <div class="skeleton map-skeleton"></div>
     </div>
   }
   @default {
     <div class="layout">
       <section id="island-map" class="map-block island-map-section" aria-labelledby="map-title">
-        <h2 id="map-title" class="visually-hidden">Mapa de la isla</h2>
+        <h2 id="map-title" class="visually-hidden">{{ 'zones.map' | t }}</h2>
         <qth-island-map
           [markers]="markers()"
           [selectedId]="focusId()"
@@ -33,11 +33,17 @@
           (pick)="focusId.set($event)"
         />
         <p id="map-legend" class="map-legend t-micro">
-          <span class="legend-item"><span class="swatch good"></span>Buen día</span>
-          <span class="legend-item"><span class="swatch fair"></span>Regular</span>
-          <span class="legend-item"><span class="swatch poor"></span>Mejor otro plan</span>
+          <span class="legend-item"
+            ><span class="swatch good"></span>{{ 'zones.legend.good' | t }}</span
+          >
+          <span class="legend-item"
+            ><span class="swatch fair"></span>{{ 'zones.legend.fair' | t }}</span
+          >
+          <span class="legend-item"
+            ><span class="swatch poor"></span>{{ 'zones.legend.poor' | t }}</span
+          >
           <span class="legend-item wind-note"
-            ><span class="streak-swatch"></span>{{ windCaption() }}</span
+            ><span class="streak-swatch"></span>{{ windCaption() | t }}</span
           >
         </p>
 
@@ -47,8 +53,8 @@
               <p class="focus-name">
                 {{ zone.name }}<span class="t-num focus-temp">{{ zone.temperature }}°</span>
               </p>
-              <p class="focus-headline">{{ zone.headline }}</p>
-              <p class="t-small t-muted">{{ zone.sentence }}</p>
+              <p class="focus-headline">{{ zone.headline | t }}</p>
+              <p class="t-small t-muted">{{ zone.sentence | t }}</p>
             </div>
             <div class="focus-actions">
               <button
@@ -57,7 +63,7 @@
                 class="btn btn--primary"
                 (click)="openDay(zone.id)"
               >
-                Ver el día
+                {{ 'zones.openDay' | t }}
                 <qth-icon name="chevron-right" />
               </button>
               <button
@@ -65,7 +71,7 @@
                 class="icon-btn star favorite-toggle"
                 [class.is-on]="zone.isFavorite"
                 [attr.aria-pressed]="zone.isFavorite"
-                [attr.aria-label]="'Favorita: ' + zone.name"
+                [attr.aria-label]="'common.favorite' | t: { name: zone.name }"
                 (click)="toggleFavorite(zone.id)"
               >
                 <qth-icon [name]="zone.isFavorite ? 'star-filled' : 'star'" />
@@ -76,7 +82,7 @@
       </section>
 
       <section id="zone-list" class="list-block zone-list-section" aria-labelledby="list-title">
-        <h2 id="list-title" class="t-title">Todas las zonas</h2>
+        <h2 id="list-title" class="t-title">{{ 'zones.all' | t }}</h2>
         <ul class="cards zone-cards">
           @for (card of cards(); track card.id; let i = $index) {
             <li class="card zone-card enter-rise" [attr.data-location-id]="card.id" [style.--i]="i">
@@ -87,11 +93,11 @@
                 </span>
                 <span class="card-text">
                   <span class="card-name">{{ card.name }}</span>
-                  <span class="card-headline">{{ card.headline }}</span>
+                  <span class="card-headline">{{ card.headline | t }}</span>
                   <span class="card-facts">
-                    {{ card.wind }}
+                    {{ card.wind | t }}
                     @if (card.sea) {
-                      · {{ card.sea }}
+                      · {{ card.sea | t }}
                     }
                   </span>
                 </span>
@@ -101,7 +107,7 @@
                 class="icon-btn star favorite-toggle"
                 [class.is-on]="card.isFavorite"
                 [attr.aria-pressed]="card.isFavorite"
-                [attr.aria-label]="'Favorita: ' + card.name"
+                [attr.aria-label]="'common.favorite' | t: { name: card.name }"
                 (click)="toggleFavorite(card.id)"
               >
                 <qth-icon [name]="card.isFavorite ? 'star-filled' : 'star'" />

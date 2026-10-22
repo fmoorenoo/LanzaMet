@@ -1,11 +1,11 @@
-<qth-sheet heading="Elige zona" [(open)]="ui.locationPickerOpen">
+<qth-sheet [heading]="'picker.title' | t" [(open)]="ui.locationPickerOpen">
   <label class="field search location-search">
     <qth-icon name="search" />
     <input
       id="location-search-input"
       type="search"
-      placeholder="Busca un pueblo o municipio"
-      aria-label="Buscar zona"
+      [placeholder]="'picker.search' | t"
+      [attr.aria-label]="'picker.searchLabel' | t"
       autocomplete="off"
       enterkeyhint="search"
       [value]="query()"
@@ -20,11 +20,11 @@
       aria-labelledby="favorite-locations-title"
     >
       <div class="group-head">
-        <h3 id="favorite-locations-title" class="group-title">Tus zonas</h3>
+        <h3 id="favorite-locations-title" class="group-title">{{ 'picker.favorites' | t }}</h3>
         <qth-scroll-controls
           [scroller]="favoriteScroll"
-          backLabel="Zonas anteriores"
-          forwardLabel="Más zonas favoritas"
+          [backLabel]="'picker.previous' | t"
+          [forwardLabel]="'picker.next' | t"
         />
       </div>
       <div class="favorites favorite-chips" qthHorizontalScroll #favoriteScroll="horizontalScroll">
@@ -56,9 +56,9 @@
   @if (locations.error(); as error) {
     <qth-status-message
       tone="error"
-      title="No hemos podido cargar las zonas"
-      [text]="error"
-      actionLabel="Reintentar"
+      [title]="'picker.error' | t"
+      [text]="error | t"
+      [actionLabel]="'common.retry' | t"
       (action)="locations.retry()"
     />
   }
@@ -69,7 +69,7 @@
       [attr.data-area]="group.slug"
       [attr.aria-labelledby]="'location-area-' + group.slug"
     >
-      <h3 class="group-title" [id]="'location-area-' + group.slug">{{ group.label }}</h3>
+      <h3 class="group-title" [id]="'location-area-' + group.slug">{{ group.label | t }}</h3>
       <ul class="rows location-list">
         @for (row of group.rows; track row.location.id) {
           <li
@@ -95,7 +95,7 @@
                 <span class="row-sub">
                   {{ row.location.municipality }}
                   @if (row.headline) {
-                    · {{ row.headline }}
+                    · {{ row.headline | t }}
                   }
                 </span>
               </span>
@@ -108,7 +108,7 @@
               class="icon-btn star favorite-toggle"
               [class.is-on]="row.isFavorite"
               [attr.aria-pressed]="row.isFavorite"
-              [attr.aria-label]="'Favorita: ' + row.location.name"
+              [attr.aria-label]="'common.favorite' | t: { name: row.location.name }"
               (click)="toggleFavorite(row.location.id)"
             >
               <qth-icon [name]="row.isFavorite ? 'star-filled' : 'star'" />
@@ -120,8 +120,8 @@
   } @empty {
     @if (query()) {
       <qth-status-message
-        title="Ninguna zona coincide"
-        text="Prueba con el nombre de un pueblo, una playa o un municipio."
+        [title]="'picker.noMatch' | t"
+        [text]="'picker.noMatch.text' | t"
         icon="search"
       />
     }

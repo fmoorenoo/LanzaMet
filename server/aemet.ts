@@ -12,11 +12,15 @@ export interface WeatherWarning {
   readonly id: string;
   readonly level: 'amarillo' | 'naranja' | 'rojo';
   readonly phenomenon: string;
+  /** Meteoalerta code of the phenomenon ("CO", "PR", "VI"…), so clients can name it in any language. */
+  readonly phenomenonCode: string | null;
   readonly coastal: boolean;
   readonly area: string;
   readonly onset: string;
   readonly expires: string;
   readonly description: string;
+  /** AEMET's own English text (its en-GB block), when the message has one. */
+  readonly descriptionEn: string | null;
   readonly url: string;
 }
 
@@ -144,8 +148,9 @@ export async function gunzip(bytes: Uint8Array): Promise<Uint8Array> {
 
 /**
  * Warnings of a CAP message that apply to `zones` and are still in force at
- * `now`. Green ("no warning") levels, cancellations and other languages are
- * left out.
+ * `now`. Green ("no warning") levels and cancellations are left out. The
+ * Spanish block is the reference; the English block of the same level and
+ * start, when present, only lends its description.
  */
 export function warningsFromCap(
   xml: string,
@@ -157,8 +162,17 @@ export function warningsFromCap(
   const msgType = text(xml, 'msgType');
   if (status !== 'Actual' || msgType === 'Cancel') return [];
 
+  const infos = blocks(xml, 'info');
+  const english = new Map<string, string>();
+  for (const info of infos) {
+    if (text(info, 'language') !== 'en-GB') continue;
+    const key = `${namedValue(info, 'parameter', 'AEMET-Meteoalerta nivel')}|${text(info, 'onset') ?? text(info, 'effective')}`;
+    const description = text(info, 'description');
+    if (description) english.set(key, description);
+  }
+
   const warnings: WeatherWarning[] = [];
-  for (const info of blocks(xml, 'info')) {
+  for (const info of infos) {
     if (text(info, 'language') !== 'es-ES') continue;
     const level = namedValue(info, 'parameter', 'AEMET-Meteoalerta nivel');
     if (!level || !LEVELS.has(level)) continue;
@@ -167,6 +181,7 @@ export function warningsFromCap(
     if (!onset || !expires || Date.parse(expires) <= now.getTime()) continue;
     const phenomenonCode = namedValue(info, 'eventCode', 'AEMET-Meteoalerta fenomeno');
     const phenomenon = phenomenonCode?.split(';')[1] ?? text(info, 'event') ?? 'Aviso';
+    const descriptionEn = english.get(`${level}|${onset}`) ?? null;
 
     for (const area of blocks(info, 'area')) {
       const zone = namedValue(area, 'geocode', 'AEMET-Meteoalerta zona');
@@ -175,11 +190,13 @@ export function warningsFromCap(
         id: `${identifier}-${zone}`,
         level: level as WeatherWarning['level'],
         phenomenon,
+        phenomenonCode: phenomenonCode?.split(';')[0] || null,
         coastal: zone.endsWith('C'),
         area: text(area, 'areaDesc') ?? zone,
         onset: new Date(onset).toISOString(),
         expires: new Date(expires).toISOString(),
         description: text(info, 'description') ?? text(info, 'headline') ?? '',
+        descriptionEn,
         url: text(info, 'web') ?? 'https://www.aemet.es/es/eltiempo/prediccion/avisos',
       });
     }

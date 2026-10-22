@@ -1,5 +1,6 @@
 import { computed, linkedSignal, ResourceRef, Signal } from '@angular/core';
 import { DataSourceError } from '../data/data-sources';
+import { msg, Msg } from '../i18n/i18n.model';
 
 export type SectionStatus = 'loading' | 'ready' | 'empty' | 'error';
 
@@ -15,13 +16,11 @@ export interface SectionState<T> {
   readonly status: SectionStatus;
   readonly data: T | null;
   readonly pending: boolean;
-  readonly error: string | null;
+  readonly error: Msg | null;
 }
 
-const FALLBACK_ERROR = 'No hemos podido cargar estos datos.';
-
-export function errorMessage(error: unknown): string {
-  return error instanceof DataSourceError ? error.message : FALLBACK_ERROR;
+export function errorMessage(error: unknown): Msg {
+  return error instanceof DataSourceError ? error.detail : msg('error.fallback');
 }
 
 /**
