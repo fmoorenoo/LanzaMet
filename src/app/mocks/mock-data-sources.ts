@@ -10,12 +10,26 @@ import {
   DataSourceError,
   LocationSource,
   MarineSource,
+  ObservationSource,
+  WarningSource,
   WeatherSource,
 } from '../core/data/data-sources';
-import { Location, LocationId, SeaForecast, TideForecast, WeatherForecast } from '../core/models';
+import { DATA_MODE, DataMode } from '../core/data/http/data-config';
+import {
+  Location,
+  LocationId,
+  SeaForecast,
+  StationObservation,
+  TideForecast,
+  WarningBulletin,
+  WeatherForecast,
+} from '../core/models';
 import { ClockStore } from '../core/state/clock.store';
+import { DEMO_CONTROLS } from '../layout/settings-panel/demo-controls.token';
+import { DemoControls } from './demo-controls';
 import { DemoStore } from './demo.store';
 import { LOCATIONS_SEED } from './seed/locations.seed';
+import { simulateObservation, simulateWarnings } from './sim/official';
 import { SimulationInput, simulateSea, simulateTides, simulateWeather } from './sim/simulator';
 
 /*
@@ -91,12 +105,40 @@ class MockMarineSource extends MarineSource {
   }
 }
 
-/** Binds every data port to simulated data. Swap for HTTP providers later. */
+@Service({ autoProvided: false })
+class MockWarningSource extends WarningSource {
+  private readonly requests = inject(MockRequests);
+
+  active(): Observable<WarningBulletin | null> {
+    return this.requests.respond('el servicio de avisos', (input) => ({
+      warnings: simulateWarnings(input),
+      publishedAt: input.now.toISOString(),
+      retrievedAt: input.now.toISOString(),
+    }));
+  }
+}
+
+@Service({ autoProvided: false })
+class MockObservationSource extends ObservationSource {
+  private readonly requests = inject(MockRequests);
+
+  latest(): Observable<readonly StationObservation[] | null> {
+    return this.requests.respond('el servicio de observación', (input) => [
+      simulateObservation({ ...input, location: findLocation('arrecife') }),
+    ]);
+  }
+}
+
+/** Binds every data port to simulated data, for development and reviews only. */
 export function provideMockDataSources(): EnvironmentProviders {
   return makeEnvironmentProviders([
     MockRequests,
+    { provide: DATA_MODE, useValue: 'demo' satisfies DataMode },
+    { provide: DEMO_CONTROLS, useValue: DemoControls },
     { provide: LocationSource, useClass: MockLocationSource },
     { provide: WeatherSource, useClass: MockWeatherSource },
     { provide: MarineSource, useClass: MockMarineSource },
+    { provide: WarningSource, useClass: MockWarningSource },
+    { provide: ObservationSource, useClass: MockObservationSource },
   ]);
 }

@@ -2,6 +2,7 @@ import { Component, computed, effect, inject, signal, untracked } from '@angular
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { delay, filter, map, take } from 'rxjs';
+import { DATA_MODE } from '../../core/data/http/data-config';
 import { Icon } from '../../shared/ui/icon/icon';
 import { IconName } from '../../shared/ui/icon/icons';
 import { BrandMark } from '../brand-mark/brand-mark';
@@ -26,6 +27,7 @@ interface NavItem {
 })
 export class NavBar {
   protected readonly ui = inject(UiStore);
+  protected readonly isDemo = inject(DATA_MODE) === 'demo';
   private readonly router = inject(Router);
 
   protected readonly items: readonly NavItem[] = [

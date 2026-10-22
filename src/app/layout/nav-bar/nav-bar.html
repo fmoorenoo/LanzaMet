@@ -30,8 +30,8 @@
     </ul>
   </div>
 
-  <button type="button" class="settings" (click)="ui.openDemoPanel()">
+  <button type="button" class="settings" (click)="ui.openSettings()">
     <qth-icon name="sliders" />
-    <span>Ajustes y demo</span>
+    <span>{{ isDemo ? 'Ajustes y demo' : 'Ajustes' }}</span>
   </button>
 </nav>

@@ -1,4 +1,5 @@
 import { Component, computed, inject, input, output } from '@angular/core';
+import { DATA_MODE } from '../../../core/data/http/data-config';
 import { Verdict } from '../../../core/insights/verdict.insight';
 import { LocationId } from '../../../core/models';
 import { LocationsStore } from '../../../core/state/locations.store';
@@ -43,6 +44,7 @@ export class TodayHero {
   readonly retry = output<void>();
 
   protected readonly ui = inject(UiStore);
+  protected readonly isDemo = inject(DATA_MODE) === 'demo';
   private readonly locations = inject(LocationsStore);
 
   protected readonly current = this.locations.selected;

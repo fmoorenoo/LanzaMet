@@ -1,0 +1,74 @@
+<qth-sheet [heading]="isDemo ? 'Ajustes y demo' : 'Ajustes'" [(open)]="ui.settingsOpen">
+  @if (demoControls) {
+    <ng-container *ngComponentOutlet="demoControls" />
+  }
+
+  <fieldset class="group">
+    <legend class="legend">Apariencia</legend>
+    @for (option of themeOptions; track option.value) {
+      <label class="choice">
+        <input
+          type="radio"
+          name="theme"
+          [value]="option.value"
+          [checked]="theme.preference() === option.value"
+          (change)="setTheme(option.value)"
+        />
+        <span class="choice-text">
+          <span class="choice-label">{{ option.label }}</span>
+          @if (option.hint) {
+            <span class="choice-hint">{{ option.hint }}</span>
+          }
+        </span>
+      </label>
+    }
+  </fieldset>
+
+  @if (!isDemo) {
+    <section class="group" aria-labelledby="sources-title">
+      <h3 id="sources-title" class="legend">De dónde salen los datos</h3>
+      <ul class="sources">
+        <li>
+          <span class="choice-label">Previsión del tiempo</span>
+          <span class="choice-hint">
+            <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a>,
+            modelo DWD ICON. Licencia CC BY 4.0. Se actualiza cada 30 minutos.
+          </span>
+        </li>
+        <li>
+          <span class="choice-label">Oleaje, agua y marea</span>
+          <span class="choice-hint">
+            Open-Meteo Marine, modelos de Météo-France, en mar abierto frente a cada zona. La marea
+            es una estimación del modelo, no una tabla oficial: no sirve para navegar.
+          </span>
+        </li>
+        <li>
+          <span class="choice-label">Calima</span>
+          <span class="choice-hint">
+            Polvo en suspensión de Copernicus CAMS, vía Open-Meteo. Contiene información modificada
+            del Copernicus Atmosphere Monitoring Service.
+          </span>
+        </li>
+        <li>
+          <span class="choice-label">Avisos oficiales</span>
+          <span class="choice-hint">
+            <a
+              href="https://www.aemet.es/es/eltiempo/prediccion/avisos"
+              target="_blank"
+              rel="noopener"
+              >AEMET</a
+            >, Plan Meteoalerta. {{ warningsStatus() }}.
+          </span>
+        </li>
+        <li>
+          <span class="choice-label">Medidas de estaciones</span>
+          <span class="choice-hint">AEMET OpenData. {{ observationsStatus() }}.</span>
+        </li>
+      </ul>
+      <p class="choice-hint">
+        Son previsiones y avisos, no garantías: antes de bañarte o salir al mar, mira las banderas y
+        sigue las indicaciones de socorristas y autoridades.
+      </p>
+    </section>
+  }
+</qth-sheet>

@@ -32,11 +32,22 @@
       >
         <qth-icon [name]="isFavorite() ? 'star-filled' : 'star'" />
       </button>
-      <button type="button" class="hero-btn demo" (click)="ui.openDemoPanel()">
-        <qth-icon name="sliders" />
-        <span class="demo-label">Demo</span>
-        <span class="visually-hidden">Datos ficticios: abrir ajustes de la demo</span>
-      </button>
+      @if (isDemo) {
+        <button type="button" class="hero-btn demo" (click)="ui.openSettings()">
+          <qth-icon name="sliders" />
+          <span class="demo-label">Demo</span>
+          <span class="visually-hidden">Datos ficticios: abrir ajustes de la demo</span>
+        </button>
+      } @else {
+        <button
+          type="button"
+          class="hero-btn"
+          aria-label="Ajustes y fuentes de datos"
+          (click)="ui.openSettings()"
+        >
+          <qth-icon name="sliders" />
+        </button>
+      }
     </div>
   </div>
 

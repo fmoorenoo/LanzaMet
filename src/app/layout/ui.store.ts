@@ -4,13 +4,13 @@ import { Service, signal } from '@angular/core';
 @Service()
 export class UiStore {
   readonly locationPickerOpen = signal(false);
-  readonly demoPanelOpen = signal(false);
+  readonly settingsOpen = signal(false);
 
   openLocationPicker(): void {
     this.locationPickerOpen.set(true);
   }
 
-  openDemoPanel(): void {
-    this.demoPanelOpen.set(true);
+  openSettings(): void {
+    this.settingsOpen.set(true);
   }
 }
