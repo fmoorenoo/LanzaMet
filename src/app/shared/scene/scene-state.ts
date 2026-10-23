@@ -4,6 +4,7 @@ import { readWind } from '../../core/insights/wind.insight';
 import {
   HorizonProfile,
   Location,
+  SceneryId,
   SeaSnapshot,
   ShoreKind,
   WeatherSnapshot,
@@ -35,6 +36,25 @@ export interface SceneState {
   };
   readonly land: { readonly far: string; readonly near: string };
   readonly shore: string;
+  /** Colours of the place's own landmarks (see scenery.ts). */
+  readonly built: {
+    /** Whitewashed walls in the light of the hour, and their shaded sides. */
+    readonly wall: string;
+    readonly shade: string;
+    /** Windows, barely there by day, and glass: both lamplit after dark. */
+    readonly window: string;
+    readonly glass: string;
+    /** Lanterns and harbour lights, and how strongly they shine (0 by day). */
+    readonly lamp: string;
+    readonly lights: number;
+    /** The stripe on a fishing boat. */
+    readonly trim: string;
+    readonly palm: string;
+    readonly lagoon: string;
+    /** Volcanic rock bands, ochre, rust and black. */
+    readonly rock: readonly [string, string, string];
+    readonly sails: readonly [string, string, string];
+  };
   readonly cloud: string;
   readonly sun: {
     readonly x: number;
@@ -58,6 +78,9 @@ export interface SceneState {
   readonly tide: number;
   readonly horizon: HorizonProfile;
   readonly shoreKind: ShoreKind;
+  readonly scenery: SceneryId;
+  /** 0 night … 1 full day. */
+  readonly daylight: number;
   /** Text colour that reads on this sky. */
   readonly ink: 'light' | 'dark';
 }
@@ -183,6 +206,14 @@ const PICON = oklch(0.3, 0.02, 50);
 const PICON_DARK = oklch(0.22, 0.02, 45);
 const NIGHT_SHADE = oklch(0.2, 0.035, 262);
 const SHALLOW = oklch(0.72, 0.1, 192);
+const CAL = oklch(0.95, 0.012, 85);
+const DAY_GLASS = oklch(0.55, 0.06, 205);
+const LAMP = oklch(0.88, 0.13, 82);
+const MANRIQUE_GREEN = oklch(0.5, 0.1, 158);
+const PALM = oklch(0.4, 0.07, 138);
+const LAGOON = oklch(0.6, 0.14, 152);
+const ROCK = [oklch(0.54, 0.09, 52), oklch(0.44, 0.1, 36), oklch(0.31, 0.03, 40)] as const;
+const SAILS = [oklch(0.68, 0.17, 38), oklch(0.66, 0.12, 205), oklch(0.85, 0.15, 95)] as const;
 
 function mixPalette(a: Palette, b: Palette, t: number): Palette {
   return P(
@@ -298,6 +329,16 @@ export function buildScene(input: SceneInput): SceneState {
 
   const shore = mix(mix(SHORE[input.location.shore], low, 0.1), NIGHT_SHADE, (1 - daylight) * 0.72);
 
+  // Landmarks take the hour's light and fall into shade after dark, though a
+  // little less than the land, so a town still reads against its hills.
+  const dark = 1 - daylight;
+  const lit = (c: Oklch, toward = 0.2, night = 0.72) =>
+    mix(mix(c, low, toward), NIGHT_SHADE, dark * night);
+  const wall = lit(CAL, 0.18, 0.66);
+  const lights = clamp(dark * 1.5 - 0.35);
+  const tones = <T extends readonly [Oklch, Oklch, Oklch]>(set: T, toward: number) =>
+    [toCss(lit(set[0], toward)), toCss(lit(set[1], toward)), toCss(lit(set[2], toward))] as const;
+
   return {
     sky: { top: toCss(top), mid: toCss(mid), low: toCss(low) },
     topHex: toHex(top),
@@ -315,6 +356,20 @@ export function buildScene(input: SceneInput): SceneState {
     },
     land: { far: toCss(mix(low, PICON, 0.38)), near: toCss(mix(low, PICON_DARK, 0.7)) },
     shore: toCss(shore),
+    built: {
+      wall: toCss(wall),
+      shade: toCss(mix(wall, mix(PICON, NIGHT_SHADE, dark), 0.32)),
+      window: toCss(mix(mix(wall, lit(DAY_GLASS, 0.3), 0.3), LAMP, lights * 0.85)),
+      // Big panes catch less lamplight than they show sky: a tower is never a lantern.
+      glass: toCss(mix(lit(DAY_GLASS, 0.3), LAMP, lights * 0.55)),
+      lamp: toCss(LAMP),
+      lights,
+      trim: toCss(lit(MANRIQUE_GREEN, 0.1)),
+      palm: toCss(lit(mix(PALM, PICON_DARK, 0.2), 0.15)),
+      lagoon: toCss(lit(LAGOON, 0.1, 0.8)),
+      rock: tones(ROCK, 0.12),
+      sails: tones(SAILS, 0.1),
+    },
     cloud: toCss(cloud),
     sun: {
       x: sunPos.x,
@@ -334,6 +389,8 @@ export function buildScene(input: SceneInput): SceneState {
     tide: input.tideLevel ?? 0.5,
     horizon: input.location.horizon,
     shoreKind: input.location.shore,
+    scenery: input.location.scenery,
+    daylight,
     ink: top[0] > 0.62 && mid[0] > 0.6 ? 'dark' : 'light',
   };
 }

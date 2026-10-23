@@ -1,4 +1,5 @@
 @let s = state();
+@let art = scenery();
 
 <div
   class="sky"
@@ -37,9 +38,47 @@
   }
 </div>
 
-<svg class="land" viewBox="0 0 1200 150" preserveAspectRatio="xMidYMax slice">
+<svg class="land" viewBox="0 0 1200 150" preserveAspectRatio="xMaxYMax slice">
   <path class="land-far" [attr.d]="horizon().far" [style.fill]="s.land.far" />
   <path class="land-near" [attr.d]="horizon().near" [style.fill]="s.land.near" />
+  <g class="scenery">
+    @if (art.terrain) {
+      <path [attr.d]="art.terrain" [style.fill]="s.land.near" />
+    }
+    @for (band of art.strata; track $index) {
+      <path [attr.d]="band" [style.fill]="s.built.rock[$index % 3]" />
+    }
+    @if (art.lagoon) {
+      <path [attr.d]="art.lagoon" [style.fill]="s.built.lagoon" />
+    }
+    @if (art.walls) {
+      <path [attr.d]="art.walls" [style.fill]="s.built.wall" />
+      <path [attr.d]="art.shade" [style.fill]="s.built.shade" />
+      <path [attr.d]="art.windows" [style.fill]="s.built.window" />
+      <path [attr.d]="art.glass" [style.fill]="s.built.glass" />
+    }
+    @if (art.trunks) {
+      <path class="trunks" [attr.d]="art.trunks" [style.stroke]="s.built.palm" />
+      <path class="fronds" [attr.d]="art.fronds" [style.stroke]="s.built.palm" />
+    }
+    @for (lamp of art.lamps; track $index) {
+      <circle
+        class="lamp-halo"
+        [attr.cx]="lamp.x"
+        [attr.cy]="lamp.y"
+        r="7"
+        [style.fill]="s.built.lamp"
+        [style.opacity]="s.built.lights * 0.3"
+      />
+      <circle
+        [attr.cx]="lamp.x"
+        [attr.cy]="lamp.y"
+        r="1.7"
+        [style.fill]="s.built.lamp"
+        [style.opacity]="s.built.lights"
+      />
+    }
+  </g>
 </svg>
 
 <div class="haze" [style.opacity]="s.haze"></div>
@@ -99,6 +138,29 @@
     </div>
   </div>
 </div>
+
+<!-- Same box and units as the land, drawn over the sea: y > 150 is on the water. -->
+@if (art.breakwater || afloat().length > 0) {
+  <svg class="land afloat" viewBox="0 0 1200 150" preserveAspectRatio="xMaxYMax slice">
+    @if (art.breakwater) {
+      <path [attr.d]="art.breakwater" [style.fill]="s.land.near" />
+    }
+    @for (item of afloat(); track $index) {
+      @let shape = shapes[item.kind];
+      <g [attr.transform]="'translate(' + item.x + ' ' + item.y + ') scale(' + item.scale + ')'">
+        <g class="bob" [class.is-sail]="item.kind === 'sail'" [style.--i]="$index">
+          <path [attr.d]="shape.hull" [style.fill]="s.built.wall" />
+          @if (item.kind === 'sail') {
+            <path [attr.d]="shape.top" [style.fill]="s.built.sails[item.tone]" />
+          } @else {
+            <path [attr.d]="shape.top" [style.fill]="s.built.wall" />
+            <path [attr.d]="shape.stripe" [style.fill]="s.built.trim" />
+          }
+        </g>
+      </g>
+    }
+  </svg>
+}
 
 <div class="rain" [class.is-on]="s.rain">
   @for (drop of rainDrops(); track $index) {

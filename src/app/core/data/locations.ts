@@ -40,6 +40,7 @@ export const LOCATIONS: readonly Location[] = [
     facing: 'S',
     horizon: 'fuerteventura',
     shore: 'arena-dorada',
+    scenery: 'playa-grande',
     coverage: { sea: SEA.southCoast, tide: { kind: 'model' } },
   },
   {
@@ -52,6 +53,7 @@ export const LOCATIONS: readonly Location[] = [
     facing: 'SE',
     horizon: 'abierto',
     shore: 'arena-dorada',
+    scenery: 'reducto',
     coverage: { sea: SEA.southOfArrecife, tide: { kind: 'model' } },
   },
   {
@@ -62,8 +64,9 @@ export const LOCATIONS: readonly Location[] = [
     kind: 'pueblo',
     position: { latitude: 28.8628, longitude: -13.8296 },
     facing: 'S',
-    horizon: 'fuerteventura',
+    horizon: 'bocaina',
     shore: 'arena-dorada',
+    scenery: 'pechiguera',
     coverage: { sea: SEA.bocaina, tide: { kind: 'model' } },
   },
   {
@@ -76,6 +79,7 @@ export const LOCATIONS: readonly Location[] = [
     facing: 'E',
     horizon: 'abierto',
     shore: 'arena-dorada',
+    scenery: 'las-cucharas',
     coverage: { sea: SEA.eastCoast, tide: { kind: 'model' } },
   },
   {
@@ -88,6 +92,7 @@ export const LOCATIONS: readonly Location[] = [
     facing: 'NO',
     horizon: 'risco',
     shore: 'arena-dorada',
+    scenery: 'famara',
     coverage: { sea: SEA.northwest, tide: { kind: 'model' } },
   },
   {
@@ -100,6 +105,7 @@ export const LOCATIONS: readonly Location[] = [
     facing: 'N',
     horizon: 'graciosa',
     shore: 'roca',
+    scenery: 'orzola',
     coverage: { sea: SEA.north, tide: { kind: 'model' } },
   },
   {
@@ -112,6 +118,7 @@ export const LOCATIONS: readonly Location[] = [
     facing: 'O',
     horizon: 'volcanes',
     shore: 'arena-negra',
+    scenery: 'el-golfo',
     coverage: { sea: SEA.west, tide: { kind: 'model' } },
   },
 ];

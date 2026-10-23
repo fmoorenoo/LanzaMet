@@ -25,6 +25,7 @@ import {
   wavePaths,
 } from './geometry';
 import { SceneState } from './scene-state';
+import { AFLOAT_PATHS, sceneryArt } from './scenery';
 
 /**
  * The day, drawn. A purely visual layer (hidden from assistive tech): the
@@ -51,6 +52,7 @@ const RAIN_FADE_MS = 900;
     // What the scene is drawing, readable from the browser's dev tools.
     '[attr.data-variant]': 'variant()',
     '[attr.data-horizon]': 'state().horizon',
+    '[attr.data-scenery]': 'state().scenery',
     '[attr.data-sea-level]': 'state().seaLevel',
     '[attr.data-ink]': 'state().ink',
   },
@@ -65,6 +67,17 @@ export class Scene {
 
   protected readonly horizon = computed(() => horizonPaths(this.state().horizon));
   protected readonly shore = computed(() => shorePath(this.state().shoreKind));
+  protected readonly scenery = computed(() => sceneryArt(this.state().scenery));
+  protected readonly shapes = AFLOAT_PATHS;
+
+  /** Boats always; windsurf sails only by day, more of them the harder it blows. */
+  protected readonly afloat = computed(() => {
+    const { wind, daylight } = this.state();
+    const sailing =
+      daylight > 0.45 ? Math.round(Math.min(1, Math.max(0, (wind - 0.18) / 0.36)) * 3) : 0;
+    let sails = 0;
+    return this.scenery().afloat.filter((a) => a.kind !== 'sail' || sails++ < sailing);
+  });
 
   protected readonly waves = computed(() => {
     const level = this.state().seaLevel;

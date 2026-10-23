@@ -4,13 +4,14 @@ import { HorizonProfile, ShoreKind } from '../../core/models';
 /*
  * Authored geometry for the scene. Horizons are built from a few volcanic
  * primitives so each place gets its own skyline: La Graciosa seen from the
- * north, the Risco above Famara, Fuerteventura across the Bocaina strait,
- * Timanfaya's cones on the west coast.
+ * north, the Risco above Famara, Fuerteventura from the south coast and,
+ * closer, across the Bocaina strait, Timanfaya's cones on the west coast.
+ * What people built (towns, towers, harbours) lives in `scenery.ts`.
  */
 
 export const HORIZON_VIEWBOX = { width: 1200, height: 150 } as const;
 
-type Feature =
+export type Feature =
   | {
       readonly kind: 'cone';
       readonly x: number;
@@ -27,14 +28,14 @@ type Feature =
       readonly wobble?: number;
     };
 
-const cone = (x: number, h: number, w: number, crater = 0): Feature => ({
+export const cone = (x: number, h: number, w: number, crater = 0): Feature => ({
   kind: 'cone',
   x,
   h,
   w,
   crater,
 });
-const ridge = (from: number, to: number, h: number, soft: number, wobble = 0): Feature => ({
+export const ridge = (from: number, to: number, h: number, soft: number, wobble = 0): Feature => ({
   kind: 'ridge',
   from,
   to,
@@ -63,13 +64,20 @@ function featureHeight(f: Feature, x: number): number {
   return f.h * rise * fall * wobble;
 }
 
-function silhouette(features: readonly Feature[]): string {
+/** Height of the land at `x`: the tallest feature there. */
+export function heightAt(features: readonly Feature[], x: number): number {
+  return Math.max(0, ...features.map((f) => featureHeight(f, x)));
+}
+
+/** Horizontal step the silhouettes are sampled at. */
+export const SILHOUETTE_STEP = 8;
+
+export function silhouette(features: readonly Feature[]): string {
   if (features.length === 0) return '';
   const { width, height } = HORIZON_VIEWBOX;
   let d = `M0 ${height}`;
-  for (let x = 0; x <= width; x += 8) {
-    const h = Math.max(0, ...features.map((f) => featureHeight(f, x)));
-    d += `L${x} ${(height - h).toFixed(1)}`;
+  for (let x = 0; x <= width; x += SILHOUETTE_STEP) {
+    d += `L${x} ${(height - heightAt(features, x)).toFixed(1)}`;
   }
   return `${d}L${width} ${height}Z`;
 }
@@ -100,6 +108,19 @@ const PROFILES: Readonly<
       cone(330, 24, 300),
       cone(760, 32, 330),
       cone(1010, 16, 70, 14),
+    ],
+    near: [],
+  },
+  // From Playa Blanca, across the Bocaina: Lobos and its crater in front,
+  // Fuerteventura close and long behind, with the volcanoes above Corralejo.
+  bocaina: {
+    far: [
+      ridge(-40, 1240, 17, 120, 0.3),
+      cone(330, 30, 92, 14),
+      cone(610, 34, 150, 10),
+      cone(790, 46, 190),
+      cone(965, 30, 130, 12),
+      cone(1120, 24, 110),
     ],
     near: [],
   },
@@ -221,7 +242,7 @@ export interface RainDrop {
 const RAIN_MAX = 120;
 
 /** A small seeded generator (mulberry32): the same rain on every render and device. */
-function seeded(seed: number): () => number {
+export function seeded(seed: number): () => number {
   let a = seed;
   return () => {
     a = (a + 0x6d2b79f5) | 0;

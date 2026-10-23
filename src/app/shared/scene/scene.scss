@@ -125,9 +125,60 @@
   bottom: calc(100% - var(--horizon));
   width: 100%;
   height: clamp(3.5rem, 18vw, 8rem);
+  // The tallest landmarks may rise past the box on very wide screens.
+  overflow: visible;
 
-  path {
-    transition: fill var(--d-atmos) ease;
+  path,
+  circle {
+    transition:
+      fill var(--d-atmos) ease,
+      stroke var(--d-atmos) ease,
+      opacity var(--d-atmos) ease;
+  }
+}
+
+.trunks,
+.fronds {
+  fill: none;
+  stroke-linecap: round;
+}
+
+.trunks {
+  stroke-width: 2.4;
+}
+
+.fronds {
+  stroke-width: 1.5;
+}
+
+// Boats rock and sails lean with the swell: a few small SVG groups, cheap
+// even off the compositor; still in cards and under reduced motion.
+.bob {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  animation: bob 4.2s ease-in-out calc(var(--i) * -1.3s) infinite alternate;
+
+  &.is-sail {
+    animation-duration: 3.1s;
+    animation-name: lean;
+  }
+}
+
+@keyframes bob {
+  from {
+    transform: translateY(0.6px) rotate(-2.5deg);
+  }
+  to {
+    transform: translateY(-0.6px) rotate(2.5deg);
+  }
+}
+
+@keyframes lean {
+  from {
+    transform: rotate(-4deg);
+  }
+  to {
+    transform: rotate(3deg);
   }
 }
 
@@ -306,6 +357,7 @@
 // ── Small, still version for cards ────────────────────────────
 :host(.is-mini) {
   .glint,
+  .bob,
   .drop {
     animation: none;
   }
@@ -322,6 +374,7 @@
   }
 
   .glint,
+  .bob,
   .drop {
     animation: none;
   }
