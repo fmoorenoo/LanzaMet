@@ -78,7 +78,7 @@ Reglas:
 | Mensaje de estado | `shared/ui/status-message` | Vacío (`status`) / error (`alert`) con acción de recuperación |
 | Recomendación | `shared/plans/plan-item` | Fila, o "lead" con miniescena |
 | Arco del sol | `shared/ui/sun-path` | Amanecer y atardecer reales, el tramo recorrido y cuánto queda; sin datos, lo dice |
-| Scroll horizontal | `shared/ui/horizontal-scroll` | Directiva (bordes fundidos; arrastre con ratón que, al soltar, se detiene en el punto de ajuste más cercano) + botones anterior/siguiente |
+| Scroll horizontal | `shared/ui/horizontal-scroll` | Directiva (bordes fundidos; arrastre con ratón que, al soltar, sigue con la inercia de la mano y se frena con `--ease-out`, sin ajuste a rejilla) + botones anterior/siguiente |
 | Selector de idioma | `layout/language-selector` | Segmentado sobre radios reales; cada idioma escrito en su lengua, sin banderas |
 | Controles sobre el cielo | `styles/_sky-controls.scss` | `.sky-chip`, `.sky-button`: toman la tinta de la escena |
 | Controles | `styles/_controls.scss` | `.btn`, `.icon-btn`, `.chip`, `.choice`, `.field`, `.skeleton`, `.pendable` |
@@ -95,6 +95,9 @@ Cada sección contempla carga (esqueleto con la forma del contenido), datos, vac
   - Las filas de cada hora son variables CSS, y de ellas se deriva la posición de la curva de temperatura: cambiar un tamaño no descoloca los puntos.
   - La curva se dibuja en unidades de hora y se estira al ancho; sus puntos son HTML y siguen redondos a cualquier ancho.
   - El resaltado va hundido unos píxeles a cada lado, para que las horas vecinas respiren.
+  - Cada hora lleva un borde de 1 px en `--c-accent-soft`, el mismo tono que el relleno de la elegida. La elegida conserva ese relleno y pasa a `--c-accent`: más oscuro de día y más luminoso de noche, siempre el verde más visible del tema.
+- **Controles sobre la escena:** `--sky-control-h` (2,5 rem) es la altura de todas las píldoras y botones redondos del cielo (zona, favoritas, estrella, ajustes), así que se alinean en cualquier idioma. En escritorio comparten una fila y se centran en ella.
+- **Lluvia:** trazos sueltos con tres profundidades, siempre con la misma inclinación (40 de ancho por cada 60 de alto). La densidad sigue a la intensidad y solo se anima `transform`.
 - **Estabilidad:** lo que aparece o desaparece no mueve nada.
   - Los controles que van y vienen están siempre en el layout y solo cambian de opacidad y visibilidad («Volver a ahora»).
   - Los contenidos que se turnan comparten una ranura cuya altura sale de su propio contenido (la fila de favoritas y la hora previsualizada).

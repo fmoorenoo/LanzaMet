@@ -152,3 +152,40 @@ Skills usadas: Emil Kowalski (arrastre, inercia, transiciones) e Impeccable (aud
 
 1. **Decidir sobre la auditoría de APIs.** La recomendación es una caché compartida con actualización programada en el API propio (Cloudflare Worker + Cron + KV). Hasta revisarla no se toca el consumo.
 2. Probar el arrastre y la inercia en dispositivos reales con ratón y trackpad.
+
+## Fase 5 — Refinamiento visual e interacciones (23-10-2026)
+
+Skills usadas: Emil Kowalski (arrastre, lluvia, transiciones) e Impeccable (coherencia de tokens y alineación).
+
+### Hecho
+
+1. **Bordes en las horas**: todas las horas llevan 1 px de `--c-accent-soft`, el tono del relleno de la elegida. La elegida conserva el relleno y pasa al verde pleno (`--c-accent`). Comprobado en los temas claro y oscuro.
+2. **Lluvia natural**:
+   - Antes era un fondo de 40×60 px con dos trazos idénticos, desplazado en bloque. Ahora son de 36 a 120 trazos sueltos.
+   - Se generan con una semilla fija (siempre la misma lluvia) y se reparten con la proporción áurea más un desplazamiento aleatorio.
+   - Hay tres profundidades, y cada trazo varía en grosor, longitud, opacidad y velocidad, y empieza en un punto distinto de su caída. Todos conservan la inclinación anterior.
+   - La densidad sigue a la intensidad del código WMO que ya se descargaba (`rainIntensityFor`): no se pide nada nuevo a Open-Meteo.
+   - Solo se anima `transform`, con unidades de contenedor para que la caída encaje en cualquier tamaño.
+   - Los trazos se pausan fuera de pantalla y en segundo plano, quedan quietos con movimiento reducido y aparecen y se van con un fundido.
+3. **Presupuestos de estilos**: medidos todos los componentes. Escena 4,16 kB, Mar 4,00, horas 3,96 y navegación 3,94; el resto, 3,5 kB o menos. El aviso por componente pasa de 4 a 6 kB y el error de 8 a 10 kB: margen razonable para los más complejos, sin esconder un componente que se dispare. El presupuesto inicial no cambia (426 kB de 500 kB). Se recupera la pequeña subida de «Volver a ahora» que se había quitado por el límite.
+4. **Altura de las favoritas**: el token `--sky-control-h` (2,5 rem) es ahora la altura de todos los controles sobre la escena. Las favoritas medían 34 px y la zona 40; ahora todos miden 40 px. Además se corrigió un desfase de 2 px en escritorio: el botón de zona quedaba arriba de la fila y ahora se centra como los demás.
+5. **Arrastre de las horas igual que el de las favoritas**:
+   - Las dos tiras ya compartían la directiva `HorizontalScroll`. La diferencia era el `scroll-snap` de las horas: tiraba de cada deslizamiento hacia la hora exacta, y eso se notaba robótico.
+   - Se quita el ajuste de las horas y, con él, la búsqueda de puntos de ajuste de la directiva, que ya no usaba nadie.
+   - Mismo gesto de ratón: las dos tiras se frenan con la misma curva, en unos 170 ms.
+   - Táctil nativo, teclado y botones sin cambios.
+
+### Validación
+
+- **Tests**: 106 de la web (nuevos: intensidad de lluvia por código, número de trazos por intensidad, reparto que cubre todo el cielo sin rejilla y trazos que nunca van al paso) y 17 del API.
+- **Lint, formato y builds** de producción y de demo sin errores ni avisos. Inicial: 426,1 kB, 116,0 kB transferidos.
+- **En Chrome sin interfaz**:
+  - Lluvia del escenario «borrasca» a 1440 y 390 px: tiempos de fotograma de unos 4 ms, pausa fuera de pantalla y quietud con movimiento reducido.
+  - Alturas y alineación de los controles a 360, 820 y 1440 px, en español e inglés.
+  - Bordes de las horas en los temas claro y oscuro.
+  - Arrastre comparado con el mismo gesto en las dos tiras.
+  - 0 px de desplazamiento del layout al previsualizar horas, volver a ahora y abrir el selector de zonas.
+
+### Pendiente
+
+1. Probar la lluvia y el arrastre en dispositivos reales, sobre todo en móviles modestos.

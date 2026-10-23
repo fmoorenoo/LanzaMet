@@ -150,10 +150,15 @@ Español (por defecto) e inglés británico, cambiables al instante en **Ajustes
 
 - **Scroll horizontal** (horas, favoritas, selector de zonas):
   - Con ratón, botones anterior/siguiente que solo aparecen con puntero fino y se desactivan en los extremos.
-  - Arrastre: un clic, o un movimiento de menos de 5 px, sigue siendo un clic. Un arrastre nunca elige la hora que queda debajo ni selecciona texto. Al soltar, la tira sigue con la velocidad de la mano y se detiene en la hora más cercana, sin saltos al reactivarse el ajuste. Con movimiento reducido se detiene en seco.
+  - Arrastre: un clic, o un movimiento de menos de 5 px, sigue siendo un clic. Un arrastre nunca elige la hora que queda debajo ni selecciona texto. Al soltar, la tira sigue con la velocidad de la mano y se frena suavemente donde esa velocidad la lleve. Todas las tiras usan la misma directiva y no se ajustan a ninguna rejilla; las horas tenían ajuste y se notaban robóticas. Con movimiento reducido se detiene en seco.
   - Bordes fundidos mientras queda contenido.
   - La rueda horizontal, el trackpad y Mayús + rueda funcionan de forma nativa. La rueda vertical no se secuestra a propósito, para no atrapar el scroll de la página. En el móvil, el desplazamiento táctil es el nativo.
-  - En las horas, las flechas, Inicio y Fin las recorren, sin animación. Cada hora mide 60 px en móvil y 72 px en escritorio, con iconos de 32 y 38 px.
+  - En las horas, las flechas, Inicio y Fin las recorren, sin animación. Cada hora mide 60 px en móvil y 72 px en escritorio, con iconos de 32 y 38 px. Todas llevan un borde fino del verde de la selección, y la elegida, además, el verde pleno.
+- **Lluvia en la escena**:
+  - Trazos sueltos (`RAIN_DROPS`), no un fondo repetido. Su reparto es irregular pero cubre todo el cielo, y hay tres planos de profundidad: los lejanos son más finos, cortos, tenues y lentos.
+  - Todos caen con la misma inclinación, y cada uno empieza en un punto distinto de su caída.
+  - Cuántos trazos se dibujan depende de la intensidad del código meteorológico, que ya se descargaba: de 36 con llovizna a 120 con chaparrón o tormenta. En escenas estrechas se oculta un tercio.
+  - Solo se anima `transform`. La animación se pausa fuera de pantalla y en pestañas ocultas, y con movimiento reducido la lluvia queda quieta.
 - **Sin saltos**:
   - Abrir el selector de zonas o cualquier hoja ya no ensancha la página: `scrollbar-gutter: stable` reserva el carril de la barra de desplazamiento.
   - «Volver a ahora» está siempre en el layout; solo aparece y desaparece con un fundido.
