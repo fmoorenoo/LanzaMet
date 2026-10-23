@@ -17,8 +17,6 @@ interface NavItem {
   readonly path: string;
   readonly label: MessageKey;
   readonly icon: IconName;
-  /** On the rail, it leaves the main tabs for the foot, right above Settings. */
-  readonly foot?: boolean;
 }
 
 /**
@@ -41,7 +39,7 @@ export class NavBar {
     { id: 'zones', path: '/zonas', label: 'nav.zones', icon: 'zones' },
     { id: 'sea', path: '/mar', label: 'nav.sea', icon: 'sea' },
     { id: 'plans', path: '/donde-ir', label: 'nav.plans', icon: 'plans' },
-    { id: 'feedback', path: '/mejorar', label: 'nav.feedback', icon: 'feedback', foot: true },
+    { id: 'feedback', path: '/mejorar', label: 'nav.feedback', icon: 'feedback' },
   ];
 
   private readonly navigations = this.router.events.pipe(
@@ -64,9 +62,6 @@ export class NavBar {
    * is on screen, so the glide is seen instead of happening behind a frozen frame.
    */
   protected readonly capsuleIndex = signal(-1);
-
-  /** On the rail, a foot tab sits apart from the others: the capsule glides down to it. */
-  protected readonly capsuleAtFoot = computed(() => this.items[this.capsuleIndex()]?.foot === true);
 
   /** The capsule only glides once the first page is in place — never on arrival. */
   protected readonly canGlide = signal(false);

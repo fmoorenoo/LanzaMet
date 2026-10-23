@@ -110,7 +110,7 @@ Validación del 22-10-2026 en Arrecife: el modelo adelanta 24–37 min respecto 
 - **Zonas**: mapa ilustrado con el estado y el viento por zona, y tarjetas con miniescena.
 - **Mar**: marea estimada, curva del día, pleamares y bajamares de hoy y mañana, oleaje, mar de fondo, agua, avisos costeros y zonas más tranquilas.
 - **Dónde ir**: recomendaciones derivadas de los datos (playa, sin viento, mar tranquilo, atardecer, paseo, olas).
-- **Ayúdanos** (`/mejorar`): formulario para avisar de errores y proponer sugerencias o mejoras; el correo es opcional. En escritorio va al pie del raíl, junto a Ajustes. Ver [Comentarios de los usuarios](#comentarios-de-los-usuarios).
+- **Ayúdanos** (`/mejorar`): formulario para avisar de errores y proponer sugerencias o mejoras; el correo es opcional. Ver [Comentarios de los usuarios](#comentarios-de-los-usuarios).
 
 ## Comentarios de los usuarios
 

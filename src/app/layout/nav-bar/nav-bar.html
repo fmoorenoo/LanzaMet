@@ -11,12 +11,11 @@
       aria-hidden="true"
       [class.is-gliding]="canGlide()"
       [class.is-hidden]="capsuleIndex() < 0"
-      [class.is-at-foot]="capsuleAtFoot()"
       [style.--i]="capsuleIndex()"
     ></span>
     <ul class="tabs nav-tabs">
       @for (item of items; track item.path) {
-        <li [class.is-foot]="item.foot">
+        <li>
           <a
             class="tab nav-tab"
             [attr.data-route]="item.id"

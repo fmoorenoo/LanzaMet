@@ -414,7 +414,7 @@ Skills usadas: Emil Kowalski (arrastre, lluvia, transiciones) e Impeccable (cohe
 
 ### Hecho
 
-1. **Menú**: la sección pasa a llamarse «Ayúdanos» / «Help us» (pestaña y título). Cabe entera en la barra del móvil, así que desaparece la etiqueta corta. En el raíl de escritorio sale de las pestañas principales y va al pie, justo encima de Ajustes y con su mismo tamaño y tipo, sea cual sea la altura de la ventana. La cápsula baja deslizándose hasta ella (`100cqh` del contenedor de pestañas). En ventanas muy bajas el raíl se desplaza en vez de cortar Ajustes. En el móvil sigue siendo la última pestaña.
+1. **Menú**: la sección pasa a llamarse «Ayúdanos» / «Help us» (pestaña y título). Cabe entera en la barra del móvil, así que desaparece la etiqueta corta. Se probó llevarla al pie del raíl, junto a Ajustes, pero se queda arriba como última pestaña, en el raíl y en el móvil. En ventanas muy bajas el raíl se desplaza en vez de cortar Ajustes.
 2. **Indicador de marea** (`.tide-gauge`): el `display: flex` anulaba el centrado de la rejilla y el conjunto quedaba pegado a la izquierda. Ahora el tubo y la flecha se centran como una sola figura. Se recortan los márgenes vacíos del icono de la flecha (5 de 24 unidades por lado) para centrar lo que se ve. Medido: 9,9 px a cada lado y 8 px arriba y abajo.
 3. **Formulario más directo**:
    - Fuera el interruptor de envío anónimo: el correo es opcional y siempre editable.
@@ -427,5 +427,5 @@ Skills usadas: Emil Kowalski (arrastre, lluvia, transiciones) e Impeccable (cohe
 ### Validación
 
 - **Tests**: 139 en verde, con los del servicio adaptados al correo opcional. **Lint**, **typecheck** y **build de producción** sin avisos.
-- **En el navegador**: Chrome sin interfaz por CDP, porque la extensión no estaba conectada. Capturas a 390, 600 y 1440 px, en español e inglés. Medidos el raíl a 900 y 560 px de alto y el centrado de la marea. Sin desbordamiento horizontal.
+- **En el navegador**: Chrome sin interfaz por CDP, porque la extensión no estaba conectada. Capturas a 390, 600 y 1440 px, en español e inglés. Medido el centrado de la marea. Sin desbordamiento horizontal.
 - **axe** (WCAG 2.2 AA y buenas prácticas) sin violaciones en Ayúdanos (inicial, y con errores y privacidad abierta) y en Hoy: 390 y 1440 px, temas claro y oscuro, español e inglés.

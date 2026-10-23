@@ -194,25 +194,11 @@
     white-space: nowrap;
   }
 
-  // The main tabs at the top; the foot tab and Settings together at the bottom,
-  // whatever the height of the window. The wrap is a size container so the
-  // capsule can glide down to the foot, and never shrinks below its tabs.
-  .tabs-wrap {
-    flex: 1;
-    width: 5rem;
-    min-height: calc(var(--count, 4) * (4.25rem + var(--s-2)) + var(--s-6));
-    container-type: size;
-  }
-
   .tabs {
     display: flex;
     flex-direction: column;
     gap: var(--s-2);
-    height: 100%;
-  }
-
-  .is-foot {
-    margin-top: auto;
+    height: auto;
   }
 
   .tab {
@@ -229,54 +215,35 @@
     height: 4.25rem;
     transform: translate3d(0, calc(var(--i, 0) * (100% + var(--s-2))), 0);
 
-    &.is-at-foot {
-      transform: translate3d(0, calc(100cqh - 100%), 0);
-    }
-
     &::before {
       width: calc(100% - 0.25rem);
       height: calc(100% - 0.25rem);
     }
   }
 
-  // Same size, type and press as a tab, so the two at the foot read as a pair.
   .settings {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 0.1875rem;
+    display: grid;
+    justify-items: center;
+    gap: var(--s-1);
     width: 5rem;
-    height: 4.25rem;
-    margin-top: var(--s-2);
-    border-radius: 1.125rem;
+    margin-top: auto;
+    padding: var(--s-2) 0;
+    border-radius: var(--r-md);
     color: var(--c-ink-3);
-    font-size: 0.75rem;
-    font-weight: 650;
-    letter-spacing: 0.01em;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    text-align: center;
     transition:
       color var(--d-fast) ease,
       transform var(--d-press) var(--ease-out);
 
     &:active {
-      transform: scale(0.95);
-    }
-
-    &:focus-visible {
-      outline-offset: -5px;
+      transform: scale(0.96);
     }
 
     qth-icon {
       width: var(--icon-lg);
       height: var(--icon-lg);
-    }
-
-    // "Ajustes y demo" takes two lines.
-    span {
-      max-width: 4.5rem;
-      line-height: 1.15;
-      text-align: center;
-      text-wrap: balance;
     }
   }
 
