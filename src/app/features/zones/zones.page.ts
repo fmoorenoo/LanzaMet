@@ -5,12 +5,14 @@ import { I18n } from '../../core/i18n/i18n.store';
 import { TranslatePipe } from '../../core/i18n/t.pipe';
 import { zoneHeadline } from '../../core/insights/island.insight';
 import { readSea } from '../../core/insights/sea.insight';
+import { drawingSunTimes } from '../../core/insights/sun.insight';
 import { dayVerdict } from '../../core/insights/verdict.insight';
 import { readWind } from '../../core/insights/wind.insight';
 import { LocationId, ZoneConditions } from '../../core/models';
 import { ClockStore } from '../../core/state/clock.store';
 import { IslandStore } from '../../core/state/island.store';
 import { LocationsStore } from '../../core/state/locations.store';
+import { islandDateKey } from '../../core/utils/time';
 import { zoneScene } from '../../shared/scene/scene-state';
 import { Scene } from '../../shared/scene/scene';
 import { DataCredit } from '../../shared/ui/data-credit/data-credit';
@@ -41,12 +43,16 @@ export class ZonesPage {
   private readonly zones = computed(() => this.island.zones().data ?? []);
 
   private verdictFor(zone: ZoneConditions) {
+    const now = this.clock.now();
+    const today = zone.weather.daily.find((d) => d.date === islandDateKey(now));
     return dayVerdict({
       location: zone.location,
       weather: zone.weather.current,
       upcoming: zone.weather.hourly,
       sea: zone.sea?.current ?? null,
       day: 'today',
+      at: now,
+      sun: drawingSunTimes(today, now),
     });
   }
 

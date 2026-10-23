@@ -101,6 +101,7 @@ export class TodayPage {
     const upcoming = forecast.hourly.slice(index ?? 0);
     const isToday = dayKey === islandDateKey(this.clock.now());
     const wind = readWind(weather.wind);
+    const sun = drawingSunTimes(day, at);
 
     const conditions: ConditionsView = {
       wind,
@@ -128,6 +129,8 @@ export class TodayPage {
         upcoming,
         sea,
         day: isToday ? 'today' : 'tomorrow',
+        at,
+        sun,
       }),
       conditions,
       momentLabel:
@@ -137,7 +140,7 @@ export class TodayPage {
         weather,
         sea,
         tideLevel: tide?.level ?? null,
-        ...drawingSunTimes(day, at),
+        ...sun,
         at,
       }),
     };
