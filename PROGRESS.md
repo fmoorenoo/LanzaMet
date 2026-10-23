@@ -189,3 +189,81 @@ Skills usadas: Emil Kowalski (arrastre, lluvia, transiciones) e Impeccable (cohe
 ### Pendiente
 
 1. Probar la lluvia y el arrastre en dispositivos reales, sobre todo en móviles modestos.
+
+## Fase 6 — Hora actual, accesibilidad y paisaje propio de cada zona (23-10-2026)
+
+### Hecho
+
+1. **Hora en la escena de Hoy**:
+   - Junto a la temperatura, tras un filete: «Ahora 14:36». Dice a qué momento corresponde la cifra, sin ser un reloj aparte.
+   - Hora canaria y reloj de 24 h en los dos idiomas, como el resto de la web (`en-GB`).
+   - Si el reloj de quien visita marca otra hora, la etiqueta pasa a «En Lanzarote» / «In Lanzarote». Si no, los lectores de pantalla oyen además «hora de Canarias».
+   - Queda fuera de la región `aria-live` (`aria-live="off"`) para que no se anuncie cada minuto.
+   - Mientras se previsualiza otra hora se aparta: la franja de la hora previsualizada ya dice qué momento se ve.
+   - `ClockStore` cambia justo al cambiar el minuto. Antes iba cada 30 s, con hasta medio minuto de retraso. Además se pone al día al volver a una pestaña que estaba en segundo plano.
+2. **Hora en la gráfica de mareas**: se aprovecha la marca de «ahora» que ya había, sin duplicarla.
+   - El pasado sigue atenuado.
+   - La línea es discontinua sobre el agua y continua desde el punto de la curva hasta el eje, donde se lee «Ahora · 14:36».
+   - La etiqueta nunca se sale de la gráfica, y las horas del eje que taparía se apartan. Su anchura se mide en el navegador, así que vale en los dos idiomas y a cualquier ancho.
+3. **Botones solo con icono**:
+   - Nueva directiva `qthTooltip`. Muestra una etiqueta al pasar el ratón (tras 450 ms, o al instante si ya había otra abierta) y al llegar con el teclado, siempre en el idioma de la web.
+   - Cumple WCAG 1.4.13: se cierra con Escape, el puntero puede pasar sobre ella sin que desaparezca y dura mientras dura el hover o el foco. Al pulsar el botón se va.
+   - Se dibuja en la capa superior (`popover`), así que ningún contenedor la recorta, tampoco dentro del selector de zonas.
+   - Está oculta a los lectores de pantalla, que ya leen el `aria-label` del botón.
+   - No se usa `title` a propósito: añadiría una segunda burbuja sin estilo, que tarda en salir y nunca aparece con teclado ni en pantallas táctiles.
+   - Llevan tooltip:
+     - la estrella y los ajustes de la escena;
+     - el botón de la demo, que en móvil se queda solo con el icono;
+     - las estrellas de Zonas y del selector;
+     - cerrar de las hojas;
+     - anterior y siguiente de las tiras.
+   - Las estrellas dicen la acción («Añadir Famara a favoritas» / «Quitar…»), mientras su nombre accesible es estable («Favorita: Famara») y el estado lo da `aria-pressed`. La estrella de la escena antes se llamaba solo «Zona favorita»; ahora lleva el nombre del lugar.
+4. **Paisaje propio de cada zona** (`shared/scene/scenery.ts`). Se buscaron referencias reales de cada lugar y se interpretaron con las formas planas de la escena, sin copiar fotografías:
+   - **Arrecife (El Reducto):** la ciudad baja y blanca del frente marítimo, sus palmeras y el Gran Hotel, la única torre de la isla, con vidrio en cada planta.
+   - **Puerto del Carmen:** el paseo de palmeras de la Avenida de las Playas y el pueblo subiendo la ladera, con Lobos y Fuerteventura enfrente.
+   - **Playa Blanca:**
+     - un horizonte nuevo, `bocaina`: Fuerteventura cerca y alta, y Lobos con su cráter delante;
+     - casas bajas;
+     - Punta Pechiguera con el faro de 50 m y el viejo al lado;
+     - el ferri a Corralejo.
+   - **Costa Teguise (Las Cucharas):** bloques ordenados tras el paseo, palmeras intercaladas y escolleras de roca. Las velas de windsurf salen solo de día y según el viento, de ninguna a tres.
+   - **Famara:** el Risco de siempre, más los bungalós a su pie y las casas de La Caleta.
+   - **Órzola:** casas blancas en la punta, el dique con su luz verde, barcas fondeadas y el barco a La Graciosa.
+   - **El Golfo:** el medio cráter con capas ocre, óxido y negro que siguen la forma de la pared, el Charco de los Clicos verde a su pie y Timanfaya detrás.
+5. **Cómo está hecho**:
+   - `Location.scenery` elige el paisaje de cada zona; `horizon` sigue eligiendo el horizonte natural.
+   - Siete primitivas componen los siete paisajes: casas, pueblos sembrados con semilla fija, torre, palmera, faro, escollera y cosas a flote.
+   - Cada papel (paredes, sombra, ventanas, vidrio, palmeras…) es un solo `path`. Cada paisaje se calcula una vez y queda en caché.
+   - Las tarjetas de Zonas heredan el paisaje sin coste extra.
+   - Los colores salen de la luz de la escena: cal templada por el cielo de día, tonos cálidos al atardecer y sombra de noche. De noche quedan algo más claros que la tierra, con las ventanas, el faro y la luz del muelle encendidos.
+   - Las barcas cabecean y las velas se inclinan con pequeñas animaciones CSS:
+     - se pausan fuera de pantalla y en segundo plano;
+     - quedan quietas en las tarjetas y con movimiento reducido.
+   - En pantallas estrechas la tierra se ancla a la derecha (`xMaxYMax slice`), donde están los hitos y no hay texto. Lo alto va a la derecha de x = 1000 y lo demás queda bajo, porque en móviles bajos el texto llega al horizonte.
+
+### Validación
+
+- **Tests**: 112 de la web (antes 106) y 17 del API. Nuevos:
+  - cada zona con un paisaje distinto;
+  - en cada paisaje, lo que identifica a su zona;
+  - nada alto donde va el texto y nada a flote por encima del agua;
+  - el reloj que cambia con el minuto y se pone al día al volver a la pestaña.
+- **Lint, formato y builds** de producción y de demo sin errores ni avisos de presupuesto. Inicial: 430,2 kB, 117,1 kB transferidos.
+- **En Chrome sin interfaz, con eventos reales de ratón y teclado**, en español e inglés:
+  - el tooltip no sale a los 150 ms y sí a los 750;
+  - sigue al pasar el puntero sobre él, y se cierra con Escape y al salir;
+  - aparece con Tab y se va con el foco;
+  - al pulsar la estrella cambia `aria-pressed` y el nombre se mantiene;
+  - funciona dentro del selector abierto;
+  - ningún botón queda sin nombre accesible.
+- **axe-core 4.10** sin violaciones en Hoy, Zonas, Mar, Dónde ir y con el selector de zonas abierto, en español (1440 px) e inglés (390 px).
+- **Revisión visual**:
+  - las siete zonas a 1440, 390 y 360 × 640 px, de día, al atardecer (19:06) y de noche (21:30);
+  - las tarjetas de Zonas;
+  - la hora de la escena y de la marea en los dos idiomas;
+  - al previsualizar las 18:00, el reloj se aparta.
+
+### Pendiente
+
+1. Probar en dispositivos reales los paisajes en móviles pequeños y los tooltips en tabletas con ratón.
+2. En móviles muy bajos (≈ 640 px) con un veredicto largo, el texto llega al horizonte y puede quedar sobre el cráter de El Golfo. Se lee gracias al halo del texto, pero conviene revisarlo si cambia la composición de la escena.

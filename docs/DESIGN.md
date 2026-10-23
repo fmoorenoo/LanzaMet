@@ -4,7 +4,7 @@ Documentado a partir de lo construido. La fuente de verdad son los tokens de `sr
 
 ## Dirección
 
-**La escena es el dato.** La pantalla principal no muestra un fondo decorativo: dibuja el día a partir de la previsión. El cielo depende de la hora y del sol de la zona; las nubes, la calima y la lluvia, de las condiciones; la velocidad de las nubes, del viento; la amplitud de las olas, del estado del mar, y el nivel del agua sobre la orilla, de la marea. Cada zona tiene su horizonte: La Graciosa desde el norte, el Risco sobre Famara, Fuerteventura desde el sur o los volcanes de Timanfaya.
+**La escena es el dato.** La pantalla principal no muestra un fondo decorativo: dibuja el día a partir de la previsión. El cielo depende de la hora y del sol de la zona; las nubes, la calima y la lluvia, de las condiciones; la velocidad de las nubes, del viento; la amplitud de las olas, del estado del mar, y el nivel del agua sobre la orilla, de la marea. Cada zona tiene su horizonte (La Graciosa desde el norte, el Risco sobre Famara, Fuerteventura desde el sur, Lobos desde la Bocaina, los volcanes de Timanfaya) y su paisaje propio: el Gran Hotel sobre El Reducto, el paseo de palmeras de Puerto del Carmen, el faro de Pechiguera, las escolleras y los windsurfistas de Las Cucharas, el muelle de Órzola o el medio cráter de El Golfo con el Charco de los Clicos. Se dibujan con las mismas formas planas que el resto de la escena y toman su luz: cal al sol, tonos cálidos al atardecer, ventanas encendidas de noche.
 
 Las palabras van primero ("Hoy apetece playa") y los números después. Nunca se muestran grados de dirección, presión, coordenadas ni códigos meteorológicos.
 
@@ -71,7 +71,8 @@ Reglas:
 
 | Componente | Archivo | Notas |
 |---|---|---|
-| Escena | `shared/scene` | `full` (animada) / `mini` (tarjetas); oculta a lectores de pantalla |
+| Escena | `shared/scene` | `full` (animada) / `mini` (tarjetas); oculta a lectores de pantalla. Paisajes por zona en `scenery.ts`: siete primitivas, un `path` por papel, calculados una vez |
+| Tooltip | `shared/ui/tooltip` | Directiva `qthTooltip` para botones solo con icono: ratón (450 ms) y teclado, Escape, en la capa superior, oculta a lectores de pantalla (el botón lleva su `aria-label`); sin `title` |
 | Hoja | `shared/ui/sheet` | `<dialog>` nativo, inferior en móvil y centrada en escritorio |
 | Icono | `shared/ui/icon` | Lucide para la interfaz + iconos propios de identidad; ver «Iconos» |
 | Glifo del cielo | `shared/ui/sky-glyph` | Bicolor: sol cálido, luna pálida, nubes que los tapan |
@@ -97,6 +98,12 @@ Cada sección contempla carga (esqueleto con la forma del contenido), datos, vac
   - El resaltado va hundido unos píxeles a cada lado, para que las horas vecinas respiren.
   - Cada hora lleva un borde de 1 px en `--c-accent-soft`, el mismo tono que el relleno de la elegida. La elegida conserva ese relleno y pasa a `--c-accent`: más oscuro de día y más luminoso de noche, siempre el verde más visible del tema.
 - **Controles sobre la escena:** `--sky-control-h` (2,5 rem) es la altura de todas las píldoras y botones redondos del cielo (zona, favoritas, estrella, ajustes), así que se alinean en cualquier idioma. En escritorio comparten una fila y se centran en ella.
+- **Hora actual:**
+  - En Hoy va junto a la temperatura, tras un filete: «Ahora 14:36», o «En Lanzarote» si el reloj de quien visita marca otra hora. Se aparta al previsualizar otra hora.
+  - En la marea, la marca de «ahora» baja del punto de la curva al eje, donde va la hora, y las horas del eje que taparía se apartan.
+- **Paisaje en pantallas estrechas:**
+  - La tierra se ancla a la derecha (`xMaxYMax slice`), donde están los hitos.
+  - Lo alto va a la derecha de x = 1000 y lo blanco queda bajo, porque en móviles bajos el texto llega al horizonte.
 - **Lluvia:** trazos sueltos con tres profundidades, siempre con la misma inclinación (40 de ancho por cada 60 de alto). La densidad sigue a la intensidad y solo se anima `transform`.
 - **Estabilidad:** lo que aparece o desaparece no mueve nada.
   - Los controles que van y vienen están siempre en el layout y solo cambian de opacidad y visibilidad («Volver a ahora»).
@@ -117,7 +124,7 @@ Para encontrar cada pieza con las herramientas del navegador:
 
 - **IDs** en inglés y `kebab-case`, solo para lo único de cada página: `weather-hero`, `weather-landscape`, `current-temperature`, `weather-verdict`, `weather-description`, `temperature-range`, `location-selector`, `location-selector-button`, `hourly-forecast`, `current-conditions`, `sun-times`, `daily-forecast`, `tide-visualization`, `tide-extremes`, `language-selector`, `theme-selector`, `main-navigation`…
 - **Clases** semánticas y reutilizables para lo repetido (`hour-cell`, `day-row`, `zone-card`, `map-marker`, `location-option`, `plan-card`, `weather-warning`, `tide-extreme`…), añadidas junto a las clases internas cortas, que no cambian.
-- **`data-*`** para identificar cada instancia: `data-location-id`, `data-index` / `data-time` (horas), `data-date` (días), `data-plan-kind`, `data-tide` (`high` / `low`), `data-level` (avisos), `data-condition`, `data-route`, `data-area`. La escena expone lo que dibuja: `data-variant`, `data-horizon`, `data-sea-level`, `data-ink`.
+- **`data-*`** para identificar cada instancia: `data-location-id`, `data-index` / `data-time` (horas), `data-date` (días), `data-plan-kind`, `data-tide` (`high` / `low`), `data-level` (avisos), `data-condition`, `data-route`, `data-area`. La escena expone lo que dibuja: `data-variant`, `data-horizon`, `data-scenery`, `data-sea-level`, `data-ink`. La hora: `current-time` y `tide-now-time`.
 
 ## Voz
 
