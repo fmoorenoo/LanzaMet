@@ -327,11 +327,17 @@
     --fade-forward: var(--fade-size);
   }
 
-  // While a mouse drags it, snapping waits and nothing gets selected.
+  // While a mouse drags it, and while it glides to rest afterwards, snapping
+  // waits (the glide itself ends on a snap point) and nothing gets selected.
+  &.is-dragging,
+  &.is-settling {
+    scroll-snap-type: none;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
   &.is-dragging {
     cursor: grabbing;
-    scroll-snap-type: none;
-    user-select: none;
 
     * {
       cursor: grabbing;

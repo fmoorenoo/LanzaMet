@@ -1,4 +1,4 @@
-import { Component, computed, inject, input, output } from '@angular/core';
+import { Component, computed, ElementRef, inject, input, output, viewChild } from '@angular/core';
 import { DATA_MODE } from '../../../core/data/http/data-config';
 import { Msg } from '../../../core/i18n/i18n.model';
 import { TranslatePipe } from '../../../core/i18n/t.pipe';
@@ -54,6 +54,7 @@ export class TodayHero {
   protected readonly ui = inject(UiStore);
   protected readonly isDemo = inject(DATA_MODE) === 'demo';
   private readonly locations = inject(LocationsStore);
+  private readonly placeButton = viewChild.required<ElementRef<HTMLButtonElement>>('placeButton');
 
   protected readonly current = this.locations.selected;
 
@@ -74,5 +75,11 @@ export class TodayHero {
 
   protected selectPlace(id: LocationId): void {
     this.locations.select(id);
+  }
+
+  /** The reset button goes away with the preview; focus moves to the place, not to the page. */
+  protected resetToNow(): void {
+    this.backToNow.emit();
+    this.placeButton().nativeElement.focus();
   }
 }

@@ -1,4 +1,7 @@
 :host {
+  // Height of the quick chips, and so of the row they share with the preview label.
+  --chip-h: 2.125rem;
+
   position: relative;
   display: block;
   height: min(78svh, 46rem);
@@ -71,9 +74,18 @@ qth-scene {
   margin-left: auto;
 }
 
+// Always laid out, with or without content: see the template.
+.slot {
+  display: grid;
+  align-items: center;
+  min-width: 0;
+  // The chips plus the 2px ring of room their focus outline needs.
+  min-height: calc(var(--chip-h) + 4px);
+  margin-top: var(--s-2);
+}
+
 .places-row {
   min-width: 0;
-  margin-top: var(--s-2);
 }
 
 .places {
@@ -103,7 +115,7 @@ qth-scene {
 }
 
 .place--quick {
-  height: 2.125rem;
+  height: var(--chip-h);
   padding-inline: var(--s-3);
   background-color: transparent;
   font-size: var(--fs-micro);
@@ -150,14 +162,13 @@ qth-scene {
   display: flex;
   align-items: center;
   gap: var(--s-3);
-  height: 2.125rem;
-  margin-top: calc(var(--s-2) + 2px);
+  height: var(--chip-h);
   font-size: var(--fs-small);
   font-weight: 650;
 }
 
 .moment-reset {
-  min-height: 2.125rem;
+  min-height: var(--chip-h);
   padding-inline: var(--s-2);
   margin-inline: calc(var(--s-2) * -1);
   border-radius: var(--r-pill);
@@ -260,8 +271,7 @@ qth-scene {
     grid-column: 3;
   }
 
-  .places-row,
-  .moment {
+  .slot {
     grid-area: 1 / 2;
     margin: 0;
   }

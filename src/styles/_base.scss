@@ -23,6 +23,11 @@ html {
   caret-color: var(--c-accent);
   scrollbar-color: var(--c-line-strong) transparent;
   scrollbar-width: thin;
+  // The scrollbar's lane is always reserved, so the page doesn't widen and
+  // shift sideways when a modal sheet locks the scroll (see below) or when a
+  // page is shorter than the window. Overlay scrollbars (phones, macOS) take
+  // no lane, so this changes nothing there.
+  scrollbar-gutter: stable;
   // Day ↔ night is eased, never a brightness jump.
   transition:
     background-color 600ms ease,

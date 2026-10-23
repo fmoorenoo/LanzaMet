@@ -1,7 +1,17 @@
 <div class="section-head section-header timeline-head">
   <ng-content select="[timelineTitle]" />
   <div class="head-actions">
-    <ng-content select="[timelineAction]" />
+    <!-- Always laid out, shown only while an hour is previewed: nothing around it moves. -->
+    <button
+      id="back-to-now"
+      type="button"
+      class="btn btn--quiet back-to-now"
+      [class.is-shown]="isPreview()"
+      [inert]="!isPreview()"
+      (click)="backToNow()"
+    >
+      {{ 'common.backToNow' | t }}
+    </button>
     <qth-scroll-controls
       [scroller]="scroll"
       [backLabel]="'hours.previous' | t"
@@ -15,25 +25,16 @@
     class="track hour-track"
     role="group"
     [attr.aria-label]="'hours.label' | t"
-    [style.width.px]="width()"
+    [style.--hours]="cells().length"
     (keydown)="onKeydown($event)"
   >
     <svg
       class="curve temperature-curve"
-      [attr.viewBox]="'0 0 ' + width() + ' 60'"
+      [attr.viewBox]="'0 0 ' + cells().length + ' 60'"
       preserveAspectRatio="none"
       aria-hidden="true"
     >
       <path class="curve-line" [attr.d]="curve()" />
-      @for (cell of cells(); track cell.index) {
-        <circle
-          class="curve-dot"
-          [class.is-active]="cell.index === activeIndex()"
-          [attr.cx]="cell.index * 56 + 28"
-          [attr.cy]="cell.y"
-          r="3"
-        />
-      }
     </svg>
 
     @for (cell of cells(); track cell.index) {
@@ -46,14 +47,14 @@
         [class.is-active]="cell.index === activeIndex()"
         [attr.aria-pressed]="cell.index === activeIndex()"
         [attr.tabindex]="cell.index === activeIndex() ? 0 : -1"
+        [style.--y]="cell.y"
         (click)="choose(cell.index)"
       >
         <span class="day-mark">{{ cell.dayMark | t }}</span>
         <span class="time">{{ cell.label | t }}</span>
         <qth-sky-glyph [sky]="cell.sky" [isDaylight]="cell.isDaylight" [decorative]="true" />
-        <span class="temp t-num" [style.transform]="'translateY(' + (cell.y - 22) + 'px)'"
-          >{{ cell.temperature }}°</span
-        >
+        <span class="temp t-num">{{ cell.temperature }}°</span>
+        <span class="curve-dot" aria-hidden="true"></span>
         <!-- The accessible name is the visible time and temperature, plus the rest in words. -->
         <span class="visually-hidden">, {{ cell.detail | t }}</span>
         <span class="wind" [attr.data-level]="cell.windLevel">

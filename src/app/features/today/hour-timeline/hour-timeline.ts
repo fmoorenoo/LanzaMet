@@ -10,13 +10,15 @@ import { HorizontalScroll } from '../../../shared/ui/horizontal-scroll/horizonta
 import { ScrollControls } from '../../../shared/ui/horizontal-scroll/scroll-controls';
 import { SkyGlyph } from '../../../shared/ui/sky-glyph/sky-glyph';
 
-const CELL = 56;
+/** Vertical room of the temperature curve, px: highest point at the top, lowest at the bottom. */
 const CURVE_TOP = 22;
 const CURVE_RANGE = 26;
 
 /**
  * The next 24 hours as a landscape of temperature, with the wind underneath.
  * Choosing an hour previews it in the scene above; arrow keys walk the hours.
+ * Cell width lives in CSS (it grows on desktop), so the curve is drawn in
+ * cell units and stretched to fit; its dots are HTML and stay round.
  */
 @Component({
   selector: 'qth-hour-timeline',
@@ -68,18 +70,24 @@ export class HourTimeline {
     }),
   );
 
-  protected readonly width = computed(() => this.hours().length * CELL);
-
+  /** The curve through the middle of each cell, x in cells, y in px. */
   protected readonly curve = computed(() =>
     this.cells()
-      .map((c, i) => `${i === 0 ? 'M' : 'L'}${c.index * CELL + CELL / 2} ${c.y.toFixed(1)}`)
+      .map((c, i) => `${i === 0 ? 'M' : 'L'}${c.index + 0.5} ${c.y.toFixed(1)}`)
       .join(''),
   );
 
   protected readonly activeIndex = computed(() => this.selected() ?? 0);
+  protected readonly isPreview = computed(() => this.selected() !== null);
 
   protected choose(index: number): void {
     this.selected.set(index === 0 ? null : index);
+  }
+
+  /** Back to "now": the first hour is chosen, shown and focused, as the button fades out. */
+  protected backToNow(): void {
+    this.choose(0);
+    this.reveal(0, true);
   }
 
   protected onKeydown(event: KeyboardEvent): void {
@@ -98,8 +106,22 @@ export class HourTimeline {
     if (next === null) return;
     event.preventDefault();
     this.choose(next);
-    const button = this.buttons()[next]?.nativeElement;
-    button?.focus();
-    button?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+    this.reveal(next);
+  }
+
+  /**
+   * Focuses an hour and brings it into view. Keys step through the hours
+   * many times in a row, so they move instantly; only a one-off jump glides.
+   */
+  private reveal(index: number, glide = false): void {
+    const button = this.buttons()[index]?.nativeElement;
+    if (!button) return;
+    button.focus({ preventScroll: true });
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    button.scrollIntoView({
+      block: 'nearest',
+      inline: 'nearest',
+      behavior: glide && !reduce ? 'smooth' : 'auto',
+    });
   }
 }

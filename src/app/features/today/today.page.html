@@ -36,17 +36,6 @@
     <section id="hourly-forecast" class="block today-section" aria-labelledby="hours-title">
       <qth-hour-timeline [hours]="hours()" [(selected)]="previewIndex">
         <h2 timelineTitle id="hours-title" class="t-title">{{ 'today.hours' | t }}</h2>
-        @if (previewIndex() !== null) {
-          <button
-            timelineAction
-            id="back-to-now"
-            type="button"
-            class="btn btn--quiet"
-            (click)="backToNow()"
-          >
-            {{ 'common.backToNow' | t }}
-          </button>
-        }
       </qth-hour-timeline>
     </section>
   } @else if (weather.status !== 'error' && !locations.error()) {
