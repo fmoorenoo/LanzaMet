@@ -93,6 +93,25 @@
   vector-effect: non-scaling-stroke;
 }
 
+// The coastline's credit, quiet in the open sea of the bottom-right corner.
+.map-credit {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  display: inline-flex;
+  align-items: center;
+  min-height: 1.5rem;
+  padding-inline: var(--s-1);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  color: var(--c-ink-3);
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
 // ── Markers: real buttons on top of the drawing ───────────────
 .marker {
   position: absolute;

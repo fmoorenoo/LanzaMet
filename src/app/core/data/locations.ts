@@ -114,7 +114,7 @@ export const LOCATIONS: readonly Location[] = [
     municipality: 'Yaiza',
     area: 'oeste',
     kind: 'costa',
-    position: { latitude: 28.979, longitude: -13.832 },
+    position: { latitude: 28.9822, longitude: -13.8314 },
     facing: 'O',
     horizon: 'volcanes',
     shore: 'arena-negra',

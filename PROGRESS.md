@@ -287,3 +287,36 @@ Skills usadas: Emil Kowalski (arrastre, lluvia, transiciones) e Impeccable (cohe
 
 1. Probar en dispositivos reales los paisajes en móviles pequeños y los tooltips en tabletas con ratón.
 2. En móviles muy bajos (≈ 640 px) con un veredicto largo, el texto llega al horizonte y puede quedar sobre el cráter de El Golfo. Se lee gracias al halo del texto, pero conviene revisarlo si cambia la composición de la escena.
+
+## Mapa de Zonas con el contorno real (23-10-2026)
+
+### Hecho
+
+1. **Contorno de OpenStreetMap**:
+   - El dibujo a mano (44 puntos para Lanzarote y 8 para La Graciosa, suavizados) se sustituye por las relaciones de isla de OSM: Lanzarote (2214686), La Graciosa (3251775) y Montaña Clara (13212914).
+   - Se unen sus tramos de costa en anillos y se simplifican con Douglas–Peucker a 120 m, por debajo de un píxel a la escala del mapa, redondeando a 4 decimales.
+   - Quedan 290 puntos para Lanzarote, 49 para La Graciosa y 12 para Montaña Clara (`coastline.ts`, 8,7 kB sin comprimir). Con tantos puntos se dibujan segmentos rectos, sin suavizar.
+   - Las áreas cuadran con las reales: 810 km² Lanzarote y 27 km² La Graciosa.
+   - La Graciosa y Montaña Clara son islas aparte, con el estrecho de El Río visible. Alegranza queda fuera del encuadre: incluirla obligaba a alargar el mapa un 20 %.
+2. **Una sola proyección** para costa y marcadores: equirectangular con la longitud corregida por el coseno de 29°, la que ya usaba el mapa. Solo se sube el borde norte (29,315) para que quepa Montaña Clara.
+3. **Posiciones comprobadas** con Nominatim y la costa de OSM:
+   - Las siete zonas caen dentro de su localidad.
+   - **El Golfo** estaba 83 m mar adentro y pasa a la coordenada de OSM para el caserío (28,9822 / −13,8314). El modelo del tiempo sigue leyendo la misma celda, así que la previsión no cambia.
+   - Órzola queda a 36 m de la costa y Playa Blanca a 24 m; todas en tierra.
+4. **Etiquetas**: la de Órzola pasa de la izquierda a abajo. A la izquierda tapaba justo La Graciosa y el estrecho.
+5. **Crédito**: «© OpenStreetMap», con enlace a su página de copyright, discreto en la esquina inferior derecha del mapa, en mar abierto. Lo pide la licencia ODbL.
+
+### Validación
+
+- **Tests**: 116 de la web (antes 112). Nuevos:
+  - todas las zonas sobre Lanzarote y no en el mar;
+  - La Graciosa y Montaña Clara separadas de Lanzarote;
+  - costa y marcadores dentro del encuadre;
+  - distancias proporcionales en todas direcciones (error menor del 1 %).
+- **Comparación con el mapa real**: el contorno simplificado y los siete puntos, superpuestos a teselas de OSM en la misma proyección, coinciden con la costa y con cada localidad.
+- **A 360, 390, 820 y 1440 px**:
+  - ninguna etiqueta se solapa con otra ni con un punto;
+  - ninguna la recorta el panel;
+  - el mapa no se deforma: la proporción la fija el `viewBox`.
+- Al pulsar los marcadores se selecciona la zona (`aria-pressed`).
+- **axe** sin violaciones en Zonas, en español e inglés. Lint, formato y build de producción sin avisos.

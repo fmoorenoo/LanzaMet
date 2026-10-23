@@ -58,7 +58,7 @@ El tiempo se pide en las coordenadas de cada zona. Para el mar no sirve: el mode
 | Costa Teguise | 29,001 / −13,491 | 28,983 / −13,538 ¹ | 28,958 / −13,375 | 12 km |
 | Famara | 29,116 / −13,557 | 29,120 / −13,604 | 29,208 / −13,708 | 18 km |
 | Órzola | 29,223 / −13,450 | 29,218 / −13,469 | 29,292 / −13,458 | 8 km |
-| El Golfo | 28,979 / −13,832 | 28,952 / −13,828 | 28,958 / −13,875 | 5 km |
+| El Golfo | 28,982 / −13,831 | 28,952 / −13,828 | 28,958 / −13,875 | 5 km |
 
 ¹ Zonas que comparten celda: el modelo no las distingue y muestran los mismos valores (salvo el ajuste de temperatura por altitud). No se inventan diferencias. Por eso, en la fase 3 se retiraron **Papagayo** y **La Santa**, que repetían las celdas de Playa Blanca y Famara: quien las tuviera guardadas como zona o favorita pasa a Playa Blanca y Famara (`RETIRED_LOCATIONS`). La pantalla Mar indica a cuántos kilómetros está el punto de mar abierto y que en la orilla las olas pueden ser distintas.
 
