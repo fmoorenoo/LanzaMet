@@ -36,6 +36,13 @@ const HOURLY_STEPS = 48;
 const DAYS = 7;
 
 const toIso = (unixSeconds: number) => new Date(unixSeconds * 1000).toISOString();
+/**
+ * Sunrise and sunset come to the second (08:00:52) but are shown to the
+ * minute. Rounded to the nearest one, as almanacs do, they are never more
+ * than 30 s off; "hh:mm" alone would cut the seconds and show 08:00.
+ */
+const toIsoMinute = (unixSeconds: number) =>
+  new Date(Math.round(unixSeconds / 60) * 60_000).toISOString();
 const round1 = (value: number) => Math.round(value * 10) / 10;
 const round2 = (value: number) => Math.round(value * 100) / 100;
 
@@ -245,8 +252,8 @@ function dailyForecasts(dto: ForecastDto, hourly: readonly WeatherSnapshot[]): D
       maxWindKmh: Math.round(wind),
       windFromDegrees: windFrom,
       uvMax: Math.round(uv),
-      sunrise: typeof sunrise === 'number' ? toIso(sunrise) : null,
-      sunset: typeof sunset === 'number' ? toIso(sunset) : null,
+      sunrise: typeof sunrise === 'number' ? toIsoMinute(sunrise) : null,
+      sunset: typeof sunset === 'number' ? toIsoMinute(sunset) : null,
     });
   });
   return days;

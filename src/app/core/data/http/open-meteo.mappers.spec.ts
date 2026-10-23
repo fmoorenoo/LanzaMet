@@ -62,6 +62,14 @@ describe('Open-Meteo weather mapping', () => {
     expect(sunTime(result.daily[0].sunset)).toMatch(/^19:1\d/);
   });
 
+  it('rounds sunrise and sunset to the nearest minute instead of cutting the seconds', () => {
+    // The fixture: 07:59:40 and 08:00:20 rise, 19:17:09 set.
+    expect(sunTime(result.daily[0].sunrise)).toBe('08:00');
+    expect(sunTime(result.daily[1].sunrise)).toBe('08:00');
+    expect(sunTime(result.daily[0].sunset)).toBe('19:17');
+    expect(result.daily[0].sunrise).toBe('2026-10-22T07:00:00.000Z');
+  });
+
   it('keeps a day whose sun times are missing, without making them up', () => {
     const gap = structuredClone(forecastFixture) as unknown as {
       daily: { sunrise: (number | null)[]; sunset: (number | null)[] };
