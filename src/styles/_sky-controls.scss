@@ -8,7 +8,7 @@
   align-items: center;
   justify-content: center;
   gap: 0.375rem;
-  height: 2.5rem;
+  height: var(--sky-control-h);
   padding: 0 var(--s-4);
   border-radius: var(--r-pill);
   color: inherit;
@@ -36,7 +36,7 @@
 }
 
 .sky-button {
-  width: 2.5rem;
+  width: var(--sky-control-h);
   padding: 0;
 
   &[aria-pressed='true'] qth-icon {
