@@ -22,15 +22,6 @@
     <path class="island" [attr.d]="paths.lanzarote" />
   </svg>
 
-  <!-- The coastline is OpenStreetMap's (ODbL): it asks for this credit on the map. -->
-  <a
-    class="map-credit"
-    href="https://www.openstreetmap.org/copyright"
-    target="_blank"
-    rel="noopener"
-    >© OpenStreetMap</a
-  >
-
   @for (marker of placed(); track marker.id) {
     <button
       type="button"

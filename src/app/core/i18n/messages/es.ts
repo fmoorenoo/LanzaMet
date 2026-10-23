@@ -385,6 +385,10 @@ export const es = {
   'settings.source.warnings.text': 'Plan Meteoalerta. {status}.',
   'settings.source.observations': 'Medidas de estaciones',
   'settings.source.observations.text': 'AEMET OpenData. {status}.',
+  'settings.source.map': 'Mapa de la isla',
+  'settings.source.map.credit': 'colaboradores de OpenStreetMap',
+  'settings.source.map.text':
+    'Licencia ODbL. Contorno simplificado e incluido en la web: no se consulta en vivo.',
   'settings.status.ready': 'Conectado',
   'settings.status.error': 'Sin conexión ahora',
   'settings.status.unavailable': 'No disponible en esta instalación',

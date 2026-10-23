@@ -3,7 +3,8 @@ import type { LatLon } from './island-geometry';
 /*
  * Coastlines of Lanzarote, La Graciosa and Montaña Clara, from
  * OpenStreetMap (island relations 2214686, 3251775 and 13212914, read on
- * 2026-10-23). © OpenStreetMap contributors, ODbL 1.0: the map credits it.
+ * 2026-10-23), bundled here: nothing is fetched at run time.
+ * © OpenStreetMap contributors, ODbL 1.0, credited in Settings' data sources.
  *
  * Simplified with Douglas–Peucker at 120 m, under a pixel at the size the
  * map is drawn (about 110 m per pixel on a wide screen), and rounded to

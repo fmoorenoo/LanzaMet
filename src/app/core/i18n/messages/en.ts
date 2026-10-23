@@ -383,6 +383,10 @@ export const en: Messages = {
   'settings.source.warnings.text': 'Meteoalerta plan. {status}.',
   'settings.source.observations': 'Station measurements',
   'settings.source.observations.text': 'AEMET OpenData. {status}.',
+  'settings.source.map': 'Island map',
+  'settings.source.map.credit': 'OpenStreetMap contributors',
+  'settings.source.map.text':
+    'ODbL licence. Coastline simplified and bundled with the site: never fetched live.',
   'settings.status.ready': 'Connected',
   'settings.status.error': 'No connection right now',
   'settings.status.unavailable': 'Not available in this installation',

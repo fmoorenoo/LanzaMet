@@ -65,6 +65,17 @@
             {{ 'settings.source.observations.text' | t: { status: observationsStatus() } }}
           </span>
         </li>
+        <!-- The map's coastline is derived from OpenStreetMap: ODbL asks for this credit. -->
+        <li data-source="map">
+          <span class="choice-label">{{ 'settings.source.map' | t }}</span>
+          <span class="choice-hint">
+            ©
+            <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">{{
+              'settings.source.map.credit' | t
+            }}</a
+            >. {{ 'settings.source.map.text' | t }}
+          </span>
+        </li>
       </ul>
       <p class="choice-hint">{{ 'settings.disclaimer' | t }}</p>
     </section>

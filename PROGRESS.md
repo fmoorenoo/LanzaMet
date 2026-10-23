@@ -304,7 +304,9 @@ Skills usadas: Emil Kowalski (arrastre, lluvia, transiciones) e Impeccable (cohe
    - **El Golfo** estaba 83 m mar adentro y pasa a la coordenada de OSM para el caserío (28,9822 / −13,8314). El modelo del tiempo sigue leyendo la misma celda, así que la previsión no cambia.
    - Órzola queda a 36 m de la costa y Playa Blanca a 24 m; todas en tierra.
 4. **Etiquetas**: la de Órzola pasa de la izquierda a abajo. A la izquierda tapaba justo La Graciosa y el estrecho.
-5. **Crédito**: «© OpenStreetMap», con enlace a su página de copyright, discreto en la esquina inferior derecha del mapa, en mar abierto. Lo pide la licencia ODbL.
+5. **Crédito**:
+   - La costa va incluida en la web y no se consulta OpenStreetMap en ningún momento.
+   - Aun así, al derivar de sus datos, la licencia ODbL pide citarla. Se hace en Ajustes, en «De dónde salen los datos» («Mapa de la isla: © colaboradores de OpenStreetMap. Licencia ODbL»), no sobre el mapa.
 
 ### Validación
 
