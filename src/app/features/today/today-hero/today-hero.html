@@ -30,7 +30,7 @@
         <span class="clock-label">{{
           (time().elsewhere ? 'today.clock.island' : 'common.now') | t
         }}</span>
-        <time class="t-num" [attr.datetime]="time().iso">{{ time().text }}</time>
+        <time class="clock-time t-num" [attr.datetime]="time().iso">{{ time().text }}</time>
         @if (!time().elsewhere) {
           <span class="visually-hidden">{{ 'today.clock.zone' | t }}</span>
         }

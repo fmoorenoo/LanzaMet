@@ -254,7 +254,7 @@ const SCENERIES: Readonly<Record<SceneryId, () => SceneryArt>> = {
     new Sketch()
       .village(190, 480, 14, 11, { w: [14, 26], h: [4, 8] })
       .village(530, 1200, 26, 12, { w: [20, 38], h: [10, 28] })
-      .tower(1022, 30, 106, 17)
+      .tower(1020, 34, 98, 17)
       .palm(624, 38, 4)
       .palm(668, 45, -3)
       .palm(718, 34, 5)

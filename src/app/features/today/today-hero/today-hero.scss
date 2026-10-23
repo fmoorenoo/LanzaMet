@@ -128,6 +128,23 @@ qth-scene {
   font-size: var(--fs-micro);
 }
 
+// The numbers carry it: larger than the pill's text, with little padding.
+.clock {
+  gap: 0.3125rem;
+  padding-inline: 0.625rem;
+}
+
+.clock-label {
+  font-weight: 520;
+  color: color-mix(in oklch, currentColor 82%, transparent);
+}
+
+.clock-time {
+  font-size: 1.1875rem;
+  font-weight: 650;
+  letter-spacing: -0.015em;
+}
+
 // On narrow phones the place name needs the room more than the labels, the
 // pin (the chevron already says "choose a place") or wide gaps do.
 @media (max-width: 26rem) {
@@ -146,7 +163,11 @@ qth-scene {
   }
 
   .clock {
-    padding-inline: 0.625rem;
+    padding-inline: 0.4375rem;
+  }
+
+  .clock-time {
+    font-size: 1.125rem;
   }
 
   .demo {
@@ -209,15 +230,6 @@ qth-scene {
 }
 
 // The island's time, in the same pill as the buttons beside it.
-.clock {
-  padding-inline: var(--s-3);
-}
-
-.clock-label {
-  font-weight: 520;
-  color: color-mix(in oklch, currentColor 82%, transparent);
-}
-
 // The words keep to the left; the sun and moon own the right-hand sky.
 .verdict {
   margin-top: var(--s-4);
