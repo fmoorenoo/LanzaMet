@@ -207,7 +207,8 @@ const PICON_DARK = oklch(0.22, 0.02, 45);
 const NIGHT_SHADE = oklch(0.2, 0.035, 262);
 const SHALLOW = oklch(0.72, 0.1, 192);
 const CAL = oklch(0.95, 0.012, 85);
-const DAY_GLASS = oklch(0.55, 0.06, 205);
+// Blue-green, like the Gran Hotel's glass.
+const DAY_GLASS = oklch(0.56, 0.075, 192);
 const LAMP = oklch(0.88, 0.13, 82);
 const MANRIQUE_GREEN = oklch(0.5, 0.1, 158);
 const PALM = oklch(0.4, 0.07, 138);
@@ -360,8 +361,8 @@ export function buildScene(input: SceneInput): SceneState {
       wall: toCss(wall),
       shade: toCss(mix(wall, mix(PICON, NIGHT_SHADE, dark), 0.32)),
       window: toCss(mix(mix(wall, lit(DAY_GLASS, 0.3), 0.3), LAMP, lights * 0.85)),
-      // Big panes catch less lamplight than they show sky: a tower is never a lantern.
-      glass: toCss(mix(lit(DAY_GLASS, 0.3), LAMP, lights * 0.55)),
+      // Big panes stay dark after dusk, warmed a little from inside: a tower is never a lantern.
+      glass: toCss(mix(lit(DAY_GLASS, 0.3), LAMP, lights * 0.28)),
       lamp: toCss(LAMP),
       lights,
       trim: toCss(lit(MANRIQUE_GREEN, 0.1)),

@@ -128,8 +128,27 @@ qth-scene {
   font-size: var(--fs-micro);
 }
 
-// On narrow phones the place name needs the room more than the label does.
+// On narrow phones the place name needs the room more than the labels, the
+// pin (the chevron already says "choose a place") or wide gaps do.
 @media (max-width: 26rem) {
+  .bar,
+  .actions {
+    gap: 0.375rem;
+  }
+
+  .pin {
+    display: none;
+  }
+
+  .place.is-current {
+    padding-inline-start: var(--s-4);
+    font-size: var(--fs-small);
+  }
+
+  .clock {
+    padding-inline: 0.625rem;
+  }
+
   .demo {
     width: var(--sky-control-h);
     padding: 0;
@@ -137,6 +156,16 @@ qth-scene {
 
   .demo-label {
     display: none;
+  }
+
+  // The time alone says "now"; screen readers still hear the word.
+  .clock-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
   }
 }
 
@@ -175,45 +204,18 @@ qth-scene {
   text-underline-offset: 0.2em;
 }
 
-.reading {
-  display: flex;
-  align-items: flex-end;
-  gap: var(--s-4);
-}
-
 .temp {
   margin-left: -0.05em;
 }
 
-// The time beside the reading, like a caption: what "now" the number is.
-// A hairline sets it apart; it steps aside while another hour is previewed.
+// The island's time, in the same pill as the buttons beside it.
 .clock {
-  display: grid;
-  gap: 0.125rem;
-  margin-bottom: 0.5rem;
-  padding-left: var(--s-3);
-  border-left: 1px solid color-mix(in oklch, currentColor 40%, transparent);
-  line-height: 1.1;
-  transition:
-    opacity var(--d-base) ease,
-    visibility var(--d-base);
-
-  &.is-hidden {
-    opacity: 0;
-    visibility: hidden;
-  }
+  padding-inline: var(--s-3);
 }
 
 .clock-label {
-  font-size: var(--fs-micro);
-  font-weight: 560;
-  color: color-mix(in oklch, currentColor 86%, transparent);
-}
-
-.clock-time {
-  font-size: 1.25rem;
-  font-weight: 640;
-  letter-spacing: -0.01em;
+  font-weight: 520;
+  color: color-mix(in oklch, currentColor 82%, transparent);
 }
 
 // The words keep to the left; the sun and moon own the right-hand sky.

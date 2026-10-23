@@ -123,18 +123,32 @@ class Sketch {
     return this;
   }
 
-  /** A slab tower with a band of glass on every floor (the Arrecife Gran Hotel). */
+  /**
+   * The Arrecife Gran Hotel: a slender tower clad in blue-green glass, thin
+   * light spandrels marking its floors and white edges, on a low podium,
+   * crowned by the steel-and-glass roof of its top-floor restaurant.
+   */
   tower(x: number, w: number, h: number, floors: number): this {
     const base = this.ground(x + w / 2) + 1;
     const top = base - h;
-    this.walls += rect(x + w * 0.3, top - 5, w * 0.4, 5);
-    this.walls += rect(x, top, w, h);
-    const side = w * 0.22;
-    this.shade += rect(x + w - side, top, side, h);
-    const floor = (h - 4) / floors;
-    for (let i = 0; i < floors; i++) {
-      this.glass += rect(x + 1.5, top + 3 + i * floor, w - side - 3, floor * 0.5);
+    const podium = 11;
+    // Podium: a low white block either side of the tower's foot.
+    this.house(x - w * 0.55, w * 2.1, podium, base);
+    // The glass shaft, its shaded side a little darker.
+    this.glass += rect(x, top, w, h - podium);
+    const side = w * 0.26;
+    this.shade += rect(x + w - side, top, 1.2, h - podium);
+    // White edges and the floor lines across the glass.
+    this.walls += rect(x, top, 1.4, h - podium);
+    this.walls += rect(x + w - side - 1, top, 1, h - podium);
+    const floor = (h - podium - 3) / floors;
+    for (let i = 1; i <= floors; i++) {
+      this.walls += rect(x, top + 3 + i * floor - 0.7, w, 0.7);
     }
+    this.walls += rect(x - 0.8, top, w + 1.6, 2.2);
+    // The roof: a narrower glass pavilion under a thin steel line.
+    this.glass += rect(x + 3, top - 6, w - 6, 6);
+    this.shade += rect(x + 2, top - 6.8, w - 4, 0.9);
     return this;
   }
 
@@ -240,7 +254,7 @@ const SCENERIES: Readonly<Record<SceneryId, () => SceneryArt>> = {
     new Sketch()
       .village(190, 480, 14, 11, { w: [14, 26], h: [4, 8] })
       .village(530, 1200, 26, 12, { w: [20, 38], h: [10, 28] })
-      .tower(1018, 44, 98, 15)
+      .tower(1022, 30, 106, 17)
       .palm(624, 38, 4)
       .palm(668, 45, -3)
       .palm(718, 34, 5)
@@ -298,11 +312,7 @@ const SCENERIES: Readonly<Record<SceneryId, () => SceneryArt>> = {
 
   // Famara: the Risco is the horizon's; at its foot, the low bungalows, and
   // La Caleta's houses at the other end of the beach.
-  famara: () =>
-    new Sketch()
-      .village(214, 330, 7, 41, { w: [8, 13], h: [4, 6] })
-      .village(600, 712, 9, 42, { w: [7, 12], h: [4, 7] })
-      .art(),
+  famara: () => new Sketch().art(),
 
   // Órzola: white fishing houses on the point, the harbour mole with its
   // green light, boats at their moorings and the ferry to La Graciosa.

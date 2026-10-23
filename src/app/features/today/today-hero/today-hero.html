@@ -19,12 +19,22 @@
       aria-haspopup="dialog"
       (click)="ui.openLocationPicker()"
     >
-      <qth-icon name="pin" />
+      <qth-icon class="pin" name="pin" />
       <span class="place-name">{{ current()?.name ?? ('common.lanzarote' | t) }}</span>
       <qth-icon class="chevron" name="chevron-down" />
       <span class="visually-hidden">{{ 'common.changePlace' | t }}</span>
     </button>
     <div class="actions hero-actions">
+      <!-- Outside the live region below: a clock announced every minute is noise. -->
+      <p id="current-time" class="sky-badge clock current-time">
+        <span class="clock-label">{{
+          (time().elsewhere ? 'today.clock.island' : 'common.now') | t
+        }}</span>
+        <time class="t-num" [attr.datetime]="time().iso">{{ time().text }}</time>
+        @if (!time().elsewhere) {
+          <span class="visually-hidden">{{ 'today.clock.zone' | t }}</span>
+        }
+      </p>
       <button
         id="favorite-toggle"
         type="button"
@@ -113,27 +123,10 @@
   <div class="copy-wrap" aria-live="polite">
     @if (v) {
       <div class="copy hero-copy pendable" [class.is-pending]="pending()">
-        <div class="reading">
-          <p id="current-temperature" class="temp current-temperature t-hero t-num">
-            <span class="visually-hidden">{{ 'today.temperature' | t }}</span
-            >{{ v.temperature }}°
-          </p>
-          <!-- Kept out of the live region: a clock announced every minute is noise. -->
-          <p
-            id="current-time"
-            class="clock current-time"
-            [class.is-hidden]="isPreview()"
-            aria-live="off"
-          >
-            <span class="clock-label">{{
-              (time().elsewhere ? 'today.clock.island' : 'common.now') | t
-            }}</span>
-            <time class="clock-time t-num" [attr.datetime]="time().iso">{{ time().text }}</time>
-            @if (!time().elsewhere) {
-              <span class="visually-hidden">{{ 'today.clock.zone' | t }}</span>
-            }
-          </p>
-        </div>
+        <p id="current-temperature" class="temp current-temperature t-hero t-num">
+          <span class="visually-hidden">{{ 'today.temperature' | t }}</span
+          >{{ v.temperature }}°
+        </p>
         <div class="copy-text">
           <h1 id="weather-verdict" class="verdict weather-verdict t-display">
             {{ v.verdict.headline | t }}

@@ -1,8 +1,10 @@
 // Controls that sit on the scene take the sky's colour (currentColor: light
 // or dark ink, whichever reads on it), never a surface's. Used by the hero.
+// `.sky-badge` wears the same pill for text that is not a control (the time).
 
 .sky-chip,
-.sky-button {
+.sky-button,
+.sky-badge {
   flex: none;
   display: inline-flex;
   align-items: center;
@@ -21,17 +23,20 @@
     transform var(--d-press) var(--ease-out),
     background-color var(--d-fast) ease;
 
+  qth-icon {
+    width: var(--icon-sm);
+    height: var(--icon-sm);
+  }
+}
+
+.sky-chip,
+.sky-button {
   &:active {
     transform: scale(0.96);
   }
 
   &:focus-visible {
     outline-color: currentColor;
-  }
-
-  qth-icon {
-    width: var(--icon-sm);
-    height: var(--icon-sm);
   }
 }
 

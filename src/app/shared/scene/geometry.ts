@@ -26,6 +26,12 @@ export type Feature =
       readonly h: number;
       readonly soft: number;
       readonly wobble?: number;
+    }
+  | {
+      /** A drawn outline: [x, height] points, eased between, rough by `rough` units. */
+      readonly kind: 'profile';
+      readonly points: readonly (readonly [number, number])[];
+      readonly rough: number;
     };
 
 export const cone = (x: number, h: number, w: number, crater = 0): Feature => ({
@@ -44,6 +50,12 @@ export const ridge = (from: number, to: number, h: number, soft: number, wobble 
   wobble,
 });
 
+export const profile = (points: readonly (readonly [number, number])[], rough = 0): Feature => ({
+  kind: 'profile',
+  points,
+  rough,
+});
+
 function smoothstep(edge0: number, edge1: number, x: number): number {
   const t = Math.min(1, Math.max(0, (x - edge0) / (edge1 - edge0)));
   return t * t * (3 - 2 * t);
@@ -57,6 +69,18 @@ function featureHeight(f: Feature, x: number): number {
     const rim = f.h * Math.pow(1 - crater / f.w, 1.6);
     if (d < crater) return rim - f.h * 0.05 * (1 - d / crater);
     return f.h * Math.pow(1 - d / f.w, 1.6);
+  }
+  if (f.kind === 'profile') {
+    const { points } = f;
+    if (x <= points[0][0] || x >= points[points.length - 1][0]) return 0;
+    const i = points.findIndex(([px]) => px > x) - 1;
+    const [x0, h0] = points[i];
+    const [x1, h1] = points[i + 1];
+    const t = (1 - Math.cos((Math.PI * (x - x0)) / (x1 - x0))) / 2;
+    const h = h0 + (h1 - h0) * t;
+    // Broken rock, not a ruled line; it fades out where the outline meets the sea.
+    const grain = Math.sin(x * 0.17) * 0.6 + Math.sin(x * 0.41 + 1.3) * 0.4;
+    return Math.max(0, h + f.rough * grain * Math.min(1, h / 20));
   }
   const rise = smoothstep(f.from - f.soft, f.from + f.soft * 0.2, x);
   const fall = 1 - smoothstep(f.to - f.soft * 0.2, f.to + f.soft, x);
@@ -89,9 +113,49 @@ const PROFILES: Readonly<
     far: [ridge(-40, 150, 16, 90, 0.2), ridge(1060, 1240, 12, 80)],
     near: [],
   },
+  // From Famara beach: Peñas del Chache, the cliff's highest point, stands
+  // nearest, to the right; the wall runs north, lower with distance and
+  // notched by its valleys, and drops straight into the sea. La Graciosa
+  // lies beyond its end.
   risco: {
-    far: [ridge(150, 470, 7, 60), cone(260, 27, 120, 18), cone(372, 17, 72)],
-    near: [ridge(730, 1280, 108, 70, 0.07)],
+    far: [
+      ridge(150, 470, 7, 60),
+      cone(260, 27, 120, 18),
+      cone(372, 17, 72),
+      profile(
+        [
+          [536, 0],
+          [552, 22],
+          [600, 30],
+          [652, 37],
+          [676, 33],
+          [716, 44],
+          [780, 54],
+          [820, 50],
+          [880, 62],
+        ],
+        1.2,
+      ),
+    ],
+    near: [
+      profile(
+        [
+          [704, 0],
+          [716, 16],
+          [742, 50],
+          [780, 68],
+          [836, 80],
+          [872, 76],
+          [916, 90],
+          [996, 101],
+          [1072, 110],
+          [1132, 113],
+          [1196, 109],
+          [1260, 112],
+        ],
+        1.6,
+      ),
+    ],
   },
   graciosa: {
     far: [

@@ -81,7 +81,7 @@ Reglas:
 | Arco del sol | `shared/ui/sun-path` | Amanecer y atardecer reales, el tramo recorrido y cuánto queda; sin datos, lo dice |
 | Scroll horizontal | `shared/ui/horizontal-scroll` | Directiva (bordes fundidos; arrastre con ratón que, al soltar, sigue con la inercia de la mano y se frena con `--ease-out`, sin ajuste a rejilla) + botones anterior/siguiente |
 | Selector de idioma | `layout/language-selector` | Segmentado sobre radios reales; cada idioma escrito en su lengua, sin banderas |
-| Controles sobre el cielo | `styles/_sky-controls.scss` | `.sky-chip`, `.sky-button`: toman la tinta de la escena |
+| Controles sobre el cielo | `styles/_sky-controls.scss` | `.sky-chip`, `.sky-button`: toman la tinta de la escena; `.sky-badge`, la misma píldora para texto que no es un control (la hora) |
 | Controles | `styles/_controls.scss` | `.btn`, `.icon-btn`, `.chip`, `.choice`, `.field`, `.skeleton`, `.pendable` |
 
 Cada sección contempla carga (esqueleto con la forma del contenido), datos, vacío (sin cobertura: se explica y se ofrece la alternativa más cercana), error (con Reintentar) y actualización (los datos anteriores siguen visibles, atenuados, mientras llegan los nuevos).
@@ -99,7 +99,8 @@ Cada sección contempla carga (esqueleto con la forma del contenido), datos, vac
   - Cada hora lleva un borde de 1 px en `--c-accent-soft`, el mismo tono que el relleno de la elegida. La elegida conserva ese relleno y pasa a `--c-accent`: más oscuro de día y más luminoso de noche, siempre el verde más visible del tema.
 - **Controles sobre la escena:** `--sky-control-h` (2,5 rem) es la altura de todas las píldoras y botones redondos del cielo (zona, favoritas, estrella, ajustes), así que se alinean en cualquier idioma. En escritorio comparten una fila y se centran en ella.
 - **Hora actual:**
-  - En Hoy va junto a la temperatura, tras un filete: «Ahora 14:36», o «En Lanzarote» si el reloj de quien visita marca otra hora. Se aparta al previsualizar otra hora.
+  - En Hoy va en la esquina superior derecha, delante de favorita y ajustes, como una píldora `.sky-badge` (mismo fondo, borde, altura y radio que esos botones): «Ahora 14:36», o «En Lanzarote» si el reloj de quien visita marca otra hora.
+  - En móviles estrechos muestra solo la hora.
   - En la marea, la marca de «ahora» baja del punto de la curva al eje, donde va la hora, y las horas del eje que taparía se apartan.
 - **Paisaje en pantallas estrechas:**
   - La tierra se ancla a la derecha (`xMaxYMax slice`), donde están los hitos.

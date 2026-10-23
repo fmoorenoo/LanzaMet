@@ -52,10 +52,11 @@
       <path [attr.d]="art.lagoon" [style.fill]="s.built.lagoon" />
     }
     @if (art.walls) {
+      <!-- Glass first: a tower's floor lines and edges are walls drawn over it. -->
+      <path [attr.d]="art.glass" [style.fill]="s.built.glass" />
       <path [attr.d]="art.walls" [style.fill]="s.built.wall" />
       <path [attr.d]="art.shade" [style.fill]="s.built.shade" />
       <path [attr.d]="art.windows" [style.fill]="s.built.window" />
-      <path [attr.d]="art.glass" [style.fill]="s.built.glass" />
     }
     @if (art.trunks) {
       <path class="trunks" [attr.d]="art.trunks" [style.stroke]="s.built.palm" />

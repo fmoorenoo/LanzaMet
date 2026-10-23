@@ -227,7 +227,7 @@ Skills usadas: Emil Kowalski (arrastre, lluvia, transiciones) e Impeccable (cohe
      - Punta Pechiguera con el faro de 50 m y el viejo al lado;
      - el ferri a Corralejo.
    - **Costa Teguise (Las Cucharas):** bloques ordenados tras el paseo, palmeras intercaladas y escolleras de roca. Las velas de windsurf salen solo de día y según el viento, de ninguna a tres.
-   - **Famara:** el Risco de siempre, más los bungalós a su pie y las casas de La Caleta.
+   - **Famara:** el Risco (rehecho después; ver «Ajustes tras la revisión»).
    - **Órzola:** casas blancas en la punta, el dique con su luz verde, barcas fondeadas y el barco a La Graciosa.
    - **El Golfo:** el medio cráter con capas ocre, óxido y negro que siguen la forma de la pared, el Charco de los Clicos verde a su pie y Timanfaya detrás.
 5. **Cómo está hecho**:
@@ -262,6 +262,26 @@ Skills usadas: Emil Kowalski (arrastre, lluvia, transiciones) e Impeccable (cohe
   - las tarjetas de Zonas;
   - la hora de la escena y de la marea en los dos idiomas;
   - al previsualizar las 18:00, el reloj se aparta.
+
+### Ajustes tras la revisión
+
+1. **Famara**:
+   - Sin casas.
+   - El Risco tiene un contorno propio (`profile`: puntos suavizados con algo de roca rota) en vez de un bloque:
+     - Peñas del Chache, el punto más alto, queda lo más cerca, a la derecha;
+     - la pared baja hacia el norte, con las muescas de sus valles, y cae al mar;
+     - su tramo lejano va en el tono del horizonte, más claro por la distancia.
+2. **Gran Hotel**:
+   - Más esbelto y alto (17 plantas), de vidrio verdeazulado.
+   - Líneas claras en cada planta, cantos blancos y un podio bajo.
+   - Arriba, el pabellón de vidrio del restaurante bajo una línea de acero.
+   - De noche el vidrio queda oscuro, apenas templado, y ya no parece un farol.
+3. **Hora actual**:
+   - Pasa a la esquina superior derecha, delante de favorita y ajustes, como una píldora con el mismo fondo, borde, altura y radio que esos botones (`.sky-badge` comparte la base de `.sky-chip` y `.sky-button`, sin hover ni pulsación).
+   - Ya no se aparta al previsualizar una hora: es la hora actual, no la de la cifra.
+   - En móviles estrechos (≤ 26 rem) muestra solo la hora; «Ahora» sigue para los lectores de pantalla. Para que quepa el nombre de la zona, ahí se oculta el icono de ubicación y se ajustan un poco los espacios.
+   - «Puerto del Carmen» cabe entero a 390 px; a 360 px pierde unas letras.
+4. Validación: 112 tests, lint, formato y build sin avisos; axe sin violaciones en las cuatro páginas y con el selector abierto, en español (1440 px) e inglés (390 px).
 
 ### Pendiente
 
