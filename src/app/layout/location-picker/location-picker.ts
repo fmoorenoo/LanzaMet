@@ -11,6 +11,7 @@ import { Icon } from '../../shared/ui/icon/icon';
 import { Sheet } from '../../shared/ui/sheet/sheet';
 import { SkyGlyph } from '../../shared/ui/sky-glyph/sky-glyph';
 import { StatusMessage } from '../../shared/ui/status-message/status-message';
+import { Tooltip } from '../../shared/ui/tooltip/tooltip';
 import { UiStore } from '../ui.store';
 
 interface PlaceRow {
@@ -32,7 +33,16 @@ const normalise = (text: string) =>
 /** Fast, visual place switcher: favourites first, then the island by coast. */
 @Component({
   selector: 'qth-location-picker',
-  imports: [Sheet, Icon, SkyGlyph, StatusMessage, HorizontalScroll, ScrollControls, TranslatePipe],
+  imports: [
+    Sheet,
+    Icon,
+    SkyGlyph,
+    StatusMessage,
+    HorizontalScroll,
+    ScrollControls,
+    Tooltip,
+    TranslatePipe,
+  ],
   templateUrl: './location-picker.html',
   styleUrl: './location-picker.scss',
 })

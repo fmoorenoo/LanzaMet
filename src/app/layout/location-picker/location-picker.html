@@ -109,6 +109,10 @@
               [class.is-on]="row.isFavorite"
               [attr.aria-pressed]="row.isFavorite"
               [attr.aria-label]="'common.favorite' | t: { name: row.location.name }"
+              [qthTooltip]="
+                (row.isFavorite ? 'common.favorite.remove' : 'common.favorite.add')
+                  | t: { name: row.location.name }
+              "
               (click)="toggleFavorite(row.location.id)"
             >
               <qth-icon [name]="row.isFavorite ? 'star-filled' : 'star'" />

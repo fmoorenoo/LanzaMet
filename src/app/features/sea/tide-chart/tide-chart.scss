@@ -58,6 +58,14 @@
   stroke-width: 1.5;
   stroke-dasharray: 3 4;
   vector-effect: non-scaling-stroke;
+  opacity: 0.55;
+}
+
+// Below the water's point the line is solid: it leads the eye down to the time.
+.now-stem {
+  stroke: var(--c-ink);
+  stroke-width: 1.5;
+  vector-effect: non-scaling-stroke;
 }
 
 .now {
@@ -131,25 +139,47 @@
   color: var(--c-ink);
 }
 
-.ticks {
+.axis {
   position: relative;
-  height: 1.25rem;
+  height: 1.5rem;
   margin-top: var(--s-2);
   font-size: var(--fs-micro);
   color: var(--c-ink-3);
+}
 
-  span {
-    position: absolute;
-    translate: -50% 0;
+.tick {
+  position: absolute;
+  top: 50%;
+  translate: -50% -50%;
+  transition: opacity var(--d-fast) ease;
 
-    &:first-child {
-      translate: 0 0;
-    }
-
-    &:last-child {
-      translate: -100% 0;
-    }
+  &.is-first {
+    translate: 0 -50%;
   }
+
+  &.is-last {
+    translate: -100% -50%;
+  }
+
+  &.is-covered {
+    opacity: 0;
+  }
+}
+
+// Where the "now" line meets the axis: the time, in the marker's ink.
+.now-label {
+  position: absolute;
+  top: 0;
+  translate: -50% 0;
+  display: inline-flex;
+  align-items: center;
+  height: 1.5rem;
+  padding: 0 var(--s-2);
+  border-radius: var(--r-pill);
+  background-color: var(--c-ink);
+  color: var(--c-surface);
+  font-weight: 650;
+  white-space: nowrap;
 }
 
 @media (prefers-reduced-motion: reduce) {

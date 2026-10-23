@@ -30,7 +30,11 @@
         type="button"
         class="sky-button favorite-toggle"
         [attr.aria-pressed]="isFavorite()"
-        [attr.aria-label]="'today.favoriteToggle' | t"
+        [attr.aria-label]="'common.favorite' | t: { name: placeName() }"
+        [qthTooltip]="
+          (isFavorite() ? 'common.favorite.remove' : 'common.favorite.add')
+            | t: { name: placeName() }
+        "
         (click)="toggleFavorite()"
       >
         <qth-icon [name]="isFavorite() ? 'star-filled' : 'star'" />
@@ -40,6 +44,7 @@
           id="hero-settings-button"
           type="button"
           class="sky-button demo settings-button"
+          [qthTooltip]="'today.demoSettings' | t"
           (click)="ui.openSettings()"
         >
           <qth-icon name="sliders" />
@@ -52,6 +57,7 @@
           type="button"
           class="sky-button settings-button"
           [attr.aria-label]="'today.settings' | t"
+          [qthTooltip]="'today.settings' | t"
           (click)="ui.openSettings()"
         >
           <qth-icon name="sliders" />
@@ -107,10 +113,27 @@
   <div class="copy-wrap" aria-live="polite">
     @if (v) {
       <div class="copy hero-copy pendable" [class.is-pending]="pending()">
-        <p id="current-temperature" class="temp current-temperature t-hero t-num">
-          <span class="visually-hidden">{{ 'today.temperature' | t }}</span
-          >{{ v.temperature }}°
-        </p>
+        <div class="reading">
+          <p id="current-temperature" class="temp current-temperature t-hero t-num">
+            <span class="visually-hidden">{{ 'today.temperature' | t }}</span
+            >{{ v.temperature }}°
+          </p>
+          <!-- Kept out of the live region: a clock announced every minute is noise. -->
+          <p
+            id="current-time"
+            class="clock current-time"
+            [class.is-hidden]="isPreview()"
+            aria-live="off"
+          >
+            <span class="clock-label">{{
+              (time().elsewhere ? 'today.clock.island' : 'common.now') | t
+            }}</span>
+            <time class="clock-time t-num" [attr.datetime]="time().iso">{{ time().text }}</time>
+            @if (!time().elsewhere) {
+              <span class="visually-hidden">{{ 'today.clock.zone' | t }}</span>
+            }
+          </p>
+        </div>
         <div class="copy-text">
           <h1 id="weather-verdict" class="verdict weather-verdict t-display">
             {{ v.verdict.headline | t }}

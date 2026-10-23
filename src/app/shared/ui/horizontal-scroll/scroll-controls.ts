@@ -1,5 +1,6 @@
 import { Component, input } from '@angular/core';
 import { Icon } from '../icon/icon';
+import { Tooltip } from '../tooltip/tooltip';
 import { HorizontalScroll } from './horizontal-scroll';
 
 /**
@@ -9,7 +10,7 @@ import { HorizontalScroll } from './horizontal-scroll';
  */
 @Component({
   selector: 'qth-scroll-controls',
-  imports: [Icon],
+  imports: [Icon, Tooltip],
   template: `
     <button
       type="button"
@@ -18,6 +19,7 @@ import { HorizontalScroll } from './horizontal-scroll';
       [disabled]="!scroller().canScrollBack()"
       [attr.aria-controls]="scroller().id"
       [attr.aria-label]="backLabel()"
+      [qthTooltip]="backLabel()"
       (click)="scroller().scrollPage(-1)"
     >
       <qth-icon name="chevron-left" />
@@ -29,6 +31,7 @@ import { HorizontalScroll } from './horizontal-scroll';
       [disabled]="!scroller().canScrollForward()"
       [attr.aria-controls]="scroller().id"
       [attr.aria-label]="forwardLabel()"
+      [qthTooltip]="forwardLabel()"
       (click)="scroller().scrollPage(1)"
     >
       <qth-icon name="chevron-right" />

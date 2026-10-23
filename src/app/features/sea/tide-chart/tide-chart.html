@@ -16,6 +16,7 @@
     </g>
     <rect class="past" x="0" y="0" [attr.width]="nowX()" height="300" />
     <line class="now-line" [attr.x1]="nowX()" [attr.x2]="nowX()" y1="0" y2="300" />
+    <line class="now-stem" [attr.x1]="nowX()" [attr.x2]="nowX()" [attr.y1]="nowY()" y2="300" />
   </svg>
 
   @for (label of labels(); track label.time) {
@@ -45,8 +46,24 @@
   </span>
 </div>
 
-<div class="ticks tide-chart-axis t-num" aria-hidden="true">
-  @for (tick of ticks; track tick.label) {
-    <span [style.left.%]="tick.left">{{ tick.label }}</span>
+<div class="axis tide-chart-axis t-num">
+  @for (tick of visibleTicks(); track tick.label; let first = $first; let last = $last) {
+    <span
+      class="tick"
+      aria-hidden="true"
+      [class.is-first]="first"
+      [class.is-last]="last"
+      [class.is-covered]="tick.covered"
+      [style.left.%]="tick.left"
+      >{{ tick.label }}</span
+    >
   }
+  <span
+    #nowLabel
+    id="tide-now-time"
+    class="now-label tide-now-time"
+    [style.left.%]="nowLabelLeft()"
+  >
+    {{ 'seaPage.curveNow' | t: { time: { time: now() } } }}
+  </span>
 </div>

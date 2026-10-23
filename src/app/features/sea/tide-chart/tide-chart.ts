@@ -1,4 +1,14 @@
-import { Component, computed, input } from '@angular/core';
+import {
+  afterNextRender,
+  Component,
+  computed,
+  DestroyRef,
+  ElementRef,
+  inject,
+  input,
+  signal,
+  viewChild,
+} from '@angular/core';
 import { TideForecast } from '../../../core/models';
 import { msg } from '../../../core/i18n/i18n.model';
 import { TranslatePipe } from '../../../core/i18n/t.pipe';
@@ -11,10 +21,15 @@ const H = 300;
 const FLOOR = 222;
 const TOP = 72;
 
+/** Room the hour labels on the axis need beside "now", in px (half a label and a gap). */
+const TICK_CLEARANCE_PX = 16;
+
 /**
  * The tide across the island day: water fills the curve, the night is
- * shaded, highs and lows are named, and "now" is marked. The curve is drawn
- * in once when it appears, left to right, the way the day unfolds.
+ * shaded, highs and lows are named, and "now" is marked: the past fades, a
+ * line falls from the point of the curve the water is at, and the time is
+ * written where that line meets the axis. The curve is drawn in once when it
+ * appears, left to right, the way the day unfolds.
  */
 @Component({
   selector: 'qth-tide-chart',
@@ -32,6 +47,27 @@ export class TideChart {
   readonly sunset = input<Date | null>(null);
 
   protected readonly viewBox = `0 0 ${W} ${H}`;
+
+  /** Widths of the chart and of the "now" label, in px, to keep them clear of each other. */
+  private readonly width = signal(0);
+  private readonly labelWidth = signal(0);
+  private readonly nowLabel = viewChild.required<ElementRef<HTMLElement>>('nowLabel');
+
+  constructor() {
+    const host = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
+    const destroyRef = inject(DestroyRef);
+    afterNextRender(() => {
+      const measure = () => {
+        this.width.set(host.clientWidth);
+        this.labelWidth.set(this.nowLabel().nativeElement.offsetWidth);
+      };
+      measure();
+      const observer = new ResizeObserver(measure);
+      observer.observe(host);
+      observer.observe(this.nowLabel().nativeElement);
+      destroyRef.onDestroy(() => observer.disconnect());
+    });
+  }
 
   private x(t: Date): number {
     return ((t.getTime() - this.dayStart().getTime()) / (24 * TIME.HOUR)) * W;
@@ -126,5 +162,27 @@ export class TideChart {
   ];
 
   protected readonly nowLeft = computed(() => (this.nowX() / W) * 100);
+
+  /** Half the label as a share of the chart; until measured, a phone's worth. */
+  private readonly labelHalf = computed(() => {
+    const width = this.width();
+    return width > 0 ? (this.labelWidth() / 2 / width) * 100 : 15;
+  });
+
+  /** The label centred under the line, but never past either end of the axis. */
+  protected readonly nowLabelLeft = computed(() => {
+    const half = this.labelHalf();
+    return Math.min(100 - half, Math.max(half, this.nowLeft()));
+  });
+
+  /** Hour labels the "now" label would cover step aside. */
+  protected readonly visibleTicks = computed(() => {
+    const width = this.width() || 360;
+    const reach = this.labelHalf() + (TICK_CLEARANCE_PX / width) * 100;
+    return this.ticks.map((tick) => ({
+      ...tick,
+      covered: Math.abs(tick.left - this.nowLabelLeft()) < reach,
+    }));
+  });
   protected readonly nowTop = computed(() => (this.nowY() / H) * 100);
 }

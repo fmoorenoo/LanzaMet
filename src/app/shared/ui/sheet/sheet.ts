@@ -12,6 +12,7 @@ import {
 } from '@angular/core';
 import { TranslatePipe } from '../../../core/i18n/t.pipe';
 import { Icon } from '../icon/icon';
+import { Tooltip } from '../tooltip/tooltip';
 
 let nextId = 0;
 
@@ -26,7 +27,7 @@ const DISMISS_FRACTION = 0.3;
  */
 @Component({
   selector: 'qth-sheet',
-  imports: [Icon, TranslatePipe],
+  imports: [Icon, Tooltip, TranslatePipe],
   templateUrl: './sheet.html',
   styleUrl: './sheet.scss',
 })

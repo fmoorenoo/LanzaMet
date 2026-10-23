@@ -175,8 +175,45 @@ qth-scene {
   text-underline-offset: 0.2em;
 }
 
+.reading {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--s-4);
+}
+
 .temp {
   margin-left: -0.05em;
+}
+
+// The time beside the reading, like a caption: what "now" the number is.
+// A hairline sets it apart; it steps aside while another hour is previewed.
+.clock {
+  display: grid;
+  gap: 0.125rem;
+  margin-bottom: 0.5rem;
+  padding-left: var(--s-3);
+  border-left: 1px solid color-mix(in oklch, currentColor 40%, transparent);
+  line-height: 1.1;
+  transition:
+    opacity var(--d-base) ease,
+    visibility var(--d-base);
+
+  &.is-hidden {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
+.clock-label {
+  font-size: var(--fs-micro);
+  font-weight: 560;
+  color: color-mix(in oklch, currentColor 86%, transparent);
+}
+
+.clock-time {
+  font-size: 1.25rem;
+  font-weight: 640;
+  letter-spacing: -0.01em;
 }
 
 // The words keep to the left; the sun and moon own the right-hand sky.

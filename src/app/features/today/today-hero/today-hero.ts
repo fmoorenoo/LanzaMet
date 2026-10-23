@@ -4,7 +4,9 @@ import { Msg } from '../../../core/i18n/i18n.model';
 import { TranslatePipe } from '../../../core/i18n/t.pipe';
 import { Verdict } from '../../../core/insights/verdict.insight';
 import { LocationId } from '../../../core/models';
+import { ClockStore } from '../../../core/state/clock.store';
 import { LocationsStore } from '../../../core/state/locations.store';
+import { formatTime, islandOffsetMinutes } from '../../../core/utils/time';
 import { UiStore } from '../../../layout/ui.store';
 import { Scene } from '../../../shared/scene/scene';
 import { SceneState } from '../../../shared/scene/scene-state';
@@ -12,6 +14,7 @@ import { HorizontalScroll } from '../../../shared/ui/horizontal-scroll/horizonta
 import { ScrollControls } from '../../../shared/ui/horizontal-scroll/scroll-controls';
 import { Icon } from '../../../shared/ui/icon/icon';
 import { StatusMessage } from '../../../shared/ui/status-message/status-message';
+import { Tooltip } from '../../../shared/ui/tooltip/tooltip';
 
 export interface HeroView {
   readonly scene: SceneState;
@@ -29,7 +32,7 @@ export interface HeroView {
  */
 @Component({
   selector: 'qth-today-hero',
-  imports: [Scene, Icon, StatusMessage, HorizontalScroll, ScrollControls, TranslatePipe],
+  imports: [Scene, Icon, StatusMessage, HorizontalScroll, ScrollControls, Tooltip, TranslatePipe],
   templateUrl: './today-hero.html',
   styleUrl: './today-hero.scss',
   host: {
@@ -54,9 +57,24 @@ export class TodayHero {
   protected readonly ui = inject(UiStore);
   protected readonly isDemo = inject(DATA_MODE) === 'demo';
   private readonly locations = inject(LocationsStore);
+  private readonly clock = inject(ClockStore);
   private readonly placeButton = viewChild.required<ElementRef<HTMLButtonElement>>('placeButton');
 
   protected readonly current = this.locations.selected;
+  protected readonly placeName = computed(() => this.current()?.name ?? '');
+
+  /**
+   * The island's time, which every time in the app is given in. A visitor
+   * whose own clock reads differently is told whose time it is.
+   */
+  protected readonly time = computed(() => {
+    const now = this.clock.now();
+    return {
+      iso: now.toISOString(),
+      text: formatTime(now),
+      elsewhere: -now.getTimezoneOffset() !== islandOffsetMinutes(now),
+    };
+  });
 
   /** Favourites to hop between without opening the picker. */
   protected readonly others = computed(() =>

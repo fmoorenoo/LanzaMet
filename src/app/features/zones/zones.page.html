@@ -72,6 +72,10 @@
                 [class.is-on]="zone.isFavorite"
                 [attr.aria-pressed]="zone.isFavorite"
                 [attr.aria-label]="'common.favorite' | t: { name: zone.name }"
+                [qthTooltip]="
+                  (zone.isFavorite ? 'common.favorite.remove' : 'common.favorite.add')
+                    | t: { name: zone.name }
+                "
                 (click)="toggleFavorite(zone.id)"
               >
                 <qth-icon [name]="zone.isFavorite ? 'star-filled' : 'star'" />
@@ -108,6 +112,10 @@
                 [class.is-on]="card.isFavorite"
                 [attr.aria-pressed]="card.isFavorite"
                 [attr.aria-label]="'common.favorite' | t: { name: card.name }"
+                [qthTooltip]="
+                  (card.isFavorite ? 'common.favorite.remove' : 'common.favorite.add')
+                    | t: { name: card.name }
+                "
                 (click)="toggleFavorite(card.id)"
               >
                 <qth-icon [name]="card.isFavorite ? 'star-filled' : 'star'" />

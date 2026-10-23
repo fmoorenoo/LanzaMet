@@ -18,12 +18,13 @@ import { Scene } from '../../shared/scene/scene';
 import { DataCredit } from '../../shared/ui/data-credit/data-credit';
 import { Icon } from '../../shared/ui/icon/icon';
 import { StatusMessage } from '../../shared/ui/status-message/status-message';
+import { Tooltip } from '../../shared/ui/tooltip/tooltip';
 import { IslandMap, MapMarker } from './island-map/island-map';
 
 /** The whole island at a glance: where it blows, where it shines, where to go. */
 @Component({
   selector: 'qth-zones-page',
-  imports: [IslandMap, Scene, Icon, StatusMessage, DataCredit, TranslatePipe],
+  imports: [IslandMap, Scene, Icon, StatusMessage, DataCredit, Tooltip, TranslatePipe],
   templateUrl: './zones.page.html',
   styleUrl: './zones.page.scss',
   host: { id: 'zones-page', class: 'page zones-page' },
