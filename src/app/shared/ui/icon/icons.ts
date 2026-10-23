@@ -1,6 +1,7 @@
 import {
   ArrowDown,
   ArrowUp,
+  Bug,
   Check,
   ChevronDown,
   ChevronLeft,
@@ -8,15 +9,24 @@ import {
   Compass,
   Droplet,
   Footprints,
+  HatGlasses,
   type IconNode,
   Info,
   Languages,
+  Lightbulb,
+  LoaderCircle,
+  Mail,
   Map as MapIcon,
   MapPin,
+  MessageCircle,
+  MessageSquareHeart,
   RefreshCw,
   Search,
+  Send,
   Shield,
+  ShieldCheck,
   SlidersHorizontal,
+  Sprout,
   Star,
   Sun,
   Sunrise,
@@ -69,6 +79,7 @@ export const ICONS = {
   zones: lucide(MapIcon),
   sea: own(WAVE_ROW(7.5), WAVE_ROW(12.5), WAVE_ROW(17.5)),
   plans: lucide(Compass),
+  feedback: lucide(MessageSquareHeart),
 
   // Interface
   'chevron-down': lucide(ChevronDown),
@@ -87,6 +98,17 @@ export const ICONS = {
   'arrow-down': lucide(ArrowDown),
   languages: lucide(Languages),
   check: lucide(Check),
+  send: lucide(Send),
+  loader: lucide(LoaderCircle),
+  mail: lucide(Mail),
+  incognito: lucide(HatGlasses),
+  privacy: lucide(ShieldCheck),
+
+  // Feedback kinds
+  bug: lucide(Bug),
+  idea: lucide(Lightbulb),
+  sprout: lucide(Sprout),
+  message: lucide(MessageCircle),
 
   // Conditions
   wind: lucide(Wind),

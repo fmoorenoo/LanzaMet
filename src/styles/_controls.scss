@@ -175,6 +175,82 @@
   }
 }
 
+// ── Switch ────────────────────────────────────────────────────
+// A native checkbox with role="switch" (keyboard, label and state come from
+// the platform); the track and thumb are drawn beneath it:
+//   <span class="switch"><input type="checkbox" role="switch" class="switch-input" />
+//   <span class="switch-track" aria-hidden="true"><span class="switch-thumb"></span></span></span>
+// The off track is ink, not a hairline, so its edge passes 3:1 in both themes.
+.switch {
+  position: relative;
+  display: block;
+  flex: none;
+  width: 3.25rem;
+  height: 2rem;
+}
+
+.switch-input {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.switch-track {
+  display: block;
+  height: 100%;
+  border-radius: var(--r-pill);
+  background-color: var(--c-ink-3);
+  transition:
+    background-color var(--d-fast) ease,
+    transform var(--d-press) var(--ease-out);
+
+  .switch-input:checked + & {
+    background-color: var(--c-accent);
+  }
+
+  .switch-input:focus-visible + & {
+    outline: 2px solid var(--c-focus);
+    outline-offset: 3px;
+  }
+
+  .switch-input:active + & {
+    transform: scale(0.96);
+  }
+}
+
+.switch-thumb {
+  position: absolute;
+  top: 0.25rem;
+  left: 0.25rem;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: var(--r-pill);
+  background-color: var(--c-surface);
+  box-shadow: var(--shadow-1);
+  transition:
+    transform var(--d-base) var(--ease-out),
+    background-color var(--d-fast) ease;
+
+  .switch-input:checked + .switch-track & {
+    background-color: var(--c-accent-ink);
+    transform: translate3d(1.25rem, 0, 0);
+  }
+}
+
+// Less motion: the thumb jumps to its side; the colour change still eases.
+@media (prefers-reduced-motion: reduce) {
+  .switch-input:active + .switch-track {
+    transform: none;
+  }
+
+  .switch-thumb {
+    transition-property: background-color;
+  }
+}
+
 // ── Text fields ───────────────────────────────────────────────
 .field {
   display: flex;

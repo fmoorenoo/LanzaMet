@@ -110,6 +110,43 @@ Validación del 22-10-2026 en Arrecife: el modelo adelanta 24–37 min respecto 
 - **Zonas**: mapa ilustrado con el estado y el viento por zona, y tarjetas con miniescena.
 - **Mar**: marea estimada, curva del día, pleamares y bajamares de hoy y mañana, oleaje, mar de fondo, agua, avisos costeros y zonas más tranquilas.
 - **Dónde ir**: recomendaciones derivadas de los datos (playa, sin viento, mar tranquilo, atardecer, paseo, olas).
+- **Ayúdanos a mejorar** (`/mejorar`): formulario para avisar de errores y proponer sugerencias o mejoras, anónimo por defecto. Ver [Comentarios de los usuarios](#comentarios-de-los-usuarios).
+
+## Comentarios de los usuarios
+
+La sección **Ayúdanos a mejorar** envía los mensajes por correo electrónico a través de [Web3Forms](https://web3forms.com), sin backend propio.
+
+**Qué pide**: tipo (error, sugerencia, mejora u otro), mensaje (de 10 a 2000 caracteres), envío anónimo (activado por defecto) y un correo opcional, que solo se puede escribir con el anonimato desactivado. Al activar el anonimato el correo se borra del formulario. No hay registro ni otros datos personales.
+
+**Qué se envía**: el tipo, el mensaje, el idioma de la web y, solo si no es anónimo y se escribe, el correo (que pasa a ser la dirección de respuesta). Nunca la zona elegida, la URL, cookies ni el *referrer* (`credentials: 'omit'`, `referrerPolicy: 'no-referrer'`). La página explica que el anonimato del formulario no es anonimato técnico: Web3Forms recibe datos de conexión como la IP.
+
+**Solo hay «enviado» si Web3Forms lo confirma** (HTTP 200 con `success: true`). Cualquier otra respuesta se muestra como error y el mensaje se conserva: sin conexión, tiempo agotado (15 s), demasiadas peticiones (429), rechazo (4xx, p. ej. el filtro de spam) o fallo del servicio (5xx o respuesta sin confirmar).
+
+**Antispam y envíos repetidos**:
+- Web3Forms filtra el spam en su servidor en todos los envíos.
+- Campo trampa (*honeypot*) oculto: si llega relleno, no se envía nada. Además se manda `botcheck: false`, el campo trampa de Web3Forms.
+- En el dispositivo: un envío no sale antes de 3 s desde que se abre el formulario; tras cada envío hay 30 s de pausa; como mucho 5 por hora; y el mismo mensaje no se envía dos veces en 24 h. Solo se guardan las horas de envío y una huella FNV-1a del último mensaje, nunca su texto (`localStorage`, clave `qth.feedback`).
+- Un segundo clic mientras se envía no duplica el envío.
+- No se usa hCaptcha: obligaría a cargar un script de terceros que también recoge datos. Si un día llega spam, se puede activar en el panel de Web3Forms (es gratis) y añadir su widget al formulario.
+
+**Límites de Web3Forms** (consultados el 23-10-2026): el plan gratuito permite 250 envíos al mes, formularios y dominios ilimitados, y hCaptcha. Restringir la clave a un dominio, reCAPTCHA/Turnstile, adjuntos y webhooks son de pago. Su API está pensada para llamarse desde el navegador: los envíos desde un servidor necesitan plan de pago y una IP autorizada, así que no se envía a través del API propio. En el plan gratuito, Web3Forms guarda una copia de los envíos durante 30 días.
+
+### Configurar la clave de Web3Forms
+
+1. Entra en [web3forms.com](https://web3forms.com), escribe el correo donde quieres recibir los mensajes y pulsa *Create Access Key*. La clave (un UUID) llega a ese correo. No hace falta cuenta ni tarjeta.
+2. Pásala al compilar con `--define`. **No se escribe en el código**:
+
+   ```bash
+   npx ng build --define "QTH_WEB3FORMS_KEY='tu-clave-de-acceso'"
+   npx ng serve --define "QTH_WEB3FORMS_KEY='tu-clave-de-acceso'"   # en local
+   ```
+
+   El mismo comando funciona en bash y en PowerShell. En el hosting (Cloudflare Pages, Netlify, Vercel…), guarda la clave como variable de entorno y usa como orden de build `npx ng build --define "QTH_WEB3FORMS_KEY='$WEB3FORMS_ACCESS_KEY'"`.
+3. Sin clave, o con una que no tenga forma de UUID, la página avisa de que el envío aún no está activado y no envía nada. La build de demo usa el mismo servicio real: no hay envíos simulados.
+
+La clave de Web3Forms **no es secreta**: según su documentación puede ser pública, porque solo sirve para enviar correos a la dirección que la creó, y acaba en el JavaScript que descarga el navegador. Se deja fuera del repositorio para no atar el código a un buzón concreto. Con el plan Pro se puede restringir a tu dominio.
+
+**Cambiar de proveedor**: la interfaz solo habla con `FeedbackService`, y este con el puerto `FeedbackTransport` (`core/feedback`). Para usar otro servicio basta con escribir otra clase `FeedbackTransport` y enlazarla en `provideFeedback()`.
 
 ## El veredicto
 
@@ -180,19 +217,21 @@ src/app/
                      signal del idioma, pipe t y títulos de ruta
   core/insights      reglas puras: datos → descriptores de texto ({ key, params }) y recomendaciones
   core/state         stores con Signals y rxResource (Forecast, Island, Official, Locations…)
+  core/feedback      comentarios: FeedbackService, puerto FeedbackTransport, Web3FormsTransport,
+                     reglas antirrepetición (puras)
   data-providers.ts  proveedores reales; la build "demo" lo sustituye por data-providers.demo.ts
   mocks/             simulador + fuentes simuladas + controles de demo (solo build demo y tests)
   shared/            escena, iconos, hoja, aviso oficial, crédito de datos, recomendación,
                      arco del sol, scroll horizontal
   layout/            navegación, selector de zonas, selector de idioma, ajustes
-  features/          today · zones · sea · plans (rutas con carga diferida)
+  features/          today · zones · sea · plans · feedback (rutas con carga diferida)
 server/              API propio (Fetch estándar): avisos y observaciones de AEMET, con tests
 scripts/             verify-sources.ts: comprobación en vivo de todas las fuentes
 ```
 
 ## Despliegue
 
-- **Web**: estática (`npm run build` → `dist/que-tal-hoy/browser`), en cualquier hosting.
+- **Web**: estática (`npm run build` → `dist/que-tal-hoy/browser`), en cualquier hosting. Para que funcione «Ayúdanos a mejorar», compila con la clave de Web3Forms (ver [Configurar la clave](#configurar-la-clave-de-web3forms)).
 - **API**: `server/api.ts` exporta un manejador `fetch` estándar. Sirve tal cual como Cloudflare Worker (`export default`), en Deno, o en cualquier host Node con `node server/dev.ts` (puerto en `PORT`). Variables: `AEMET_API_KEY` (secreto) y `ALLOWED_ORIGIN` (por defecto `*`).
 - La web llama a `/api` en su mismo origen. Si el API vive en otro dominio, cambia `provideHttpDataSources({ proxyUrl: 'https://…/api' })` en `src/app/data-providers.ts`.
 - Cabe en el plan gratuito de Cloudflare Workers (10 ms de CPU por petición). Avisos: dos ficheros de ~8 KB. Observaciones: 7 estaciones de ~5 KB, unos 0,3 ms cada una. Cada actualización hace como mucho 15 subpeticiones a AEMET, por debajo del límite de 50.
@@ -211,3 +250,4 @@ Sistema documentado en [`docs/DESIGN.md`](docs/DESIGN.md). Tokens en `src/styles
 - Revisión visual hecha en Chrome headless (360–1920 px); falta probar en dispositivos reales.
 - Las horas de amanecer y atardecer son las de Open-Meteo para cada zona. Si faltan, se dice y la escena se dibuja con un día nominal (7:30–19:30), solo como ilustración.
 - La descripción de un aviso solo sale en inglés si AEMET la publica así; parte de su texto libre puede venir en español.
+- «Ayúdanos a mejorar» necesita una clave de Web3Forms en el build. La entrega real a un buzón está pendiente de probar con una clave; los tests y la revisión en el navegador simulan las respuestas de Web3Forms. Las reglas antirrepetición viven en el navegador: frenan los clics repetidos y los scripts sencillos, no a quien borre su almacenamiento. Lo demás lo cubre el filtro de spam de Web3Forms.

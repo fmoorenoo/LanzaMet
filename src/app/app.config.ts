@@ -5,6 +5,7 @@ import {
   withInMemoryScrolling,
   withViewTransitions,
 } from '@angular/router';
+import { provideFeedback } from './core/feedback/provide-feedback';
 import { I18nTitleStrategy } from './core/i18n/i18n-title.strategy';
 import { routes } from './app.routes';
 import { RouteTransitions } from './layout/route-transitions';
@@ -24,5 +25,7 @@ export const appConfig: ApplicationConfig = {
     { provide: TitleStrategy, useClass: I18nTitleStrategy },
     // Real providers; the demo build swaps them for simulated data.
     provideDataSources(),
+    // Feedback is always real: the demo build has no pretend "sent".
+    provideFeedback(),
   ],
 };

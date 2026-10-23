@@ -4,7 +4,7 @@
     <span class="brand-name">{{ 'app.brand' | t }}</span>
   </a>
 
-  <div class="tabs-wrap">
+  <div class="tabs-wrap" [style.--count]="items.length">
     <span
       id="nav-indicator"
       class="capsule nav-indicator"
@@ -25,7 +25,13 @@
             [routerLinkActiveOptions]="{ exact: item.path === '/' }"
           >
             <qth-icon class="tab-icon" [name]="item.icon" />
-            <span class="tab-label">{{ item.label | t }}</span>
+            @if (item.shortLabel) {
+              <!-- Only one of the two is displayed (and read) at a time. -->
+              <span class="tab-label tab-label--short">{{ item.shortLabel | t }}</span>
+              <span class="tab-label tab-label--full">{{ item.label | t }}</span>
+            } @else {
+              <span class="tab-label">{{ item.label | t }}</span>
+            }
           </a>
         </li>
       }

@@ -16,6 +16,8 @@ interface NavItem {
   readonly id: string;
   readonly path: string;
   readonly label: MessageKey;
+  /** A shorter label for the phone's tab bar, when the full one won't fit. */
+  readonly shortLabel?: MessageKey;
   readonly icon: IconName;
 }
 
@@ -39,6 +41,13 @@ export class NavBar {
     { id: 'zones', path: '/zonas', label: 'nav.zones', icon: 'zones' },
     { id: 'sea', path: '/mar', label: 'nav.sea', icon: 'sea' },
     { id: 'plans', path: '/donde-ir', label: 'nav.plans', icon: 'plans' },
+    {
+      id: 'feedback',
+      path: '/mejorar',
+      label: 'nav.feedback',
+      shortLabel: 'nav.feedbackShort',
+      icon: 'feedback',
+    },
   ];
 
   private readonly navigations = this.router.events.pipe(

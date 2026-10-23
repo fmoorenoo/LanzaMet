@@ -16,6 +16,7 @@ export const en: Messages = {
   'route.zones': 'Places',
   'route.sea': 'Sea and tides',
   'route.plans': 'Where to go today?',
+  'route.feedback': 'Help us improve',
   'route.title': '{page} · {brand}',
 
   'nav.label': 'Main',
@@ -23,6 +24,8 @@ export const en: Messages = {
   'nav.zones': 'Places',
   'nav.sea': 'Sea',
   'nav.plans': 'Where to go',
+  'nav.feedback': 'Help us improve',
+  'nav.feedbackShort': 'Improve',
   'nav.settings': 'Settings',
   'nav.settingsDemo': 'Settings and demo',
 
@@ -475,6 +478,99 @@ export const en: Messages = {
     "Suggestions based on each place's weather. In this version they are examples with fictitious data.",
   'plans.more': 'More ideas',
   'plans.loading': 'Loading suggestions',
+
+  // ── Feedback ─────────────────────────────────────────────────
+  'feedback.lead':
+    'If something breaks or you can think of a way to make the site more useful, tell us. We read every message.',
+  'feedback.form': 'Feedback form',
+
+  'feedback.kind.legend': 'What would you like to tell us?',
+  'feedback.kind.bug': 'Bug',
+  'feedback.kind.bug.hint': 'Something fails or looks wrong',
+  'feedback.kind.suggestion': 'Suggestion',
+  'feedback.kind.suggestion.hint': "Something new you'd like to see",
+  'feedback.kind.improvement': 'Improvement',
+  'feedback.kind.improvement.hint': 'Something that exists, but better',
+  'feedback.kind.other': 'Other',
+  'feedback.kind.other.hint': 'Anything else',
+
+  'feedback.message.label': 'Your message',
+  'feedback.message.limits': 'Between {min} and {max} characters.',
+  'feedback.message.count': '{count} of {max} characters',
+  'feedback.message.counter': '{count}/{max}',
+  'feedback.message.placeholder.none': "Choose what it's about above, then tell us here.",
+  'feedback.message.placeholder.bug':
+    'What happened, on which screen, and what you expected to see.',
+  'feedback.message.placeholder.suggestion': "What you'd like to find and how it would help you.",
+  'feedback.message.placeholder.improvement': "What you'd change and why.",
+  'feedback.message.placeholder.other': "Whatever you'd like to tell us.",
+
+  'feedback.anonymous.label': 'Send anonymously',
+  'feedback.anonymous.on': "We don't ask for or send your email, so we won't be able to reply.",
+  'feedback.anonymous.off': "Leave your email if you'd like a reply. It's optional.",
+  'feedback.anonymous.technical':
+    'Anonymous refers to what you send: the receiving service still sees technical connection data, such as your IP address.',
+  'feedback.email.label': 'Email (optional)',
+  'feedback.email.placeholder': 'name@example.com',
+  'feedback.email.hint': 'Only to reply to you. Never for anything else.',
+  'feedback.email.hintAnonymous': 'Turn off anonymous sending to add it.',
+  'feedback.honeypot': 'Leave this field empty',
+
+  'feedback.invalid.kind': 'Choose what you would like to tell us.',
+  'feedback.invalid.messageEmpty': 'Write your message.',
+  'feedback.invalid.messageShort': 'Tell us a little more: at least {min} characters.',
+  'feedback.invalid.messageLong': '{n} characters over the limit. Try to shorten it.',
+  'feedback.invalid.email': "That email doesn't look right. Check it or leave it blank.",
+  'feedback.invalid.emailLong': 'That email is too long.',
+
+  'feedback.submit': 'Send',
+  'feedback.sending': 'Sending…',
+
+  'feedback.failed': 'Not sent',
+  'feedback.failed.not-configured':
+    "Sending feedback isn't switched on in this version of the site yet. Your message is still here.",
+  'feedback.failed.offline':
+    "Can't reach the sending service. Check your connection and try again.",
+  'feedback.failed.timeout':
+    'The sending service is taking too long to answer. Try again in a moment.',
+  'feedback.failed.rate-limited':
+    'The sending service is getting too many messages. Try again in a few minutes.',
+  'feedback.failed.too-soon': 'Wait {wait} and try again.',
+  'feedback.failed.duplicate':
+    'This exact message has already reached us from here. To add something, change it a little.',
+  'feedback.failed.rejected':
+    "The sending service didn't accept the message. Check the text and try again.",
+  'feedback.failed.unavailable':
+    "The sending service didn't confirm it received the message, so we don't count it as sent. Try again in a while.",
+  'feedback.failed.kept': 'Your message is still here.',
+
+  'feedback.notConfigured': 'Sending not switched on yet',
+  'feedback.notConfigured.text':
+    "This version of the site has no receiving service set up, so the form can't send anything yet.",
+
+  'feedback.sent': 'Got it, thank you!',
+  'feedback.sent.anonymous':
+    "Your message has arrived. As it's anonymous we can't reply, but we'll take it into account.",
+  'feedback.sent.withEmail': "Your message has arrived. If needed, we'll write to you at {email}.",
+  'feedback.sent.noEmail':
+    "Your message has arrived. You didn't leave an email, so we won't be able to reply.",
+  'feedback.sent.again': 'Send more feedback',
+
+  'feedback.privacy': 'Privacy',
+  'feedback.privacy.what':
+    "We send the kind of feedback, your message and the site's language. Your email only if you type it with anonymous sending off. Never your location, your places or device data.",
+  'feedback.privacy.who':
+    'Messages are received by {provider}, an external service that forwards them to us by email. It may keep a copy for a while, under its own terms.',
+  'feedback.privacy.technical':
+    "Anonymous isn't absolute technical anonymity: like any online service, the receiving one sees connection data, such as your IP address and browser, and may use it, for instance, to stop spam.",
+  'feedback.privacy.use':
+    "We use messages only to fix bugs and improve the site, and your email only to reply. We don't use it for advertising or share it with anyone.",
+  'feedback.privacy.content': "Don't put personal details you don't need to in your message.",
+  'feedback.privacy.device':
+    'On this device we only keep when you sent your last messages and a fingerprint of the last one (not its text), to prevent repeated submissions.',
+  'feedback.privacy.providerLink': 'Web3Forms privacy policy',
+  'feedback.privacy.erase':
+    'If you left your email and want your message deleted, ask us in a new message from that same email.',
 
   // ── Demo build only ──────────────────────────────────────────
   'demo.intro':

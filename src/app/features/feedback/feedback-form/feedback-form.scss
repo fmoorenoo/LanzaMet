@@ -1,0 +1,410 @@
+:host {
+  display: block;
+  // Error text: the lava red pulled towards the ink, so it reads at small sizes.
+  --c-error: color-mix(in oklch, var(--c-poor) 72%, var(--c-ink));
+}
+
+.form {
+  display: grid;
+  gap: var(--s-8);
+}
+
+.block {
+  display: grid;
+  gap: var(--s-2);
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.label {
+  padding: 0;
+  font-size: 0.9375rem;
+  font-weight: 620;
+  letter-spacing: -0.005em;
+  color: var(--c-ink);
+}
+
+legend.label {
+  margin-bottom: var(--s-3);
+}
+
+.help {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--s-1);
+  font-size: var(--fs-micro);
+  line-height: 1.4;
+  color: var(--c-ink-2);
+
+  qth-icon {
+    width: var(--icon-xs);
+    height: var(--icon-xs);
+    margin-top: 0.05rem;
+  }
+
+  &.is-error {
+    color: var(--c-error);
+    font-weight: 560;
+  }
+}
+
+// ── Kind cards: real radios, the whole card is the target ─────
+.kind-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--s-3);
+}
+
+.kind {
+  position: relative;
+  display: grid;
+  align-content: start;
+  gap: var(--s-1);
+  min-height: 7.5rem;
+  padding: var(--s-4);
+  border: 1px solid var(--c-line-strong);
+  border-radius: var(--r-md);
+  background-color: var(--c-surface);
+  cursor: pointer;
+  transition:
+    transform var(--d-press) var(--ease-out),
+    border-color var(--d-fast) ease,
+    background-color var(--d-fast) ease;
+
+  &:active {
+    transform: scale(0.97);
+  }
+
+  &:has(.kind-input:focus-visible) {
+    outline: 2px solid var(--c-focus);
+    outline-offset: 2px;
+  }
+
+  &:has(.kind-input:checked) {
+    border-color: var(--c-accent);
+    background-color: color-mix(in oklch, var(--c-accent) 8%, var(--c-surface));
+  }
+}
+
+.kind-input {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.kind-mark {
+  display: grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  margin-bottom: var(--s-2);
+  border-radius: var(--r-pill);
+  background-color: var(--c-surface-sunken);
+  color: var(--c-ink-2);
+  transition:
+    background-color var(--d-fast) ease,
+    color var(--d-fast) ease;
+
+  qth-icon {
+    width: var(--icon-md);
+    height: var(--icon-md);
+  }
+
+  .kind:has(.kind-input:checked) & {
+    background-color: var(--c-accent);
+    color: var(--c-accent-ink);
+  }
+}
+
+.kind-label {
+  font-weight: 640;
+  letter-spacing: -0.01em;
+}
+
+.kind-hint {
+  font-size: var(--fs-micro);
+  line-height: 1.35;
+  color: var(--c-ink-2);
+}
+
+.kind-check {
+  position: absolute;
+  top: var(--s-4);
+  right: var(--s-4);
+  width: var(--icon-sm);
+  height: var(--icon-sm);
+  color: var(--c-accent);
+  opacity: 0;
+  transform: scale(0.6);
+  transition:
+    opacity var(--d-fast) ease,
+    transform var(--d-base) var(--ease-out);
+
+  .kind:has(.kind-input:checked) & {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+// ── Message ───────────────────────────────────────────────────
+.label-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--s-3);
+}
+
+.counter {
+  font-size: var(--fs-micro);
+  font-weight: 520;
+  color: var(--c-ink-3);
+  transition: color var(--d-fast) ease;
+
+  &.is-near {
+    color: var(--c-ink);
+    font-weight: 620;
+  }
+
+  &.is-over {
+    color: var(--c-error);
+  }
+}
+
+.textarea {
+  display: block;
+  width: 100%;
+  min-height: 9.5rem;
+  max-height: 26rem;
+  padding: var(--s-4);
+  border: 0;
+  border-radius: var(--r-md);
+  background-color: var(--c-surface-sunken);
+  color: var(--c-ink);
+  line-height: 1.5;
+  resize: vertical;
+  field-sizing: content;
+  outline: none;
+  transition: box-shadow var(--d-fast) ease;
+
+  &::placeholder {
+    color: var(--c-ink-3);
+    opacity: 1;
+  }
+
+  &:focus-visible {
+    box-shadow: 0 0 0 2px var(--c-focus);
+  }
+}
+
+.textarea[aria-invalid='true'],
+.email-field:has(input[aria-invalid='true']) {
+  box-shadow: 0 0 0 1.5px var(--c-error);
+}
+
+.textarea[aria-invalid='true']:focus-visible,
+.email-field:has(input[aria-invalid='true']):focus-within {
+  box-shadow: 0 0 0 2px var(--c-focus);
+}
+
+// ── Anonymity and reply ───────────────────────────────────────
+.reply {
+  gap: 0;
+  padding: var(--s-4);
+  border: 1px solid var(--c-line);
+  border-radius: var(--r-lg);
+  background-color: var(--c-surface);
+}
+
+.switch-row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--s-3);
+}
+
+.switch-mark {
+  display: grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: var(--r-pill);
+  background-color: var(--c-surface-sunken);
+  color: var(--c-ink-2);
+  transition:
+    background-color var(--d-fast) ease,
+    color var(--d-fast) ease;
+
+  qth-icon {
+    width: var(--icon-md);
+    height: var(--icon-md);
+  }
+
+  .is-anonymous & {
+    background-color: var(--c-accent-soft);
+    color: var(--c-accent);
+  }
+}
+
+.switch-copy {
+  display: grid;
+  gap: 0.125rem;
+}
+
+.switch-label {
+  font-weight: 620;
+  cursor: pointer;
+}
+
+.email {
+  display: grid;
+  gap: var(--s-2);
+  margin-top: var(--s-4);
+  padding-top: var(--s-4);
+  border-top: 1px solid var(--c-line);
+
+  // Off while anonymous: still in place, so nothing below moves.
+  > .label,
+  > .email-field {
+    transition: opacity var(--d-base) ease;
+  }
+
+  .is-anonymous & > .label,
+  .is-anonymous & > .email-field {
+    opacity: 0.5;
+  }
+
+  input:disabled {
+    cursor: not-allowed;
+  }
+}
+
+.note {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--s-2);
+  margin-top: var(--s-4);
+  font-size: var(--fs-micro);
+  line-height: 1.4;
+  color: var(--c-ink-2);
+
+  qth-icon {
+    width: var(--icon-xs);
+    height: var(--icon-xs);
+    margin-top: 0.05rem;
+    flex: none;
+  }
+}
+
+.trap {
+  position: absolute;
+  left: -100vw;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+// ── Sending ───────────────────────────────────────────────────
+.send {
+  display: grid;
+  gap: var(--s-4);
+}
+
+.outcome:empty {
+  display: none;
+}
+
+.alert {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--s-3);
+  padding: var(--s-4);
+  border-radius: var(--r-md);
+  background-color: color-mix(in oklch, var(--c-poor) 9%, var(--c-surface));
+  font-size: var(--fs-small);
+  animation: qth-rise 240ms var(--ease-out) both;
+
+  qth-icon {
+    width: var(--icon-lg);
+    height: var(--icon-lg);
+    flex: none;
+    color: var(--c-error);
+  }
+}
+
+.submit {
+  display: grid;
+  width: 100%;
+  min-height: 3.25rem;
+  font-size: 1rem;
+
+  &.is-sending {
+    cursor: progress;
+  }
+}
+
+// Both faces share one cell, so the button never changes size between them.
+.submit-face {
+  grid-area: 1 / 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--s-2);
+  transition:
+    opacity var(--d-fast) ease,
+    filter var(--d-fast) ease,
+    transform var(--d-base) var(--ease-out);
+
+  &[aria-hidden='true'] {
+    opacity: 0;
+    filter: blur(3px);
+    transform: translateY(0.25rem);
+  }
+}
+
+.spinner {
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(1turn);
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .kind:hover:not(:has(.kind-input:checked)) {
+    border-color: var(--c-ink-3);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kind:active,
+  .submit-face[aria-hidden='true'],
+  .kind-check {
+    transform: none;
+  }
+
+  .kind-check {
+    transition-property: opacity;
+  }
+
+  .alert {
+    animation-name: qth-fade-in;
+  }
+
+  .spinner {
+    animation-duration: 2s;
+  }
+}
+
+@media (min-width: 48rem) {
+  .submit {
+    justify-self: start;
+    width: auto;
+    min-width: 12rem;
+  }
+}

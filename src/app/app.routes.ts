@@ -25,5 +25,10 @@ export const routes: Routes = [
     title: title('route.plans'),
     loadComponent: () => import('./features/plans/plans.page').then((m) => m.PlansPage),
   },
+  {
+    path: 'mejorar',
+    title: title('route.feedback'),
+    loadComponent: () => import('./features/feedback/feedback.page').then((m) => m.FeedbackPage),
+  },
   { path: '**', redirectTo: '' },
 ];

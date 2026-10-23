@@ -1,0 +1,172 @@
+<form
+  id="feedback-form"
+  class="form"
+  novalidate
+  [attr.aria-label]="'feedback.form' | t"
+  [attr.aria-busy]="sending()"
+  (submit)="onSubmit($event)"
+>
+  <!-- What it is about -->
+  <fieldset id="feedback-kind" class="block kinds">
+    <legend class="label">{{ 'feedback.kind.legend' | t }}</legend>
+    <div class="kind-grid">
+      @for (option of kinds; track option.kind) {
+        <label class="kind feedback-kind" [attr.data-kind]="option.kind">
+          <input
+            type="radio"
+            class="kind-input"
+            [value]="option.kind"
+            [formField]="f.kind"
+            [attr.aria-describedby]="kindError() ? 'feedback-kind-error' : null"
+          />
+          <span class="kind-mark" aria-hidden="true">
+            <qth-icon [name]="option.icon" />
+          </span>
+          <span class="kind-label">{{ option.label | t }}</span>
+          <span class="kind-hint">{{ option.hint | t }}</span>
+          <qth-icon class="kind-check" name="check" />
+        </label>
+      }
+    </div>
+    @if (kindError()) {
+      <p id="feedback-kind-error" class="help is-error">
+        <qth-icon name="alert" />{{ 'feedback.invalid.kind' | t }}
+      </p>
+    }
+  </fieldset>
+
+  <!-- The message -->
+  <div class="block message">
+    <div class="label-row">
+      <label class="label" for="feedback-message">{{ 'feedback.message.label' | t }}</label>
+      <span
+        class="counter t-num"
+        aria-hidden="true"
+        [class.is-near]="nearLimit()"
+        [class.is-over]="overLimit()"
+        >{{ counter() | t }}</span
+      >
+    </div>
+    <textarea
+      id="feedback-message"
+      class="textarea"
+      rows="6"
+      spellcheck="true"
+      autocapitalize="sentences"
+      [formField]="f.message"
+      [placeholder]="placeholder() | t"
+      [attr.aria-invalid]="messageError() ? 'true' : null"
+      aria-describedby="feedback-message-help"
+    ></textarea>
+    <p id="feedback-message-help" class="help" [class.is-error]="messageError()">
+      @if (messageError(); as error) {
+        <qth-icon name="alert" />{{ error | t }}
+      } @else {
+        {{ limits | t }}
+      }
+      <span class="visually-hidden">{{ count() | t }}</span>
+    </p>
+  </div>
+
+  <!-- Anonymity and an optional way to reply -->
+  <div class="block reply" [class.is-anonymous]="anonymous()">
+    <div class="switch-row">
+      <span class="switch-mark" aria-hidden="true"><qth-icon name="incognito" /></span>
+      <span class="switch-copy">
+        <label class="switch-label" for="feedback-anonymous">{{
+          'feedback.anonymous.label' | t
+        }}</label>
+        <span id="feedback-anonymous-hint" class="help">{{
+          (anonymous() ? 'feedback.anonymous.on' : 'feedback.anonymous.off') | t
+        }}</span>
+      </span>
+      <span class="switch">
+        <input
+          #anonymousInput
+          id="feedback-anonymous"
+          type="checkbox"
+          role="switch"
+          class="switch-input"
+          [formField]="f.anonymous"
+          aria-describedby="feedback-anonymous-hint"
+          (change)="onAnonymousChange(anonymousInput.checked)"
+        />
+        <span class="switch-track" aria-hidden="true"><span class="switch-thumb"></span></span>
+      </span>
+    </div>
+
+    <div class="email">
+      <label class="label" for="feedback-email">{{ 'feedback.email.label' | t }}</label>
+      <div class="field email-field">
+        <qth-icon name="mail" />
+        <input
+          id="feedback-email"
+          type="email"
+          inputmode="email"
+          autocomplete="email"
+          autocapitalize="off"
+          spellcheck="false"
+          [formField]="f.email"
+          [placeholder]="'feedback.email.placeholder' | t"
+          [attr.aria-invalid]="emailError() ? 'true' : null"
+          aria-describedby="feedback-email-help"
+        />
+      </div>
+      <p id="feedback-email-help" class="help" [class.is-error]="emailError()">
+        @if (emailError(); as error) {
+          <qth-icon name="alert" />{{ error | t }}
+        } @else {
+          {{ (anonymous() ? 'feedback.email.hintAnonymous' : 'feedback.email.hint') | t }}
+        }
+      </p>
+    </div>
+
+    <p class="note">
+      <qth-icon name="info" />
+      <span>{{ 'feedback.anonymous.technical' | t }}</span>
+    </p>
+  </div>
+
+  <!-- Only bots see this one: people never reach it. -->
+  <div class="trap" aria-hidden="true">
+    <label for="feedback-website">{{ 'feedback.honeypot' | t }}</label>
+    <input
+      id="feedback-website"
+      type="text"
+      tabindex="-1"
+      autocomplete="off"
+      [formField]="f.website"
+    />
+  </div>
+
+  <div class="send">
+    <div class="outcome">
+      @if (failure(); as reason) {
+        <div id="feedback-error" class="alert feedback-error" role="alert">
+          <qth-icon name="alert" />
+          <p>
+            <strong>{{ 'feedback.failed' | t }}.</strong>
+            {{ reason | t }}
+          </p>
+        </div>
+      }
+    </div>
+
+    <button
+      id="feedback-submit"
+      type="submit"
+      class="btn btn--primary submit"
+      [class.is-sending]="sending()"
+      [attr.aria-disabled]="sending() ? 'true' : null"
+    >
+      <span class="submit-face" [attr.aria-hidden]="sending() ? 'true' : null">
+        <qth-icon name="send" />{{ 'feedback.submit' | t }}
+      </span>
+      <span class="submit-face submit-face--busy" [attr.aria-hidden]="sending() ? null : 'true'">
+        <qth-icon class="spinner" name="loader" />{{ 'feedback.sending' | t }}
+      </span>
+    </button>
+  </div>
+
+  <p class="visually-hidden" role="status">{{ sending() ? ('feedback.sending' | t) : '' }}</p>
+</form>

@@ -19,6 +19,7 @@ export const es = {
   'route.zones': 'Zonas',
   'route.sea': 'Mar y mareas',
   'route.plans': '¿Dónde ir hoy?',
+  'route.feedback': 'Ayúdanos a mejorar',
   'route.title': '{page} · {brand}',
 
   'nav.label': 'Principal',
@@ -26,6 +27,8 @@ export const es = {
   'nav.zones': 'Zonas',
   'nav.sea': 'Mar',
   'nav.plans': 'Dónde ir',
+  'nav.feedback': 'Ayúdanos a mejorar',
+  'nav.feedbackShort': 'Mejorar',
   'nav.settings': 'Ajustes',
   'nav.settingsDemo': 'Ajustes y demo',
 
@@ -477,6 +480,98 @@ export const es = {
     'Sugerencias según el tiempo de cada zona. En esta versión son ejemplos con datos ficticios.',
   'plans.more': 'Más ideas',
   'plans.loading': 'Cargando sugerencias',
+
+  // ── Feedback ─────────────────────────────────────────────────
+  'feedback.lead':
+    'Si algo falla o se te ocurre cómo hacer la web más útil, cuéntanoslo. Leemos cada mensaje.',
+  'feedback.form': 'Formulario de comentarios',
+
+  'feedback.kind.legend': '¿Qué quieres contarnos?',
+  'feedback.kind.bug': 'Error',
+  'feedback.kind.bug.hint': 'Algo falla o se ve mal',
+  'feedback.kind.suggestion': 'Sugerencia',
+  'feedback.kind.suggestion.hint': 'Algo nuevo que te gustaría ver',
+  'feedback.kind.improvement': 'Mejora',
+  'feedback.kind.improvement.hint': 'Algo que ya existe, pero mejor',
+  'feedback.kind.other': 'Otro',
+  'feedback.kind.other.hint': 'Cualquier otra cosa',
+
+  'feedback.message.label': 'Tu mensaje',
+  'feedback.message.limits': 'Entre {min} y {max} caracteres.',
+  'feedback.message.count': '{count} de {max} caracteres',
+  'feedback.message.counter': '{count}/{max}',
+  'feedback.message.placeholder.none': 'Elige arriba de qué se trata y cuéntanoslo aquí.',
+  'feedback.message.placeholder.bug': 'Qué ha pasado, en qué pantalla y qué esperabas ver.',
+  'feedback.message.placeholder.suggestion': 'Qué te gustaría encontrar y para qué te serviría.',
+  'feedback.message.placeholder.improvement': 'Qué cambiarías y por qué.',
+  'feedback.message.placeholder.other': 'Lo que quieras contarnos.',
+
+  'feedback.anonymous.label': 'Enviar de forma anónima',
+  'feedback.anonymous.on': 'No pedimos ni enviamos tu correo, así que no podremos responderte.',
+  'feedback.anonymous.off': 'Déjanos tu correo si quieres respuesta. Es opcional.',
+  'feedback.anonymous.technical':
+    'El anonimato se refiere a lo que envías: el servicio de recepción sigue viendo datos técnicos de la conexión, como la IP.',
+  'feedback.email.label': 'Correo electrónico (opcional)',
+  'feedback.email.placeholder': 'nombre@ejemplo.com',
+  'feedback.email.hint': 'Solo para responderte. Nunca para nada más.',
+  'feedback.email.hintAnonymous': 'Desactiva el envío anónimo para escribirlo.',
+  'feedback.honeypot': 'Deja este campo vacío',
+
+  'feedback.invalid.kind': 'Elige qué quieres contarnos.',
+  'feedback.invalid.messageEmpty': 'Escribe tu mensaje.',
+  'feedback.invalid.messageShort': 'Cuéntanos un poco más: al menos {min} caracteres.',
+  'feedback.invalid.messageLong': 'Te sobran {n} caracteres. Resume un poco.',
+  'feedback.invalid.email': 'Este correo no parece válido. Revísalo o déjalo en blanco.',
+  'feedback.invalid.emailLong': 'Este correo es demasiado largo.',
+
+  'feedback.submit': 'Enviar',
+  'feedback.sending': 'Enviando…',
+
+  'feedback.failed': 'No se ha enviado',
+  'feedback.failed.not-configured':
+    'El envío de comentarios aún no está activado en esta versión de la web. Tu mensaje sigue aquí.',
+  'feedback.failed.offline':
+    'No hay conexión con el servicio de envío. Comprueba tu red y vuelve a intentarlo.',
+  'feedback.failed.timeout':
+    'El servicio de envío tarda demasiado en responder. Prueba otra vez en un momento.',
+  'feedback.failed.rate-limited':
+    'El servicio de envío está recibiendo demasiados mensajes. Prueba en unos minutos.',
+  'feedback.failed.too-soon': 'Espera {wait} y vuelve a intentarlo.',
+  'feedback.failed.duplicate':
+    'Este mismo mensaje ya nos llegó desde aquí. Si quieres añadir algo, cámbialo un poco.',
+  'feedback.failed.rejected':
+    'El servicio de envío no ha aceptado el mensaje. Revisa el texto y vuelve a intentarlo.',
+  'feedback.failed.unavailable':
+    'El servicio de envío no ha confirmado que lo haya recibido, así que no lo damos por enviado. Prueba de nuevo en un rato.',
+  'feedback.failed.kept': 'Tu mensaje sigue aquí.',
+
+  'feedback.notConfigured': 'Envío aún no activado',
+  'feedback.notConfigured.text':
+    'Esta versión de la web no tiene configurado el servicio de recepción, así que el formulario todavía no puede enviar nada.',
+
+  'feedback.sent': '¡Recibido, gracias!',
+  'feedback.sent.anonymous':
+    'Tu mensaje ha llegado. Como es anónimo no podremos contestarte, pero lo tendremos en cuenta.',
+  'feedback.sent.withEmail': 'Tu mensaje ha llegado. Si hace falta, te escribiremos a {email}.',
+  'feedback.sent.noEmail':
+    'Tu mensaje ha llegado. No nos has dejado correo, así que no podremos contestarte.',
+  'feedback.sent.again': 'Enviar otro comentario',
+
+  'feedback.privacy': 'Privacidad',
+  'feedback.privacy.what':
+    'Enviamos el tipo de comentario, tu mensaje y el idioma de la web. Tu correo, solo si lo escribes con el envío anónimo desactivado. Nunca tu ubicación, tus zonas ni datos del dispositivo.',
+  'feedback.privacy.who':
+    'Los recibe {provider}, un servicio externo que nos los reenvía por correo electrónico. Puede conservar una copia durante un tiempo, según sus condiciones.',
+  'feedback.privacy.technical':
+    'Anónimo no es anonimato técnico absoluto: como cualquier servicio en Internet, el de recepción ve datos de la conexión, como la dirección IP y el navegador, y puede usarlos, por ejemplo, para frenar el spam.',
+  'feedback.privacy.use':
+    'Usamos los mensajes solo para corregir errores y mejorar la web, y el correo solo para responderte. No lo usamos para publicidad ni lo cedemos a nadie.',
+  'feedback.privacy.content': 'No escribas en el mensaje datos personales que no hagan falta.',
+  'feedback.privacy.device':
+    'En este dispositivo solo guardamos cuándo enviaste tus últimos mensajes y una huella del último (no su texto), para evitar envíos repetidos.',
+  'feedback.privacy.providerLink': 'Política de privacidad de Web3Forms',
+  'feedback.privacy.erase':
+    'Si nos dejaste tu correo y quieres que borremos tu mensaje, pídenoslo en un nuevo comentario con ese mismo correo.',
 
   // ── Demo build only ──────────────────────────────────────────
   'demo.intro':

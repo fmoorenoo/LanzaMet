@@ -355,3 +355,57 @@ Skills usadas: Emil Kowalski (arrastre, lluvia, transiciones) e Impeccable (cohe
   - Mapa a 360, 390, 820 y 1440 px, en los temas claro y oscuro: 8 marcadores sin solapes ni recortes y etiquetas siempre por encima del viento.
   - 14 ráfagas animadas con 13 ritmos distintos, y ninguna con movimiento reducido.
 - **axe** sin violaciones en las cuatro páginas y con el selector abierto, en español e inglés.
+
+## Fase 7 — Ayúdanos a mejorar (23-10-2026)
+
+### Hecho
+
+1. **Sección nueva** «Ayúdanos a mejorar» / «Help us improve» en `/mejorar`:
+   - Es la quinta pestaña. En la barra del móvil se lee «Mejorar» / «Improve»; en el raíl de escritorio, el nombre completo en dos líneas. La cápsula y la rejilla se adaptan al número de pestañas (`--count`).
+   - Carga diferida, título de ruta traducido y la misma cabecera que el resto de páginas.
+2. **Formulario** con Signal Forms (`@angular/forms/signals`):
+   - Tipo de comentario en cuatro tarjetas sobre radios reales (Error, Sugerencia, Mejora, Otro). El texto de ayuda del mensaje cambia según el tipo elegido.
+   - Mensaje de 10 a 2000 caracteres. El contador discreto se oscurece al 90 % y se pone rojo si se pasa. No se usa `maxlength`, que cortaría un texto pegado sin avisar; el error dice cuántos caracteres sobran.
+   - Interruptor de anonimato, activado por defecto: checkbox nativo con `role="switch"`. Va a `_controls.scss` como `.switch` reutilizable.
+   - Correo opcional, desactivado y atenuado mientras el envío es anónimo (sin salir del layout). Activar el anonimato lo borra.
+   - Los errores aparecen al salir de un campo o al intentar enviar, y el foco va al primer campo con error. Los mensajes de error están enlazados con `aria-describedby` y `aria-invalid`.
+   - Botón con dos caras (Enviar ↔ Enviando…) en la misma celda, así que no cambia de tamaño. Mientras envía queda `aria-disabled` y una región `status` lo anuncia.
+   - La confirmación solo aparece si Web3Forms responde `success: true`. Lleva el disco y la marca dibujándose (el único momento animado), el foco pasa a su título y se ofrece «Enviar otro comentario».
+   - Los errores se muestran en línea (`role="alert"`) y el mensaje se conserva.
+   - Sin alertas nativas. Con `prefers-reduced-motion` desaparecen los desplazamientos y se conservan los fundidos.
+3. **Privacidad**, visible en la propia página (columna lateral fija en escritorio): qué se envía, quién lo recibe (Web3Forms, con enlace a su política), que el anonimato del formulario no es anonimato técnico (IP y navegador), para qué se usan los datos, qué se guarda en el dispositivo y cómo pedir que se borre un mensaje. Además, una nota bajo el interruptor.
+4. **Envío desacoplado** (`core/feedback`):
+   - `FeedbackService` deja solo lo que puede salir del dispositivo (sin correo si es anónimo), aplica las reglas antirrepetición y une los envíos que llegan mientras otro sigue en curso.
+   - `FeedbackTransport` es el puerto y `Web3FormsTransport` el adaptador. `provideFeedback()` los enlaza.
+   - La clave se inyecta en el build (`--define QTH_WEB3FORMS_KEY`) y se valida como UUID. Sin clave, la página lo avisa y no envía nada, también en la build de demo.
+5. **Antispam**:
+   - El filtro de servidor de Web3Forms, más `botcheck: false`.
+   - Un campo trampa propio.
+   - Al menos 3 s desde que se abre el formulario, 30 s entre envíos y 5 por hora.
+   - El mismo mensaje no se repite en 24 h (huella FNV-1a; el texto no se guarda).
+6. **Traducciones completas** en español e inglés: 66 claves nuevas (títulos, tipos, campos, ayudas, validaciones, estados, errores y privacidad).
+
+### Verificación de Web3Forms (23-10-2026)
+
+- Documentación leída en docs.web3forms.com: API (`POST https://api.web3forms.com/submit`, JSON, respuestas 200/400/429/500), personalización, protección antispam (filtro de servidor, honeypot `botcheck`, hCaptcha gratis, reCAPTCHA/Turnstile de pago), restricción de dominio (de pago) y uso desde un servidor (de pago, con IP autorizada).
+- La web de precios, los términos y la política de privacidad devolvieron 403 al consultarlas de forma automática. El plan gratuito (250 envíos/mes) y la conservación de 30 días se han contrastado con buscadores y reseñas; conviene revisarlos a mano antes de publicar.
+
+### Validación
+
+- **Tests**: 138 de la web (antes 117). Hay 21 nuevos: las reglas antirrepetición, el adaptador de Web3Forms con `fetch` simulado (contenido exacto del envío, éxito solo con `success: true`, 400/429/500, sin conexión y tiempo agotado) y el servicio (anonimato sin correo, campo trampa, sin clave, duplicados tras recargar, envíos simultáneos).
+- **Lint**, **formato** y **build de producción** sin avisos (el SCSS del formulario queda dentro de los 6 kB). Sin clave, el bundle no contiene ninguna; con `--define`, la clave llega al bundle.
+- **En el navegador** (Chrome sin interfaz, con Playwright; la extensión de Chrome no estaba conectada). Se usó una build de desarrollo con una clave ficticia y todas las peticiones a Web3Forms interceptadas: no salió ninguna. Se probaron 60 comprobaciones de extremo a extremo:
+  - validación vacía, mensaje corto, mensaje demasiado largo y correo no válido;
+  - el interruptor con el teclado (Espacio) y con la etiqueta;
+  - borrar el correo al activar el anonimato;
+  - el estado de carga y que un segundo clic no envíe dos veces;
+  - el éxito con el foco en la confirmación y «enviar otro»;
+  - el duplicado, la pausa de 30 s, el envío instantáneo y el campo trampa;
+  - los errores 500, 200 sin `success`, 400 y 429, y sin red, con el mensaje conservado y sin éxito falso.
+- **Capturas** a 360, 390, 1280 y 1440 px, en los temas claro y oscuro, en español e inglés. La barra de cinco pestañas no desborda en ninguna página.
+- **axe** (WCAG 2.2 AA y buenas prácticas) sin violaciones en los estados inicial, con errores, error de envío y enviado. El detector de Impeccable, sin avisos.
+
+### Pendiente
+
+- Crear la clave de Web3Forms, compilar con ella y comprobar que los mensajes llegan de verdad al buzón (anónimo y con correo).
+- Probar en dispositivos reales.

@@ -82,13 +82,15 @@ Reglas:
 | Scroll horizontal | `shared/ui/horizontal-scroll` | Directiva (bordes fundidos; arrastre con ratón que, al soltar, sigue con la inercia de la mano y se frena con `--ease-out`, sin ajuste a rejilla) + botones anterior/siguiente |
 | Selector de idioma | `layout/language-selector` | Segmentado sobre radios reales; cada idioma escrito en su lengua, sin banderas |
 | Controles sobre el cielo | `styles/_sky-controls.scss` | `.sky-chip`, `.sky-button`: toman la tinta de la escena; `.sky-badge`, la misma píldora para texto que no es un control (la hora) |
-| Controles | `styles/_controls.scss` | `.btn`, `.icon-btn`, `.chip`, `.choice`, `.field`, `.skeleton`, `.pendable` |
+| Controles | `styles/_controls.scss` | `.btn`, `.icon-btn`, `.chip`, `.choice`, `.field`, `.switch`, `.skeleton`, `.pendable` |
+| Interruptor | `styles/_controls.scss` | `.switch`: checkbox nativo con `role="switch"` y la pista y el pulgar dibujados debajo. Pista apagada en `--c-ink-3` (borde ≥ 3:1 en los dos temas) y encendida en `--c-accent`. El pulgar se desliza en 240 ms con `--ease-out`; con menos movimiento salta y solo funde el color |
+| Comentarios | `features/feedback` | Tarjetas de tipo sobre radios reales (2 × 2; la elegida, en verde, con una marca que crece desde 0,6), mensaje con contador discreto y un error que dice cuánto sobra, bloque de anonimato y correo (el correo se atenúa, sin salir del layout), botón con dos caras en la misma celda (Enviar ↔ Enviando…, fundido con desenfoque, sin cambiar de tamaño) y una confirmación con el único momento animado de la página: el disco crece y la marca se dibuja |
 
 Cada sección contempla carga (esqueleto con la forma del contenido), datos, vacío (sin cobertura: se explica y se ofrece la alternativa más cercana), error (con Reintentar) y actualización (los datos anteriores siguen visibles, atenuados, mientras llegan los nuevos).
 
 ## Adaptación
 
-- **Móvil (base):** escena casi a pantalla completa con la hoja de detalle superpuesta; barra de pestañas inferior con zonas seguras. El horizonte baja en pantallas de poca altura para que el texto siempre quede sobre cielo profundo.
+- **Móvil (base):** escena casi a pantalla completa con la hoja de detalle superpuesta; barra de pestañas inferior con zonas seguras. Son cinco pestañas: «Ayúdanos a mejorar» se queda en «Mejorar» («Improve») en la barra y en el raíl cabe entero en dos líneas; solo se muestra, y se lee, una de las dos etiquetas. El horizonte baja en pantallas de poca altura para que el texto siempre quede sobre cielo profundo.
 - **Tableta (≥ 48 rem):** el mismo flujo con una medida de lectura más tranquila.
 - **Escritorio (≥ 64 rem):** raíl lateral. En Hoy, la escena es una banda panorámica (≈ 3:1, `clamp(26rem, 54vh, 32rem)` de alto) en un contenedor de 84 rem: zona, favoritas y acciones en una línea; la temperatura junto al veredicto, con la máxima y la mínima; el cielo de la derecha queda para el sol y la luna. Debajo, «ahora» (viento, mar y marea en tres columnas desde 72 rem), las 24 horas a todo el ancho —justo bajo la escena que previsualizan— y una rejilla de dos columnas: planes y detalle a la izquierda, los siete días a la derecha. El orden del DOM y del foco es el de móvil. Zonas y Mar pasan a dos columnas a partir de 72 rem.
 - **Horas:**
@@ -117,7 +119,7 @@ Cada sección contempla carga (esqueleto con la forma del contenido), datos, vac
 
 ## Iconos
 
-- **Lucide** (ISC, versión fijada) para la interfaz: chevrons, cerrar, buscar, estrella, ubicación, actualizar, ajustes, información, aviso, flechas, viento, termómetro, gota, sol, amanecer y atardecer, mapa, brújula, huellas, escudo e idiomas. Se importan uno a uno; solo los usados llegan al bundle.
+- **Lucide** (ISC, versión fijada) para la interfaz: chevrons, cerrar, buscar, estrella, ubicación, actualizar, ajustes, información, aviso, flechas, viento, termómetro, gota, sol, amanecer y atardecer, mapa, brújula, huellas, escudo, idiomas y, en Comentarios, bicho, bombilla, brote, bocadillo, enviar, carga, correo, incógnito y escudo con marca. Se importan uno a uno; solo los usados llegan al bundle.
 - **Propios** donde dan identidad o Lucide no tiene nada tan preciso: Hoy (el sol sobre el horizonte), el mar y las olas, la marea subiendo y bajando, la sombrilla, el bañista y el surf. Dibujados en la misma rejilla.
 - Los glifos del cielo, la marca y la escena son ilustraciones, no iconos, y no se sustituyen.
 - Rejilla de 24, trazo 1,75 para todos, extremos y uniones redondeados, color `currentColor`. Tamaño por rol: `--icon-xs` 1 rem (con texto micro) · `--icon-sm` 1,125 rem (etiquetas, chips) · `--icon-md` 1,25 rem (chevrons de fila) · `--icon-lg` 1,375 rem (pestañas, avisos, estados) · `--icon-xl` 1,5 rem (por defecto). Se alinean al centro de la línea con `inline-flex` y `gap`.
@@ -129,7 +131,7 @@ Para encontrar cada pieza con las herramientas del navegador:
 
 - **IDs** en inglés y `kebab-case`, solo para lo único de cada página: `weather-hero`, `weather-landscape`, `current-temperature`, `weather-verdict`, `weather-description`, `temperature-range`, `location-selector`, `location-selector-button`, `hourly-forecast`, `current-conditions`, `sun-times`, `daily-forecast`, `tide-visualization`, `tide-extremes`, `language-selector`, `theme-selector`, `main-navigation`…
 - **Clases** semánticas y reutilizables para lo repetido (`hour-cell`, `day-row`, `zone-card`, `map-marker`, `location-option`, `plan-card`, `weather-warning`, `tide-extreme`…), añadidas junto a las clases internas cortas, que no cambian.
-- **`data-*`** para identificar cada instancia: `data-location-id`, `data-index` / `data-time` (horas), `data-date` (días), `data-plan-kind`, `data-tide` (`high` / `low`), `data-level` (avisos), `data-condition`, `data-route`, `data-area`. La escena expone lo que dibuja: `data-variant`, `data-horizon`, `data-scenery`, `data-sea-level`, `data-ink`. La hora: `current-time` y `tide-now-time`.
+- **`data-*`** para identificar cada instancia: `data-location-id`, `data-index` / `data-time` (horas), `data-date` (días), `data-plan-kind`, `data-tide` (`high` / `low`), `data-level` (avisos), `data-condition`, `data-route`, `data-area`, `data-kind` (tipo de comentario). La escena expone lo que dibuja: `data-variant`, `data-horizon`, `data-scenery`, `data-sea-level`, `data-ink`. La hora: `current-time` y `tide-now-time`.
 
 ## Voz
 

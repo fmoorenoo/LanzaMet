@@ -45,7 +45,7 @@
 .tabs {
   position: relative;
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(var(--count, 4), minmax(0, 1fr));
   height: var(--tabbar-h);
 }
 
@@ -55,7 +55,7 @@
   position: absolute;
   top: 0;
   left: 0;
-  width: 25%;
+  width: calc(100% / var(--count, 4));
   height: var(--tabbar-h);
   display: grid;
   place-items: center;
@@ -126,6 +126,12 @@
   font-size: 0.6875rem;
   font-weight: 650;
   letter-spacing: 0.01em;
+  white-space: nowrap;
+}
+
+// A long name has a short one for the phone's tab bar; the rail has room for it all.
+.tab-label--full {
+  display: none;
 }
 
 @media (hover: hover) and (pointer: fine) {
@@ -204,6 +210,19 @@
 
   .tab-label {
     font-size: 0.75rem;
+  }
+
+  .tab-label--short {
+    display: none;
+  }
+
+  .tab-label--full {
+    display: block;
+    max-width: 4.5rem;
+    line-height: 1.15;
+    text-align: center;
+    white-space: normal;
+    text-wrap: balance;
   }
 
   .capsule {
