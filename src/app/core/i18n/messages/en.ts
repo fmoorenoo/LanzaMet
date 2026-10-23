@@ -90,6 +90,7 @@ export const en: Messages = {
     'A promenade facing Fuerteventura, with water that is nearly always calm.',
   'place.summary.costa-teguise': 'Beaches open to the trade wind: windsurfing country.',
   'place.summary.famara': 'Six kilometres of sand beneath the Risco cliffs. Waves and wind.',
+  'place.summary.la-santa': 'A fishing village on the lava, facing the El Quemao wave.',
   'place.summary.orzola': 'A fishing village facing La Graciosa, with white-sand coves.',
   'place.summary.el-golfo': 'A crater split by the sea, a black beach and the Green Lagoon.',
 

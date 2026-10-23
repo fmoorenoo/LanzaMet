@@ -1,26 +1,28 @@
 <div class="map island-map-canvas" [style.aspect-ratio]="size.width + ' / ' + size.height">
-  @if (windAngle() !== null) {
-    <!-- Composited: the streak layer slides with transform; nothing repaints per frame. -->
-    <div class="wind wind-streaks" aria-hidden="true">
-      <div class="wind-turn" [style.transform]="'rotate(' + windAngle() + 'deg)'">
-        <div class="wind-track">
-          <svg viewBox="0 0 2400 1000" preserveAspectRatio="none">
-            @for (y of streaks; track y; let i = $index) {
-              <path
-                class="streak"
-                [attr.d]="'M0 ' + y + 'H2400'"
-                [style.stroke-dashoffset]="-i * 110"
-              />
-            }
-          </svg>
-        </div>
-      </div>
-    </div>
-  }
   <svg class="art" [attr.viewBox]="'0 0 ' + size.width + ' ' + size.height" aria-hidden="true">
+    <!-- The sea's texture, static: shallows tinting towards the shore, swell marks offshore. -->
+    <path class="shoal shoal--outer" [attr.d]="coast" />
+    <path class="shoal shoal--mid" [attr.d]="coast" />
+    <path class="shoal shoal--inner" [attr.d]="coast" />
+    <path class="swell" [attr.d]="swell" />
     <path class="island graciosa" [attr.d]="paths.islets" />
     <path class="island" [attr.d]="paths.lanzarote" />
   </svg>
+
+  @if (windAngle() !== null) {
+    <!-- Over the land, under the markers. Each gust moves with transform and opacity only. -->
+    <div class="wind wind-streaks" aria-hidden="true">
+      <div class="wind-turn" [style.transform]="'rotate(' + windAngle() + 'deg)'">
+        @for (gust of gusts; track $index) {
+          <div class="gust" [style]="gust.style">
+            <svg viewBox="0 0 100 12" preserveAspectRatio="none">
+              <path [attr.d]="gust.d" />
+            </svg>
+          </div>
+        }
+      </div>
+    </div>
+  }
 
   @for (marker of placed(); track marker.id) {
     <button

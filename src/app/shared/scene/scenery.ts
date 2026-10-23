@@ -2,6 +2,7 @@ import { SceneryId } from '../../core/models';
 import {
   cone,
   Feature,
+  profile,
   heightAt,
   HORIZON_VIEWBOX,
   ridge,
@@ -15,7 +16,8 @@ import {
  * the waterline at y = 150) so they stand on its land: the Gran Hotel over El
  * Reducto, the palms of Puerto del Carmen's promenade, the Pechiguera
  * lighthouse facing Lobos, Las Cucharas' breakwaters and windsurfers,
- * Órzola's harbour, El Golfo's half crater over the green lagoon.
+ * La Santa's village on the lava and the El Quemao wave, Órzola's harbour,
+ * El Golfo's half crater over the green lagoon.
  *
  * A few primitives (houses, a slab tower, palms, a lighthouse, a breakwater,
  * boats and sails) build them all. Every shape of one role shares one path,
@@ -34,7 +36,8 @@ const BASE = HORIZON_VIEWBOX.height;
 
 /** Something afloat, in the horizon's units; `y` is its waterline (> 150, on the sea). */
 export interface Afloat {
-  readonly kind: 'boat' | 'ferry' | 'sail';
+  /** A breaker is a wave, not a boat: drawn only when the sea is up (see the scene). */
+  readonly kind: 'boat' | 'ferry' | 'sail' | 'breaker';
   readonly x: number;
   readonly y: number;
   readonly scale: number;
@@ -314,6 +317,39 @@ const SCENERIES: Readonly<Record<SceneryId, () => SceneryArt>> = {
   // La Caleta's houses at the other end of the beach.
   famara: () => new Sketch().art(),
 
+  // La Santa: a fishing village of flat white roofs on a low shelf of black
+  // lava, its sea wall, a boat, the low islet across the water (with the
+  // long blocks of the sports club) and, when the swell is up, El Quemao
+  // breaking over the reef in front of the village.
+  'la-santa': () => {
+    const sketch = new Sketch();
+    sketch.terrain = [
+      profile(
+        [
+          [372, 0],
+          [392, 4],
+          [520, 5],
+          [548, 0],
+          [700, 0],
+          [736, 5],
+          [880, 7],
+          [1040, 9],
+          [1200, 10],
+          [1260, 10],
+        ],
+        1.1,
+      ),
+    ];
+    return sketch
+      .house(404, 42, 6)
+      .house(452, 30, 8)
+      .village(760, 1190, 20, 61, { w: [9, 15], h: [6, 11] })
+      .mole(752, 1000, 3)
+      .float('breaker', 620, 158, 1.6)
+      .float('boat', 1090, 160, 0.75)
+      .art();
+  },
+
   // Órzola: white fishing houses on the point, the harbour mole with its
   // green light, boats at their moorings and the ferry to La Graciosa.
   orzola: () => {
@@ -365,4 +401,11 @@ export const AFLOAT_PATHS = {
     top: 'M-16 -4V-9H11V-4ZM-10 -9V-11.5H3V-9Z',
   },
   sail: { hull: 'M-7 0H6L5 1H-6Z', stripe: '', top: 'M-1 -1V-18Q8.5 -10 6.5 -1Z' },
+  // The wave's face (hull), steep on the left where it pitches, and its white
+  // water: the curling lip and the foam it leaves (top).
+  breaker: {
+    hull: 'M-32 0C-22 -1 -13 -6 -5 -11C1 -14 9 -13.5 13 -9C17 -4.5 25 -1 36 0Z',
+    stripe: '',
+    top: 'M-5 -11C1 -14 9 -13.5 13 -9C8.5 -11 3.5 -10.5 1 -7.5C-1.5 -4.5 -3.5 -2 -7 0C-7.5 -4 -7 -8 -5 -11ZM-32 0C-24 -2.6 -15 -2.4 -7 0Z',
+  },
 } as const;

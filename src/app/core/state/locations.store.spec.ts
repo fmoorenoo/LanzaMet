@@ -23,18 +23,24 @@ describe('LocationsStore', () => {
   it('moves places saved before they were retired to the ones that replaced them', () => {
     const locations = store({
       selected: 'papagayo',
-      favorites: ['la-santa', 'playa-blanca', 'papagayo', 'arrecife'],
+      favorites: ['famara', 'playa-blanca', 'papagayo', 'arrecife'],
     });
     expect(locations.selected()?.id).toBe('playa-blanca');
     expect(locations.favorites().map((l) => l.id)).toEqual(['famara', 'playa-blanca', 'arrecife']);
   });
 
-  it('no longer lists the retired places', () => {
+  it('no longer lists the retired places, and lists La Santa again', () => {
     const ids = store({})
       .all()
       .map((l) => l.id);
     expect(ids).not.toContain('papagayo');
-    expect(ids).not.toContain('la-santa');
-    expect(ids).toHaveLength(7);
+    expect(ids).toContain('la-santa');
+    expect(ids).toHaveLength(8);
+  });
+
+  it('keeps La Santa when it was saved, rather than moving it to Famara', () => {
+    const locations = store({ selected: 'la-santa', favorites: ['la-santa', 'famara'] });
+    expect(locations.selected()?.id).toBe('la-santa');
+    expect(locations.favorites().map((l) => l.id)).toEqual(['la-santa', 'famara']);
   });
 });

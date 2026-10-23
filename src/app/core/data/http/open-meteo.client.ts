@@ -12,7 +12,7 @@ import { Cached, ResponseCache } from './response-cache';
 
 /*
  * Open-Meteo, asked once for the whole island: one request carries every
- * place (the API takes lists of coordinates), so the seven places cost three
+ * place (the API takes lists of coordinates), so the eight places cost three
  * requests in total — forecast, sea and dust — however many screens show them.
  *
  * Freshness follows how often each model is updated upstream:

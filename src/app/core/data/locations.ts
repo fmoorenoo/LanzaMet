@@ -13,9 +13,12 @@ import { GeoPoint, Location, LocationId } from '../models';
  * 2026-10-22. Places that share a cell get the same sea, because the model
  * cannot tell them apart.
  *
- * Papagayo and La Santa were dropped in phase 3: they read the same model
- * cells as Playa Blanca and Famara, so they only repeated those forecasts.
- * Visitors who had them saved are moved to those places (`RETIRED_LOCATIONS`).
+ * Papagayo was dropped in phase 3: it read the same model cells as Playa
+ * Blanca, so it only repeated that forecast. Visitors who had it saved are
+ * moved there (`RETIRED_LOCATIONS`). La Santa, dropped with it for sharing
+ * Famara's, came back: the weather model still cannot tell the two apart (one
+ * cell, 29.120 / −13.604), but its sea is read at a cell of its own, west of
+ * the bay, so the waves at El Quemao are not Famara's.
  */
 
 /** Centres of the marine model's 1/12° cells around the island. */
@@ -25,6 +28,7 @@ const SEA = {
   southOfArrecife: { latitude: 28.875, longitude: -13.541667 },
   eastCoast: { latitude: 28.958333, longitude: -13.375 },
   northwest: { latitude: 29.208333, longitude: -13.708333 },
+  westOfLaSanta: { latitude: 29.125, longitude: -13.791667 },
   north: { latitude: 29.291667, longitude: -13.458333 },
   west: { latitude: 28.958333, longitude: -13.875 },
 } as const satisfies Record<string, GeoPoint>;
@@ -96,6 +100,19 @@ export const LOCATIONS: readonly Location[] = [
     coverage: { sea: SEA.northwest, tide: { kind: 'model' } },
   },
   {
+    id: 'la-santa',
+    name: 'La Santa',
+    municipality: 'Tinajo',
+    area: 'oeste',
+    kind: 'pueblo',
+    position: { latitude: 29.1117, longitude: -13.6545 },
+    facing: 'NO',
+    horizon: 'bahia',
+    shore: 'roca',
+    scenery: 'la-santa',
+    coverage: { sea: SEA.westOfLaSanta, tide: { kind: 'model' } },
+  },
+  {
     id: 'orzola',
     name: 'Órzola',
     municipality: 'Haría',
@@ -126,5 +143,4 @@ export const LOCATIONS: readonly Location[] = [
 /** Places no longer in the catalogue, and the one that now stands for each. */
 export const RETIRED_LOCATIONS: Readonly<Record<string, LocationId>> = {
   papagayo: 'playa-blanca',
-  'la-santa': 'famara',
 };

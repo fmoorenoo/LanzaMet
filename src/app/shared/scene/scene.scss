@@ -162,6 +162,21 @@
     animation-duration: 3.1s;
     animation-name: lean;
   }
+
+  // A breaker swells and pitches, slowly, from its base.
+  &.is-breaker {
+    animation-duration: 3.8s;
+    animation-name: surge;
+  }
+}
+
+@keyframes surge {
+  from {
+    transform: scale(0.94, 0.86);
+  }
+  to {
+    transform: scale(1.04, 1.06);
+  }
 }
 
 @keyframes bob {

@@ -149,11 +149,20 @@
     @for (item of afloat(); track $index) {
       @let shape = shapes[item.kind];
       <g [attr.transform]="'translate(' + item.x + ' ' + item.y + ') scale(' + item.scale + ')'">
-        <g class="bob" [class.is-sail]="item.kind === 'sail'" [style.--i]="$index">
-          <path [attr.d]="shape.hull" [style.fill]="s.built.wall" />
-          @if (item.kind === 'sail') {
+        <g
+          class="bob"
+          [class.is-sail]="item.kind === 'sail'"
+          [class.is-breaker]="item.kind === 'breaker'"
+          [style.--i]="$index"
+        >
+          @if (item.kind === 'breaker') {
+            <path [attr.d]="shape.hull" [style.fill]="s.sea.swellMid" />
+            <path [attr.d]="shape.top" [style.fill]="s.built.wall" />
+          } @else if (item.kind === 'sail') {
+            <path [attr.d]="shape.hull" [style.fill]="s.built.wall" />
             <path [attr.d]="shape.top" [style.fill]="s.built.sails[item.tone]" />
           } @else {
+            <path [attr.d]="shape.hull" [style.fill]="s.built.wall" />
             <path [attr.d]="shape.top" [style.fill]="s.built.wall" />
             <path [attr.d]="shape.stripe" [style.fill]="s.built.trim" />
           }

@@ -322,3 +322,36 @@ Skills usadas: Emil Kowalski (arrastre, lluvia, transiciones) e Impeccable (cohe
   - el mapa no se deforma: la proporción la fija el `viewBox`.
 - Al pulsar los marcadores se selecciona la zona (`aria-pressed`).
 - **axe** sin violaciones en Zonas, en español e inglés. Lint, formato y build de producción sin avisos.
+
+## Zonas más vivas y vuelta de La Santa (23-10-2026)
+
+### Hecho
+
+1. **Isla y mar en el mapa de Zonas**:
+   - Tierra con color propio en los dos temas: arena volcánica cálida de día y picón de noche. Son tokens nuevos (`--c-land`, `--c-land-islet`, `--c-land-edge`). La Graciosa y Montaña Clara van algo más claras. El contorno no cambia.
+   - Mar con textura estática. La costa se dibuja tres veces bajo la tierra, en trazos anchos y muy tenues, y el agua se aclara por franjas hacia la orilla. En mar abierto hay ondas finas, sembradas con semilla fija, que nunca tocan la costa.
+2. **Capas**: el viento pasa por encima de la isla y por debajo de los marcadores y sus etiquetas (`pointer-events: none`). Antes iba debajo de la isla.
+3. **Viento más natural**. Antes eran diez líneas discontinuas que se desplazaban en bloque a la misma velocidad. Ahora son 14 ráfagas sueltas, cada una con su altura, longitud, curva, opacidad, ritmo (11–17 s), arranque y un leve vaivén. Aparecen, cruzan y se desvanecen, con la cola difuminada.
+   - Solo se animan `transform` y `opacity`.
+   - Con movimiento reducido, cada ráfaga queda quieta en su propio punto del recorrido.
+   - La dirección sigue a la del viento como antes.
+4. **La Santa vuelve** como zona completa:
+   - Está en el catálogo, el selector (oeste), las favoritas, Zonas, Mar, el mapa, la demo, los textos en los dos idiomas, los tests y `verify:sources`.
+   - Sale de `RETIRED_LOCATIONS`. Quien la tenía guardada desde antes de la fase 3 ya se había pasado a Famara; desde ahora se conserva.
+   - **Datos**: el modelo del tiempo sigue sin distinguirla de Famara (la misma celda, 29,120 / −13,604), así que su tiempo coincide. Su mar se lee en una celda propia de mar abierto al oeste de la bahía (29,125 / −13,792; comprobada con oleaje y nivel), así que sus olas y su marea son suyas.
+   - **Paisaje**:
+     - horizonte nuevo, `bahia`: el Risco de Famara a lo lejos, a la derecha, subiendo hacia Peñas del Chache;
+     - una plataforma baja de lava negra;
+     - el pueblo de azoteas blancas, el malecón y una barca;
+     - el islote con los bloques bajos del club deportivo;
+     - **El Quemao**: una ola que solo rompe cuando hay mar (nivel 2 o más), más grande cuanto mayor es, y que crece y rompe despacio.
+
+### Validación
+
+- **Tests**: 117 de la web (antes 116). La Santa listada y conservada al guardarla, sin estación de AEMET representativa; además, los tests del mapa y de los paisajes ya la cubren. Lint, formato y build de producción sin avisos.
+- **`verify:sources`** contra los API reales: 8 previsiones, 8 puntos de mar y 8 series de polvo. La Santa: olas de 1,82 m en su celda; Famara, 1,84 m en la suya.
+- **En el navegador**:
+  - La Santa en el selector, marcada como favorita y guardada, en el héroe («Hay olas», con la ola rompiendo) y en Mar (marea y estado del mar).
+  - Mapa a 360, 390, 820 y 1440 px, en los temas claro y oscuro: 8 marcadores sin solapes ni recortes y etiquetas siempre por encima del viento.
+  - 14 ráfagas animadas con 13 ritmos distintos, y ninguna con movimiento reducido.
+- **axe** sin violaciones en las cuatro páginas y con el selector abierto, en español e inglés.

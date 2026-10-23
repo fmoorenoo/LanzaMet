@@ -157,6 +157,27 @@ const PROFILES: Readonly<
       ),
     ],
   },
+  // From La Santa, across its bay: the Risco de Famara far off to the
+  // right, a long flat-topped wall rising towards Peñas del Chache.
+  bahia: {
+    far: [
+      profile(
+        [
+          [620, 0],
+          [660, 7],
+          [760, 13],
+          [860, 20],
+          [960, 27],
+          [1060, 35],
+          [1140, 41],
+          [1200, 44],
+          [1270, 45],
+        ],
+        0.8,
+      ),
+    ],
+    near: [],
+  },
   graciosa: {
     far: [
       ridge(260, 960, 9, 70),

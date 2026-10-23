@@ -70,13 +70,24 @@ export class Scene {
   protected readonly scenery = computed(() => sceneryArt(this.state().scenery));
   protected readonly shapes = AFLOAT_PATHS;
 
-  /** Boats always; windsurf sails only by day, more of them the harder it blows. */
+  /**
+   * Boats always; windsurf sails only by day, more of them the harder it
+   * blows; a breaker only when the sea is up, bigger the bigger it is.
+   */
   protected readonly afloat = computed(() => {
-    const { wind, daylight } = this.state();
+    const { wind, daylight, seaLevel } = this.state();
     const sailing =
       daylight > 0.45 ? Math.round(Math.min(1, Math.max(0, (wind - 0.18) / 0.36)) * 3) : 0;
     let sails = 0;
-    return this.scenery().afloat.filter((a) => a.kind !== 'sail' || sails++ < sailing);
+    return this.scenery()
+      .afloat.filter((a) => {
+        if (a.kind === 'sail') return sails++ < sailing;
+        if (a.kind === 'breaker') return seaLevel >= 2;
+        return true;
+      })
+      .map((a) =>
+        a.kind === 'breaker' ? { ...a, scale: a.scale * (0.75 + 0.2 * (seaLevel - 2)) } : a,
+      );
   });
 
   protected readonly waves = computed(() => {

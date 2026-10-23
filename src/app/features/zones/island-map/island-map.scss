@@ -38,21 +38,52 @@
 }
 
 .island {
-  fill: var(--c-surface);
-  stroke: var(--c-line-strong);
+  fill: var(--c-land);
+  stroke: var(--c-land-edge);
   stroke-width: 2;
   stroke-linejoin: round;
 }
 
 .graciosa {
-  fill: color-mix(in oklab, var(--c-surface), var(--c-ground) 40%);
+  fill: var(--c-land-islet);
 }
 
-// The prevailing wind, drawn as streaks that flow across the island.
+// Shallows: the coast stroked wide under the land, each band a faint tint,
+// so the water deepens in steps away from the shore.
+.shoal {
+  fill: none;
+  stroke: color-mix(in oklch, var(--c-sea) 5.5%, transparent);
+  stroke-linejoin: round;
+}
+
+.shoal--outer {
+  stroke-width: 64;
+}
+
+.shoal--mid {
+  stroke-width: 38;
+}
+
+.shoal--inner {
+  stroke-width: 16;
+}
+
+// Swell marks on open water: hairline ripples, never moving.
+.swell {
+  fill: none;
+  stroke: color-mix(in oklch, var(--c-sea) 28%, transparent);
+  stroke-width: 1.25;
+  stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
+}
+
+// The prevailing wind, drawn as gusts that flow across the island: above
+// the land, below the markers and their labels (z-index 1).
 .wind {
   position: absolute;
   inset: 0;
   overflow: hidden;
+  pointer-events: none;
 }
 
 // Oversized so the rotated layer still covers the whole box.
@@ -65,32 +96,54 @@
   translate: -50% -50%;
 }
 
-.wind-track {
-  width: 200%;
-  height: 100%;
-  animation: flow 20s linear infinite;
+// A gust crosses the whole (rotated) layer: it enters from the east, fades
+// in, sways a touch off its line and fades out past the west edge. Only
+// transform and opacity move; every value comes from the gust's own style.
+.gust {
+  position: absolute;
+  top: var(--y);
+  left: 0;
+  width: 100%;
+  height: 0.75rem;
+  opacity: 0;
+  animation: gust var(--t) linear var(--d) infinite;
 
   svg {
     display: block;
-    width: 100%;
+    width: var(--l);
     height: 100%;
+    overflow: visible;
+    // The leading end is the gust; its tail thins out behind it.
+    mask-image: linear-gradient(to right, black 25%, transparent);
+  }
+
+  path {
+    fill: none;
+    stroke: color-mix(in oklch, var(--c-sea) 60%, transparent);
+    stroke-width: 1.75;
+    stroke-linecap: round;
+    vector-effect: non-scaling-stroke;
   }
 }
 
-// -50% is exactly four dash periods (4 × 300 units), so the loop is seamless.
-@keyframes flow {
-  to {
-    transform: translate3d(-50%, 0, 0);
+@keyframes gust {
+  0% {
+    opacity: 0;
+    transform: translate3d(100%, 0, 0);
   }
-}
-
-.streak {
-  fill: none;
-  stroke: color-mix(in oklch, var(--c-sea) 40%, transparent);
-  stroke-width: 2;
-  stroke-linecap: round;
-  stroke-dasharray: 80 220;
-  vector-effect: non-scaling-stroke;
+  14% {
+    opacity: var(--o);
+  }
+  50% {
+    transform: translate3d(calc(50% - var(--l) / 2), var(--dy), 0);
+  }
+  86% {
+    opacity: var(--o);
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(calc(var(--l) * -1), 0, 0);
+  }
 }
 
 // ── Markers: real buttons on top of the drawing ───────────────
@@ -204,8 +257,11 @@
   bottom: calc(50% + 0.75rem);
 }
 
+// Still wind: each gust rests at its own point of the crossing.
 @media (prefers-reduced-motion: reduce) {
-  .wind-track {
+  .gust {
     animation: none;
+    opacity: calc(var(--o) * 0.8);
+    transform: translate3d(calc(var(--r) * (100% - var(--l))), 0, 0);
   }
 }

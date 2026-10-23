@@ -9,14 +9,21 @@ export type PlaceKind = 'ciudad' | 'pueblo' | 'playa' | 'costa';
 
 /** What the place looks like from its shore; drives the scene's horizon. */
 export type HorizonProfile =
-  'abierto' | 'risco' | 'graciosa' | 'fuerteventura' | 'bocaina' | 'volcanes';
+  'abierto' | 'risco' | 'bahia' | 'graciosa' | 'fuerteventura' | 'bocaina' | 'volcanes';
 
 /**
  * The place's own landmarks, drawn in front of its horizon: what someone who
  * knows the place would recognise first (see shared/scene/scenery.ts).
  */
 export type SceneryId =
-  'reducto' | 'playa-grande' | 'pechiguera' | 'las-cucharas' | 'famara' | 'orzola' | 'el-golfo';
+  | 'reducto'
+  | 'playa-grande'
+  | 'pechiguera'
+  | 'las-cucharas'
+  | 'famara'
+  | 'la-santa'
+  | 'orzola'
+  | 'el-golfo';
 
 export type ShoreKind = 'arena-dorada' | 'arena-negra' | 'roca';
 

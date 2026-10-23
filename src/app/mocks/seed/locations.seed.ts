@@ -76,6 +76,14 @@ export const CLIMATE_TRAITS: Readonly<Record<LocationId, ClimateTraits>> = {
     tideDelayMin: 14,
     waterOffsetC: -0.6,
   },
+  'la-santa': {
+    windFactor: 1.05,
+    cloudiness: 0.2,
+    temperatureOffsetC: -0.8,
+    swellFactor: 1.3,
+    tideDelayMin: 16,
+    waterOffsetC: -0.4,
+  },
   orzola: {
     windFactor: 1.1,
     cloudiness: 0.26,

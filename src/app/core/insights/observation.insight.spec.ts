@@ -54,6 +54,7 @@ describe('representative observation', () => {
     // Haría (277 m) sits behind the Risco; Tinajo is 275 m up; the rest are over 10 km away.
     expect(pick('famara')).toBeNull();
     expect(pick('el-golfo')).toBeNull();
+    expect(pick('la-santa')).toBeNull();
   });
 
   it('ignores readings more than three hours old', () => {

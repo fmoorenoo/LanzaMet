@@ -102,6 +102,10 @@ Cada sección contempla carga (esqueleto con la forma del contenido), datos, vac
   - En Hoy va en la esquina superior derecha, delante de favorita y ajustes, como una píldora `.sky-badge` (mismo fondo, borde, altura y radio que esos botones): «Ahora 14:36», o «En Lanzarote» si el reloj de quien visita marca otra hora.
   - En móviles estrechos muestra solo la hora.
   - En la marea, la marca de «ahora» baja del punto de la curva al eje, donde va la hora, y las horas del eje que taparía se apartan.
+- **Mapa de Zonas:**
+  - La tierra va en `--c-land` (arena volcánica de día, picón de noche) y los islotes en `--c-land-islet`.
+  - El mar tiene franjas de agua somera y ondas estáticas.
+  - El viento son ráfagas sueltas por encima de la tierra y por debajo de los marcadores.
 - **Paisaje en pantallas estrechas:**
   - La tierra se ancla a la derecha (`xMaxYMax slice`), donde están los hitos.
   - Lo alto va a la derecha de x = 1000 y lo blanco queda bajo, porque en móviles bajos el texto llega al horizonte.

@@ -92,6 +92,7 @@ export const es = {
   'place.summary.playa-blanca': 'Paseo frente a Fuerteventura y aguas casi siempre tranquilas.',
   'place.summary.costa-teguise': 'Playas abiertas al alisio: territorio de windsurf.',
   'place.summary.famara': 'Seis kilómetros de arena bajo el Risco. Olas y viento.',
+  'place.summary.la-santa': 'Pueblo pesquero sobre la lava, frente a la ola de El Quemao.',
   'place.summary.orzola': 'Pueblo marinero frente a La Graciosa, con caletas de arena blanca.',
   'place.summary.el-golfo': 'Un cráter partido por el mar, playa negra y el Charco Verde.',
 
