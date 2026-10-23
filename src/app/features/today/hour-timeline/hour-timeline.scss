@@ -41,29 +41,36 @@
   margin-left: auto;
 }
 
-// Present in the layout at all times; it only fades in and out, so the
+// Present in the layout at all times; it only fades and rises in, so the
 // heading, the arrows and the hours below never move when it appears.
 .back-to-now {
   opacity: 0;
   visibility: hidden;
+  transform: translateY(0.25rem);
   // Hidden only once it has faded out; shown at once.
   transition:
     opacity var(--d-fast) ease,
+    transform var(--d-base) var(--ease-out),
     visibility 0s var(--d-fast),
     background-color var(--d-fast) ease;
 
   &.is-shown {
     opacity: 1;
     visibility: visible;
+    transform: none;
     transition-delay: 0s;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transform: none;
   }
 }
 
-// Native horizontal scroll with snapping: the browser's physics, not ours.
+// Native horizontal scroll, free like the favourites': no snapping, so a
+// drag or a swipe comes to rest where the hand sent it.
 .scroller {
   overflow-x: auto;
   overscroll-behavior-x: contain;
-  scroll-snap-type: x proximity;
   scrollbar-width: none;
   margin: 0 calc(var(--gutter) * -1);
   padding: 0 var(--gutter);
@@ -109,7 +116,6 @@
   width: var(--cell-w);
   padding: var(--cell-pad-top) 0 var(--s-3);
   border-radius: var(--r-md);
-  scroll-snap-align: start;
   transition: transform var(--d-press) var(--ease-out);
 
   // The highlight is inset, so neighbouring hours keep a gap between them.
@@ -118,8 +124,11 @@
     position: absolute;
     inset: 0 var(--cell-inset);
     z-index: -1;
+    border: 1px solid var(--c-accent-soft);
     border-radius: var(--r-md);
-    transition: background-color var(--d-fast) ease;
+    transition:
+      background-color var(--d-fast) ease,
+      border-color var(--d-fast) ease;
   }
 
   &:active {
@@ -140,8 +149,10 @@
     }
   }
 
+  // The chosen hour keeps the soft fill and takes the full green for its edge.
   &.is-active::before {
     background-color: var(--c-accent-soft);
+    border-color: var(--c-accent);
   }
 
   qth-sky-glyph {
