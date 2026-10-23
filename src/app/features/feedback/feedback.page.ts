@@ -7,7 +7,7 @@ import { FeedbackForm, FeedbackReceipt } from './feedback-form/feedback-form';
 import { FeedbackPrivacy } from './feedback-privacy';
 import { FeedbackSent } from './feedback-sent';
 
-/** "Help us improve": report a bug or suggest something, anonymously by default. */
+/** "Help us": report a bug or suggest something; leaving an email is optional. */
 @Component({
   selector: 'qth-feedback-page',
   host: { id: 'feedback-page', class: 'page feedback-page' },
@@ -19,21 +19,19 @@ import { FeedbackSent } from './feedback-sent';
     </header>
 
     <div class="content">
-      <div class="main">
-        @if (!configured) {
-          <qth-status-message
-            id="feedback-not-configured"
-            class="notice"
-            [title]="'feedback.notConfigured' | t"
-            [text]="'feedback.notConfigured.text' | t"
-          />
-        }
-        @if (receipt(); as sent) {
-          <qth-feedback-sent [receipt]="sent" (again)="again()" />
-        } @else {
-          <qth-feedback-form (sent)="receipt.set($event)" />
-        }
-      </div>
+      @if (!configured) {
+        <qth-status-message
+          id="feedback-not-configured"
+          class="notice"
+          [title]="'feedback.notConfigured' | t"
+          [text]="'feedback.notConfigured.text' | t"
+        />
+      }
+      @if (receipt(); as sent) {
+        <qth-feedback-sent [receipt]="sent" (again)="again()" />
+      } @else {
+        <qth-feedback-form (sent)="receipt.set($event)" />
+      }
 
       <qth-feedback-privacy id="feedback-privacy" class="privacy" />
     </div>
@@ -53,14 +51,12 @@ import { FeedbackSent } from './feedback-sent';
     }
     .content {
       display: grid;
-      grid-template-columns: minmax(0, 1fr);
-      gap: var(--s-12);
+      gap: var(--s-6);
       padding: 0 var(--gutter);
     }
-    .main {
-      display: grid;
-      gap: var(--s-6);
-      align-content: start;
+    // The privacy line sits right under the send button, as its footnote.
+    .privacy {
+      margin-top: calc(var(--s-2) - var(--s-6));
     }
     @media (min-width: 48rem) {
       .page-head,
@@ -70,21 +66,6 @@ import { FeedbackSent } from './feedback-sent';
       }
       .page-head {
         padding-top: var(--s-12);
-      }
-    }
-    @media (min-width: 72rem) {
-      .page-head,
-      .content {
-        max-width: 66rem;
-      }
-      .content {
-        grid-template-columns: minmax(0, 1fr) 20rem;
-        gap: var(--s-12);
-        align-items: start;
-      }
-      .privacy {
-        position: sticky;
-        top: var(--s-8);
       }
     }
   `,

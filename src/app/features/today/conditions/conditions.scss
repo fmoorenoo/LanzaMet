@@ -132,10 +132,14 @@
   stroke-linecap: round;
 }
 
+// The tube and the arrow are centred as one figure (flex ignores the grid's
+// `justify-items`, so it is said again here).
 .tide {
   position: relative;
   display: flex;
-  gap: 2px;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
 }
 
 .tide-tube {
@@ -156,8 +160,12 @@
 }
 
 .tide-arrow {
-  width: 0.875rem;
-  height: 0.875rem;
+  --size: 0.875rem;
+  width: var(--size);
+  height: var(--size);
+  // Lucide draws the arrow in the middle 14 of its 24 units: trim the empty
+  // sides, so the figure is centred on what is seen, not on the icon's box.
+  margin-inline: calc(var(--size) * -5 / 24);
   color: var(--c-ink);
 }
 

@@ -108,8 +108,7 @@ export class FeedbackSent {
   private readonly heading = viewChild.required<ElementRef<HTMLElement>>('heading');
 
   protected readonly text = computed(() => {
-    const { anonymous, email } = this.receipt();
-    if (anonymous) return msg('feedback.sent.anonymous');
+    const { email } = this.receipt();
     return email ? msg('feedback.sent.withEmail', { email }) : msg('feedback.sent.noEmail');
   });
 

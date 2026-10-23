@@ -19,8 +19,7 @@ const NOW = Date.UTC(2026, 9, 23, 12);
 const draft = (overrides: Partial<FeedbackDraft> = {}): FeedbackDraft => ({
   kind: 'suggestion',
   message: '  Una tabla de mareas para Playa Blanca.  ',
-  anonymous: true,
-  email: 'ana@example.com',
+  email: '',
   honeypot: '',
   startedAt: NOW - 60_000,
   ...overrides,
@@ -57,9 +56,9 @@ describe('FeedbackService', () => {
     localStorage.clear();
   });
 
-  it('never sends the email of an anonymous draft', async () => {
+  it('sends no email when the visitor left none', async () => {
     const { service, transport } = setup();
-    await service.send(draft());
+    await service.send(draft({ email: '   ' }));
     expect(transport.sent[0]).toEqual({
       kind: 'suggestion',
       message: 'Una tabla de mareas para Playa Blanca.',
@@ -70,7 +69,7 @@ describe('FeedbackService', () => {
 
   it('sends the email, trimmed, when the visitor chose to leave it', async () => {
     const { service, transport } = setup();
-    await service.send(draft({ anonymous: false, email: ' ana@example.com ' }));
+    await service.send(draft({ email: ' ana@example.com ' }));
     expect(transport.sent[0].email).toBe('ana@example.com');
   });
 

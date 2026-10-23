@@ -6,7 +6,7 @@
 
 .form {
   display: grid;
-  gap: var(--s-8);
+  gap: var(--s-6);
 }
 
 .block {
@@ -51,19 +51,22 @@ legend.label {
 }
 
 // ── Kind cards: real radios, the whole card is the target ─────
+// One per row on phones; two by two once each row has room for its hint.
 .kind-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--s-3);
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--s-2);
 }
 
+// Icon, then title over hint, then the check: one row, centred on its height.
 .kind {
   position: relative;
   display: grid;
-  align-content: start;
-  gap: var(--s-1);
-  min-height: 7.5rem;
-  padding: var(--s-4);
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--s-3);
+  min-height: 4.5rem;
+  padding: var(--s-3) var(--s-4);
   border: 1px solid var(--c-line-strong);
   border-radius: var(--r-md);
   background-color: var(--c-surface);
@@ -101,7 +104,6 @@ legend.label {
   place-items: center;
   width: 2.5rem;
   height: 2.5rem;
-  margin-bottom: var(--s-2);
   border-radius: var(--r-pill);
   background-color: var(--c-surface-sunken);
   color: var(--c-ink-2);
@@ -120,8 +122,16 @@ legend.label {
   }
 }
 
+.kind-text {
+  display: grid;
+  gap: 0.125rem;
+  min-width: 0;
+  overflow-wrap: break-word;
+}
+
 .kind-label {
   font-weight: 640;
+  line-height: 1.25;
   letter-spacing: -0.01em;
 }
 
@@ -129,12 +139,11 @@ legend.label {
   font-size: var(--fs-micro);
   line-height: 1.35;
   color: var(--c-ink-2);
+  text-wrap: pretty;
 }
 
+// Always in the row, so choosing a card never shifts its text.
 .kind-check {
-  position: absolute;
-  top: var(--s-4);
-  right: var(--s-4);
   width: var(--icon-sm);
   height: var(--icon-sm);
   color: var(--c-accent);
@@ -208,95 +217,6 @@ legend.label {
 .textarea[aria-invalid='true']:focus-visible,
 .email-field:has(input[aria-invalid='true']):focus-within {
   box-shadow: 0 0 0 2px var(--c-focus);
-}
-
-// ── Anonymity and reply ───────────────────────────────────────
-.reply {
-  gap: 0;
-  padding: var(--s-4);
-  border: 1px solid var(--c-line);
-  border-radius: var(--r-lg);
-  background-color: var(--c-surface);
-}
-
-.switch-row {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
-  align-items: center;
-  gap: var(--s-3);
-}
-
-.switch-mark {
-  display: grid;
-  place-items: center;
-  width: 2.5rem;
-  height: 2.5rem;
-  border-radius: var(--r-pill);
-  background-color: var(--c-surface-sunken);
-  color: var(--c-ink-2);
-  transition:
-    background-color var(--d-fast) ease,
-    color var(--d-fast) ease;
-
-  qth-icon {
-    width: var(--icon-md);
-    height: var(--icon-md);
-  }
-
-  .is-anonymous & {
-    background-color: var(--c-accent-soft);
-    color: var(--c-accent);
-  }
-}
-
-.switch-copy {
-  display: grid;
-  gap: 0.125rem;
-}
-
-.switch-label {
-  font-weight: 620;
-  cursor: pointer;
-}
-
-.email {
-  display: grid;
-  gap: var(--s-2);
-  margin-top: var(--s-4);
-  padding-top: var(--s-4);
-  border-top: 1px solid var(--c-line);
-
-  // Off while anonymous: still in place, so nothing below moves.
-  > .label,
-  > .email-field {
-    transition: opacity var(--d-base) ease;
-  }
-
-  .is-anonymous & > .label,
-  .is-anonymous & > .email-field {
-    opacity: 0.5;
-  }
-
-  input:disabled {
-    cursor: not-allowed;
-  }
-}
-
-.note {
-  display: flex;
-  align-items: flex-start;
-  gap: var(--s-2);
-  margin-top: var(--s-4);
-  font-size: var(--fs-micro);
-  line-height: 1.4;
-  color: var(--c-ink-2);
-
-  qth-icon {
-    width: var(--icon-xs);
-    height: var(--icon-xs);
-    margin-top: 0.05rem;
-    flex: none;
-  }
 }
 
 .trap {
@@ -398,6 +318,13 @@ legend.label {
 
   .spinner {
     animation-duration: 2s;
+  }
+}
+
+@media (min-width: 36rem) {
+  .kind-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--s-3);
   }
 }
 

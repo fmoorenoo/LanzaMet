@@ -1,6 +1,5 @@
 import { Component, computed, inject, output, signal } from '@angular/core';
 import {
-  disabled,
   email,
   FieldState,
   form,
@@ -27,13 +26,11 @@ import { IconName } from '../../../shared/ui/icon/icons';
 /** What the page shows once the provider has confirmed receipt. */
 export interface FeedbackReceipt {
   readonly email: string | null;
-  readonly anonymous: boolean;
 }
 
 interface FeedbackModel {
   kind: FeedbackKind | '';
   message: string;
-  anonymous: boolean;
   email: string;
   /** The honeypot: hidden from people, irresistible to bots. */
   website: string;
@@ -59,7 +56,7 @@ type SendState = 'idle' | 'sending' | 'failed';
 const NEAR_LIMIT = MESSAGE_MAX_LENGTH * 0.9;
 
 /**
- * Kind, message, anonymity and an optional email. Errors show once a field
+ * Kind, message and an optional email. Errors show once a field
  * has been left or a send was attempted; the only "sent" is the provider's.
  */
 @Component({
@@ -91,8 +88,6 @@ export class FeedbackForm {
   private readonly model = signal<FeedbackModel>({
     kind: '',
     message: '',
-    // Anonymous unless the visitor chooses otherwise.
-    anonymous: true,
     email: '',
     website: '',
   });
@@ -106,8 +101,7 @@ export class FeedbackForm {
       if (value().length > MESSAGE_MAX_LENGTH) return { kind: 'long' };
       return null;
     });
-    // Anonymous means the email is neither asked for nor sent.
-    disabled(p.email, ({ valueOf }) => valueOf(p.anonymous));
+    // Optional: checked only when something was typed.
     email(p.email);
     validate(p.email, ({ value }) =>
       value().trim().length > EMAIL_MAX_LENGTH ? { kind: 'long' } : null,
@@ -121,7 +115,6 @@ export class FeedbackForm {
   protected readonly failure = signal<Msg | null>(null);
   protected readonly sending = computed(() => this.state() === 'sending');
 
-  protected readonly anonymous = computed(() => this.model().anonymous);
   protected readonly length = computed(() => this.model().message.length);
   protected readonly nearLimit = computed(() => this.length() >= NEAR_LIMIT);
   protected readonly overLimit = computed(() => this.length() > MESSAGE_MAX_LENGTH);
@@ -165,11 +158,6 @@ export class FeedbackForm {
     }
   });
 
-  protected onAnonymousChange(anonymous: boolean): void {
-    // Turning anonymity on forgets any email typed, so none can leave by mistake.
-    if (anonymous) this.f.email().value.set('');
-  }
-
   protected async onSubmit(event: Event): Promise<void> {
     event.preventDefault();
     if (this.sending()) return;
@@ -192,16 +180,12 @@ export class FeedbackForm {
       await this.feedback.send({
         kind: draft.kind,
         message: draft.message,
-        anonymous: draft.anonymous,
         email: draft.email,
         honeypot: draft.website,
         startedAt: this.startedAt,
       });
       this.state.set('idle');
-      this.sent.emit({
-        anonymous: draft.anonymous,
-        email: draft.anonymous ? null : draft.email.trim() || null,
-      });
+      this.sent.emit({ email: draft.email.trim() || null });
     } catch (error) {
       this.state.set('failed');
       this.failure.set(failureMessage(error));

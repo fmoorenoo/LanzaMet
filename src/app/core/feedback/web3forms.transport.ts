@@ -85,7 +85,7 @@ export class Web3FormsTransport extends FeedbackTransport {
       tipo: kind,
       mensaje: submission.message,
       idioma: submission.lang === 'es' ? 'Español' : 'Inglés',
-      // `email` also becomes the reply-to address; it is absent when anonymous.
+      // `email` also becomes the reply-to address; it is absent when none was left.
       ...(submission.email ? { email: submission.email } : { respuesta: 'Sin correo de contacto' }),
       botcheck: false,
     };

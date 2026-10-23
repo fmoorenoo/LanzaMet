@@ -409,3 +409,23 @@ Skills usadas: Emil Kowalski (arrastre, lluvia, transiciones) e Impeccable (cohe
 
 - Crear la clave de Web3Forms, compilar con ella y comprobar que los mensajes llegan de verdad al buzón (anónimo y con correo).
 - Probar en dispositivos reales.
+
+## Ajustes de Ayúdanos, menú y marea (23-10-2026)
+
+### Hecho
+
+1. **Menú**: la sección pasa a llamarse «Ayúdanos» / «Help us» (pestaña y título). Cabe entera en la barra del móvil, así que desaparece la etiqueta corta. En el raíl de escritorio sale de las pestañas principales y va al pie, justo encima de Ajustes y con su mismo tamaño y tipo, sea cual sea la altura de la ventana. La cápsula baja deslizándose hasta ella (`100cqh` del contenedor de pestañas). En ventanas muy bajas el raíl se desplaza en vez de cortar Ajustes. En el móvil sigue siendo la última pestaña.
+2. **Indicador de marea** (`.tide-gauge`): el `display: flex` anulaba el centrado de la rejilla y el conjunto quedaba pegado a la izquierda. Ahora el tubo y la flecha se centran como una sola figura. Se recortan los márgenes vacíos del icono de la flecha (5 de 24 unidades por lado) para centrar lo que se ve. Medido: 9,9 px a cada lado y 8 px arriba y abajo.
+3. **Formulario más directo**:
+   - Fuera el interruptor de envío anónimo: el correo es opcional y siempre editable.
+   - Fuera la nota de anonimato y la columna de privacidad. La información sigue a un clic, en una línea discreta bajo el botón («Cómo tratamos tus datos», `<details>` nativo) con el enlace a la política de Web3Forms.
+   - El formulario queda en una columna de 40 rem, con 1,5 rem entre bloques.
+   - Se conservan las validaciones, los estados de envío y el antispam.
+4. **Tarjetas de tipo**: el icono, el título sobre la ayuda y la marca de elección van en una fila centrada en vertical. La columna de la marca está siempre reservada, así que elegir una tarjeta no mueve el texto. Una por fila en el móvil y 2 × 2 desde 36 rem, todas de la misma altura.
+5. Traducciones: se quitan 7 claves (anonimato, ayuda del correo anónimo, etiqueta corta) y se reescriben las de privacidad sin hablar de anonimato.
+
+### Validación
+
+- **Tests**: 139 en verde, con los del servicio adaptados al correo opcional. **Lint**, **typecheck** y **build de producción** sin avisos.
+- **En el navegador**: Chrome sin interfaz por CDP, porque la extensión no estaba conectada. Capturas a 390, 600 y 1440 px, en español e inglés. Medidos el raíl a 900 y 560 px de alto y el centrado de la marea. Sin desbordamiento horizontal.
+- **axe** (WCAG 2.2 AA y buenas prácticas) sin violaciones en Ayúdanos (inicial, y con errores y privacidad abierta) y en Hoy: 390 y 1440 px, temas claro y oscuro, español e inglés.

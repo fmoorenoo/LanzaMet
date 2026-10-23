@@ -19,7 +19,7 @@ export const es = {
   'route.zones': 'Zonas',
   'route.sea': 'Mar y mareas',
   'route.plans': '¿Dónde ir hoy?',
-  'route.feedback': 'Ayúdanos a mejorar',
+  'route.feedback': 'Ayúdanos',
   'route.title': '{page} · {brand}',
 
   'nav.label': 'Principal',
@@ -27,8 +27,7 @@ export const es = {
   'nav.zones': 'Zonas',
   'nav.sea': 'Mar',
   'nav.plans': 'Dónde ir',
-  'nav.feedback': 'Ayúdanos a mejorar',
-  'nav.feedbackShort': 'Mejorar',
+  'nav.feedback': 'Ayúdanos',
   'nav.settings': 'Ajustes',
   'nav.settingsDemo': 'Ajustes y demo',
 
@@ -506,15 +505,9 @@ export const es = {
   'feedback.message.placeholder.improvement': 'Qué cambiarías y por qué.',
   'feedback.message.placeholder.other': 'Lo que quieras contarnos.',
 
-  'feedback.anonymous.label': 'Enviar de forma anónima',
-  'feedback.anonymous.on': 'No pedimos ni enviamos tu correo, así que no podremos responderte.',
-  'feedback.anonymous.off': 'Déjanos tu correo si quieres respuesta. Es opcional.',
-  'feedback.anonymous.technical':
-    'El anonimato se refiere a lo que envías: el servicio de recepción sigue viendo datos técnicos de la conexión, como la IP.',
   'feedback.email.label': 'Correo electrónico (opcional)',
   'feedback.email.placeholder': 'nombre@ejemplo.com',
   'feedback.email.hint': 'Solo para responderte. Nunca para nada más.',
-  'feedback.email.hintAnonymous': 'Desactiva el envío anónimo para escribirlo.',
   'feedback.honeypot': 'Deja este campo vacío',
 
   'feedback.invalid.kind': 'Elige qué quieres contarnos.',
@@ -550,20 +543,18 @@ export const es = {
     'Esta versión de la web no tiene configurado el servicio de recepción, así que el formulario todavía no puede enviar nada.',
 
   'feedback.sent': '¡Recibido, gracias!',
-  'feedback.sent.anonymous':
-    'Tu mensaje ha llegado. Como es anónimo no podremos contestarte, pero lo tendremos en cuenta.',
   'feedback.sent.withEmail': 'Tu mensaje ha llegado. Si hace falta, te escribiremos a {email}.',
   'feedback.sent.noEmail':
     'Tu mensaje ha llegado. No nos has dejado correo, así que no podremos contestarte.',
   'feedback.sent.again': 'Enviar otro comentario',
 
-  'feedback.privacy': 'Privacidad',
+  'feedback.privacy': 'Cómo tratamos tus datos',
   'feedback.privacy.what':
-    'Enviamos el tipo de comentario, tu mensaje y el idioma de la web. Tu correo, solo si lo escribes con el envío anónimo desactivado. Nunca tu ubicación, tus zonas ni datos del dispositivo.',
+    'Enviamos el tipo de comentario, tu mensaje y el idioma de la web, y tu correo solo si lo escribes. Nunca tu ubicación, tus zonas ni datos del dispositivo.',
   'feedback.privacy.who':
     'Los recibe {provider}, un servicio externo que nos los reenvía por correo electrónico. Puede conservar una copia durante un tiempo, según sus condiciones.',
   'feedback.privacy.technical':
-    'Anónimo no es anonimato técnico absoluto: como cualquier servicio en Internet, el de recepción ve datos de la conexión, como la dirección IP y el navegador, y puede usarlos, por ejemplo, para frenar el spam.',
+    'Como cualquier servicio en Internet, el de recepción ve datos de la conexión, como la dirección IP y el navegador, y puede usarlos, por ejemplo, para frenar el spam.',
   'feedback.privacy.use':
     'Usamos los mensajes solo para corregir errores y mejorar la web, y el correo solo para responderte. No lo usamos para publicidad ni lo cedemos a nadie.',
   'feedback.privacy.content': 'No escribas en el mensaje datos personales que no hagan falta.',

@@ -22,8 +22,10 @@
           <span class="kind-mark" aria-hidden="true">
             <qth-icon [name]="option.icon" />
           </span>
-          <span class="kind-label">{{ option.label | t }}</span>
-          <span class="kind-hint">{{ option.hint | t }}</span>
+          <span class="kind-text">
+            <span class="kind-label">{{ option.label | t }}</span>
+            <span class="kind-hint">{{ option.hint | t }}</span>
+          </span>
           <qth-icon class="kind-check" name="check" />
         </label>
       }
@@ -68,62 +70,30 @@
     </p>
   </div>
 
-  <!-- Anonymity and an optional way to reply -->
-  <div class="block reply" [class.is-anonymous]="anonymous()">
-    <div class="switch-row">
-      <span class="switch-mark" aria-hidden="true"><qth-icon name="incognito" /></span>
-      <span class="switch-copy">
-        <label class="switch-label" for="feedback-anonymous">{{
-          'feedback.anonymous.label' | t
-        }}</label>
-        <span id="feedback-anonymous-hint" class="help">{{
-          (anonymous() ? 'feedback.anonymous.on' : 'feedback.anonymous.off') | t
-        }}</span>
-      </span>
-      <span class="switch">
-        <input
-          #anonymousInput
-          id="feedback-anonymous"
-          type="checkbox"
-          role="switch"
-          class="switch-input"
-          [formField]="f.anonymous"
-          aria-describedby="feedback-anonymous-hint"
-          (change)="onAnonymousChange(anonymousInput.checked)"
-        />
-        <span class="switch-track" aria-hidden="true"><span class="switch-thumb"></span></span>
-      </span>
+  <!-- An optional way to reply -->
+  <div class="block email">
+    <label class="label" for="feedback-email">{{ 'feedback.email.label' | t }}</label>
+    <div class="field email-field">
+      <qth-icon name="mail" />
+      <input
+        id="feedback-email"
+        type="email"
+        inputmode="email"
+        autocomplete="email"
+        autocapitalize="off"
+        spellcheck="false"
+        [formField]="f.email"
+        [placeholder]="'feedback.email.placeholder' | t"
+        [attr.aria-invalid]="emailError() ? 'true' : null"
+        aria-describedby="feedback-email-help"
+      />
     </div>
-
-    <div class="email">
-      <label class="label" for="feedback-email">{{ 'feedback.email.label' | t }}</label>
-      <div class="field email-field">
-        <qth-icon name="mail" />
-        <input
-          id="feedback-email"
-          type="email"
-          inputmode="email"
-          autocomplete="email"
-          autocapitalize="off"
-          spellcheck="false"
-          [formField]="f.email"
-          [placeholder]="'feedback.email.placeholder' | t"
-          [attr.aria-invalid]="emailError() ? 'true' : null"
-          aria-describedby="feedback-email-help"
-        />
-      </div>
-      <p id="feedback-email-help" class="help" [class.is-error]="emailError()">
-        @if (emailError(); as error) {
-          <qth-icon name="alert" />{{ error | t }}
-        } @else {
-          {{ (anonymous() ? 'feedback.email.hintAnonymous' : 'feedback.email.hint') | t }}
-        }
-      </p>
-    </div>
-
-    <p class="note">
-      <qth-icon name="info" />
-      <span>{{ 'feedback.anonymous.technical' | t }}</span>
+    <p id="feedback-email-help" class="help" [class.is-error]="emailError()">
+      @if (emailError(); as error) {
+        <qth-icon name="alert" />{{ error | t }}
+      } @else {
+        {{ 'feedback.email.hint' | t }}
+      }
     </p>
   </div>
 

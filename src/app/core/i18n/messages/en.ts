@@ -16,7 +16,7 @@ export const en: Messages = {
   'route.zones': 'Places',
   'route.sea': 'Sea and tides',
   'route.plans': 'Where to go today?',
-  'route.feedback': 'Help us improve',
+  'route.feedback': 'Help us',
   'route.title': '{page} · {brand}',
 
   'nav.label': 'Main',
@@ -24,8 +24,7 @@ export const en: Messages = {
   'nav.zones': 'Places',
   'nav.sea': 'Sea',
   'nav.plans': 'Where to go',
-  'nav.feedback': 'Help us improve',
-  'nav.feedbackShort': 'Improve',
+  'nav.feedback': 'Help us',
   'nav.settings': 'Settings',
   'nav.settingsDemo': 'Settings and demo',
 
@@ -505,15 +504,9 @@ export const en: Messages = {
   'feedback.message.placeholder.improvement': "What you'd change and why.",
   'feedback.message.placeholder.other': "Whatever you'd like to tell us.",
 
-  'feedback.anonymous.label': 'Send anonymously',
-  'feedback.anonymous.on': "We don't ask for or send your email, so we won't be able to reply.",
-  'feedback.anonymous.off': "Leave your email if you'd like a reply. It's optional.",
-  'feedback.anonymous.technical':
-    'Anonymous refers to what you send: the receiving service still sees technical connection data, such as your IP address.',
   'feedback.email.label': 'Email (optional)',
   'feedback.email.placeholder': 'name@example.com',
   'feedback.email.hint': 'Only to reply to you. Never for anything else.',
-  'feedback.email.hintAnonymous': 'Turn off anonymous sending to add it.',
   'feedback.honeypot': 'Leave this field empty',
 
   'feedback.invalid.kind': 'Choose what you would like to tell us.',
@@ -549,20 +542,18 @@ export const en: Messages = {
     "This version of the site has no receiving service set up, so the form can't send anything yet.",
 
   'feedback.sent': 'Got it, thank you!',
-  'feedback.sent.anonymous':
-    "Your message has arrived. As it's anonymous we can't reply, but we'll take it into account.",
   'feedback.sent.withEmail': "Your message has arrived. If needed, we'll write to you at {email}.",
   'feedback.sent.noEmail':
     "Your message has arrived. You didn't leave an email, so we won't be able to reply.",
   'feedback.sent.again': 'Send more feedback',
 
-  'feedback.privacy': 'Privacy',
+  'feedback.privacy': 'How we handle your data',
   'feedback.privacy.what':
-    "We send the kind of feedback, your message and the site's language. Your email only if you type it with anonymous sending off. Never your location, your places or device data.",
+    "We send the kind of feedback, your message and the site's language, and your email only if you type it. Never your location, your places or device data.",
   'feedback.privacy.who':
     'Messages are received by {provider}, an external service that forwards them to us by email. It may keep a copy for a while, under its own terms.',
   'feedback.privacy.technical':
-    "Anonymous isn't absolute technical anonymity: like any online service, the receiving one sees connection data, such as your IP address and browser, and may use it, for instance, to stop spam.",
+    'Like any online service, the receiving one sees connection data, such as your IP address and browser, and may use it, for instance, to stop spam.',
   'feedback.privacy.use':
     "We use messages only to fix bugs and improve the site, and your email only to reply. We don't use it for advertising or share it with anyone.",
   'feedback.privacy.content': "Don't put personal details you don't need to in your message.",

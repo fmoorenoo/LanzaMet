@@ -110,15 +110,15 @@ Validación del 22-10-2026 en Arrecife: el modelo adelanta 24–37 min respecto 
 - **Zonas**: mapa ilustrado con el estado y el viento por zona, y tarjetas con miniescena.
 - **Mar**: marea estimada, curva del día, pleamares y bajamares de hoy y mañana, oleaje, mar de fondo, agua, avisos costeros y zonas más tranquilas.
 - **Dónde ir**: recomendaciones derivadas de los datos (playa, sin viento, mar tranquilo, atardecer, paseo, olas).
-- **Ayúdanos a mejorar** (`/mejorar`): formulario para avisar de errores y proponer sugerencias o mejoras, anónimo por defecto. Ver [Comentarios de los usuarios](#comentarios-de-los-usuarios).
+- **Ayúdanos** (`/mejorar`): formulario para avisar de errores y proponer sugerencias o mejoras; el correo es opcional. En escritorio va al pie del raíl, junto a Ajustes. Ver [Comentarios de los usuarios](#comentarios-de-los-usuarios).
 
 ## Comentarios de los usuarios
 
-La sección **Ayúdanos a mejorar** envía los mensajes por correo electrónico a través de [Web3Forms](https://web3forms.com), sin backend propio.
+La sección **Ayúdanos** envía los mensajes por correo electrónico a través de [Web3Forms](https://web3forms.com), sin backend propio.
 
-**Qué pide**: tipo (error, sugerencia, mejora u otro), mensaje (de 10 a 2000 caracteres), envío anónimo (activado por defecto) y un correo opcional, que solo se puede escribir con el anonimato desactivado. Al activar el anonimato el correo se borra del formulario. No hay registro ni otros datos personales.
+**Qué pide**: tipo (error, sugerencia, mejora u otro), mensaje (de 10 a 2000 caracteres) y un correo opcional, solo para poder responder. No hay registro ni otros datos personales.
 
-**Qué se envía**: el tipo, el mensaje, el idioma de la web y, solo si no es anónimo y se escribe, el correo (que pasa a ser la dirección de respuesta). Nunca la zona elegida, la URL, cookies ni el *referrer* (`credentials: 'omit'`, `referrerPolicy: 'no-referrer'`). La página explica que el anonimato del formulario no es anonimato técnico: Web3Forms recibe datos de conexión como la IP.
+**Qué se envía**: el tipo, el mensaje, el idioma de la web y, solo si se escribe, el correo (que pasa a ser la dirección de respuesta). Nunca la zona elegida, la URL, cookies ni el *referrer* (`credentials: 'omit'`, `referrerPolicy: 'no-referrer'`). Bajo el botón, una línea plegable («Cómo tratamos tus datos») explica qué se envía, que Web3Forms recibe datos de conexión como la IP, qué se guarda en el dispositivo y cómo pedir el borrado, con enlace a la política de Web3Forms.
 
 **Solo hay «enviado» si Web3Forms lo confirma** (HTTP 200 con `success: true`). Cualquier otra respuesta se muestra como error y el mensaje se conserva: sin conexión, tiempo agotado (15 s), demasiadas peticiones (429), rechazo (4xx, p. ej. el filtro de spam) o fallo del servicio (5xx o respuesta sin confirmar).
 
@@ -231,7 +231,7 @@ scripts/             verify-sources.ts: comprobación en vivo de todas las fuent
 
 ## Despliegue
 
-- **Web**: estática (`npm run build` → `dist/que-tal-hoy/browser`), en cualquier hosting. Para que funcione «Ayúdanos a mejorar», compila con la clave de Web3Forms (ver [Configurar la clave](#configurar-la-clave-de-web3forms)).
+- **Web**: estática (`npm run build` → `dist/que-tal-hoy/browser`), en cualquier hosting. Para que funcione «Ayúdanos», compila con la clave de Web3Forms (ver [Configurar la clave](#configurar-la-clave-de-web3forms)).
 - **API**: `server/api.ts` exporta un manejador `fetch` estándar. Sirve tal cual como Cloudflare Worker (`export default`), en Deno, o en cualquier host Node con `node server/dev.ts` (puerto en `PORT`). Variables: `AEMET_API_KEY` (secreto) y `ALLOWED_ORIGIN` (por defecto `*`).
 - La web llama a `/api` en su mismo origen. Si el API vive en otro dominio, cambia `provideHttpDataSources({ proxyUrl: 'https://…/api' })` en `src/app/data-providers.ts`.
 - Cabe en el plan gratuito de Cloudflare Workers (10 ms de CPU por petición). Avisos: dos ficheros de ~8 KB. Observaciones: 7 estaciones de ~5 KB, unos 0,3 ms cada una. Cada actualización hace como mucho 15 subpeticiones a AEMET, por debajo del límite de 50.
@@ -250,4 +250,4 @@ Sistema documentado en [`docs/DESIGN.md`](docs/DESIGN.md). Tokens en `src/styles
 - Revisión visual hecha en Chrome headless (360–1920 px); falta probar en dispositivos reales.
 - Las horas de amanecer y atardecer son las de Open-Meteo para cada zona. Si faltan, se dice y la escena se dibuja con un día nominal (7:30–19:30), solo como ilustración.
 - La descripción de un aviso solo sale en inglés si AEMET la publica así; parte de su texto libre puede venir en español.
-- «Ayúdanos a mejorar» necesita una clave de Web3Forms en el build. La entrega real a un buzón está pendiente de probar con una clave; los tests y la revisión en el navegador simulan las respuestas de Web3Forms. Las reglas antirrepetición viven en el navegador: frenan los clics repetidos y los scripts sencillos, no a quien borre su almacenamiento. Lo demás lo cubre el filtro de spam de Web3Forms.
+- «Ayúdanos» necesita una clave de Web3Forms en el build. La entrega real a un buzón está pendiente de probar con una clave; los tests y la revisión en el navegador simulan las respuestas de Web3Forms. Las reglas antirrepetición viven en el navegador: frenan los clics repetidos y los scripts sencillos, no a quien borre su almacenamiento. Lo demás lo cubre el filtro de spam de Web3Forms.

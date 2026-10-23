@@ -15,7 +15,7 @@ const HISTORY_KEY = 'feedback';
 
 /**
  * Sends what the visitor wrote, whoever the provider is. It strips the draft
- * down to what may leave the device (no email when anonymous), applies the
+ * down to what may leave the device (the email only if typed), applies the
  * anti-repetition rules, and resolves only when the provider confirms receipt.
  */
 @Service()
@@ -49,7 +49,7 @@ export class FeedbackService {
       kind: draft.kind,
       message,
       lang: this.i18n.lang(),
-      email: draft.anonymous ? null : draft.email.trim() || null,
+      email: draft.email.trim() || null,
     });
 
     this.history = recordSent(history, message, Date.now());

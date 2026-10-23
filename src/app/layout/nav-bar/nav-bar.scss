@@ -129,11 +129,6 @@
   white-space: nowrap;
 }
 
-// A long name has a short one for the phone's tab bar; the rail has room for it all.
-.tab-label--full {
-  display: none;
-}
-
 @media (hover: hover) and (pointer: fine) {
   .tab:hover:not(.is-active) {
     color: var(--c-ink);
@@ -168,6 +163,9 @@
     align-items: center;
     height: 100%;
     padding: var(--s-5) 0 var(--s-5);
+    // Only in very short windows: the rail scrolls rather than cut Settings off.
+    overflow-y: auto;
+    scrollbar-width: none;
     background-color: var(--c-ground);
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
@@ -196,11 +194,25 @@
     white-space: nowrap;
   }
 
+  // The main tabs at the top; the foot tab and Settings together at the bottom,
+  // whatever the height of the window. The wrap is a size container so the
+  // capsule can glide down to the foot, and never shrinks below its tabs.
+  .tabs-wrap {
+    flex: 1;
+    width: 5rem;
+    min-height: calc(var(--count, 4) * (4.25rem + var(--s-2)) + var(--s-6));
+    container-type: size;
+  }
+
   .tabs {
     display: flex;
     flex-direction: column;
     gap: var(--s-2);
-    height: auto;
+    height: 100%;
+  }
+
+  .is-foot {
+    margin-top: auto;
   }
 
   .tab {
@@ -212,23 +224,14 @@
     font-size: 0.75rem;
   }
 
-  .tab-label--short {
-    display: none;
-  }
-
-  .tab-label--full {
-    display: block;
-    max-width: 4.5rem;
-    line-height: 1.15;
-    text-align: center;
-    white-space: normal;
-    text-wrap: balance;
-  }
-
   .capsule {
     width: 5rem;
     height: 4.25rem;
     transform: translate3d(0, calc(var(--i, 0) * (100% + var(--s-2))), 0);
+
+    &.is-at-foot {
+      transform: translate3d(0, calc(100cqh - 100%), 0);
+    }
 
     &::before {
       width: calc(100% - 0.25rem);
@@ -236,29 +239,44 @@
     }
   }
 
+  // Same size, type and press as a tab, so the two at the foot read as a pair.
   .settings {
-    display: grid;
-    justify-items: center;
-    gap: var(--s-1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.1875rem;
     width: 5rem;
-    margin-top: auto;
-    padding: var(--s-2) 0;
-    border-radius: var(--r-md);
+    height: 4.25rem;
+    margin-top: var(--s-2);
+    border-radius: 1.125rem;
     color: var(--c-ink-3);
-    font-size: 0.6875rem;
-    font-weight: 600;
-    text-align: center;
+    font-size: 0.75rem;
+    font-weight: 650;
+    letter-spacing: 0.01em;
     transition:
       color var(--d-fast) ease,
       transform var(--d-press) var(--ease-out);
 
     &:active {
-      transform: scale(0.96);
+      transform: scale(0.95);
+    }
+
+    &:focus-visible {
+      outline-offset: -5px;
     }
 
     qth-icon {
       width: var(--icon-lg);
       height: var(--icon-lg);
+    }
+
+    // "Ajustes y demo" takes two lines.
+    span {
+      max-width: 4.5rem;
+      line-height: 1.15;
+      text-align: center;
+      text-wrap: balance;
     }
   }
 

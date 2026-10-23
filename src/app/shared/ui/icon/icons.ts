@@ -9,7 +9,6 @@ import {
   Compass,
   Droplet,
   Footprints,
-  HatGlasses,
   type IconNode,
   Info,
   Languages,
@@ -101,7 +100,6 @@ export const ICONS = {
   send: lucide(Send),
   loader: lucide(LoaderCircle),
   mail: lucide(Mail),
-  incognito: lucide(HatGlasses),
   privacy: lucide(ShieldCheck),
 
   // Feedback kinds

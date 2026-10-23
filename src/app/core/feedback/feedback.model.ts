@@ -20,7 +20,7 @@ export const EMAIL_MAX_LENGTH = 254;
 export interface FeedbackDraft {
   readonly kind: FeedbackKind;
   readonly message: string;
-  readonly anonymous: boolean;
+  /** Optional: empty when the visitor leaves no way to reply. */
   readonly email: string;
   /** A field people never see; only bots fill it in. */
   readonly honeypot: string;
@@ -29,8 +29,8 @@ export interface FeedbackDraft {
 }
 
 /**
- * What reaches the provider, and nothing more. An anonymous submission has no
- * email; no submission carries the address of the page, the browser or the device.
+ * What reaches the provider, and nothing more. The email only when one was
+ * typed; never the address of the page, the browser or the device.
  */
 export interface FeedbackSubmission {
   readonly kind: FeedbackKind;
