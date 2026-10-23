@@ -99,3 +99,56 @@ Punto de recuperación: tag `fase-2-datos-reales`. Skills de diseño usadas: Imp
 1. Reiniciar el API propio allí donde esté desplegado para que sirva `phenomenonCode` y `descriptionEn` (la web funciona igual sin ellos).
 2. Probar en dispositivos reales, incluido el arrastre y los botones de las tiras en tabletas con ratón.
 3. `npm audit` señala vulnerabilidades en `vite` dentro de `@angular/build` (solo herramientas de desarrollo); se resuelven al actualizar Angular CLI.
+
+## Fase 4 — Veredicto, selector horario y consumo de APIs (23-10-2026)
+
+Skills usadas: Emil Kowalski (arrastre, inercia, transiciones) e Impeccable (auditoría de jerarquía, accesibilidad, adaptación y textos).
+
+### Hecho
+
+1. **Veredicto según el momento del día** (`day-period.ts`). Siete momentos marcados por el amanecer y el atardecer reales de cada zona, en hora canaria: madrugada, primera hora, mañana, mediodía, tarde, atardecer y noche. A las 07:30 de octubre (amanecer a las 08:01) ya no dice «Noche templada», sino «Amanece despejado. Amanece a las 08:01».
+2. **Catálogo de frases** ampliado con mesura, en español y en inglés:
+   - riesgos dichos para el momento: lluvia, viento y calima de noche, al amanecer y de día;
+   - noche y madrugada por temperatura y por cielo;
+   - amanecer y atardecer con su hora;
+   - calor, sol de mediodía, gris según la temperatura y ratos de sol;
+   - playa por la tarde.
+   El veredicto usa la hora elegida en la previsión, y en Zonas, el momento actual.
+3. **Selector de horas**:
+   - Cada hora mide 72 px en escritorio y 60 px en móvil (antes 56), con iconos de 38 y 32 px (antes 26) y temperaturas algo mayores en escritorio.
+   - El resaltado va hundido, para separar las horas vecinas.
+   - La curva y sus puntos se calculan en CSS a partir de las filas de cada hora.
+4. **Arrastre con ratón**:
+   - Al soltar, la tira proyecta la velocidad de la mano y se detiene en la hora más cercana. Ya no salta al volver el `scroll-snap`.
+   - Una pausa antes de soltar anula la inercia.
+   - El arrastre limpia cualquier selección de texto y no encoge la hora pulsada.
+   - Los botones, la rueda, las teclas y cualquier toque detienen el deslizamiento.
+   - Las teclas se mueven sin animación.
+   - Con movimiento reducido no hay inercia.
+5. **Sin saltos de layout**:
+   - **Selector de zonas.** Causa: `html:has(dialog[open]) { overflow: hidden }` quitaba la barra de desplazamiento, y a 1440 px los elementos alineados a la derecha se movían 10 px. Solución: `scrollbar-gutter: stable`.
+   - **«Volver a ahora».** Causa: el botón (2,75 rem) era más alto que la cabecera (2,5 rem), y se añadía y quitaba del DOM, así que las horas bajaban 4 px. Ahora vive en el componente de horas, siempre en el layout, y solo cambia de opacidad y visibilidad; con `inert` mientras está oculto. Al pulsarlo, el foco va a «Ahora».
+   - **Escena.** La fila de la hora previsualizada medía 44 px y la de las favoritas 46 px, y sin favoritas aparecía de la nada. Ahora ambas comparten una ranura de altura fija. Al volver a ahora, el foco va al botón de la zona.
+6. **Auditoría de consumo de APIs**, solo análisis, en [`API_USAGE_AUDIT.md`](API_USAGE_AUDIT.md). No se ha cambiado el sistema de consumo.
+
+### Validación
+
+- **Tests**: 102 de la web (antes 77) y 17 del API. Nuevos:
+  - momentos del día alrededor de las 07:30, del amanecer, del mediodía y del atardecer, a medianoche y en el cambio de hora del 25-10-2026, en octubre, diciembre y junio;
+  - frases por momento en los dos idiomas;
+  - un barrido de 38 880 combinaciones contra contradicciones. Encontró una real, «Amanece templado» a 24 °C, ya corregida con «Amanece cálido».
+- **Lint, formato y builds** de producción y de demo sin errores ni avisos de presupuesto. Inicial: 425,6 kB, 115,7 kB transferidos.
+- **Estabilidad** medida en Chrome sin interfaz a 390, 820 y 1440 px, en español e inglés y sin favoritas: 0 px de desplazamiento al previsualizar una hora, al volver a ahora y al abrir o cerrar el selector de zonas.
+- **Arrastre** probado con eventos reales de ratón:
+  - un arrastre lento avanza 2 horas exactas sin elegir ninguna;
+  - un lanzamiento llega al final;
+  - un clic y un temblor de 3 px eligen hora;
+  - Inicio y Fin funcionan;
+  - con movimiento reducido no hay inercia;
+  - nunca se selecciona texto.
+- **Revisión visual** de día y de noche a 360, 390 y 1440 px, en los dos idiomas: foco visible en las horas y sin desbordamiento horizontal.
+
+### Pendiente
+
+1. **Decidir sobre la auditoría de APIs.** La recomendación es una caché compartida con actualización programada en el API propio (Cloudflare Worker + Cron + KV). Hasta revisarla no se toca el consumo.
+2. Probar el arrastre y la inercia en dispositivos reales con ratón y trackpad.

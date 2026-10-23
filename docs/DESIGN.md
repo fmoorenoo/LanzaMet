@@ -78,7 +78,7 @@ Reglas:
 | Mensaje de estado | `shared/ui/status-message` | Vacío (`status`) / error (`alert`) con acción de recuperación |
 | Recomendación | `shared/plans/plan-item` | Fila, o "lead" con miniescena |
 | Arco del sol | `shared/ui/sun-path` | Amanecer y atardecer reales, el tramo recorrido y cuánto queda; sin datos, lo dice |
-| Scroll horizontal | `shared/ui/horizontal-scroll` | Directiva (bordes fundidos, arrastre con ratón) + botones anterior/siguiente |
+| Scroll horizontal | `shared/ui/horizontal-scroll` | Directiva (bordes fundidos; arrastre con ratón que, al soltar, se detiene en el punto de ajuste más cercano) + botones anterior/siguiente |
 | Selector de idioma | `layout/language-selector` | Segmentado sobre radios reales; cada idioma escrito en su lengua, sin banderas |
 | Controles sobre el cielo | `styles/_sky-controls.scss` | `.sky-chip`, `.sky-button`: toman la tinta de la escena |
 | Controles | `styles/_controls.scss` | `.btn`, `.icon-btn`, `.chip`, `.choice`, `.field`, `.skeleton`, `.pendable` |
@@ -90,6 +90,15 @@ Cada sección contempla carga (esqueleto con la forma del contenido), datos, vac
 - **Móvil (base):** escena casi a pantalla completa con la hoja de detalle superpuesta; barra de pestañas inferior con zonas seguras. El horizonte baja en pantallas de poca altura para que el texto siempre quede sobre cielo profundo.
 - **Tableta (≥ 48 rem):** el mismo flujo con una medida de lectura más tranquila.
 - **Escritorio (≥ 64 rem):** raíl lateral. En Hoy, la escena es una banda panorámica (≈ 3:1, `clamp(26rem, 54vh, 32rem)` de alto) en un contenedor de 84 rem: zona, favoritas y acciones en una línea; la temperatura junto al veredicto, con la máxima y la mínima; el cielo de la derecha queda para el sol y la luna. Debajo, «ahora» (viento, mar y marea en tres columnas desde 72 rem), las 24 horas a todo el ancho —justo bajo la escena que previsualizan— y una rejilla de dos columnas: planes y detalle a la izquierda, los siete días a la derecha. El orden del DOM y del foco es el de móvil. Zonas y Mar pasan a dos columnas a partir de 72 rem.
+- **Horas:**
+  - Cada hora mide 3,75 rem en móvil y 4,5 rem en escritorio, con glifos de 2 y 2,375 rem.
+  - Las filas de cada hora son variables CSS, y de ellas se deriva la posición de la curva de temperatura: cambiar un tamaño no descoloca los puntos.
+  - La curva se dibuja en unidades de hora y se estira al ancho; sus puntos son HTML y siguen redondos a cualquier ancho.
+  - El resaltado va hundido unos píxeles a cada lado, para que las horas vecinas respiren.
+- **Estabilidad:** lo que aparece o desaparece no mueve nada.
+  - Los controles que van y vienen están siempre en el layout y solo cambian de opacidad y visibilidad («Volver a ahora»).
+  - Los contenidos que se turnan comparten una ranura cuya altura sale de su propio contenido (la fila de favoritas y la hora previsualizada).
+  - La barra de desplazamiento tiene su carril reservado (`scrollbar-gutter: stable`), así que una hoja modal no ensancha la página.
 
 ## Iconos
 

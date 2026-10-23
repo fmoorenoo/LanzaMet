@@ -87,6 +87,8 @@ Validación del 22-10-2026 en Arrecife: el modelo adelanta 24–37 min respecto 
 
 ## Caché y actualización
 
+> Consumo real por visitante, límites de los proveedores, capacidad estimada y recomendación a largo plazo: [`API_USAGE_AUDIT.md`](API_USAGE_AUDIT.md).
+
 - **Una petición por fuente para toda la isla.** Open-Meteo admite listas de coordenadas: las 7 zonas cuestan 3 peticiones (tiempo, mar con 7 puntos distintos y polvo), por muchas pantallas que las usen. Las peticiones simultáneas se comparten (`ResponseCache`).
 - **Caducidad según el modelo**: tiempo 30 min, mar 60 min, polvo 3 h, avisos 10 min, observaciones 20 min. Las respuestas de Open-Meteo se guardan en `localStorage`, así que recargar dentro de ese plazo no pide nada.
 - **Actualización automática**: los stores se revisan cada 15 min (`ClockStore.quarterKey`) y la caché decide si eso llega a la red. «Actualizar» vuelve a pedir lo que tenga más de 1 min.
@@ -108,6 +110,30 @@ Validación del 22-10-2026 en Arrecife: el modelo adelanta 24–37 min respecto 
 - **Mar**: marea estimada, curva del día, pleamares y bajamares de hoy y mañana, oleaje, mar de fondo, agua, avisos costeros y zonas más tranquilas.
 - **Dónde ir**: recomendaciones derivadas de los datos (playa, sin viento, mar tranquilo, atardecer, paseo, olas).
 
+## El veredicto
+
+La frase grande de Hoy («Hoy apetece playa», «Amanece despejado», «Noche estrellada») sale de `core/insights/verdict.insight.ts`, y su momento del día, de `day-period.ts`.
+
+- **El momento lo marca el sol de la zona**, no una hora fija: se usan el amanecer y el atardecer de Open-Meteo para ese día y ese lugar, en hora canaria. Hay siete momentos:
+  - *madrugada*: de 01:00 a una hora antes de amanecer;
+  - *primera hora*: de una hora antes a 75 min después de amanecer;
+  - *mañana*;
+  - *mediodía*: alrededor del punto más alto del sol, de 1 h antes a 90 min después;
+  - *tarde*;
+  - *atardecer*: la última hora de sol y el crepúsculo, hasta 45 min después;
+  - *noche*: hasta la 01:00.
+
+  Así, a las 07:30 de octubre, con el sol aún bajo el horizonte, ya no se dice «Noche templada» sino «Amanece despejado», con la frase «Amanece a las 08:01».
+- **Primero los riesgos**, dichos para el momento: lluvia («Amanece lloviendo», «Noche de lluvia»), viento fuerte, calima, viento que va a más y olas en costas de surf. Los consejos de playa solo se dan en las horas en que tiene sentido planearla.
+- **Después, lo que ofrece el momento**:
+  - de noche, la temperatura y el cielo («Noche cálida», «Noche estrellada», «Noche nublada»);
+  - a primera hora, cómo empieza el día y a qué hora sale el sol;
+  - de día, la playa, el calor, el sol fuerte a mediodía, el gris según la temperatura o los ratos de sol;
+  - al atardecer, cómo se pone el sol y a qué hora.
+- **Sin contradicciones**: el titular y la frase leen el mismo cielo, viento y luz. Un test recorre 38 880 combinaciones (cada 20 min del día × cielo × temperatura × viento × mar) y comprueba que nunca se habla de noche con sol, de playa sin datos del mar, de cielo despejado con nubes ni de «templado» a 30 °C.
+- Se aplica a «ahora» y a la hora elegida en las 24 horas. En Zonas, a cada zona en este momento.
+- Si faltan las horas de sol, el momento se calcula con un día nominal (07:30–19:30), solo para elegir las palabras.
+
 ## Idiomas
 
 Español (por defecto) e inglés británico, cambiables al instante en **Ajustes → Idioma**, sin recargar.
@@ -122,7 +148,17 @@ Español (por defecto) e inglés británico, cambiables al instante en **Ajustes
 
 ## Interacción
 
-- **Scroll horizontal** (horas, favoritas, selector de zonas): con ratón, botones anterior/siguiente que solo aparecen con puntero fino y se desactivan en los extremos, y arrastre (un clic sigue siendo un clic); bordes fundidos mientras queda contenido. La rueda horizontal, el trackpad y Mayús + rueda funcionan de forma nativa. La rueda vertical no se secuestra a propósito, para no atrapar el scroll de la página. En las horas, las flechas, Inicio y Fin las recorren.
+- **Scroll horizontal** (horas, favoritas, selector de zonas):
+  - Con ratón, botones anterior/siguiente que solo aparecen con puntero fino y se desactivan en los extremos.
+  - Arrastre: un clic, o un movimiento de menos de 5 px, sigue siendo un clic. Un arrastre nunca elige la hora que queda debajo ni selecciona texto. Al soltar, la tira sigue con la velocidad de la mano y se detiene en la hora más cercana, sin saltos al reactivarse el ajuste. Con movimiento reducido se detiene en seco.
+  - Bordes fundidos mientras queda contenido.
+  - La rueda horizontal, el trackpad y Mayús + rueda funcionan de forma nativa. La rueda vertical no se secuestra a propósito, para no atrapar el scroll de la página. En el móvil, el desplazamiento táctil es el nativo.
+  - En las horas, las flechas, Inicio y Fin las recorren, sin animación. Cada hora mide 60 px en móvil y 72 px en escritorio, con iconos de 32 y 38 px.
+- **Sin saltos**:
+  - Abrir el selector de zonas o cualquier hoja ya no ensancha la página: `scrollbar-gutter: stable` reserva el carril de la barra de desplazamiento.
+  - «Volver a ahora» está siempre en el layout; solo aparece y desaparece con un fundido.
+  - En la escena, las favoritas y la hora previsualizada comparten una fila de altura fija, que existe aunque no haya favoritas.
+  - Medido en Chrome a 390, 820 y 1440 px, en español e inglés: 0 px de desplazamiento.
 - **Identificadores** para las herramientas del navegador: IDs en inglés para lo único (`weather-hero`, `current-temperature`, `hourly-forecast`, `tide-visualization`, `language-selector`…), clases semánticas para lo repetido y `data-*` para cada instancia (`data-location-id`, `data-index`…). Convención completa en [`docs/DESIGN.md`](docs/DESIGN.md#identificadores).
 - **Iconos**: Lucide para la interfaz, importado icono a icono, y los propios donde dan identidad. Criterios en [`docs/DESIGN.md`](docs/DESIGN.md#iconos).
 
