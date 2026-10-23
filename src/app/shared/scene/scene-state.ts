@@ -49,6 +49,8 @@ export interface SceneState {
   readonly clouds: number;
   readonly haze: number;
   readonly rain: boolean;
+  /** 0–1, how hard it rains (0 when dry); unknown intensity draws moderate rain. */
+  readonly rainIntensity: number;
   /** 0–1, how hard the wind blows. */
   readonly wind: number;
   readonly seaLevel: SeaLevel;
@@ -326,6 +328,7 @@ export function buildScene(input: SceneInput): SceneState {
     clouds,
     haze: haze * (0.5 + 0.5 * daylight),
     rain,
+    rainIntensity: rain ? (weather.rainIntensity ?? 0.6) : 0,
     wind: readWind(weather.wind).strength,
     seaLevel,
     tide: input.tideLevel ?? 0.5,

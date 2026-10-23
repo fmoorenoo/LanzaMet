@@ -201,3 +201,81 @@ export const STARS: readonly (readonly [number, number, number])[] = [
 
 export const CLOUD_PATH =
   'M22 70C8 70 2 58 10 49 6 34 24 25 39 31 46 14 74 8 92 20 104 6 138 6 148 27 168 22 188 36 183 52 196 58 192 72 176 72Z';
+
+// ── Rain ─────────────────────────────────────────────────────────────
+
+/**
+ * One streak of rain. Every streak falls along the same line (the scene's
+ * fixed slant); what varies is where it starts, how far away it seems
+ * (thinner, shorter, fainter and slower in the distance) and where in its
+ * fall it is when the rain begins, so no two move in step.
+ */
+export interface RainDrop {
+  /** Inline style: `--x` start across the sky (0–1), `--p` resting point of the fall (0–1)
+   *  for still drawings, `--w`/`--l` width and length (px), `--o` opacity, `--t` seconds
+   *  per fall, `--d` its (negative) delay. */
+  readonly style: string;
+}
+
+/** Most streaks there can be; light rain draws the first ones only. */
+const RAIN_MAX = 120;
+
+/** A small seeded generator (mulberry32): the same rain on every render and device. */
+function seeded(seed: number): () => number {
+  let a = seed;
+  return () => {
+    a = (a + 0x6d2b79f5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+const DEPTHS = [
+  // far: hairlines, faint and unhurried
+  { share: 0.45, w: [0.8, 1], l: [12, 20], o: [0.24, 0.38], t: [1.05, 1.35] },
+  // middle
+  { share: 0.35, w: [1, 1.3], l: [18, 28], o: [0.38, 0.54], t: [0.8, 1] },
+  // near: thicker, longer, brighter and quick
+  { share: 0.2, w: [1.4, 1.8], l: [26, 40], o: [0.52, 0.72], t: [0.6, 0.75] },
+] as const;
+
+function rainDrops(): readonly RainDrop[] {
+  const random = seeded(20261023);
+  const between = ([min, max]: readonly [number, number]) => min + (max - min) * random();
+  return Array.from({ length: RAIN_MAX }, (_, i) => {
+    // A golden-ratio walk spreads any first n streaks over the whole sky;
+    // the jitter breaks the regular spacing it would otherwise show.
+    const x = (i * 0.6180339887 + 0.17 + ((random() - 0.5) * 0.9) / RAIN_MAX + 1) % 1;
+    const roll = random();
+    const depth = roll < DEPTHS[0].share ? DEPTHS[0] : roll < 0.8 ? DEPTHS[1] : DEPTHS[2];
+    const t = between(depth.t);
+    const values = {
+      x: x.toFixed(4),
+      p: random().toFixed(3),
+      w: between(depth.w).toFixed(2) + 'px',
+      l: between(depth.l).toFixed(1) + 'px',
+      o: between(depth.o).toFixed(2),
+      t: t.toFixed(3) + 's',
+      d: (-random() * t).toFixed(3) + 's',
+    };
+    return {
+      style: Object.entries(values)
+        .map(([key, value]) => `--${key}:${value}`)
+        .join(';'),
+    };
+  });
+}
+
+export const RAIN_DROPS = rainDrops();
+
+/**
+ * How many streaks to draw for a rain intensity (0–1): from 36 for drizzle to
+ * 120 for a downpour, sized for a wide scene (narrow ones hide a third, in
+ * CSS). Mini scenes keep a few, still.
+ */
+export function rainDropCount(intensity: number, mini: boolean): number {
+  if (intensity <= 0) return 0;
+  const count = Math.round(36 + 84 * Math.min(1, intensity));
+  return mini ? Math.round(count / 3) : count;
+}

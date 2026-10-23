@@ -7,6 +7,7 @@ import {
   ElementRef,
   inject,
   input,
+  signal,
   untracked,
   viewChildren,
 } from '@angular/core';
@@ -14,6 +15,9 @@ import {
   CLOUD_PATH,
   CLOUDS,
   horizonPaths,
+  RAIN_DROPS,
+  RainDrop,
+  rainDropCount,
   SEA_SPEED,
   shorePath,
   STARS,
@@ -28,9 +32,14 @@ import { SceneState } from './scene-state';
  *
  * Motion budget: clouds and swell drift with WAAPI transform animations
  * (composited, off the main thread), their speed retargeted with
- * `updatePlaybackRate` so a change of wind never makes them jump. Ambient
- * loops pause off-screen, in background tabs and under reduced motion.
+ * `updatePlaybackRate` so a change of wind never makes them jump. Rain is a
+ * field of single streaks on CSS transform animations, more of them the
+ * harder it rains. Ambient loops pause off-screen, in background tabs and
+ * under reduced motion.
  */
+/** The rain layer's fade (`--d-atmos`): streaks stay until it has faded out. */
+const RAIN_FADE_MS = 900;
+
 @Component({
   selector: 'qth-scene',
   templateUrl: './scene.html',
@@ -95,6 +104,10 @@ export class Scene {
   private readonly waveTracks = viewChildren<ElementRef<HTMLElement>>('waveTrack');
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
 
+  /** Streaks being drawn; they outlive the rain by its fade, so it never cuts out. */
+  protected readonly rainDrops = signal<readonly RainDrop[]>([]);
+  private rainFade: ReturnType<typeof setTimeout> | null = null;
+
   private cloudAnimations: Animation[] = [];
   private waveAnimations: Animation[] = [];
   private onScreen = true;
@@ -126,6 +139,14 @@ export class Scene {
       });
     });
 
+    effect(() => {
+      const count = rainDropCount(this.state().rainIntensity, this.variant() === 'mini');
+      untracked(() => this.showRain(count));
+    });
+    destroyRef.onDestroy(() => {
+      if (this.rainFade) clearTimeout(this.rainFade);
+    });
+
     // Wind and sea changes retarget speed smoothly instead of restarting.
     effect(() => {
       const rate = 1 + this.state().wind * 3.2;
@@ -145,6 +166,18 @@ export class Scene {
 
   protected cssPath(d: string): string {
     return `path("${d}")`;
+  }
+
+  private showRain(count: number): void {
+    if (this.rainFade) clearTimeout(this.rainFade);
+    this.rainFade = null;
+    if (count > 0) {
+      this.rainDrops.set(RAIN_DROPS.slice(0, count));
+      // New streaks start running at once; hold them if the scene is off-screen.
+      requestAnimationFrame(() => this.updatePlayState());
+    } else if (this.rainDrops().length > 0) {
+      this.rainFade = setTimeout(() => this.rainDrops.set([]), RAIN_FADE_MS);
+    }
   }
 
   private startAmbient(): void {

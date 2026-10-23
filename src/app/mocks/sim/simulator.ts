@@ -178,6 +178,9 @@ function weatherAt(ctx: Context, at: Date): WeatherSnapshot {
     sky,
     cloudCover: Math.round(cloudCover * 100) / 100,
     precipitationChance: Math.round(clamp(s.rain * (0.6 + 0.5 * cloudCover)) * 100) / 100,
+    // Rain starts at 0.45 in `skyFrom`: from there it grows from light to heavy.
+    rainIntensity:
+      sky === 'lluvia' ? Math.round(clamp(0.3 + (s.rain - 0.45)) * 100) / 100 : undefined,
     uvIndex: Math.round(uv),
     wind,
     isDaylight,

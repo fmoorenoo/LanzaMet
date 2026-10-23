@@ -8,6 +8,7 @@ import { AirQualityDto, ForecastDto, MarineDto } from './open-meteo.dto';
 import {
   CALIMA_DUST_UGM3,
   findTideExtremes,
+  rainIntensityFor,
   skyFor,
   toSeaForecast,
   toTideForecast,
@@ -170,6 +171,17 @@ describe('sky', () => {
     expect(skyFor(80, 0.6, 400)).toBe('lluvia');
     expect(skyFor(0, 0.05, CALIMA_DUST_UGM3)).toBe('calima');
     expect(skyFor(0, 0.05, CALIMA_DUST_UGM3 - 1)).toBe('despejado');
+  });
+
+  it('grades the rain by its code, for the drawing only', () => {
+    expect(rainIntensityFor(3)).toBeUndefined();
+    expect(rainIntensityFor(51)).toBeLessThan(rainIntensityFor(61) ?? 0);
+    expect(rainIntensityFor(61)).toBeLessThan(rainIntensityFor(63) ?? 0);
+    expect(rainIntensityFor(63)).toBeLessThan(rainIntensityFor(65) ?? 0);
+    expect(rainIntensityFor(82)).toBe(1);
+    expect(rainIntensityFor(95)).toBeGreaterThanOrEqual(0.9);
+    // A precipitation code the table doesn't know still rains, moderately.
+    expect(rainIntensityFor(58)).toBe(0.6);
   });
 });
 

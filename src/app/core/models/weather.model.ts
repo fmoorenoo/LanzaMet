@@ -25,6 +25,12 @@ export interface WeatherSnapshot {
   readonly cloudCover: number;
   /** 0–1 */
   readonly precipitationChance: number;
+  /**
+   * 0–1, how hard it rains (drizzle ≈ 0.2, heavy showers or storms 1), read
+   * from the weather code. Only when the sky is `lluvia` and the provider
+   * says; it shapes the drawing, never the words.
+   */
+  readonly rainIntensity?: number;
   readonly uvIndex: number;
   readonly wind: Wind;
   readonly isDaylight: boolean;

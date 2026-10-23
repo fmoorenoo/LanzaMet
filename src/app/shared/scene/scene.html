@@ -100,4 +100,8 @@
   </div>
 </div>
 
-<div class="rain" [class.is-on]="s.rain"></div>
+<div class="rain" [class.is-on]="s.rain">
+  @for (drop of rainDrops(); track $index) {
+    <span class="drop" [style]="drop.style"></span>
+  }
+</div>

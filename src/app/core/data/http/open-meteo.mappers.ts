@@ -65,6 +65,39 @@ export function skyFor(weatherCode: number, cloudCover: number, dust: number | n
   return 'cubierto';
 }
 
+/**
+ * How hard it rains for a WMO code (Open-Meteo subset), 0–1; undefined when
+ * the code is not precipitation. Drizzle, rain and showers each come in three
+ * strengths; thunderstorms count as the heaviest.
+ */
+export function rainIntensityFor(weatherCode: number): number | undefined {
+  const byCode: Readonly<Record<number, number>> = {
+    51: 0.15,
+    53: 0.25,
+    55: 0.35,
+    56: 0.25,
+    57: 0.35,
+    61: 0.35,
+    63: 0.6,
+    65: 0.9,
+    66: 0.45,
+    67: 0.8,
+    71: 0.3,
+    73: 0.5,
+    75: 0.8,
+    77: 0.3,
+    80: 0.45,
+    81: 0.7,
+    82: 1,
+    85: 0.5,
+    86: 0.8,
+    95: 0.9,
+    96: 1,
+    99: 1,
+  };
+  return weatherCode >= 51 ? (byCode[weatherCode] ?? 0.6) : undefined;
+}
+
 const SEVERITY: readonly SkyCondition[] = [
   'lluvia',
   'calima',
@@ -133,6 +166,7 @@ function hourlySnapshots(dto: ForecastDto, dust: ReadonlyMap<number, number>): W
       sky: skyFor(code, cloud / 100, dustAt(dust, t)),
       cloudCover: round2(cloud / 100),
       precipitationChance: round2(rainChance / 100),
+      rainIntensity: rainIntensityFor(code),
       uvIndex: Math.round(uv),
       wind: { speedKmh: Math.round(speed), gustKmh: Math.round(gust), fromDegrees: direction },
       isDaylight: isDay === 1,
@@ -174,6 +208,7 @@ function currentSnapshot(
     cloudCover: round2(cloud / 100),
     // Open-Meteo has no "current" rain probability; the hour's value is the one.
     precipitationChance: sameHour?.precipitationChance ?? 0,
+    rainIntensity: rainIntensityFor(code),
     uvIndex: Math.round(uv),
     wind: { speedKmh: Math.round(speed), gustKmh: Math.round(gust), fromDegrees: direction },
     isDaylight: isDay === 1,
