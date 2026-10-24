@@ -1,0 +1,112 @@
+<header id="legal-header" class="page-head page-header">
+  <h1 class="t-display">{{ 'route.legal' | t }}</h1>
+  <p class="t-lead t-muted lead">{{ 'legal.lead' | t }}</p>
+</header>
+
+<div class="content">
+  <p id="legal-disclaimer" class="notice">
+    <lm-icon name="alert" />
+    <span>{{ 'legal.disclaimer' | t }}</span>
+  </p>
+
+  <section id="legal-privacy" class="section" aria-labelledby="legal-privacy-title">
+    <h2 id="legal-privacy-title" class="t-title">{{ 'legal.privacy' | t }}</h2>
+    <ul class="points">
+      @for (point of privacy; track point) {
+        <li>{{ point | t }}</li>
+      }
+    </ul>
+
+    <h3 id="legal-feedback-title" class="subhead">{{ 'legal.privacy.feedback' | t }}</h3>
+    <ul class="points">
+      @for (point of feedbackPrivacy; track point) {
+        <li>{{ point | t: { provider: 'Web3Forms' } }}</li>
+      }
+    </ul>
+    <a
+      id="legal-provider-privacy"
+      class="link"
+      href="https://web3forms.com/privacy"
+      target="_blank"
+      rel="noopener"
+      >{{ 'feedback.privacy.providerLink' | t }}</a
+    >
+  </section>
+
+  <section id="legal-terms" class="section" aria-labelledby="legal-terms-title">
+    <h2 id="legal-terms-title" class="t-title">{{ 'legal.terms' | t }}</h2>
+    <ul class="points">
+      @for (point of terms; track point) {
+        <li>{{ point | t }}</li>
+      }
+    </ul>
+  </section>
+
+  <section id="data-sources" class="section data-sources" aria-labelledby="sources-title">
+    <h2 id="sources-title" class="t-title">{{ 'legal.sources' | t }}</h2>
+    @if (isDemo) {
+      <p class="t-muted">{{ 'credit.demo' | t }}</p>
+    } @else {
+      <ul class="points sources data-source-list">
+        <li data-source="forecast">
+          <span class="label">{{ 'legal.source.forecast' | t }}</span>
+          <span>
+            <a class="link" href="https://open-meteo.com/" target="_blank" rel="noopener"
+              >Open-Meteo.com</a
+            >, {{ 'legal.source.forecast.text' | t }}
+          </span>
+        </li>
+        <li data-source="marine">
+          <span class="label">{{ 'legal.source.sea' | t }}</span>
+          <span>{{ 'legal.source.sea.text' | t }}</span>
+        </li>
+        <li data-source="dust">
+          <span class="label">{{ 'legal.source.dust' | t }}</span>
+          <span>{{ 'legal.source.dust.text' | t }}</span>
+        </li>
+        <li data-source="warnings">
+          <span class="label">{{ 'legal.source.warnings' | t }}</span>
+          <span>
+            <a
+              class="link"
+              href="https://www.aemet.es/es/eltiempo/prediccion/avisos"
+              target="_blank"
+              rel="noopener"
+              >AEMET</a
+            >, {{ 'legal.source.warnings.text' | t: { status: warningsStatus() } }}
+          </span>
+        </li>
+        <li data-source="observations">
+          <span class="label">{{ 'legal.source.observations' | t }}</span>
+          <span>
+            {{ 'legal.source.observations.text' | t: { status: observationsStatus() } }}
+          </span>
+        </li>
+        <!-- The map's coastline is derived from OpenStreetMap: ODbL asks for this credit. -->
+        <li data-source="map">
+          <span class="label">{{ 'legal.source.map' | t }}</span>
+          <span>
+            ©
+            <a
+              class="link"
+              href="https://www.openstreetmap.org/copyright"
+              target="_blank"
+              rel="noopener"
+              >{{ 'legal.source.map.credit' | t }}</a
+            >. {{ 'legal.source.map.text' | t }}
+          </span>
+        </li>
+      </ul>
+    }
+  </section>
+
+  <section id="legal-contact" class="section" aria-labelledby="legal-contact-title">
+    <h2 id="legal-contact-title" class="t-title">{{ 'legal.contact' | t }}</h2>
+    <p class="t-muted">{{ 'legal.contact.text' | t }}</p>
+    <a id="legal-contact-link" class="btn contact-link" routerLink="/mejorar">
+      {{ 'legal.contact.link' | t }}
+    </a>
+  </section>
+
+  <p class="t-small t-faint updated">{{ 'legal.updated' | t }}</p>
+</div>

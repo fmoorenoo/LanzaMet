@@ -30,5 +30,10 @@ export const routes: Routes = [
     title: title('route.feedback'),
     loadComponent: () => import('./features/feedback/feedback.page').then((m) => m.FeedbackPage),
   },
+  {
+    path: 'legal',
+    title: title('route.legal'),
+    loadComponent: () => import('./features/legal/legal.page').then((m) => m.LegalPage),
+  },
   { path: '**', redirectTo: '' },
 ];

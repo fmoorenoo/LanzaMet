@@ -127,7 +127,8 @@ Validación del 22-10-2026 en Arrecife: el modelo adelanta 24–37 min respecto 
 - **Mar**: marea estimada, curva del día, pleamares y bajamares de hoy y mañana, oleaje, mar de fondo, agua, avisos costeros y zonas más tranquilas.
 - **Dónde ir**: recomendaciones derivadas de los datos (playa, sin viento, mar tranquilo, atardecer, paseo, olas).
 - **Ayúdanos** (`/mejorar`): formulario para avisar de errores y proponer sugerencias o mejoras; el correo es opcional. Ver [Comentarios de los usuarios](#comentarios-de-los-usuarios).
-- **Ajustes**: idioma, apariencia, **acceso rápido** (instalar la web como app o guardarla en marcadores; ver [Instalar la web](#instalar-la-web-pwa)) y de dónde salen los datos.
+- **Ajustes**: idioma, apariencia, **acceso rápido** (instalar la web como app o guardarla en marcadores; ver [Instalar la web](#instalar-la-web-pwa)) y un enlace a **Legal y privacidad**.
+- **Legal y privacidad** (`/legal`, sin pestaña propia: se llega desde Ajustes): aviso de seguridad, privacidad (qué se guarda en el dispositivo, qué ven los servidores y qué envía el formulario de Ayúdanos), condiciones de uso, de dónde salen los datos con sus licencias y el estado de AEMET, y contacto.
 
 ## Comentarios de los usuarios
 

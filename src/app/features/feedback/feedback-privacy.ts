@@ -3,7 +3,8 @@ import { MessageKey } from '../../core/i18n/i18n.model';
 import { TranslatePipe } from '../../core/i18n/t.pipe';
 import { Icon } from '../../shared/ui/icon/icon';
 
-const POINTS: readonly MessageKey[] = [
+/** What the feedback form sends and who receives it; also listed on the legal page. */
+export const FEEDBACK_PRIVACY_POINTS: readonly MessageKey[] = [
   'feedback.privacy.what',
   'feedback.privacy.who',
   'feedback.privacy.technical',
@@ -126,5 +127,5 @@ const POINTS: readonly MessageKey[] = [
   `,
 })
 export class FeedbackPrivacy {
-  protected readonly points = POINTS;
+  protected readonly points = FEEDBACK_PRIVACY_POINTS;
 }

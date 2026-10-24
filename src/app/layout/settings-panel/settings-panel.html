@@ -34,55 +34,13 @@
     <lm-install-option />
   }
 
-  @if (!isDemo) {
-    <section id="data-sources" class="group data-sources" aria-labelledby="sources-title">
-      <h3 id="sources-title" class="legend">{{ 'settings.sources' | t }}</h3>
-      <ul class="sources data-source-list">
-        <li data-source="forecast">
-          <span class="choice-label">{{ 'settings.source.forecast' | t }}</span>
-          <span class="choice-hint">
-            <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a>,
-            {{ 'settings.source.forecast.text' | t }}
-          </span>
-        </li>
-        <li data-source="marine">
-          <span class="choice-label">{{ 'settings.source.sea' | t }}</span>
-          <span class="choice-hint">{{ 'settings.source.sea.text' | t }}</span>
-        </li>
-        <li data-source="dust">
-          <span class="choice-label">{{ 'settings.source.dust' | t }}</span>
-          <span class="choice-hint">{{ 'settings.source.dust.text' | t }}</span>
-        </li>
-        <li data-source="warnings">
-          <span class="choice-label">{{ 'settings.source.warnings' | t }}</span>
-          <span class="choice-hint">
-            <a
-              href="https://www.aemet.es/es/eltiempo/prediccion/avisos"
-              target="_blank"
-              rel="noopener"
-              >AEMET</a
-            >, {{ 'settings.source.warnings.text' | t: { status: warningsStatus() } }}
-          </span>
-        </li>
-        <li data-source="observations">
-          <span class="choice-label">{{ 'settings.source.observations' | t }}</span>
-          <span class="choice-hint">
-            {{ 'settings.source.observations.text' | t: { status: observationsStatus() } }}
-          </span>
-        </li>
-        <!-- The map's coastline is derived from OpenStreetMap: ODbL asks for this credit. -->
-        <li data-source="map">
-          <span class="choice-label">{{ 'settings.source.map' | t }}</span>
-          <span class="choice-hint">
-            ©
-            <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">{{
-              'settings.source.map.credit' | t
-            }}</a
-            >. {{ 'settings.source.map.text' | t }}
-          </span>
-        </li>
-      </ul>
-      <p class="choice-hint">{{ 'settings.disclaimer' | t }}</p>
-    </section>
-  }
+  <!-- Sources, privacy and terms live on their own page; the sheet closes on the way there. -->
+  <a id="legal-link" class="legal-link" routerLink="/legal" (click)="ui.settingsOpen.set(false)">
+    <lm-icon name="privacy" />
+    <span class="choice-text">
+      <span class="choice-label">{{ 'route.legal' | t }}</span>
+      <span class="choice-hint">{{ 'settings.legal.hint' | t }}</span>
+    </span>
+    <lm-icon class="chevron" name="chevron-right" />
+  </a>
 </lm-sheet>

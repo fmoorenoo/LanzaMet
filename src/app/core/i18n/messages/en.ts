@@ -17,6 +17,7 @@ export const en: Messages = {
   'route.sea': 'Sea and tides',
   'route.plans': 'Where to go today?',
   'route.feedback': 'Help us',
+  'route.legal': 'Legal and privacy',
   'route.title': '{page} · {brand}',
 
   'nav.label': 'Main',
@@ -408,29 +409,66 @@ export const en: Messages = {
   'settings.theme.auto.hint': "Light by day, dark by night, with the place's own sun.",
   'settings.theme.light': 'Light',
   'settings.theme.dark': 'Dark',
-  'settings.sources': 'Where the data comes from',
-  'settings.source.forecast': 'Weather forecast',
-  'settings.source.forecast.text': 'DWD ICON model. CC BY 4.0 licence. Updated every 30 minutes.',
-  'settings.source.sea': 'Waves, water and tide',
-  'settings.source.sea.text':
+  'settings.legal.hint': 'Where the data comes from, privacy and terms of use.',
+
+  // ── Legal and privacy (/legal) ──────────────────────────────
+  'legal.lead':
+    'What data LanzaMet uses, where it comes from and the terms on which you can use it.',
+  'legal.updated': 'Last reviewed: 24 October 2026.',
+  'legal.privacy': 'Privacy',
+  'legal.privacy.summary':
+    'LanzaMet has no accounts or sign-up, uses no cookies and carries no advertising, analytics or tracking tools.',
+  'legal.privacy.location':
+    "We don't use your location. The weather is requested for the whole island at once, so not even the place you're looking at leaves your device.",
+  'legal.privacy.device':
+    'Your device, and only your device, keeps the language, the appearance, the chosen place and your favourites, the latest copy of the weather data and whether you have installed the site, with a count of visits so as not to insist. None of it is ever sent anywhere.',
+  'legal.privacy.offline':
+    'The site also keeps a copy of itself so it opens quickly and works offline.',
+  'legal.privacy.erase':
+    "You can erase all of it whenever you like by clearing this site's data in your browser settings.",
+  'legal.privacy.servers':
+    "The data comes from our server, hosted on Cloudflare; if it doesn't answer, your browser asks Open-Meteo directly. As with any website, these services see technical connection data, such as the IP address and the browser, which they need to work and to protect themselves from abuse.",
+  'legal.privacy.share':
+    'When you share the weather, the image is created on your device and you send it yourself, with the app you choose.',
+  'legal.privacy.feedback': 'If you write to us from Help us',
+  'legal.terms': 'Terms of use',
+  'legal.terms.free':
+    'LanzaMet is free and is there to tell you about the weather and the sea in Lanzarote. You need no account to use it.',
+  'legal.terms.asIs':
+    'The information is provided as is, with no guarantee that it is accurate, complete or always available. Forecasts and the tide are model estimates and can be wrong.',
+  'legal.terms.responsibility':
+    "Don't use it as the only basis for safety decisions, for navigation or for risky activities. We accept no liability for any damage arising from its use.",
+  'legal.terms.thirdParty':
+    'The data belongs to its sources and is used under their licences, credited on this page. Links to other websites lead to sites we do not control.',
+  'legal.terms.changes':
+    'We may change the site or these terms, or stop offering it, at any time. The terms that apply are always the ones on this page.',
+  'legal.contact': 'Contact',
+  'legal.contact.text':
+    'For any question about these texts or about your data, write to us from Help us.',
+  'legal.contact.link': 'Go to Help us',
+  'legal.sources': 'Where the data comes from',
+  'legal.source.forecast': 'Weather forecast',
+  'legal.source.forecast.text': 'DWD ICON model. CC BY 4.0 licence. Updated every 30 minutes.',
+  'legal.source.sea': 'Waves, water and tide',
+  'legal.source.sea.text':
     "Open-Meteo Marine, Météo-France models, in open water off each place. The tide is the model's estimate, not an official table: don't use it for navigation.",
-  'settings.source.dust': 'Calima',
-  'settings.source.dust.text':
+  'legal.source.dust': 'Calima',
+  'legal.source.dust.text':
     'Airborne dust from Copernicus CAMS, via Open-Meteo. Contains modified Copernicus Atmosphere Monitoring Service information.',
-  'settings.source.warnings': 'Official warnings',
-  'settings.source.warnings.text': 'Meteoalerta plan. {status}.',
-  'settings.source.observations': 'Station measurements',
-  'settings.source.observations.text': 'AEMET OpenData. {status}.',
-  'settings.source.map': 'Island map',
-  'settings.source.map.credit': 'OpenStreetMap contributors',
-  'settings.source.map.text':
+  'legal.source.warnings': 'Official warnings',
+  'legal.source.warnings.text': 'Meteoalerta plan. {status}.',
+  'legal.source.observations': 'Station measurements',
+  'legal.source.observations.text': 'AEMET OpenData. {status}.',
+  'legal.source.map': 'Island map',
+  'legal.source.map.credit': 'OpenStreetMap contributors',
+  'legal.source.map.text':
     'ODbL licence. Coastline simplified and bundled with the site: never fetched live.',
-  'settings.status.ready': 'Connected',
-  'settings.status.error': 'No connection right now',
-  'settings.status.unavailable': 'Not available in this installation',
-  'settings.status.noKey': 'Waiting for AEMET credentials',
-  'settings.status.checking': 'Checking…',
-  'settings.disclaimer':
+  'legal.status.ready': 'Connected',
+  'legal.status.error': 'No connection right now',
+  'legal.status.unavailable': 'Not available in this installation',
+  'legal.status.noKey': 'Waiting for AEMET credentials',
+  'legal.status.checking': 'Checking…',
+  'legal.disclaimer':
     'These are forecasts and warnings, not guarantees: before swimming or going out to sea, check the flags and follow lifeguards and the authorities.',
 
   // ── Installing the web as an app ────────────────────────────

@@ -1,0 +1,98 @@
+:host {
+  display: block;
+  padding-bottom: var(--s-12);
+}
+
+.page-head {
+  display: grid;
+  gap: var(--s-3);
+  padding: calc(var(--safe-top) + var(--s-8)) var(--gutter) var(--s-8);
+}
+
+.lead {
+  max-width: 38ch;
+}
+
+.content {
+  display: grid;
+  gap: var(--s-10);
+  padding: 0 var(--gutter);
+}
+
+// The one thing worth reading even if nothing else is.
+.notice {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--s-3);
+  padding: var(--s-4);
+  border-radius: var(--r-md);
+  background-color: var(--c-surface-sunken);
+  text-wrap: pretty;
+
+  lm-icon {
+    flex: none;
+    width: var(--icon-md);
+    height: var(--icon-md);
+    margin-top: 0.125rem;
+  }
+}
+
+.section {
+  display: grid;
+  gap: var(--s-3);
+}
+
+.subhead {
+  margin-top: var(--s-4);
+  font-size: var(--fs-body);
+  font-weight: 640;
+}
+
+.points {
+  display: grid;
+
+  li {
+    display: grid;
+    gap: 0.125rem;
+    padding-block: var(--s-3);
+    color: var(--c-ink-2);
+    text-wrap: pretty;
+  }
+
+  li + li {
+    border-top: 1px solid var(--c-line);
+  }
+}
+
+.label {
+  font-weight: 600;
+  color: var(--c-ink);
+}
+
+.link {
+  color: var(--c-accent);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+.section > .link,
+.contact-link {
+  justify-self: start;
+}
+
+.updated {
+  margin-top: calc(var(--s-4) - var(--s-10));
+}
+
+@media (min-width: 48rem) {
+  .page-head,
+  .content {
+    max-width: 40rem;
+    margin-inline: auto;
+  }
+
+  .page-head {
+    padding-top: var(--s-12);
+  }
+}
