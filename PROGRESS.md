@@ -575,3 +575,19 @@ La web pasa a llamarse **LanzaMet**, con el dominio `lanzamet.com`.
 - **Despliegue**: `lanzamet.com` queda declarado como *custom domain* en `wrangler.jsonc` y `PUBLIC_URL=https://lanzamet.com` en `.env`. El Worker de pruebas `que-tal-hoy` se borrará cuando el dominio funcione.
 - **Validación**: 185 tests de la web y 24 del API; lint, tipos, formato, build de producción y *dry run* sin errores. En la vista previa local: título «Hoy en Lanzarote · LanzaMet», raíl «LanzaMet», ningún `qth-` en la página, tarjeta y mensaje para compartir con `lanzamet.com`.
 - Sin cambiar: la carpeta del proyecto en tu disco (`QueTalHoy`), el `id` del manifest (`/`) y el logotipo.
+
+## Publicada en lanzamet.com (24-10-2026)
+
+- **Worker `lanzamet`**, con `lanzamet.com` como *custom domain* (DNS y certificado creados por el despliegue) y el secreto `AEMET_API_KEY`.
+- **En el panel de Cloudflare**: Always Use HTTPS (`http://` → 301 → `https://`); `www.lanzamet.com` → 301 → `lanzamet.com`, conservando ruta y consulta; Worker de pruebas `que-tal-hoy` borrado; subdominio de la cuenta `lanzamet.workers.dev`.
+- **Comprobado en la web publicada**:
+  - `/api/salud` con clave y las 7 estaciones;
+  - las cinco páginas a 1440 y 390 px, con 0 errores, 0 avisos de CSP, 0 problemas de axe y ninguna petición fuera del dominio;
+  - compartir, con la tarjeta y el enlace a `https://lanzamet.com`;
+  - el service worker activo y sin errores de instalabilidad;
+  - la copia compartida de Open-Meteo, servida igual a varios visitantes (Cache API activa en el dominio propio).
+- **«Ayúdanos»**: enviados dos mensajes reales desde `lanzamet.com` (sin correo y con correo).
+
+### Pendiente
+
+- Probar en móviles reales: instalar en Android e iPhone, compartir a WhatsApp, y ver la actualización tras el próximo despliegue.

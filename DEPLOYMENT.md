@@ -2,7 +2,7 @@
 
 Guía para publicar LanzaMet (<https://lanzamet.com>) y sus actualizaciones.
 
-La web se llamó «¿Qué tal hoy?» hasta el 24-10-2026. Ese día se publicó en pruebas como Worker `que-tal-hoy` (`https://que-tal-hoy.que-tal-hoy.workers.dev`). Con el nombre nuevo, el Worker es `lanzamet`: el antiguo se borra cuando `lanzamet.com` funcione (ver el paso 5).
+**Publicada el 24-10-2026** en <https://lanzamet.com>: Worker `lanzamet`, con la dirección de reserva `https://lanzamet.lanzamet.workers.dev`. Hasta ese día se llamó «¿Qué tal hoy?». El Worker de pruebas `que-tal-hoy` ya está borrado, y el subdominio `*.workers.dev` de la cuenta pasó de `que-tal-hoy` a `lanzamet`.
 
 ## Cómo queda montado
 
@@ -108,7 +108,7 @@ El dominio ya está declarado en `wrangler.jsonc` (`routes`, con `custom_domain:
    Ese comando lee la clave de `server/.dev.vars` y se la pasa a Wrangler sin mostrarla. Un `npx wrangler secret put` sin tubería pide teclearla, y solo funciona en una terminal interactiva: en otras guarda un valor vacío.
 5. **SSL/TLS → Edge Certificates**: activa **Always Use HTTPS**. HSTS es opcional; actívalo solo cuando el dominio vaya a servirse siempre por HTTPS.
 6. `www.lanzamet.com` redirige a `lanzamet.com` (hecho el 24-10-2026). Hay un registro DNS `www`, de tipo `AAAA` con valor `100::` y proxy activado, para que Cloudflare atienda esas peticiones. La regla está en **Rules → Redirect Rules**, «www → lanzamet.com»: *wildcard* `https://www.lanzamet.com/*` → `https://lanzamet.com/${1}`, con código 301 y conservando la consulta.
-7. Cuando `https://lanzamet.com` funcione, borra el Worker antiguo: **Workers & Pages → que-tal-hoy → Settings → Delete**. Si quieres que solo funcione el dominio, pon también `"workers_dev": false` en `wrangler.jsonc` y despliega.
+7. Para que solo funcione el dominio, pon `"workers_dev": false` en `wrangler.jsonc` y despliega. Hoy se deja activa la dirección de reserva `lanzamet.lanzamet.workers.dev`.
 
 La copia compartida de Open-Meteo usa la Cache API de Cloudflare, que **solo funciona en el dominio propio**. En `*.workers.dev` cada instancia del Worker guarda su propia copia en memoria: funciona igual, pero se ahorran menos peticiones.
 
