@@ -107,7 +107,7 @@ El dominio ya está declarado en `wrangler.jsonc` (`routes`, con `custom_domain:
 
    Ese comando lee la clave de `server/.dev.vars` y se la pasa a Wrangler sin mostrarla. Un `npx wrangler secret put` sin tubería pide teclearla, y solo funciona en una terminal interactiva: en otras guarda un valor vacío.
 5. **SSL/TLS → Edge Certificates**: activa **Always Use HTTPS**. HSTS es opcional; actívalo solo cuando el dominio vaya a servirse siempre por HTTPS.
-6. Opcional, `www.lanzamet.com`: **Rules → Overview → Create rule → Redirect Rule**, con la plantilla **Redirect from WWW to root**. Necesita un registro DNS `www`, de tipo `AAAA` con valor `100::` y proxy activado, para que Cloudflare atienda esas peticiones.
+6. `www.lanzamet.com` redirige a `lanzamet.com` (hecho el 24-10-2026). Hay un registro DNS `www`, de tipo `AAAA` con valor `100::` y proxy activado, para que Cloudflare atienda esas peticiones. La regla está en **Rules → Redirect Rules**, «www → lanzamet.com»: *wildcard* `https://www.lanzamet.com/*` → `https://lanzamet.com/${1}`, con código 301 y conservando la consulta.
 7. Cuando `https://lanzamet.com` funcione, borra el Worker antiguo: **Workers & Pages → que-tal-hoy → Settings → Delete**. Si quieres que solo funcione el dominio, pon también `"workers_dev": false` en `wrangler.jsonc` y despliega.
 
 La copia compartida de Open-Meteo usa la Cache API de Cloudflare, que **solo funciona en el dominio propio**. En `*.workers.dev` cada instancia del Worker guarda su propia copia en memoria: funciona igual, pero se ahorran menos peticiones.
