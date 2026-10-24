@@ -40,6 +40,11 @@
     opacity: 0;
     transition-duration: 240ms;
   }
+
+  // Over another sheet: a lighter veil, just enough to set the two apart.
+  &.is-stacked::backdrop {
+    background-color: color-mix(in oklch, var(--c-scrim), transparent 55%);
+  }
 }
 
 .panel {

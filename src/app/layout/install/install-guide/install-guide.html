@@ -1,0 +1,127 @@
+<qth-sheet [heading]="heading() | t" [(open)]="ui.installGuideOpen">
+  <div id="install-guide" class="guide" [attr.data-view]="view()">
+    <!-- The icon as it will sit among the visitor's apps. -->
+    <figure class="preview install-preview">
+      <qth-app-tile class="preview-tile" [installed]="installedHere()" />
+      <figcaption class="preview-text">
+        <span class="app-name" aria-hidden="true">Qué tal hoy</span>
+        <span class="t-micro preview-caption">{{ previewCaption() | t }}</span>
+      </figcaption>
+    </figure>
+
+    <fieldset id="install-device-selector" class="views">
+      <legend class="legend">{{ 'install.guide.device' | t }}</legend>
+      <div class="segmented">
+        @for (option of views; track option.value) {
+          <label class="segment" [attr.data-device]="option.value">
+            <input
+              type="radio"
+              name="install-device"
+              [value]="option.value"
+              [checked]="view() === option.value"
+              (change)="select(option.value)"
+            />
+            <span>{{ option.label | t }}</span>
+          </label>
+        }
+      </div>
+    </fieldset>
+
+    @if (installedHere()) {
+      <p class="installed" role="status">
+        <qth-icon name="check" />
+        {{ (store.justInstalled() ? 'install.done' : 'install.guide.installed') | t }}
+      </p>
+    }
+
+    @if (view() === 'desktop') {
+      <section class="method" aria-labelledby="install-method-app">
+        <h3 id="install-method-app" class="method-title">{{ 'install.desktop.app' | t }}</h3>
+        <p class="method-text">{{ 'install.desktop.app.text' | t }}</p>
+        @if (canPrompt()) {
+          <p class="method-text">{{ 'install.guide.prompt' | t }}</p>
+          <button type="button" class="btn btn--primary install-now" (click)="install()">
+            <qth-icon name="install-desktop" />
+            {{ 'install.action.install' | t }}
+          </button>
+        } @else if (!installedHere()) {
+          <ol class="steps">
+            <li class="step">
+              <span class="step-icon"><qth-icon [name]="appStep().icon" /></span>
+              <span class="step-text">
+                <span class="step-title">{{ appStep().title | t }}</span>
+                @if (appStep().hint; as hint) {
+                  <span class="step-hint">{{ hint | t }}</span>
+                }
+              </span>
+            </li>
+          </ol>
+        }
+      </section>
+
+      <section class="method" aria-labelledby="install-method-bookmark">
+        <h3 id="install-method-bookmark" class="method-title">
+          {{ 'install.desktop.bookmark' | t }}
+        </h3>
+        <p class="method-text">{{ 'install.desktop.bookmark.text' | t }}</p>
+        <p class="keys">
+          <span class="step-icon"><qth-icon name="bookmark" /></span>
+          <span>
+            {{ 'install.desktop.bookmark.press' | t }}
+            @for (combo of shortcuts; track $index) {
+              @if (!$first) {
+                {{ 'install.desktop.bookmark.or' | t }}
+              }
+              <span class="combo">
+                @for (key of combo; track key) {
+                  @if (!$first) {
+                    <span aria-hidden="true">+</span>
+                  }
+                  <kbd>{{ key }}</kbd>
+                }
+              </span>
+            }
+          </span>
+        </p>
+        <p class="step-hint">{{ 'install.desktop.shortcut' | t }}</p>
+      </section>
+    } @else {
+      @if (inApp()) {
+        <p class="caution">
+          <qth-icon name="info" />
+          {{ (view() === 'ios' ? 'install.ios.inApp' : 'install.android.inApp') | t }}
+        </p>
+      }
+
+      @if (canPrompt()) {
+        <div class="method">
+          <p class="method-text">{{ 'install.guide.prompt' | t }}</p>
+          <button type="button" class="btn btn--primary install-now" (click)="install()">
+            <qth-icon name="add-home" />
+            {{ 'install.action.install' | t }}
+          </button>
+          <p class="step-hint">{{ 'install.guide.prompt.menu' | t }}</p>
+        </div>
+      } @else if (!installedHere()) {
+        <p class="method-text">
+          {{ (view() === 'ios' ? 'install.ios.intro' : 'install.android.intro') | t }}
+        </p>
+        <ol class="steps install-steps">
+          @for (step of steps(); track step.title) {
+            <li class="step" [attr.data-step]="$index + 1">
+              <span class="step-icon"><qth-icon [name]="step.icon" /></span>
+              <span class="step-text">
+                <span class="step-title">{{ step.title | t }}</span>
+                @if (step.hint; as hint) {
+                  <span class="step-hint">{{ hint | t }}</span>
+                }
+              </span>
+            </li>
+          }
+        </ol>
+      }
+    }
+
+    <p class="note t-micro">{{ 'install.guide.note' | t }}</p>
+  </div>
+</qth-sheet>

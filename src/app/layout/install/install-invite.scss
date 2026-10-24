@@ -1,0 +1,92 @@
+// Phones: a small card resting above the tab bar. Computers: the corner.
+.invite {
+  position: fixed;
+  z-index: calc(var(--z-chrome) + 1);
+  left: var(--s-3);
+  right: var(--s-3);
+  bottom: calc(var(--tabbar-h) + var(--safe-bottom) + var(--s-3));
+  max-width: 26rem;
+  margin-inline: auto;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: start;
+  gap: var(--s-3);
+  padding: var(--s-4) var(--s-2) var(--s-4) var(--s-4);
+  border-radius: var(--r-lg);
+  background-color: var(--c-surface-raised);
+  color: var(--c-ink);
+  box-shadow: var(--shadow-2);
+  transition:
+    transform 280ms var(--ease-out),
+    opacity 200ms ease;
+
+  @starting-style {
+    opacity: 0;
+    transform: translate3d(0, 0.75rem, 0) scale(0.98);
+  }
+}
+
+// Leaving is quicker than arriving.
+.invite.is-leaving {
+  animation: invite-leave 180ms var(--ease-out) forwards;
+}
+
+@keyframes invite-leave {
+  to {
+    opacity: 0;
+    transform: translate3d(0, 0.5rem, 0) scale(0.98);
+  }
+}
+
+.text {
+  display: grid;
+  gap: 0.125rem;
+  justify-items: start;
+  padding-top: 0.125rem;
+}
+
+.title {
+  font-weight: 650;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+
+.sub {
+  font-size: var(--fs-small);
+  color: var(--c-ink-2);
+}
+
+.action {
+  margin-top: var(--s-3);
+}
+
+// The cross sits in the corner, its hit area kept whole.
+.close {
+  margin: calc(-1 * var(--s-2)) 0 0;
+}
+
+@media (min-width: 64rem) {
+  .invite {
+    left: auto;
+    right: var(--s-6);
+    bottom: var(--s-6);
+    width: 23rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .invite {
+    transition: opacity 200ms ease;
+
+    @starting-style {
+      opacity: 0;
+      transform: none;
+    }
+  }
+
+  @keyframes invite-leave {
+    to {
+      opacity: 0;
+    }
+  }
+}

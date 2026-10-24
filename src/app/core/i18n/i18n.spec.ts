@@ -18,7 +18,7 @@ describe('dictionaries', () => {
 
   it('translate every message into English', () => {
     expect(Object.keys(en).sort()).toEqual(Object.keys(es).sort());
-    // Only names read the same in both: the brand, places, sources and "calima".
+    // Only names read the same in both: the brand, places, sources, "calima" and Android.
     const sameInBoth: readonly MessageKey[] = [
       'app.brand',
       'common.lanzarote',
@@ -28,6 +28,7 @@ describe('dictionaries', () => {
       'settings.source.observations.text',
       'demo.scenario.calima',
       'today.demo',
+      'install.device.android',
     ];
     const untranslated = (Object.keys(es) as MessageKey[]).filter(
       (key) =>

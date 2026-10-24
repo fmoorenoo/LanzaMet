@@ -436,6 +436,86 @@ export const es = {
   'settings.disclaimer':
     'Son previsiones y avisos, no garantías: antes de bañarte o salir al mar, mira las banderas y sigue las indicaciones de socorristas y autoridades.',
 
+  // ── Installing the web as an app ────────────────────────────
+  'install.group': 'Acceso rápido',
+  'install.option.title.mobile': 'Añádela a tu pantalla de inicio',
+  'install.option.title.desktop': 'Tenla a mano en el ordenador',
+  'install.option.hint.mobile': 'Con su icono, entre tus apps. Sin tiendas.',
+  'install.option.hint.desktop': 'Como app, en su propia ventana, o en tus marcadores.',
+  'install.option.hint.desktop.prompt': 'En su propia ventana, con su icono, como una app.',
+  'install.option.installed': 'Ya la tienes instalada',
+  'install.option.installed.mobile': 'Ábrela desde tu pantalla de inicio.',
+  'install.option.installed.desktop': 'Ábrela desde el escritorio o el menú de aplicaciones.',
+  'install.action.install': 'Instalar',
+  'install.action.how': 'Ver cómo',
+  'install.action.more': 'Ver otras formas',
+  'install.done': 'Instalada. La encontrarás entre tus apps.',
+
+  'install.guide.title.mobile': 'Añadir a la pantalla de inicio',
+  'install.guide.title.desktop': 'Tener ¿Qué tal hoy? a mano',
+  'install.guide.preview.mobile': 'Así aparecerá entre tus apps',
+  'install.guide.preview.desktop': 'Así aparecerá en tu ordenador',
+  'install.guide.device': 'Instrucciones para',
+  'install.device.ios': 'iPhone o iPad',
+  'install.device.android': 'Android',
+  'install.device.desktop': 'Ordenador',
+  'install.guide.installed': 'Ya la tienes instalada en este dispositivo.',
+  'install.guide.prompt': 'Tu navegador puede instalarla ahora mismo.',
+  'install.guide.prompt.menu': 'También puedes hacerlo desde el menú del navegador.',
+  'install.guide.note':
+    'Es la misma web, gratis y sin tiendas: se actualiza sola y apenas ocupa espacio.',
+
+  'install.ios.intro': 'Safari no instala webs con un botón: se hace desde su menú Compartir.',
+  'install.ios.inApp':
+    'Estás viendo la web dentro de otra app. Ábrela en Safari y añádela desde allí.',
+  'install.ios.share': 'Toca «Compartir»',
+  'install.ios.share.safari':
+    'En la barra de Safari. Si no lo ves, toca antes el botón de los tres puntos.',
+  'install.ios.share.other': 'En la barra de direcciones o en el menú del navegador.',
+  'install.ios.add': 'Elige «Añadir a pantalla de inicio»',
+  'install.ios.add.hint': 'Si no aparece, desliza la lista hacia arriba o toca «Ver más».',
+  'install.ios.confirm': 'Toca «Añadir»',
+  'install.step.done': 'El icono aparecerá entre tus apps.',
+
+  'install.android.intro': 'Tu navegador lo hace desde su menú.',
+  'install.android.inApp':
+    'Estás viendo la web dentro de otra app. Ábrela en tu navegador y añádela desde allí.',
+  'install.android.menu': 'Abre el menú del navegador',
+  'install.android.menu.dots': 'Es el botón de los tres puntos, junto a la dirección.',
+  'install.android.menu.samsung': 'Es el botón de las tres rayas, abajo a la derecha.',
+  'install.android.add': 'Elige «Instalar aplicación» o «Añadir a pantalla de inicio»',
+  'install.android.add.samsung': 'Elige «Añadir página a» y luego «Pantalla de inicio»',
+  'install.android.confirm': 'Confirma con «Instalar» o «Añadir»',
+
+  'install.desktop.app': 'Como app',
+  'install.desktop.app.text':
+    'Se abre en su propia ventana, con su icono, sin pestañas ni barra de direcciones.',
+  'install.desktop.chromium': 'Pulsa el icono de instalar',
+  'install.desktop.chromium.hint':
+    'Al final de la barra de direcciones. Si no lo ves, búscalo en el menú del navegador, en «Guardar y compartir».',
+  'install.desktop.edge.hint':
+    'En la barra de direcciones. Si no lo ves, búscalo en el menú del navegador, en «Aplicaciones».',
+  'install.desktop.safari': 'Elige «Archivo» › «Añadir al Dock»',
+  'install.desktop.safari.hint': 'En la barra de menús de Safari, con macOS Sonoma o posterior.',
+  'install.desktop.firefox': 'Firefox no instala webs como apps',
+  'install.desktop.firefox.hint':
+    'Puedes hacerlo con Chrome o Edge, o con Safari en un Mac. O guárdala en marcadores.',
+  'install.desktop.generic': 'Desde el navegador',
+  'install.desktop.generic.hint':
+    'En Chrome y Edge, con el icono de instalar de la barra de direcciones. En Safari para Mac, en «Archivo» › «Añadir al Dock».',
+  'install.desktop.bookmark': 'En marcadores',
+  'install.desktop.bookmark.text': 'Se queda en tu navegador, junto a tus otras webs, a un clic.',
+  'install.desktop.bookmark.press': 'Pulsa',
+  'install.desktop.bookmark.or': 'o',
+  'install.desktop.shortcut':
+    'Para crear un acceso directo, arrastra al escritorio el icono que hay a la izquierda de la dirección.',
+
+  'install.invite.label': 'Instalar ¿Qué tal hoy?',
+  'install.invite.title': 'Ten ¿Qué tal hoy? a mano',
+  'install.invite.text.mobile': 'Añádela a tu pantalla de inicio y ábrela como una app.',
+  'install.invite.text.desktop': 'Instálala y ábrela en su propia ventana, como una app.',
+  'install.invite.dismiss': 'Ahora no',
+
   // ── Official warnings and credits ────────────────────────────
   'warning.region': 'Avisos meteorológicos oficiales',
   'warning.title': 'Aviso {level}: {phenomenon}',

@@ -6,6 +6,7 @@ import {
   withViewTransitions,
 } from '@angular/router';
 import { provideFeedback } from './core/feedback/provide-feedback';
+import { provideAppServiceWorker } from './core/pwa/provide-service-worker';
 import { I18nTitleStrategy } from './core/i18n/i18n-title.strategy';
 import { routes } from './app.routes';
 import { RouteTransitions } from './layout/route-transitions';
@@ -27,5 +28,7 @@ export const appConfig: ApplicationConfig = {
     provideDataSources(),
     // Feedback is always real: the demo build has no pretend "sent".
     provideFeedback(),
+    // Installable as an app: keeps the app itself, never the weather.
+    provideAppServiceWorker(),
   ],
 };

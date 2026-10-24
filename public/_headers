@@ -1,0 +1,18 @@
+# Cache headers for Cloudflare Pages and Netlify (other hosts ignore this file).
+# The HTML, the manifest and the service worker's own files are always asked
+# for again, so a new deploy reaches installed copies. Matching rules add up
+# their headers, so nothing here may also match these paths with a long cache.
+
+/
+  Cache-Control: no-cache
+/index.html
+  Cache-Control: no-cache
+/ngsw.json
+  Cache-Control: no-cache
+/ngsw-worker.js
+  Cache-Control: no-cache
+/safety-worker.js
+  Cache-Control: no-cache
+/manifest.webmanifest
+  Content-Type: application/manifest+json
+  Cache-Control: no-cache

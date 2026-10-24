@@ -3,10 +3,12 @@ import { Component, computed, inject } from '@angular/core';
 import { DATA_MODE } from '../../core/data/http/data-config';
 import { msg, MessageKey } from '../../core/i18n/i18n.model';
 import { TranslatePipe } from '../../core/i18n/t.pipe';
+import { InstallStore } from '../../core/pwa/install.store';
 import { OfficialStore } from '../../core/state/official.store';
 import { SectionStatus } from '../../core/state/section-state';
 import { ThemePreference, ThemeStore } from '../../core/state/theme.store';
 import { Sheet } from '../../shared/ui/sheet/sheet';
+import { InstallOption } from '../install/install-option';
 import { LanguageSelector } from '../language-selector/language-selector';
 import { UiStore } from '../ui.store';
 import { DEMO_CONTROLS } from './demo-controls.token';
@@ -17,16 +19,17 @@ const STATUS: Readonly<Record<Exclude<SectionStatus, 'empty'>, MessageKey>> = {
   loading: 'settings.status.checking',
 };
 
-/** Language, appearance, where the data comes from and — in the demo build — the demo's controls. */
+/** Language, appearance, installing the web, where the data comes from and — in the demo build — the demo's controls. */
 @Component({
   selector: 'qth-settings-panel',
-  imports: [Sheet, NgComponentOutlet, TranslatePipe, LanguageSelector],
+  imports: [Sheet, NgComponentOutlet, TranslatePipe, LanguageSelector, InstallOption],
   templateUrl: './settings-panel.html',
   styleUrl: './settings-panel.scss',
 })
 export class SettingsPanel {
   protected readonly ui = inject(UiStore);
   protected readonly theme = inject(ThemeStore);
+  protected readonly install = inject(InstallStore);
   private readonly official = inject(OfficialStore);
 
   protected readonly isDemo = inject(DATA_MODE) === 'demo';

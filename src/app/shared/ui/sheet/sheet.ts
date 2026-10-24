@@ -1,3 +1,4 @@
+import { DOCUMENT } from '@angular/common';
 import {
   afterNextRender,
   Component,
@@ -38,6 +39,7 @@ export class Sheet {
   protected readonly titleId = `qth-sheet-title-${nextId++}`;
   private readonly dialog = viewChild.required<ElementRef<HTMLDialogElement>>('dialog');
   private readonly panel = viewChild.required<ElementRef<HTMLElement>>('panel');
+  private readonly document = inject(DOCUMENT);
 
   private drag: { pointerId: number; startY: number; startTime: number; offset: number } | null =
     null;
@@ -51,6 +53,11 @@ export class Sheet {
         if (shouldOpen && !dialog.open) {
           this.resetPanel();
           dialog.classList.remove('is-closing');
+          // Opened over another sheet (a guide from Settings): the page is already dimmed.
+          dialog.classList.toggle(
+            'is-stacked',
+            !!this.document.querySelector('dialog.sheet[open]'),
+          );
           dialog.showModal();
         } else if (!shouldOpen && dialog.open) {
           this.animateClose();

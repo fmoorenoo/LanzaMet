@@ -466,3 +466,41 @@ Skills usadas: Emil Kowalski (arrastre, lluvia, transiciones) e Impeccable (cohe
 
 - Poner la dirección pública en `SHARE_CONFIG` cuando exista.
 - Probar en móviles reales: Android con Chrome y iPhone con Safari, enviando la tarjeta a WhatsApp.
+
+## Instalar la web como app (24-10-2026)
+
+### Hecho
+
+1. **Dónde va**: en Ajustes, como «Acceso rápido» (sitio fijo y fácil de encontrar), y con una invitación contextual discreta para quien vuelve. Ni en la barra (es una acción de una sola vez) ni en Hoy (no ocupa la pantalla principal).
+2. **PWA**:
+   - manifest con `display: standalone`, nombre y nombre corto;
+   - iconos «any», «maskable» y `apple-touch-icon` sacados de la marca; de paso, `favicon.svg` recorta ya sus esquinas inferiores, que la ola dejaba cuadradas;
+   - metadatos de iOS;
+   - service worker de Angular que guarda la app y nunca los datos.
+3. **Instalación por plataforma**:
+   - botón con `beforeinstallprompt` donde existe;
+   - guía con los pasos y el icono de cada navegador en iPhone/iPad, Android (Samsung Internet con sus propias palabras), Mac con Safari y Firefox;
+   - en el ordenador, la diferencia entre app y marcadores, con `Ctrl + D` / `Cmd + D`;
+   - estado «Ya la tienes instalada» con una marca que crece, y nada que instalar dentro de la app.
+4. **Invitación**: nunca en la primera visita, como mucho dos veces y con una semana de separación, nunca después de cerrarla. Espera a que la página esté visible y sin hojas abiertas, y no roba el foco.
+5. **Rendimiento**:
+   - la guía (12 kB) y la invitación (4 kB) se cargan con `import()` solo cuando hacen falta. `@defer` costaba 9 kB de runtime en el bundle inicial, casi lo mismo que ahorraba;
+   - el bundle inicial queda en 497,9 kB, dentro del presupuesto de 500 kB.
+6. **Sin conexión**: al volver la red, los datos se piden otra vez enseguida.
+
+### Validación
+
+- **Tests**: 174 en verde (+26: detección de dispositivo con user agents reales, política de la invitación, `InstallStore` con ofertas simuladas aceptadas, rechazadas, tempranas y repetidas, y contenido de la guía por navegador). **Lint**, **formato** y **build de producción** sin avisos.
+- **En el navegador**: Chrome sin interfaz por CDP, porque la extensión no estaba conectada.
+  - Chrome lee el manifest sin errores y no da ningún error de instalabilidad (`Page.getInstallabilityErrors`). Llega la oferta de instalación y el service worker queda activo y controlando la página, con 25 archivos, todos del propio origen.
+  - Simulando un iPhone con Safari: en la primera carga no hay invitación; en una visita de vuelta aparece a los 8 s, se cuenta y, al usarla, no vuelve. Guía de iOS y de Android, y Ajustes.
+  - Escritorio: Instalar, «Ver otras formas» y la guía con app y marcadores, encima de Ajustes con el velo más ligero.
+  - Con todos los dominios externos sin resolver, «No hay conexión con el servicio meteorológico» y «Reintentar», sin datos viejos. Con el servidor apagado, la copia guardada abre la app.
+  - Sin desbordamiento horizontal a 320, 390 y 1440 px, en claro y oscuro, en español e inglés.
+- **axe** (WCAG 2.2 AA y buenas prácticas) sin violaciones: invitación, Ajustes y guía (ordenador, iPhone y Android) en escritorio, tema oscuro, inglés.
+
+### Pendiente
+
+- Instalarla en dispositivos reales: Android con Chrome y Samsung Internet, iPhone con Safari y Mac con Safari.
+- Desplegar con HTTPS y las cabeceras de `public/_headers`, y comprobar en DevTools → Application que el manifest y el service worker están bien en el dominio público.
+- Si se quiere el diálogo de instalación ampliado de Chrome, añadir `screenshots` al manifest.

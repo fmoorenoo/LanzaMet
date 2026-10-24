@@ -8,3 +8,9 @@
 
 <qth-location-picker id="location-selector" />
 <qth-settings-panel id="settings-panel" />
+@if (installGuide(); as guide) {
+  <ng-container *ngComponentOutlet="guide" />
+}
+@if (installInvite(); as invite) {
+  <ng-container *ngComponentOutlet="invite" />
+}

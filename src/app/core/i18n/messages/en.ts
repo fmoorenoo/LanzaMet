@@ -433,6 +433,87 @@ export const en: Messages = {
   'settings.disclaimer':
     'These are forecasts and warnings, not guarantees: before swimming or going out to sea, check the flags and follow lifeguards and the authorities.',
 
+  // ── Installing the web as an app ────────────────────────────
+  'install.group': 'Quick access',
+  'install.option.title.mobile': 'Add it to your home screen',
+  'install.option.title.desktop': 'Keep it handy on your computer',
+  'install.option.hint.mobile': 'With its own icon, among your apps. No app store.',
+  'install.option.hint.desktop': 'As an app in its own window, or as a bookmark.',
+  'install.option.hint.desktop.prompt': 'In its own window, with its own icon, like an app.',
+  'install.option.installed': "It's already installed",
+  'install.option.installed.mobile': 'Open it from your home screen.',
+  'install.option.installed.desktop': 'Open it from your desktop or apps menu.',
+  'install.action.install': 'Install',
+  'install.action.how': 'Show me how',
+  'install.action.more': 'See other ways',
+  'install.done': "Installed. You'll find it with your apps.",
+
+  'install.guide.title.mobile': 'Add to home screen',
+  'install.guide.title.desktop': 'Keep ¿Qué tal hoy? handy',
+  'install.guide.preview.mobile': "How it'll look among your apps",
+  'install.guide.preview.desktop': "How it'll look on your computer",
+  'install.guide.device': 'Instructions for',
+  'install.device.ios': 'iPhone or iPad',
+  'install.device.android': 'Android',
+  'install.device.desktop': 'Computer',
+  'install.guide.installed': "It's already installed on this device.",
+  'install.guide.prompt': 'Your browser can install it right now.',
+  'install.guide.prompt.menu': 'You can also do it from the browser menu.',
+  'install.guide.note':
+    'Same website, free and no app store: it updates itself and takes up hardly any space.',
+
+  'install.ios.intro':
+    "Safari doesn't install websites with a button: it's done from its Share menu.",
+  'install.ios.inApp':
+    "You're viewing the site inside another app. Open it in Safari and add it from there.",
+  'install.ios.share': 'Tap "Share"',
+  'install.ios.share.safari':
+    "In Safari's toolbar. If you can't see it, tap the three-dots button first.",
+  'install.ios.share.other': "In the address bar or the browser's menu.",
+  'install.ios.add': 'Choose "Add to Home Screen"',
+  'install.ios.add.hint': 'If it isn\'t there, scroll the list up or tap "View More".',
+  'install.ios.confirm': 'Tap "Add"',
+  'install.step.done': 'The icon will appear with your apps.',
+
+  'install.android.intro': 'Your browser does it from its menu.',
+  'install.android.inApp':
+    "You're viewing the site inside another app. Open it in your browser and add it from there.",
+  'install.android.menu': 'Open the browser menu',
+  'install.android.menu.dots': "It's the three-dots button next to the address.",
+  'install.android.menu.samsung': "It's the three-lines button, bottom right.",
+  'install.android.add': 'Choose "Install app" or "Add to Home screen"',
+  'install.android.add.samsung': 'Choose "Add page to", then "Home screen"',
+  'install.android.confirm': 'Confirm with "Install" or "Add"',
+
+  'install.desktop.app': 'As an app',
+  'install.desktop.app.text':
+    'Opens in its own window, with its own icon, without tabs or an address bar.',
+  'install.desktop.chromium': 'Click the install icon',
+  'install.desktop.chromium.hint':
+    'At the end of the address bar. If you can\'t see it, look in the browser menu under "Save and share".',
+  'install.desktop.edge.hint':
+    'In the address bar. If you can\'t see it, look in the browser menu under "Apps".',
+  'install.desktop.safari': 'Choose "File" › "Add to Dock"',
+  'install.desktop.safari.hint': "In Safari's menu bar, on macOS Sonoma or later.",
+  'install.desktop.firefox': "Firefox doesn't install websites as apps",
+  'install.desktop.firefox.hint':
+    'You can with Chrome or Edge, or with Safari on a Mac. Or bookmark it.',
+  'install.desktop.generic': 'From your browser',
+  'install.desktop.generic.hint':
+    'In Chrome and Edge, with the install icon in the address bar. In Safari on a Mac, from "File" › "Add to Dock".',
+  'install.desktop.bookmark': 'As a bookmark',
+  'install.desktop.bookmark.text': 'Stays in your browser with your other sites, one click away.',
+  'install.desktop.bookmark.press': 'Press',
+  'install.desktop.bookmark.or': 'or',
+  'install.desktop.shortcut':
+    'For a desktop shortcut, drag the icon to the left of the web address onto your desktop.',
+
+  'install.invite.label': 'Install ¿Qué tal hoy?',
+  'install.invite.title': 'Keep ¿Qué tal hoy? handy',
+  'install.invite.text.mobile': 'Add it to your home screen and open it like an app.',
+  'install.invite.text.desktop': 'Install it and open it in its own window, like an app.',
+  'install.invite.dismiss': 'Not now',
+
   // ── Official warnings and credits ────────────────────────────
   'warning.region': 'Official weather warnings',
   'warning.title': '{^level} warning: {phenomenon}',

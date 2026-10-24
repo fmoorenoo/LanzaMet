@@ -111,6 +111,7 @@ Validación del 22-10-2026 en Arrecife: el modelo adelanta 24–37 min respecto 
 - **Mar**: marea estimada, curva del día, pleamares y bajamares de hoy y mañana, oleaje, mar de fondo, agua, avisos costeros y zonas más tranquilas.
 - **Dónde ir**: recomendaciones derivadas de los datos (playa, sin viento, mar tranquilo, atardecer, paseo, olas).
 - **Ayúdanos** (`/mejorar`): formulario para avisar de errores y proponer sugerencias o mejoras; el correo es opcional. Ver [Comentarios de los usuarios](#comentarios-de-los-usuarios).
+- **Ajustes**: idioma, apariencia, **acceso rápido** (instalar la web como app o guardarla en marcadores; ver [Instalar la web](#instalar-la-web-pwa)) y de dónde salen los datos.
 
 ## Comentarios de los usuarios
 
@@ -147,6 +148,84 @@ La sección **Ayúdanos** envía los mensajes por correo electrónico a través 
 La clave de Web3Forms **no es secreta**: según su documentación puede ser pública, porque solo sirve para enviar correos a la dirección que la creó, y acaba en el JavaScript que descarga el navegador. Se deja fuera del repositorio para no atar el código a un buzón concreto. Con el plan Pro se puede restringir a tu dominio.
 
 **Cambiar de proveedor**: la interfaz solo habla con `FeedbackService`, y este con el puerto `FeedbackTransport` (`core/feedback`). Para usar otro servicio basta con escribir otra clase `FeedbackTransport` y enlazarla en `provideFeedback()`.
+
+## Instalar la web (PWA)
+
+¿Qué tal hoy? se puede tener entre las apps del móvil o en el escritorio del ordenador sin pasar por ninguna tienda: es la misma web, instalada como aplicación web progresiva (PWA). No hay app nativa.
+
+### Dónde está
+
+- **Ajustes → Acceso rápido** es su sitio fijo, entre Apariencia y las fuentes de datos. Es una fila con el icono de la app, una frase y un botón:
+  - **Instalar**, si el navegador permite hacerlo desde la web (Chrome, Edge, Samsung Internet y Opera, mediante `beforeinstallprompt`). Abre el diálogo del propio navegador.
+  - **Ver cómo**, si el navegador lo hace desde su menú (Safari, Firefox para Android) o no lo hace (Firefox de escritorio). Abre una guía.
+  - **Ya la tienes instalada**, con una marca verde, cuando consta que está instalada.
+  - En un ordenador con instalación directa, «Ver otras formas» abre la guía, que compara la app con los marcadores.
+  - Si la web ya se está ejecutando como app (`display-mode: standalone` o `navigator.standalone` en iOS), la sección no aparece.
+- **Invitación contextual**: una tarjeta pequeña sobre la barra de pestañas en el móvil y en la esquina inferior derecha en el ordenador. Su política (`core/pwa/install-record.ts`):
+  - nunca en la primera visita: espera al segundo día distinto con visita;
+  - como mucho dos veces, con una semana entre una y otra;
+  - nunca más si se cierra (la cruz, o Escape desde sus botones), si se usa o si la web ya está instalada;
+  - aparece 8 s después de cargar, solo con la página visible y sin ninguna hoja abierta; no toma el foco;
+  - solo donde se puede cumplir lo que promete: con el botón del navegador disponible, o en iPhone/iPad y Firefox para Android, donde los pasos son cortos y seguros. Nunca dentro del navegador de otra app (Instagram, Facebook…), que no puede añadir nada a la pantalla de inicio.
+- **No está en la barra de navegación ni en Hoy**: es una acción que se hace una sola vez y no merece una pestaña ni espacio fijo en la pantalla principal.
+- Al recibir la oferta de instalación, la web cancela el banner automático de Chrome (`preventDefault`), así que el navegador no insiste por su cuenta. Un script en línea de `index.html` guarda la oferta si llega antes de que arranque Angular.
+
+### Qué dice en cada plataforma
+
+La guía (`layout/install/install-guide`) se abre en el dispositivo detectado (`core/pwa/device.ts`, a partir del user agent; el iPad se reconoce porque se presenta como Mac con pantalla táctil). Unos botones permiten ver los pasos de otro dispositivo si la detección falla. Cada paso muestra el icono que hay que buscar en pantalla, dibujado como lo dibuja el navegador. No se promete nada que el navegador no haga.
+
+| Dónde | Qué ofrece |
+|---|---|
+| Android con Chrome, Edge, Samsung Internet u Opera | Botón **Instalar** (diálogo del navegador). Si aún no hay oferta, los pasos del menú |
+| Android, Samsung Internet sin oferta | Menú (tres rayas) → «Añadir página a» → «Pantalla de inicio» |
+| Android, Firefox y otros | Menú (tres puntos) → «Instalar aplicación» o «Añadir a pantalla de inicio» |
+| iPhone y iPad, Safari | «Safari no instala webs con un botón»: Compartir (si no se ve, primero el botón de los tres puntos) → «Añadir a pantalla de inicio» → «Añadir» |
+| iPhone y iPad, Chrome, Edge o Firefox | Los mismos pasos, con Compartir en la barra de direcciones o en el menú |
+| Navegador dentro de otra app | Que abra la página en Safari (o en su navegador) y la añada desde allí |
+| Ordenador, Chrome, Edge u Opera | Botón **Instalar**; sin oferta, el icono de instalar de la barra de direcciones o su menú |
+| Mac, Safari (Sonoma o posterior) | «Archivo» → «Añadir al Dock» |
+| Ordenador, Firefox | Que Firefox no instala webs como app, y las alternativas |
+| Todos los ordenadores | **En marcadores**: `Ctrl + D` (`Cmd + D` en Mac; las dos combinaciones si se mira desde un móvil) y cómo crear un acceso directo arrastrando el icono de la barra de direcciones. Nunca se añade un marcador automáticamente: no hay API estándar para ello |
+
+En el ordenador la guía separa **Como app** («se abre en su propia ventana, con su icono, sin pestañas ni barra de direcciones») de **En marcadores** («se queda en tu navegador, junto a tus otras webs, a un clic»). Todo está en español y en inglés.
+
+**Cuándo consta que está instalada**: al aceptar el diálogo del navegador, al recibir `appinstalled` o al abrirse en modo app. Se guarda en este dispositivo (`localStorage`, clave `qth.install`, junto al recuento de días con visita y de invitaciones; nada más). Desinstalar no deja rastro, así que, si el navegador vuelve a ofrecer la instalación, se olvida. En iOS no hay forma de saberlo desde Safari: la guía se sigue ofreciendo hasta que la web se abre como app.
+
+### Manifest e iconos
+
+- `public/manifest.webmanifest`: `id` y `start_url` `/`, `display: standalone`, nombre «¿Qué tal hoy? · Lanzarote», nombre corto «Qué tal hoy» (el que se lee bajo el icono), fondo y color de tema `#f8fafb` (el fondo de día, el mismo de `<meta name="theme-color">`), idioma `es`.
+- Iconos en `public/icons/`, sacados de la marca (el sol poniéndose en el Atlántico):
+  - `icon.svg`, `icon-192.png` e `icon-512.png` («any»), con las esquinas recortadas y transparentes;
+  - `icon-maskable-192.png` e `icon-maskable-512.png` («maskable»), a sangre, con el sol dentro de la zona segura del 80 %;
+  - `apple-touch-icon.png` (180 px), a sangre y sin transparencia, porque iOS rellena la transparencia de negro y redondea él las esquinas.
+- Los PNG se renderizaron desde los SVG con Chrome sin interfaz. Para regenerarlos, abre el SVG a su tamaño en una página con fondo transparente y haz una captura (`chrome --headless --screenshot --default-background-color=00000000 --window-size=512,512`).
+- `index.html` enlaza el manifest y el `apple-touch-icon`, y declara `apple-mobile-web-app-title` y la barra de estado de iOS por defecto. El color de la barra en modo app lo sigue llevando `ThemeStore`, como en el navegador: el cielo en Hoy y el fondo en las demás pantallas.
+- El manifest va en español, el idioma por defecto: solo puede tener uno, y el nombre es el mismo en los dos.
+
+### Service worker y datos frescos
+
+El service worker es el de Angular (`@angular/service-worker`), configurado en `ngsw-config.json` y registrado solo en la build de producción (`provideAppServiceWorker()`), 30 s después de que la primera pantalla se asiente.
+
+- **Guarda la app, nunca el tiempo.** Solo cachea el HTML, el JS, el CSS, las fuentes, los iconos y el manifest. No hay `dataGroups`: Open-Meteo, el API propio (`/api`) y Web3Forms van siempre a la red, y su caducidad sigue siendo la de `ResponseCache` (30 min el tiempo, 60 el mar…). Comprobado: la caché del service worker solo contiene archivos del propio origen.
+- **Navegación con red primero** (`navigationRequestStrategy: freshness`): con conexión, cada visita carga el `index.html` recién desplegado. La copia guardada solo se usa sin red. Así nadie se queda con una versión antigua de la app.
+- **Sin conexión**, una copia instalada abre igual y cada pantalla dice que no hay conexión con el servicio meteorológico, con «Reintentar». Nunca se muestran datos caducados como si fueran actuales.
+- **Al volver la conexión** (`online`), los datos se piden otra vez sin esperar a la siguiente revisión de 15 min.
+- Si el navegador expulsa parte de la caché y la versión guardada ya no se puede servir entera (`unrecoverable`), la página se recarga.
+- **Tamaño**: unos 1,2 MB entre todo el JS, el CSS y las fuentes. El JS y el CSS se descargan al instalar el worker; las fuentes y los iconos, la primera vez que se usan.
+- `/api/**` queda fuera de la navegación del worker, así que nunca devuelve el HTML de la app.
+
+### Requisitos para que se pueda instalar en público
+
+1. **HTTPS** en el dominio público. Los navegadores solo permiten service workers e instalación en un origen seguro; `localhost` es la única excepción, para desarrollo.
+2. **La web en la raíz del dominio** (`/`). Para servirla en una subruta hay que cambiar `start_url`, `scope` e `id` del manifest, el `<base href>` y compilar con `--base-href`.
+3. **Cabeceras**: `index.html`, `ngsw.json`, `ngsw-worker.js`, `safety-worker.js` y `manifest.webmanifest` sin caché larga (`Cache-Control: no-cache`), para que un despliegue nuevo llegue a las copias instaladas. El manifest con `Content-Type: application/manifest+json`. `public/_headers` ya lo hace en Cloudflare Pages y Netlify; en otro hosting hay que configurarlo a mano.
+4. **Rutas de la SPA**: cualquier ruta sin extensión (`/mar`, `/zonas`…) debe servir `index.html`. Cloudflare Pages lo hace solo si no hay `404.html`; en Netlify hace falta una regla `/* /index.html 200`.
+5. **Build de producción** (`npm run build`): solo esa build incluye `ngsw-worker.js` y `ngsw.json`. `npm start` y la demo no registran service worker.
+6. Chrome pide además unos segundos de uso real antes de ofrecer la instalación. Hasta entonces, la guía explica cómo hacerlo desde el menú.
+
+Comprobarlo tras desplegar: Chrome DevTools → Application → Manifest (sin errores ni avisos de instalabilidad) y Service workers (activo, controlando la página). En Lighthouse, la categoría PWA ya no existe; los avisos de instalabilidad salen en el panel Application.
+
+**Si hubiera que retirarlo**: quitar `provideAppServiceWorker()` y `serviceWorker` de `angular.json`, y publicar una vez `safety-worker.js` como `ngsw-worker.js`. Ese worker se desregistra solo y borra sus cachés en los dispositivos que lo tenían.
 
 ## El veredicto
 
@@ -219,11 +298,14 @@ src/app/
   core/state         stores con Signals y rxResource (Forecast, Island, Official, Locations…)
   core/feedback      comentarios: FeedbackService, puerto FeedbackTransport, Web3FormsTransport,
                      reglas antirrepetición (puras)
+  core/pwa           instalación: InstallStore (oferta del navegador, modo app, invitación),
+                     dispositivo y política de la invitación (puras), service worker
   data-providers.ts  proveedores reales; la build "demo" lo sustituye por data-providers.demo.ts
   mocks/             simulador + fuentes simuladas + controles de demo (solo build demo y tests)
   shared/            escena, iconos, hoja, aviso oficial, crédito de datos, recomendación,
                      arco del sol, scroll horizontal
-  layout/            navegación, selector de zonas, selector de idioma, ajustes
+  layout/            navegación, selector de zonas, selector de idioma, ajustes,
+                     instalación (fila de Ajustes, guía e invitación; las dos últimas con carga diferida)
   features/          today · zones · sea · plans · feedback (rutas con carga diferida)
 server/              API propio (Fetch estándar): avisos y observaciones de AEMET, con tests
 scripts/             verify-sources.ts: comprobación en vivo de todas las fuentes
@@ -231,7 +313,7 @@ scripts/             verify-sources.ts: comprobación en vivo de todas las fuent
 
 ## Despliegue
 
-- **Web**: estática (`npm run build` → `dist/que-tal-hoy/browser`), en cualquier hosting. Para que funcione «Ayúdanos», compila con la clave de Web3Forms (ver [Configurar la clave](#configurar-la-clave-de-web3forms)).
+- **Web**: estática (`npm run build` → `dist/que-tal-hoy/browser`), en cualquier hosting con **HTTPS**. Para que funcione «Ayúdanos», compila con la clave de Web3Forms (ver [Configurar la clave](#configurar-la-clave-de-web3forms)). Para que se pueda instalar como app: en la raíz del dominio, rutas de la SPA hacia `index.html` y las cabeceras de `public/_headers` (ver [Requisitos para que se pueda instalar](#requisitos-para-que-se-pueda-instalar-en-público)).
 - **API**: `server/api.ts` exporta un manejador `fetch` estándar. Sirve tal cual como Cloudflare Worker (`export default`), en Deno, o en cualquier host Node con `node server/dev.ts` (puerto en `PORT`). Variables: `AEMET_API_KEY` (secreto) y `ALLOWED_ORIGIN` (por defecto `*`).
 - La web llama a `/api` en su mismo origen. Si el API vive en otro dominio, cambia `provideHttpDataSources({ proxyUrl: 'https://…/api' })` en `src/app/data-providers.ts`.
 - Cabe en el plan gratuito de Cloudflare Workers (10 ms de CPU por petición). Avisos: dos ficheros de ~8 KB. Observaciones: 7 estaciones de ~5 KB, unos 0,3 ms cada una. Cada actualización hace como mucho 15 subpeticiones a AEMET, por debajo del límite de 50.
@@ -250,4 +332,7 @@ Sistema documentado en [`docs/DESIGN.md`](docs/DESIGN.md). Tokens en `src/styles
 - Revisión visual hecha en Chrome headless (360–1920 px); falta probar en dispositivos reales.
 - Las horas de amanecer y atardecer son las de Open-Meteo para cada zona. Si faltan, se dice y la escena se dibuja con un día nominal (7:30–19:30), solo como ilustración.
 - La descripción de un aviso solo sale en inglés si AEMET la publica así; parte de su texto libre puede venir en español.
+- La instalación se ha comprobado en Chrome sin interfaz (manifest sin errores ni avisos de instalabilidad, service worker activo, oferta de instalación recibida) y simulando iPhone y Android. Falta instalarla en dispositivos reales: Android con Chrome y Samsung Internet, iPhone con Safari y un Mac con Safari.
+- Safari no dice si la web está instalada: en un iPhone, la guía se sigue ofreciendo en el navegador aunque ya esté en la pantalla de inicio (no así dentro de la app).
+- Los nombres de los menús de cada navegador cambian con sus versiones. La guía nombra lo estable («Compartir», «Añadir a pantalla de inicio», «Archivo › Añadir al Dock») y, para Chrome y Edge, la sección del menú.
 - «Ayúdanos» necesita una clave de Web3Forms en el build. La entrega real a un buzón está pendiente de probar con una clave; los tests y la revisión en el navegador simulan las respuestas de Web3Forms. Las reglas antirrepetición viven en el navegador: frenan los clics repetidos y los scripts sencillos, no a quien borre su almacenamiento. Lo demás lo cubre el filtro de spam de Web3Forms.
