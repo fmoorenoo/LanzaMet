@@ -17,6 +17,7 @@
     "format": "prettier --write \"src/**/*.{ts,html,scss}\" \"server/*.ts\"",
     "format:check": "prettier --check \"src/**/*.{ts,html,scss}\" \"server/*.ts\"",
     "preview": "node scripts/build-production.ts --allow-without-feedback && wrangler dev --port 8788",
+    "preview:lan": "node scripts/build-production.ts --allow-without-feedback && wrangler dev --port 8788 --ip 0.0.0.0",
     "deploy": "node scripts/build-production.ts && wrangler deploy",
     "deploy:check": "node scripts/build-production.ts --allow-without-feedback && wrangler deploy --dry-run --outdir .wrangler/dry-run"
   },

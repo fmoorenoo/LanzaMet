@@ -165,6 +165,16 @@ Es el mismo Worker con el runtime de Cloudflare (`workerd`): web, API, cabeceras
 - Tras cambiar el código, vuelve a lanzar `npm run preview`. Con la vista previa en marcha, Wrangler no detecta los archivos nuevos con hash de una build posterior y sirve la página en su lugar.
 - Si `npm run preview` dice que el puerto está ocupado, cierra la vista previa anterior: a veces su proceso `workerd` sigue vivo.
 
+### En el móvil
+
+```bash
+npm run preview:lan    # lo mismo, abierto a la red local
+```
+
+Con el móvil en la misma wifi, abre `http://<IP del ordenador>:8788` (la IP sale en `ipconfig`, «Dirección IPv4» de la wifi). La primera vez, Windows puede preguntar si deja a Node o `workerd` aceptar conexiones: permítelo en redes privadas; si la wifi está marcada como pública, márcala como privada.
+
+Por HTTP y con una IP, el navegador no considera la página segura: funciona todo salvo el service worker y lo que depende de él (instalar como app, funcionar sin conexión). Para probar eso, en Android conecta el móvil por USB, abre `chrome://inspect` en el ordenador y redirige el puerto 8788: en el móvil, `http://localhost:8788` sí cuenta como segura.
+
 `npm run deploy:check` hace la build sin clave y un *dry run* de Wrangler: comprueba que todo se empaqueta, sin publicar nada.
 
 ## Consumo y límites (plan gratuito)
