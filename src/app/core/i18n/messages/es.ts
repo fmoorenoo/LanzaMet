@@ -408,8 +408,8 @@ export const es = {
   'settings.appearance': 'Apariencia',
   'settings.theme.auto': 'Según la hora',
   'settings.theme.auto.hint': 'De día claro, de noche oscuro, con el sol de la zona.',
-  'settings.theme.light': 'Siempre claro',
-  'settings.theme.dark': 'Siempre oscuro',
+  'settings.theme.light': 'Claro',
+  'settings.theme.dark': 'Oscuro',
   'settings.sources': 'De dónde salen los datos',
   'settings.source.forecast': 'Previsión del tiempo',
   'settings.source.forecast.text':
