@@ -1,14 +1,17 @@
 import { Routes } from '@angular/router';
 import { MessageKey } from './core/i18n/i18n.model';
+import { TodayPage } from './features/today/today.page';
 
 /** Titles are message keys; I18nTitleStrategy writes them in the visitor's language. */
 const title = (key: MessageKey) => key;
 
 export const routes: Routes = [
+  // Eager: it is the page nearly every visit opens on, and loading it lazily
+  // left a chain of downloads between the first byte and the first paint.
   {
     path: '',
     title: title('route.today'),
-    loadComponent: () => import('./features/today/today.page').then((m) => m.TodayPage),
+    component: TodayPage,
   },
   {
     path: 'zonas',

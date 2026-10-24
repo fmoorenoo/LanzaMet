@@ -23,7 +23,8 @@
     <meta name="apple-mobile-web-app-title" content="LanzaMet" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-    <script src="install-prompt.js"></script>
+    <!-- Deferred: it still runs before the app (it comes first), without holding up the first paint. -->
+    <script src="install-prompt.js" defer></script>
   </head>
   <body>
     <lm-root></lm-root>
