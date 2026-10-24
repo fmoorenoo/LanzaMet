@@ -24,6 +24,7 @@ import {
   WAVE_DURATIONS,
   wavePaths,
 } from './geometry';
+import { afloatFor, cloudOpacity, glintFor, visibleClouds } from './layers';
 import { SceneState } from './scene-state';
 import { AFLOAT_PATHS, sceneryArt } from './scenery';
 
@@ -70,36 +71,16 @@ export class Scene {
   protected readonly scenery = computed(() => sceneryArt(this.state().scenery));
   protected readonly shapes = AFLOAT_PATHS;
 
-  /**
-   * Boats always; windsurf sails only by day, more of them the harder it
-   * blows; a breaker only when the sea is up, bigger the bigger it is.
-   */
-  protected readonly afloat = computed(() => {
-    const { wind, daylight, seaLevel } = this.state();
-    const sailing =
-      daylight > 0.45 ? Math.round(Math.min(1, Math.max(0, (wind - 0.18) / 0.36)) * 3) : 0;
-    let sails = 0;
-    return this.scenery()
-      .afloat.filter((a) => {
-        if (a.kind === 'sail') return sails++ < sailing;
-        if (a.kind === 'breaker') return seaLevel >= 2;
-        return true;
-      })
-      .map((a) =>
-        a.kind === 'breaker' ? { ...a, scale: a.scale * (0.75 + 0.2 * (seaLevel - 2)) } : a,
-      );
-  });
+  protected readonly afloat = computed(() => afloatFor(this.scenery(), this.state()));
 
   protected readonly waves = computed(() => {
     const level = this.state().seaLevel;
     return [wavePaths(level, 150, 0.45), wavePaths(level, 240, 0.75), wavePaths(level, 300, 1)];
   });
 
-  private readonly visibleClouds = computed(() => {
-    const cover = this.state().clouds;
-    const count = cover < 0.06 ? 0 : Math.max(1, Math.round(cover * CLOUDS.length));
-    return this.variant() === 'mini' ? Math.min(count, 2) : count;
-  });
+  private readonly visibleClouds = computed(() =>
+    visibleClouds(this.state(), this.variant() === 'mini'),
+  );
 
   protected readonly sunTransform = computed(
     () => `translate3d(${this.state().sun.x}%, ${this.state().sun.y}%, 0)`,
@@ -110,13 +91,11 @@ export class Scene {
 
   /** The sea reflects whichever light is up. */
   protected readonly glint = computed(() => {
-    const { sun, moon, clouds } = this.state();
-    const useSun = sun.visible > 0;
-    const strength = (useSun ? sun.visible : moon.visible * 0.45) * (1 - clouds * 0.85);
+    const glint = glintFor(this.state());
     return {
-      transform: `translate3d(${useSun ? sun.x : moon.x}%, 0, 0)`,
-      opacity: strength,
-      color: useSun ? sun.color : 'oklch(0.94 0.03 95)',
+      transform: `translate3d(${glint.x}%, 0, 0)`,
+      opacity: glint.opacity,
+      color: glint.color,
     };
   });
 
@@ -182,10 +161,8 @@ export class Scene {
     });
   }
 
-  protected cloudOpacity(index: number, layer: number): number {
-    if (index >= this.visibleClouds()) return 0;
-    const base = layer === 1 ? 0.7 : 0.95;
-    return base * (0.55 + 0.45 * Math.min(1, this.state().clouds * 1.6));
+  protected cloudOpacity(index: number): number {
+    return cloudOpacity(this.state(), index, this.visibleClouds());
   }
 
   protected cssPath(d: string): string {

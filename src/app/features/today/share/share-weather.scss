@@ -1,0 +1,150 @@
+// The button is one more control in the hero's row: the host takes no box.
+:host {
+  display: contents;
+}
+
+// Share and spinner share one cell; the spinner fades in only if drawing is slow.
+.glyphs {
+  display: grid;
+
+  > * {
+    grid-area: 1 / 1;
+    transition:
+      opacity var(--d-fast) var(--ease-out),
+      transform var(--d-fast) var(--ease-out);
+  }
+}
+
+.glyph--busy {
+  opacity: 0;
+  transform: scale(0.8);
+}
+
+.is-busy {
+  cursor: progress;
+
+  .glyph--share {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+
+  .glyph--busy {
+    opacity: 1;
+    transform: none;
+    animation: spin 700ms linear infinite;
+  }
+}
+
+@keyframes spin {
+  to {
+    rotate: 1turn;
+  }
+}
+
+// ── Fallback sheet ───────────────────────────────────────────
+.share-sheet {
+  display: grid;
+  gap: var(--s-5);
+}
+
+// The card as it will be sent, small enough to keep the actions in view.
+.preview {
+  justify-self: center;
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: min(40svh, 22rem);
+  aspect-ratio: 4 / 5;
+  border-radius: var(--r-md);
+  box-shadow: var(--shadow-2);
+  background-color: var(--c-surface-sunken);
+}
+
+.body {
+  display: grid;
+  gap: var(--s-4);
+  min-width: 0;
+}
+
+.intro {
+  color: var(--c-ink-2);
+  text-wrap: pretty;
+}
+
+.message {
+  display: grid;
+  gap: var(--s-1);
+  margin: 0;
+  padding: var(--s-3) var(--s-4);
+  border-radius: var(--r-sm);
+  background-color: var(--c-surface-sunken);
+
+  figcaption {
+    color: var(--c-ink-3);
+  }
+}
+
+.message-text {
+  font-size: var(--fs-small);
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+  user-select: all;
+}
+
+.actions {
+  display: grid;
+  gap: var(--s-2);
+
+  .btn {
+    justify-content: flex-start;
+    white-space: normal;
+    text-align: start;
+  }
+}
+
+// Two faces in one cell: the label and its confirmation, so the button keeps its size.
+.faces {
+  display: grid;
+}
+
+.face {
+  grid-area: 1 / 1;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  opacity: 0;
+  filter: blur(2px);
+  visibility: hidden;
+  transition:
+    opacity var(--d-base) var(--ease-out),
+    filter var(--d-base) var(--ease-out),
+    visibility 0s linear var(--d-base);
+
+  &.is-shown {
+    opacity: 1;
+    filter: none;
+    visibility: visible;
+    transition-delay: 0s;
+  }
+}
+
+.hint,
+.failed {
+  color: var(--c-ink-3);
+}
+
+.failed {
+  color: var(--c-poor);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .glyphs > *,
+  .face {
+    transform: none;
+    filter: none;
+  }
+
+  .is-busy .glyph--busy {
+    animation-duration: 2s;
+  }
+}

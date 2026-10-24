@@ -55,6 +55,23 @@ export function formatWeekday(value: string | Date, style: 'short' | 'long', lan
   return weekdayFormat(lang, style).format(toDate(value)).replace('.', '');
 }
 
+const longDateFormats = new Map<Lang, Intl.DateTimeFormat>();
+
+/** "Sábado, 24 de octubre" / "Saturday 24 October", in island time. */
+export function formatLongDate(value: string | Date, lang: Lang): string {
+  let format = longDateFormats.get(lang);
+  if (!format) {
+    format = new Intl.DateTimeFormat(LOCALES[lang], {
+      timeZone: ISLAND_TIME_ZONE,
+      weekday: 'long',
+      day: 'numeric',
+      month: 'long',
+    });
+    longDateFormats.set(lang, format);
+  }
+  return capitalise(format.format(toDate(value)), lang);
+}
+
 /** "2 h 10 min", "45 min", "un momento". */
 export function formatDuration(ms: number, lang: Lang): string {
   const minutes = Math.max(0, Math.round(ms / 60_000));

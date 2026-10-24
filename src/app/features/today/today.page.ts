@@ -26,6 +26,7 @@ import { SunPath } from '../../shared/ui/sun-path/sun-path';
 import { Conditions, ConditionsView } from './conditions/conditions';
 import { DayList } from './day-list/day-list';
 import { HourTimeline } from './hour-timeline/hour-timeline';
+import { WeatherCard } from './share/weather-card';
 import { HeroView, TodayHero } from './today-hero/today-hero';
 
 /**
@@ -121,6 +122,8 @@ export class TodayPage {
 
     const dayName = msg(isToday ? 'day.today' : 'day.tomorrow');
     return {
+      weather,
+      moment: { at, day: dayName, isNow: index === null },
       temperature: Math.round(weather.temperatureC),
       range: { max: day.maxC, min: day.minC },
       verdict: dayVerdict({
@@ -155,8 +158,36 @@ export class TodayPage {
           range: v.range,
           verdict: v.verdict,
           momentLabel: v.momentLabel,
+          moment: v.moment,
         }
       : null;
+  });
+
+  /** The card the share button sends: what the hero and the conditions below it show. */
+  protected readonly shareCard = computed<WeatherCard | null>(() => {
+    const v = this.view();
+    const location = this.location();
+    if (!v || !location) return null;
+    const { sea, tide, wind } = v.conditions;
+    return {
+      place: location.name,
+      at: v.moment.at,
+      isNow: v.moment.isNow,
+      today: islandDateKey(this.clock.now()),
+      scene: v.scene,
+      temperature: v.temperature,
+      feelsLike: Math.round(v.weather.feelsLikeC),
+      range: v.range,
+      sky: v.weather.sky,
+      isDaylight: v.weather.isDaylight,
+      verdict: v.verdict,
+      wind,
+      sea: sea.status === 'ready' ? sea.reading : null,
+      tide:
+        tide.status === 'ready' && tide.reading
+          ? { reading: tide.reading, estimated: tide.estimated }
+          : null,
+    };
   });
 
   protected readonly heroError = computed(() => {

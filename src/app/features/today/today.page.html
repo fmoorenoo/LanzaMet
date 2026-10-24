@@ -6,6 +6,7 @@
   [pending]="weather.pending || forecast.sea().status === 'loading'"
   [error]="heroError()"
   [isPreview]="previewIndex() !== null"
+  [share]="shareCard()"
   (backToNow)="backToNow()"
   (retry)="retryAll()"
 />

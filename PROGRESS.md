@@ -429,3 +429,40 @@ Skills usadas: Emil Kowalski (arrastre, lluvia, transiciones) e Impeccable (cohe
 - **Tests**: 139 en verde, con los del servicio adaptados al correo opcional. **Lint**, **typecheck** y **build de producción** sin avisos.
 - **En el navegador**: Chrome sin interfaz por CDP, porque la extensión no estaba conectada. Capturas a 390, 600 y 1440 px, en español e inglés. Medido el centrado de la marea. Sin desbordamiento horizontal.
 - **axe** (WCAG 2.2 AA y buenas prácticas) sin violaciones en Ayúdanos (inicial, y con errores y privacidad abierta) y en Hoy: 390 y 1440 px, temas claro y oscuro, español e inglés.
+
+## Hora elegida y compartir el tiempo (24-10-2026)
+
+### Hecho
+
+1. **Reloj del héroe**: muestra la hora de lo que dibuja la escena. Ahora, «Ahora 10:13»; al elegir una hora, esa hora con su día («Hoy 15:00», «Mañana 05:00»), con su `datetime` y en hora de Canarias. «Volver a ahora» la devuelve a la actual. El cambio entra desde un leve desenfoque (WAAPI, 240 ms); la píldora no cambia de sitio.
+2. **Botón Compartir** a la derecha de Ajustes: `.sky-button` como los demás, icono Share2 de Lucide, `aria-label` y tooltip en los dos idiomas («Compartir el tiempo en Famara», «Compartir la previsión de Famara» al ver otra hora). Si dibujar tarda, el icono pasa a un indicador de carga, anunciado a los lectores de pantalla. En móviles de menos de 23 rem los controles del cielo bajan a 2,25 rem para que quepan los cinco.
+3. **Tarjeta para compartir** (`features/today/share`): 1200 × 1500 (4:5), dibujada en un canvas sin dependencias nuevas.
+   - La escena es la del héroe, pintada con `shared/scene/scene-paint.ts` desde la misma geometría y colores, con cada cosa en su reposo: nunca un fotograma a medias.
+   - Lo que deciden las capas (nubes visibles, barcos y velas, reflejo) sale de `shared/scene/layers.ts`, que ahora usan la escena viva y la tarjeta.
+   - Lleva zona, día y fecha, hora o «Previsión», temperatura, veredicto y frase. Debajo, cielo con sensación, máxima y mínima; viento con rachas; mar y marea, solo si la página tiene esos datos, y la marea estimada dice que lo es.
+   - Al pie, la marca, el lema, el enlace (si lo hay) y la fuente; en la demo, «Datos ficticios de demostración».
+   - La hoja es de día o de noche según la luz de la escena.
+4. **Compartir**:
+   - Si el navegador puede adjuntar archivos (`navigator.canShare({ files })`), abre el menú del sistema con la imagen y el texto. El enlace va dentro del texto, porque algunas apps descartan la imagen si reciben un `url` aparte.
+   - Cancelar no hace nada.
+   - Si el navegador rechaza el gesto, una hoja permite volver a compartir la imagen.
+   - Sin archivos, la hoja ofrece descargar la imagen, copiarla (si hay `ClipboardItem`), copiar el texto, compartir solo el texto y enviarlo por WhatsApp (`wa.me`), diciendo claro que WhatsApp recibe solo el texto.
+   - La tarjeta empieza a dibujarse al acercar el puntero o el foco al botón, para que el menú se abra mientras el toque aún cuenta (Safari da poco margen).
+5. **Texto**: «Así está el tiempo en Famara ☀️🌊.» o «Así estará el tiempo en Famara hoy a las 18:00 ☀️🌊.», más «Consulta la previsión completa de Lanzarote aquí: …» si hay enlace. Lo mismo en inglés. El emoji sale del cielo, de día o de noche, y del mar o del viento.
+6. **Enlace**: `SHARE_CONFIG.publicUrl` en `core/share/share-config.ts`, ahora `null`. Mientras no tenga dirección, una copia desplegada comparte la suya; en local o en una red privada no se comparte ningún enlace, nunca uno inventado.
+
+### Validación
+
+- **Tests**: 148 en verde, con los nuevos del texto, el emoji, el nombre del archivo y el enlace. **Lint**, **formato** y **build de producción** sin avisos.
+- **En el navegador**: Chrome sin interfaz por CDP, porque la extensión no estaba conectada.
+  - Reloj con la hora actual, una hora de hoy, una de mañana y la vuelta a ahora.
+  - Tarjetas de alisio, calma, ventoso, calima y borrasca en siete zonas, de día, al atardecer, al amanecer y de noche, en español e inglés: de 70 a 460 ms y unos 0,5 MB cada una.
+  - El flujo con Web Share simulado (archivo y texto), cancelado y rechazado, y sin Web Share (la hoja, copiar texto, foco de vuelta al botón).
+  - Sin desbordamiento horizontal a 320, 360, 390 y 1440 px.
+- **axe** (WCAG 2.2 AA y buenas prácticas) sin violaciones en Hoy (ahora, una hora elegida y la hoja abierta): 390 y 1440 px, temas claro y oscuro, español e inglés.
+- **Impeccable**: un único aviso, falso. La vista previa (`<img>`) recibe su `src` por enlace de datos y solo existe cuando lo tiene.
+
+### Pendiente
+
+- Poner la dirección pública en `SHARE_CONFIG` cuando exista.
+- Probar en móviles reales: Android con Chrome y iPhone con Safari, enviando la tarjeta a WhatsApp.

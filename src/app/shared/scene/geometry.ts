@@ -321,6 +321,14 @@ export interface RainDrop {
    *  for still drawings, `--w`/`--l` width and length (px), `--o` opacity, `--t` seconds
    *  per fall, `--d` its (negative) delay. */
   readonly style: string;
+  /** The same resting values as numbers, for still drawings on a canvas (px are CSS px). */
+  readonly still: {
+    readonly x: number;
+    readonly p: number;
+    readonly w: number;
+    readonly l: number;
+    readonly o: number;
+  };
 }
 
 /** Most streaks there can be; light rain draws the first ones only. */
@@ -356,12 +364,19 @@ function rainDrops(): readonly RainDrop[] {
     const roll = random();
     const depth = roll < DEPTHS[0].share ? DEPTHS[0] : roll < 0.8 ? DEPTHS[1] : DEPTHS[2];
     const t = between(depth.t);
+    const still = {
+      x: Number(x.toFixed(4)),
+      p: Number(random().toFixed(3)),
+      w: Number(between(depth.w).toFixed(2)),
+      l: Number(between(depth.l).toFixed(1)),
+      o: Number(between(depth.o).toFixed(2)),
+    };
     const values = {
-      x: x.toFixed(4),
-      p: random().toFixed(3),
-      w: between(depth.w).toFixed(2) + 'px',
-      l: between(depth.l).toFixed(1) + 'px',
-      o: between(depth.o).toFixed(2),
+      x: still.x,
+      p: still.p,
+      w: still.w + 'px',
+      l: still.l + 'px',
+      o: still.o,
       t: t.toFixed(3) + 's',
       d: (-random() * t).toFixed(3) + 's',
     };
@@ -369,6 +384,7 @@ function rainDrops(): readonly RainDrop[] {
       style: Object.entries(values)
         .map(([key, value]) => `--${key}:${value}`)
         .join(';'),
+      still,
     };
   });
 }

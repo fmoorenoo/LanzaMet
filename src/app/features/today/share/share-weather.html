@@ -1,0 +1,130 @@
+<button
+  id="hero-share-button"
+  type="button"
+  class="sky-button share-button"
+  [class.is-busy]="rendering()"
+  [attr.aria-label]="label()"
+  [attr.aria-busy]="rendering() || null"
+  [qthTooltip]="label()"
+  [disabled]="!card()"
+  (pointerenter)="warm()"
+  (pointerdown)="warm()"
+  (focus)="warm()"
+  (click)="share()"
+>
+  <span class="glyphs" aria-hidden="true">
+    <qth-icon class="glyph glyph--share" name="share" />
+    <qth-icon class="glyph glyph--busy" name="loader" />
+  </span>
+</button>
+<span class="visually-hidden" aria-live="polite">{{
+  rendering() ? ('share.preparing' | t) : ''
+}}</span>
+
+<qth-sheet [heading]="'share.sheet.title' | t" [(open)]="sheetOpen">
+  @if (fallback(); as f) {
+    <div id="share-sheet" class="share-sheet">
+      @if (f.url) {
+        <img
+          id="share-preview"
+          class="preview share-preview"
+          [src]="f.url"
+          [alt]="f.alt"
+          width="1200"
+          height="1500"
+        />
+      }
+      <div class="body">
+        <p class="intro t-small">
+          {{
+            (f.file
+              ? f.canShareFiles
+                ? 'share.sheet.ready'
+                : 'share.sheet.intro'
+              : 'share.sheet.failed'
+            ) | t
+          }}
+        </p>
+
+        <figure class="message share-message">
+          <figcaption class="t-micro">{{ 'share.sheet.message' | t }}</figcaption>
+          <p class="message-text">{{ f.text }}</p>
+        </figure>
+
+        <div class="actions share-actions">
+          @if (f.file && f.canShareFiles) {
+            <button type="button" class="btn btn--primary" (click)="shareFile()">
+              <qth-icon name="share" />
+              {{ 'share.action.share' | t }}
+            </button>
+          }
+          @if (f.url && f.file) {
+            <a
+              class="btn"
+              [class.btn--primary]="!f.canShareFiles"
+              [href]="f.url"
+              [attr.download]="f.file.name"
+            >
+              <qth-icon name="download" />
+              {{ 'share.action.download' | t }}
+            </a>
+          }
+          @if (f.file && canCopyImage) {
+            <button type="button" class="btn" (click)="copyImage()">
+              <span class="faces">
+                <span class="face" [class.is-shown]="copied() !== 'image'">
+                  <qth-icon name="image" />
+                  {{ 'share.action.copyImage' | t }}
+                </span>
+                <span class="face" [class.is-shown]="copied() === 'image'" aria-hidden="true">
+                  <qth-icon name="check" />
+                  {{ 'share.copied.image' | t }}
+                </span>
+              </span>
+            </button>
+          }
+          <button type="button" class="btn" (click)="copyText()">
+            <span class="faces">
+              <span class="face" [class.is-shown]="copied() !== 'text'">
+                <qth-icon name="copy" />
+                {{ (hasLink ? 'share.action.copyTextLink' : 'share.action.copyText') | t }}
+              </span>
+              <span class="face" [class.is-shown]="copied() === 'text'" aria-hidden="true">
+                <qth-icon name="check" />
+                {{ 'share.copied.text' | t }}
+              </span>
+            </span>
+          </button>
+          @if (canShareText && !f.canShareFiles) {
+            <button type="button" class="btn" (click)="shareText()">
+              <qth-icon name="share" />
+              {{ 'share.action.textOnly' | t }}
+            </button>
+          }
+          <a class="btn" [href]="whatsapp()" target="_blank" rel="noopener">
+            <qth-icon name="message" />
+            {{ 'share.action.whatsapp' | t }}
+          </a>
+        </div>
+        <p class="hint t-micro">{{ 'share.action.whatsapp.hint' | t }}</p>
+
+        <p class="visually-hidden" role="status">
+          @switch (copied()) {
+            @case ('image') {
+              {{ 'share.copied.image' | t }}
+            }
+            @case ('text') {
+              {{ 'share.copied.text' | t }}
+            }
+            @case ('failed') {
+              {{ 'share.copyFailed' | t }}
+            }
+          }
+        </p>
+        @if (copied() === 'failed') {
+          <p class="failed t-micro" aria-hidden="true">{{ 'share.copyFailed' | t }}</p>
+        }
+      </div>
+    </div>
+  }
+</qth-sheet>

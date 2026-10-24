@@ -28,8 +28,8 @@ function gamma(x: number): number {
   return Math.round(Math.min(1, Math.max(0, v)) * 255);
 }
 
-/** sRGB hex, for places that don't read OKLCH (the browser's theme-color). */
-export function toHex([l, c, h]: Oklch): string {
+/** 0–255 sRGB channels, clipped to the gamut. */
+function toSrgb([l, c, h]: Oklch): readonly [number, number, number] {
   const rad = (h * Math.PI) / 180;
   const a = c * Math.cos(rad);
   const b = c * Math.sin(rad);
@@ -39,5 +39,24 @@ export function toHex([l, c, h]: Oklch): string {
   const r = 4.0767416621 * l_ - 3.3077115913 * m_ + 0.2309699292 * s_;
   const g = -1.2684380046 * l_ + 2.6097574011 * m_ - 0.3413193965 * s_;
   const bl = -0.0041960863 * l_ - 0.7034186147 * m_ + 1.707614701 * s_;
-  return `#${[gamma(r), gamma(g), gamma(bl)].map((v) => v.toString(16).padStart(2, '0')).join('')}`;
+  return [gamma(r), gamma(g), gamma(bl)];
+}
+
+/** sRGB hex, for places that don't read OKLCH (the browser's theme-color). */
+export function toHex(color: Oklch): string {
+  return `#${toSrgb(color)
+    .map((v) => v.toString(16).padStart(2, '0'))
+    .join('')}`;
+}
+
+/** `rgb(…)` with an alpha, for a canvas: every browser paints it the same. */
+export function toRgb(color: Oklch, alpha = 1): string {
+  const [r, g, b] = toSrgb(color);
+  return alpha >= 1 ? `rgb(${r} ${g} ${b})` : `rgb(${r} ${g} ${b} / ${alpha.toFixed(3)})`;
+}
+
+/** Reads back a colour written by `toCss` ("oklch(0.470 0.135 251.0)"). */
+export function parseOklch(css: string): Oklch {
+  const match = /oklch\(\s*([\d.]+)\s+([\d.]+)\s+([\d.]+)/.exec(css);
+  return match ? [Number(match[1]), Number(match[2]), Number(match[3])] : [0, 0, 0];
 }

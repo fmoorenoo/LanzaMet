@@ -1,4 +1,13 @@
-import { Component, computed, ElementRef, inject, input, output, viewChild } from '@angular/core';
+import {
+  afterRenderEffect,
+  Component,
+  computed,
+  ElementRef,
+  inject,
+  input,
+  output,
+  viewChild,
+} from '@angular/core';
 import { DATA_MODE } from '../../../core/data/http/data-config';
 import { Msg } from '../../../core/i18n/i18n.model';
 import { TranslatePipe } from '../../../core/i18n/t.pipe';
@@ -15,6 +24,8 @@ import { ScrollControls } from '../../../shared/ui/horizontal-scroll/scroll-cont
 import { Icon } from '../../../shared/ui/icon/icon';
 import { StatusMessage } from '../../../shared/ui/status-message/status-message';
 import { Tooltip } from '../../../shared/ui/tooltip/tooltip';
+import { ShareWeather } from '../share/share-weather';
+import { WeatherCard } from '../share/weather-card';
 
 export interface HeroView {
   readonly scene: SceneState;
@@ -23,6 +34,8 @@ export interface HeroView {
   readonly range: { readonly max: number; readonly min: number };
   readonly verdict: Verdict;
   readonly momentLabel: Msg;
+  /** The moment drawn: now, or the hour chosen in the forecast, with its day ("Hoy"). */
+  readonly moment: { readonly at: Date; readonly day: Msg };
 }
 
 /**
@@ -32,7 +45,16 @@ export interface HeroView {
  */
 @Component({
   selector: 'qth-today-hero',
-  imports: [Scene, Icon, StatusMessage, HorizontalScroll, ScrollControls, Tooltip, TranslatePipe],
+  imports: [
+    Scene,
+    Icon,
+    StatusMessage,
+    HorizontalScroll,
+    ScrollControls,
+    Tooltip,
+    ShareWeather,
+    TranslatePipe,
+  ],
   templateUrl: './today-hero.html',
   styleUrl: './today-hero.scss',
   host: {
@@ -50,6 +72,8 @@ export class TodayHero {
   /** Set when there is nothing to show because loading failed. */
   readonly error = input<Msg | null>(null);
   readonly isPreview = input(false);
+  /** What the share button sends: the card for the place and moment on screen. */
+  readonly share = input<WeatherCard | null>(null);
 
   readonly backToNow = output<void>();
   readonly retry = output<void>();
@@ -59,22 +83,47 @@ export class TodayHero {
   private readonly locations = inject(LocationsStore);
   private readonly clock = inject(ClockStore);
   private readonly placeButton = viewChild.required<ElementRef<HTMLButtonElement>>('placeButton');
+  private readonly clockTime = viewChild.required<ElementRef<HTMLElement>>('clockTime');
 
   protected readonly current = this.locations.selected;
   protected readonly placeName = computed(() => this.current()?.name ?? '');
 
   /**
-   * The island's time, which every time in the app is given in. A visitor
-   * whose own clock reads differently is told whose time it is.
+   * The time of what the scene is drawing, in the island's time, which every
+   * time in the app is given in: now, or the hour being previewed, labelled
+   * with its day. A visitor whose own clock reads differently is told whose
+   * time it is.
    */
   protected readonly time = computed(() => {
     const now = this.clock.now();
+    const preview = this.isPreview() ? this.view()?.moment : undefined;
+    const at = preview?.at ?? now;
     return {
-      iso: now.toISOString(),
-      text: formatTime(now),
+      iso: at.toISOString(),
+      text: formatTime(at),
+      day: preview?.day ?? null,
       elsewhere: -now.getTimezoneOffset() !== islandOffsetMinutes(now),
     };
   });
+
+  constructor() {
+    // A new time (another hour chosen, the minute turning) settles in from a
+    // soft blur instead of flicking over; the first one is simply there.
+    let shown: string | null = null;
+    afterRenderEffect(() => {
+      const text = this.time().text;
+      if (shown !== null && text !== shown) {
+        this.clockTime().nativeElement.animate(
+          [
+            { opacity: 0.3, filter: 'blur(2px)' },
+            { opacity: 1, filter: 'blur(0)' },
+          ],
+          { duration: 240, easing: 'cubic-bezier(0.23, 1, 0.32, 1)' },
+        );
+      }
+      shown = text;
+    });
+  }
 
   /** Favourites to hop between without opening the picker. */
   protected readonly others = computed(() =>

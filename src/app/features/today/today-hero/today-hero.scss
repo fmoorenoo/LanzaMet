@@ -190,6 +190,36 @@ qth-scene {
   }
 }
 
+// The smallest phones: five controls share the row, so they are a little
+// smaller (36 px, still well past the 24 px target size) and closer, and the
+// chip drops its chevron, so the place keeps its name.
+@media (max-width: 23rem) {
+  :host {
+    --sky-control-h: 2.25rem;
+  }
+
+  .bar,
+  .actions {
+    gap: var(--s-1);
+  }
+
+  .chevron {
+    display: none;
+  }
+
+  .place.is-current {
+    padding-inline: var(--s-3);
+  }
+
+  .clock {
+    padding-inline: 0.375rem;
+  }
+
+  .clock-time {
+    font-size: 1.0625rem;
+  }
+}
+
 .copy-wrap {
   margin-top: clamp(1rem, 4svh, 3rem);
 }

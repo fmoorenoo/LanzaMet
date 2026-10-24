@@ -29,7 +29,7 @@
       class="cloud-track"
       [style.top.%]="cloud.top"
       [style.transform]="'translate3d(' + cloud.rest + '%, 0, 0)'"
-      [style.opacity]="cloudOpacity($index, cloud.layer)"
+      [style.opacity]="cloudOpacity($index)"
     >
       <svg class="cloud" viewBox="0 0 200 80" [style.width.%]="cloud.width">
         <path [attr.d]="cloudPath" />

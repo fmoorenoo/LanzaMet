@@ -3,11 +3,11 @@ import { I18n } from '../../../core/i18n/i18n.store';
 import { skyLabel } from '../../../core/insights/sky.insight';
 import { SkyCondition } from '../../../core/models';
 
-type Tone = 'sun' | 'ray' | 'moon' | 'cloud' | 'cloud-back' | 'rain' | 'haze';
+export type GlyphTone = 'sun' | 'ray' | 'moon' | 'cloud' | 'cloud-back' | 'rain' | 'haze';
 
-interface GlyphPart {
+export interface GlyphPart {
   readonly d: string;
-  readonly tone: Tone;
+  readonly tone: GlyphTone;
   readonly transform?: string;
 }
 
@@ -77,6 +77,11 @@ const NIGHT: Readonly<Record<SkyCondition, readonly GlyphPart[]>> = {
     { d: HAZE_LINES, tone: 'haze' },
   ],
 };
+
+/** The shapes of a sky, by day or night, back to front. */
+export function glyphParts(sky: SkyCondition, isDaylight: boolean): readonly GlyphPart[] {
+  return (isDaylight ? DAY : NIGHT)[sky];
+}
 
 /** Two-tone weather glyph: a warm sun, a pale moon, clouds that occlude them. */
 @Component({
@@ -150,7 +155,7 @@ export class SkyGlyph {
   /** When the condition is already written next to the glyph. */
   readonly decorative = input(false);
 
-  protected readonly parts = computed(() => (this.isDaylight() ? DAY : NIGHT)[this.sky()]);
+  protected readonly parts = computed(() => glyphParts(this.sky(), this.isDaylight()));
   private readonly i18n = inject(I18n);
   protected readonly label = computed(() => this.i18n.t(skyLabel(this.sky(), this.isDaylight())));
 }

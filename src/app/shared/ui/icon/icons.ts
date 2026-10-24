@@ -7,8 +7,11 @@ import {
   ChevronLeft,
   ChevronRight,
   Compass,
+  Copy,
+  Download,
   Droplet,
   Footprints,
+  Image as ImageIcon,
   type IconNode,
   Info,
   Languages,
@@ -22,6 +25,7 @@ import {
   RefreshCw,
   Search,
   Send,
+  Share2,
   Shield,
   ShieldCheck,
   SlidersHorizontal,
@@ -107,6 +111,12 @@ export const ICONS = {
   idea: lucide(Lightbulb),
   sprout: lucide(Sprout),
   message: lucide(MessageCircle),
+
+  // Sharing the weather
+  share: lucide(Share2),
+  download: lucide(Download),
+  copy: lucide(Copy),
+  image: lucide(ImageIcon),
 
   // Conditions
   wind: lucide(Wind),

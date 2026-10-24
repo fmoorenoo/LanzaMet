@@ -26,12 +26,20 @@
     </button>
     <div class="actions hero-actions">
       <!-- Outside the live region below: a clock announced every minute is noise. -->
-      <p id="current-time" class="sky-badge clock current-time">
-        <span class="clock-label">{{
-          (time().elsewhere ? 'today.clock.island' : 'common.now') | t
-        }}</span>
-        <time class="clock-time t-num" [attr.datetime]="time().iso">{{ time().text }}</time>
-        @if (!time().elsewhere) {
+      <!-- The time of the moment drawn; while previewing an hour, that hour and its day. -->
+      @let clock = time();
+      <p id="current-time" class="sky-badge clock current-time" [class.is-preview]="clock.day">
+        <span class="clock-label">
+          @if (clock.day; as day) {
+            {{ day | t }}
+          } @else {
+            {{ (clock.elsewhere ? 'today.clock.island' : 'common.now') | t }}
+          }
+        </span>
+        <time #clockTime class="clock-time t-num" [attr.datetime]="clock.iso">{{
+          clock.text
+        }}</time>
+        @if (clock.day || !clock.elsewhere) {
           <span class="visually-hidden">{{ 'today.clock.zone' | t }}</span>
         }
       </p>
@@ -73,6 +81,7 @@
           <qth-icon name="sliders" />
         </button>
       }
+      <qth-share-weather [card]="share()" />
     </div>
   </div>
 
