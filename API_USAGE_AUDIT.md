@@ -1,6 +1,22 @@
 # Auditoría de consumo de APIs
 
-Fecha: 23-10-2026 · Estado del código: fase 4 (rama `main`) · **Solo diagnóstico: no se ha cambiado el sistema de consumo.**
+Fecha: 23-10-2026 · Estado del código: fase 4 (rama `main`) · Diagnóstico hecho antes de cambiar nada. **El 24-10-2026 se aplicó parte de la recomendación: ver [Estado](#estado-24-10-2026).**
+
+## Estado (24-10-2026)
+
+Aplicado al preparar el despliegue en Cloudflare:
+
+| Recomendación | Decisión | Dónde |
+|---|---|---|
+| Caché compartida de Open-Meteo en el API propio | **Hecha, sin Cron ni KV.** `/api/open-meteo/{forecast,marine,air-quality}` reenvía la consulta de la web y guarda la respuesta 10, 30 o 60 min en memoria y en la Cache API de Cloudflare. La primera visita de cada centro de datos la rellena; las demás no llegan a Open-Meteo | `server/open-meteo.ts`, `server/edge-cache.ts`, `OpenMeteoClient` |
+| Open-Meteo directo como reserva | **Hecha.** Si el API no responde, falla, devuelve algo inesperado o tarda más de 8 s, el navegador pregunta a Open-Meteo como antes | `OpenMeteoClient.fetchList` |
+| Caché de AEMET global, no por instancia | **Hecha** con la misma caché en dos niveles; se conserva la copia de hasta 2 h si AEMET falla | `server/api.ts` |
+| Pausar la renovación con la pestaña oculta | **Hecha.** El pulso de 15 min se detiene con la pestaña oculta y se reanuda al volver | `ClockStore.refreshBeat` |
+| Cron Trigger + KV con actualización programada | **No por ahora.** Añade un servicio (KV) que crear y mantener a mano, y la Cache API ya deja el consumo en unas pocas peticiones por hora y centro de datos. Merece la pena si el tráfico llega a miles de visitas al día o si se quiere el mismo dato en todos los centros de datos | — |
+| Un único `GET /api/isla` | **No.** Cambiaría el formato de las respuestas y los mapeadores; con tres respuestas cacheadas en el borde la ganancia es pequeña | — |
+| Petición de polvo opcional | **No**, como ya preveía la auditoría: ahorro pequeño para su complejidad | — |
+
+Resultado: una visita nueva hace como mucho 5 peticiones al Worker y ninguna a Open-Meteo mientras la copia del centro de datos esté fresca. Open-Meteo recibe del orden de 6 + 2 + 1 peticiones por hora y centro de datos activo, vengan los visitantes que vengan. La Cache API solo funciona con dominio propio: en `*.workers.dev` cada instancia guarda su copia en memoria.
 
 Respuesta corta: **sí, cada visitante nuevo genera sus propias llamadas a Open-Meteo** (3 peticiones, una por servicio). Después ya no pide nada más: navegar, cambiar de zona o de hora es gratis, y una recarga dentro del plazo de caché también. La caché es **por navegador, no compartida**: mil visitantes son al menos tres mil peticiones. Con el tráfico actual no hay problema. El riesgo aparece con unos cientos de visitantes al día si Open-Meteo cuenta las llamadas por aplicación y no por IP, y con wifis compartidas (hoteles) en cualquier caso. La solución a largo plazo es una **caché compartida con actualización programada en el API propio** (Cloudflare Worker + Cron), que deja el consumo en ~80 peticiones al día a Open-Meteo, vengan los visitantes que vengan.
 

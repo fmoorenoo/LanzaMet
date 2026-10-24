@@ -22,15 +22,7 @@
     <meta name="apple-mobile-web-app-title" content="Qué tal hoy" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-    <script>
-      // Chromium can offer installation before the app has started: keep the offer
-      // for InstallStore, and hold back the browser's own banner (the app asks once,
-      // and only on a return visit).
-      addEventListener('beforeinstallprompt', function (event) {
-        event.preventDefault();
-        window.qthInstallPrompt = event;
-      });
-    </script>
+    <script src="install-prompt.js"></script>
   </head>
   <body>
     <qth-root></qth-root>

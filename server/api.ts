@@ -9,14 +9,17 @@ import {
   untar,
   warningsFromArchive,
 } from './aemet.ts';
+import { NoFallback, remember } from './edge-cache.ts';
+import { OPEN_METEO_SERVICES, openMeteoUrl } from './open-meteo.ts';
 
 /*
- * The app's own small API. It exists for two reasons only:
- *  · AEMET's warning files can't be read from a browser (no CORS), and
- *  · AEMET OpenData needs a private key that must never reach the browser.
+ * The app's own small API. It exists for three reasons:
+ *  · AEMET's warning files can't be read from a browser (no CORS),
+ *  · AEMET OpenData needs a private key that must never reach the browser, and
+ *  · one shared copy of each Open-Meteo answer spares its free tier (open-meteo.ts).
  * It answers a fixed set of routes (it is not an open proxy) and keeps each
- * answer in memory for a few minutes, so AEMET sees a handful of requests an
- * hour however many people use the app.
+ * answer for a few minutes, in memory and in Cloudflare's cache (edge-cache.ts),
+ * so the providers see a handful of requests an hour however many people use the app.
  *
  * Standard Fetch handler: runs as a Cloudflare Worker (`export default`),
  * on Deno, or on Node through `dev.ts`.
@@ -25,7 +28,10 @@ import {
 export interface Env {
   /** AEMET OpenData key (https://opendata.aemet.es/centrodedescargas/altaUsuario). */
   readonly AEMET_API_KEY?: string;
-  /** Origin allowed to call the API; `*` by default (the data is public). */
+  /**
+   * Another origin allowed to call the API from a browser (or `*`). Empty by
+   * default: the site and its API share one origin, which needs no CORS.
+   */
   readonly ALLOWED_ORIGIN?: string;
 }
 
@@ -42,16 +48,9 @@ const OBSERVATIONS_TTL = 20 * MINUTE;
 const STALE_LIMIT = 2 * 60 * MINUTE;
 const UPSTREAM_TIMEOUT = 15_000;
 
-interface CacheEntry {
-  readonly body: Record<string, unknown>;
-  readonly storedAt: number;
-}
-
-const memory = new Map<string, CacheEntry>();
-const inflight = new Map<string, Promise<Record<string, unknown>>>();
-
 class UpstreamError extends Error {}
-class NotConfiguredError extends Error {}
+/** Without a key there is nothing to fall back on: an old copy would hide it. */
+class NotConfiguredError extends NoFallback {}
 
 async function fetchUpstream(url: string, init?: RequestInit): Promise<Response> {
   const response = await fetch(url, {
@@ -129,54 +128,74 @@ async function cached(
   ttl: number,
   load: () => Promise<Record<string, unknown>>,
 ): Promise<{ body: Record<string, unknown>; stale: boolean }> {
-  const now = Date.now();
-  const hit = memory.get(key);
-  if (hit && now - hit.storedAt < ttl) return { body: hit.body, stale: false };
-  try {
-    let pending = inflight.get(key);
-    if (!pending) {
-      pending = load().finally(() => inflight.delete(key));
-      inflight.set(key, pending);
-    }
-    const body = { ...(await pending), retrievedAt: new Date().toISOString() };
-    memory.set(key, { body, storedAt: Date.now() });
-    return { body, stale: false };
-  } catch (error) {
-    if (!(error instanceof NotConfiguredError) && hit && now - hit.storedAt < STALE_LIMIT) {
-      return { body: hit.body, stale: true };
-    }
-    throw error;
-  }
+  const { text, stale } = await remember(
+    key,
+    { ttlMs: ttl, staleMs: STALE_LIMIT - ttl },
+    async () => JSON.stringify({ ...(await load()), retrievedAt: new Date().toISOString() }),
+  );
+  return { body: JSON.parse(text) as Record<string, unknown>, stale };
+}
+
+/** Open-Meteo's answer to one of the web's own queries, shared by every visitor. */
+async function openMeteo(service: string, query: URLSearchParams, env: Env): Promise<Response> {
+  const known = OPEN_METEO_SERVICES[service];
+  const upstream = known ? openMeteoUrl(known, query) : null;
+  if (!known || !upstream) return json({ error: 'not_found' }, 404, env);
+  const { text, storedAt, stale } = await remember(
+    upstream,
+    { ttlMs: known.ttlMs, staleMs: STALE_LIMIT - known.ttlMs },
+    async () => (await fetchUpstream(upstream)).text(),
+  );
+  // Open-Meteo's JSON as it came; whether it is fresh travels in the headers.
+  return new Response(text, {
+    headers: {
+      ...headers(env, 60),
+      'x-service': SERVICE,
+      'x-upstream-fetched-at': new Date(storedAt).toISOString(),
+      'x-stale': String(stale),
+    },
+  });
+}
+
+function headers(env: Env, maxAge: number): Record<string, string> {
+  const origin = env.ALLOWED_ORIGIN?.trim();
+  return {
+    'content-type': 'application/json; charset=utf-8',
+    'cache-control': maxAge > 0 ? `public, max-age=${maxAge}` : 'no-store',
+    'x-content-type-options': 'nosniff',
+    ...(origin ? { 'access-control-allow-origin': origin, vary: 'origin' } : {}),
+  };
 }
 
 function json(body: Record<string, unknown>, status: number, env: Env, maxAge = 0): Response {
   return new Response(JSON.stringify({ service: SERVICE, ...body }), {
     status,
-    headers: {
-      'content-type': 'application/json; charset=utf-8',
-      'cache-control': maxAge > 0 ? `public, max-age=${maxAge}` : 'no-store',
-      'access-control-allow-origin': env.ALLOWED_ORIGIN ?? '*',
-      vary: 'origin',
-    },
+    headers: headers(env, maxAge),
   });
 }
 
 export async function handle(request: Request, env: Env): Promise<Response> {
   const url = new URL(request.url);
   if (request.method === 'OPTIONS') {
+    const origin = env.ALLOWED_ORIGIN?.trim();
     return new Response(null, {
       status: 204,
-      headers: {
-        'access-control-allow-origin': env.ALLOWED_ORIGIN ?? '*',
-        'access-control-allow-methods': 'GET, OPTIONS',
-        'access-control-max-age': '86400',
-      },
+      headers: origin
+        ? {
+            'access-control-allow-origin': origin,
+            'access-control-allow-methods': 'GET, OPTIONS',
+            'access-control-max-age': '86400',
+          }
+        : {},
     });
   }
   if (request.method !== 'GET') return json({ error: 'method_not_allowed' }, 405, env);
 
   const route = url.pathname.replace(/\/+$/, '').replace(/^\/api/, '');
   try {
+    if (route.startsWith('/open-meteo/')) {
+      return await openMeteo(route.slice('/open-meteo/'.length), url.searchParams, env);
+    }
     switch (route) {
       case '/avisos': {
         const { body, stale } = await cached('avisos', WARNINGS_TTL, () =>

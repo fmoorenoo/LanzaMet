@@ -23,7 +23,7 @@ export class OfficialStore {
   private readonly observationSource = inject(ObservationSource);
 
   private readonly params = computed(() => ({
-    beat: this.clock.quarterKey(),
+    beat: this.clock.refreshBeat(),
     version: this.refreshStore.version(),
   }));
 

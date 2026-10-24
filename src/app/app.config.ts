@@ -3,10 +3,12 @@ import {
   provideRouter,
   TitleStrategy,
   withInMemoryScrolling,
+  withNavigationErrorHandler,
   withViewTransitions,
 } from '@angular/router';
 import { provideFeedback } from './core/feedback/provide-feedback';
 import { provideAppServiceWorker } from './core/pwa/provide-service-worker';
+import { reloadForNewVersion } from './core/pwa/stale-version';
 import { I18nTitleStrategy } from './core/i18n/i18n-title.strategy';
 import { routes } from './app.routes';
 import { RouteTransitions } from './layout/route-transitions';
@@ -22,6 +24,8 @@ export const appConfig: ApplicationConfig = {
         onViewTransitionCreated: ({ transition }) => inject(RouteTransitions).track(transition),
       }),
       withInMemoryScrolling({ scrollPositionRestoration: 'top' }),
+      // A screen built before the latest deploy: reload once to get the new version.
+      withNavigationErrorHandler((event) => void reloadForNewVersion(event.error)),
     ),
     { provide: TitleStrategy, useClass: I18nTitleStrategy },
     // Real providers; the demo build swaps them for simulated data.

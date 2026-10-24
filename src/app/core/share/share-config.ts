@@ -3,15 +3,22 @@ import { InjectionToken } from '@angular/core';
 export interface ShareConfig {
   /**
    * The site's public address ("https://…"), the link every shared message
-   * carries. Set it here once the site has its own domain. Until then a
-   * deployed copy shares the address it is served from, and a local one
-   * (localhost, a private network) shares no link at all, never a made-up one.
+   * carries. Given at build time (`PUBLIC_URL`, see scripts/build-production.ts),
+   * so a copy opened from another address (*.workers.dev) still shares the
+   * real domain. Without it a deployed copy shares the address it is served
+   * from, and a local one (localhost, a private network) shares no link at
+   * all, never a made-up one.
    */
   readonly publicUrl: string | null;
 }
 
+declare const QTH_PUBLIC_URL: string | undefined;
+
 export const SHARE_CONFIG = new InjectionToken<ShareConfig>('SHARE_CONFIG', {
-  factory: () => ({ publicUrl: null }),
+  factory: () => {
+    const url = typeof QTH_PUBLIC_URL === 'string' ? QTH_PUBLIC_URL.trim() : '';
+    return { publicUrl: /^https:\/\/[^/\s]+$/.test(url) ? url : null };
+  },
 });
 
 /** Hosts nobody else can open: a link to them would lead nowhere. */

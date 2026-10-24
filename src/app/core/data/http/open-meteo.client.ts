@@ -1,11 +1,12 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Service } from '@angular/core';
-import { catchError, forkJoin, map, Observable, of } from 'rxjs';
+import { catchError, forkJoin, map, Observable, of, timeout } from 'rxjs';
 import { GeoPoint, Location } from '../../models';
 import { ISLAND_TIME_ZONE, TIME } from '../../utils/time';
 import { MessageKey, msg } from '../../i18n/i18n.model';
 import { DataSourceError } from '../data-sources';
 import { LOCATIONS } from '../locations';
+import { DATA_CONFIG } from './data-config';
 import { resilient } from './http-errors';
 import { AirQualityDto, asList, ForecastDto, isProviderError, MarineDto } from './open-meteo.dto';
 import { Cached, ResponseCache } from './response-cache';
@@ -19,6 +20,11 @@ import { Cached, ResponseCache } from './response-cache';
  *  · forecast (DWD ICON): new runs several times a day, `current` every 15 min → 30 min
  *  · sea (Météo-France MFWAM/SMOC): updated every 12–24 h → 60 min
  *  · dust (CAMS global): updated every 12 h → 3 h
+ *
+ * Each request goes first to the app's API (`/api/open-meteo/…`), which keeps
+ * one copy of Open-Meteo's answer for every visitor (server/open-meteo.ts).
+ * If that copy can't be had — no API on this host, an error, a slow answer —
+ * the same query goes straight to Open-Meteo, as it always did.
  */
 
 const FORECAST_URL = 'https://api.open-meteo.com/v1/forecast';
@@ -28,6 +34,16 @@ const AIR_QUALITY_URL = 'https://air-quality-api.open-meteo.com/v1/air-quality';
 const FORECAST_TTL = 30 * TIME.MINUTE;
 const MARINE_TTL = 60 * TIME.MINUTE;
 const DUST_TTL = 3 * TIME.HOUR;
+
+/** Long enough for the API to ask Open-Meteo itself; short enough to leave time to go direct. */
+const SHARED_TIMEOUT_MS = 8_000;
+
+/** Where the app's API keeps each Open-Meteo service. */
+const SHARED_PATH: Readonly<Record<string, string>> = {
+  [FORECAST_URL]: 'forecast',
+  [MARINE_URL]: 'marine',
+  [AIR_QUALITY_URL]: 'air-quality',
+};
 
 const FORECAST_VARIABLES = {
   current: [
@@ -123,6 +139,7 @@ export function samePoint(a: GeoPoint, b: GeoPoint): boolean {
 export class OpenMeteoClient {
   private readonly http = inject(HttpClient);
   private readonly cache = inject(ResponseCache);
+  private readonly proxyUrl = inject(DATA_CONFIG).proxyUrl;
 
   readonly locations = LOCATIONS;
   private readonly seaPoints = distinctSeaPoints(LOCATIONS);
@@ -204,21 +221,37 @@ export class OpenMeteoClient {
     expected: number,
     service: MessageKey,
   ): Observable<readonly T[]> {
-    return this.http.get<T | readonly T[]>(url).pipe(
-      map((body) => {
-        if (isProviderError(body)) {
-          throw new DataSourceError(
-            msg('error.provider', { service: msg(service), reason: body.reason }),
-            false,
-          );
-        }
-        const list = asList(body);
-        if (list.length !== expected) {
-          throw new DataSourceError(msg('error.mismatch', { service: msg(service) }));
-        }
-        return list;
-      }),
-      resilient(service),
-    );
+    const read = (body: T | readonly T[]): readonly T[] => {
+      if (isProviderError(body)) {
+        throw new DataSourceError(
+          msg('error.provider', { service: msg(service), reason: body.reason }),
+          false,
+        );
+      }
+      const list = asList(body);
+      if (list.length !== expected) {
+        throw new DataSourceError(msg('error.mismatch', { service: msg(service) }));
+      }
+      return list;
+    };
+    const direct = this.http.get<T | readonly T[]>(url).pipe(map(read));
+    const shared = this.sharedUrl(url);
+    const answer = shared
+      ? this.http.get<T | readonly T[]>(shared).pipe(
+          timeout({ first: SHARED_TIMEOUT_MS }),
+          map(read),
+          // Anything wrong with the shared copy: ask Open-Meteo as before.
+          catchError(() => direct),
+        )
+      : direct;
+    return answer.pipe(resilient(service));
+  }
+
+  /** The same query on the app's API, or null when this deployment has none. */
+  private sharedUrl(url: string): string | null {
+    const [base, query] = url.split('?');
+    const path = SHARED_PATH[base];
+    if (this.proxyUrl === null || !path) return null;
+    return `${this.proxyUrl.replace(/\/$/, '')}/open-meteo/${path}?${query}`;
   }
 }

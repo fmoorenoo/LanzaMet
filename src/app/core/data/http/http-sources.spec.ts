@@ -35,7 +35,8 @@ describe('Open-Meteo sources', () => {
     // The app's clock reads the time once it is created: fix it first.
     vi.useFakeTimers({ toFake: ['Date'] });
     vi.setSystemTime(NOW);
-    http = setUp();
+    // Straight to Open-Meteo, as on a host without the app's API (the shared copy is below).
+    http = setUp(null);
   });
 
   afterEach(() => {
@@ -141,6 +142,59 @@ describe('Open-Meteo sources', () => {
     expect(famara?.point).toBeDefined();
     expect(golfo?.point).toBeDefined();
     expect(tide?.source.official).toBe(false);
+  });
+});
+
+describe("Open-Meteo through the app's shared copy", () => {
+  let http: HttpTestingController;
+  const shared = (service: string) => (r: { url: string }) =>
+    r.url.startsWith(`/api/open-meteo/${service}?`);
+  const direct = (host: string) => (r: { url: string }) => r.url.startsWith(`https://${host}/`);
+
+  beforeEach(() => {
+    vi.useFakeTimers({ toFake: ['Date'] });
+    vi.setSystemTime(NOW);
+    http = setUp('/api');
+  });
+
+  afterEach(() => {
+    http.verify();
+    vi.useRealTimers();
+  });
+
+  it("asks the app's API with the very query Open-Meteo would get, and nothing else", async () => {
+    const result = firstValueFrom(TestBed.inject(WeatherSource).forecast('famara'));
+    const forecast = http.expectOne(shared('forecast'));
+    http.expectOne(shared('air-quality')).flush(forEveryPlace(dustFixture));
+    forecast.flush(forEveryPlace(forecastFixture));
+    expect((await result).locationId).toBe('famara');
+    expect(forecast.request.url.split('?')[1]).toContain('timezone=Atlantic%2FCanary');
+    http.expectNone(direct('api.open-meteo.com'));
+  });
+
+  it('goes straight to Open-Meteo when the shared copy fails', async () => {
+    const result = firstValueFrom(TestBed.inject(MarineSource).sea('famara'));
+    http.expectOne(shared('marine')).flush('busy', { status: 502, statusText: 'Bad Gateway' });
+    const request = http.expectOne(direct('marine-api.open-meteo.com'));
+    const points = request.request.url.split('latitude=')[1].split('&')[0].split('%2C');
+    request.flush(points.map(() => marineFixture));
+    expect((await result)?.point).toBeDefined();
+  });
+
+  it('goes straight to Open-Meteo when this host has no API (its page instead of JSON)', async () => {
+    const result = firstValueFrom(TestBed.inject(WeatherSource).forecast('arrecife'));
+    http.expectOne(shared('forecast')).flush('<!doctype html>', { status: 404, statusText: 'NF' });
+    http.expectOne(shared('air-quality')).flush(forEveryPlace(dustFixture));
+    http.expectOne(direct('api.open-meteo.com')).flush(forEveryPlace(forecastFixture));
+    expect((await result).hourly.length).toBe(48);
+  });
+
+  it('goes straight to Open-Meteo when the shared copy has the wrong number of places', async () => {
+    const result = firstValueFrom(TestBed.inject(WeatherSource).forecast('arrecife'));
+    http.expectOne(shared('forecast')).flush([forecastFixture]);
+    http.expectOne(shared('air-quality')).flush(forEveryPlace(dustFixture));
+    http.expectOne(direct('api.open-meteo.com')).flush(forEveryPlace(forecastFixture));
+    expect((await result).hourly.length).toBe(48);
   });
 });
 

@@ -23,7 +23,7 @@ export class ForecastStore {
     if (!location) return undefined;
     return {
       id: location.id,
-      beat: this.clock.quarterKey(),
+      beat: this.clock.refreshBeat(),
       version: this.refreshStore.version(),
     };
   });

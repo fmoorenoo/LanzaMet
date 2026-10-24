@@ -23,11 +23,13 @@ const get = (path: string, env = {}) => handle(new Request(`http://localhost/api
 describe('API', () => {
   afterEach(() => mock.restoreAll());
 
-  it('serves Lanzarote warnings with the service marker and open CORS', async () => {
+  it('serves Lanzarote warnings with the service marker, for its own site only', async () => {
     const fetchMock = aemet({ down: false });
     const response = await get('/avisos');
     assert.equal(response.status, 200);
-    assert.equal(response.headers.get('access-control-allow-origin'), '*');
+    // Same origin as the site: no CORS unless another origin is configured.
+    assert.equal(response.headers.get('access-control-allow-origin'), null);
+    assert.equal(response.headers.get('x-content-type-options'), 'nosniff');
     const body = (await response.json()) as Record<string, unknown>;
     assert.equal(body['service'], 'que-tal-hoy-api');
     assert.ok(Array.isArray(body['warnings']));
@@ -53,6 +55,17 @@ describe('API', () => {
     assert.equal((await get('/https://example.com')).status, 404);
     const post = await handle(new Request('http://localhost/api/avisos', { method: 'POST' }), {});
     assert.equal(post.status, 405);
+  });
+
+  it('opens CORS only to the configured origin', async () => {
+    aemet({ down: false });
+    const response = await get('/avisos', { ALLOWED_ORIGIN: 'https://example.org' });
+    assert.equal(response.headers.get('access-control-allow-origin'), 'https://example.org');
+    const preflight = await handle(
+      new Request('http://localhost/api/avisos', { method: 'OPTIONS' }),
+      {},
+    );
+    assert.equal(preflight.headers.get('access-control-allow-origin'), null);
   });
 
   it('reports the key without revealing it', async () => {

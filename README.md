@@ -10,8 +10,8 @@ Requisitos: Node 24+ (el API ejecuta TypeScript directamente) y npm.
 
 ```bash
 npm install
-npm run api          # API propio en http://localhost:8787/api (avisos y observaciones de AEMET;
-                     #   la clave de AEMET va en server/.dev.vars, ver más abajo)
+npm run api          # API propio en http://localhost:8787/api (AEMET y copia compartida de
+                     #   Open-Meteo; la clave de AEMET va en .dev.vars, ver más abajo)
 npm start            # web en http://localhost:4200 (reenvía /api al API propio)
 npm run start:demo   # web con datos simulados (escenarios, hora y red ajustables)
 
@@ -20,8 +20,15 @@ npm run test:api     # tests del API (node:test, con ficheros reales de AEMET)
 npm run typecheck:api
 npm run verify:sources  # comprueba en vivo todas las fuentes para las 7 zonas
 npm run lint
-npm run build        # build de producción en dist/
+npm run build        # build de producción en dist/, sin clave de Web3Forms
+
+npm run build:prod   # build para publicar: con la clave de Web3Forms (.env) y comprobaciones
+npm run preview      # build:prod + el Worker de Cloudflare en local, en http://localhost:8788
+npm run deploy       # build:prod + publicar en Cloudflare (ver DEPLOYMENT.md)
+npm run deploy:check # build sin clave + simulacro de publicación; no publica nada
 ```
+
+**Publicar y actualizar en Cloudflare: [`DEPLOYMENT.md`](DEPLOYMENT.md).**
 
 Sin `npm run api` la web funciona igual con Open-Meteo; los avisos y las medidas de AEMET se muestran como no disponibles.
 
@@ -84,7 +91,7 @@ Validación del 22-10-2026 en Arrecife: el modelo adelanta 24–37 min respecto 
 - **Avisos**: funcionan sin clave. El API propio lee el RSS oficial de Canarias (`CAP_AFAC65_RSS.xml`, ~7 KB) y el paquete «estado completo» que enlaza (`.tar.gz`, ~8 KB, un CAP 1.2 por aviso). Se queda con los niveles amarillo, naranja y rojo de las zonas 659101 y 659101C que no hayan caducado, en español y sin cancelaciones. El navegador no puede leer esos ficheros (AEMET no envía CORS).
 - **Observaciones**: funcionan con clave, verificadas contra el API real el 22-10-2026. El API pide una a una las **7 estaciones de AEMET en Lanzarote** (OpenData solo acepta una estación por petición): C018J Tías-Las Vegas (376 m), C019V Yaiza-Playa Blanca (6 m), C029O Aeropuerto (14 m), C029R Arrecife-Granja Cabildo (108 m), C038N Haría (277 m), C048W Tinajo (275 m) y C839X La Graciosa (19 m). Cada estación ocupa ~5 KB y se procesa en ~0,3 ms; el listado nacional (`todas`) son 3,4 MB y ~270 ms, por eso no se usa. Las horas llegan en UTC (`+0000`) y el viento en m/s, que se pasa a km/h.
 - **Qué estación representa a cada zona**: solo una estación baja (≤ 150 m), a 10 km como máximo y con lectura de las últimas 3 h. Las estaciones de interior no describen la costa; Haría, por ejemplo, está detrás del Risco de Famara. Por eso Famara y El Golfo no muestran «Medido»: mejor nada que una lectura de otro sitio. Puerto del Carmen usa el Aeropuerto; Arrecife y Costa Teguise, Granja Cabildo; Playa Blanca, Playa Blanca; Órzola, La Graciosa.
-- **Clave**: gratuita en <https://opendata.aemet.es/centrodedescargas/altaUsuario>. En local va en `server/.dev.vars`, una sola línea `AEMET_API_KEY=…`. Git ignora ese archivo y lo leen tanto `npm run api` como `wrangler dev`. En producción se guarda como secreto del servidor, nunca en el frontend. `http://localhost:8787/api/salud` dice si hay clave sin revelarla.
+- **Clave**: gratuita en <https://opendata.aemet.es/centrodedescargas/altaUsuario>. En local va en `.dev.vars` en la raíz del proyecto, una sola línea `AEMET_API_KEY=…`. Git ignora ese archivo y lo leen tanto `npm run api` como `npm run preview` (`wrangler dev`). `server/.dev.vars`, el sitio anterior, sigue valiendo para `npm run api`. En producción se guarda como secreto del Worker (`npx wrangler secret put AEMET_API_KEY`), nunca en el frontend. `http://localhost:8787/api/salud` dice si hay clave sin revelarla.
 
 ## Caché y actualización
 
@@ -92,8 +99,15 @@ Validación del 22-10-2026 en Arrecife: el modelo adelanta 24–37 min respecto 
 
 - **Una petición por fuente para toda la isla.** Open-Meteo admite listas de coordenadas: las 7 zonas cuestan 3 peticiones (tiempo, mar con 7 puntos distintos y polvo), por muchas pantallas que las usen. Las peticiones simultáneas se comparten (`ResponseCache`).
 - **Caducidad según el modelo**: tiempo 30 min, mar 60 min, polvo 3 h, avisos 10 min, observaciones 20 min. Las respuestas de Open-Meteo se guardan en `localStorage`, así que recargar dentro de ese plazo no pide nada.
-- **Actualización automática**: los stores se revisan cada 15 min (`ClockStore.quarterKey`) y la caché decide si eso llega a la red. «Actualizar» vuelve a pedir lo que tenga más de 1 min.
-- **API propio**: guarda cada respuesta en memoria (10–20 min). Si AEMET falla, sirve la copia anterior de hasta 2 h marcada con `stale: true`. Solo atiende rutas fijas (`/api/avisos`, `/api/observaciones`, `/api/salud`): no es un proxy abierto.
+- **Actualización automática**: los stores se revisan cada 15 min (`ClockStore.refreshBeat`) y la caché decide si eso llega a la red. **Con la pestaña oculta ese pulso se detiene**: una pestaña olvidada no pide nada. Al volver a verla, se vuelve a pedir lo caducado. «Actualizar» vuelve a pedir lo que tenga más de 1 min, y al recuperar la conexión se piden los datos enseguida.
+- **Copia compartida de Open-Meteo** (`/api/open-meteo/{forecast,marine,air-quality}`, `server/open-meteo.ts`):
+  - La web pide al API propio la misma consulta que haría a Open-Meteo. El API la reenvía y guarda la respuesta, sin tocarla, 10 min (tiempo), 30 min (mar) o 60 min (polvo), para todos los visitantes. Esas caducidades son más cortas que las de la web para que, sumadas, la antigüedad máxima siga siendo de unos 40 min.
+  - Open-Meteo recibe así unas pocas peticiones por hora, vengan los visitantes que vengan, y las ve llegar desde Cloudflare, como recomienda para Workers.
+  - No es un proxy abierto: solo esos tres servicios, los parámetros que usa la web y coordenadas de Lanzarote.
+  - **Reserva**: si el API no está, falla, devuelve algo inesperado o tarda más de 8 s, el navegador pregunta directamente a Open-Meteo, como antes.
+  - El pie («Actualizado a las…») toma la hora en que la web recibió los datos, que puede ser hasta 10 min posterior a la de Open-Meteo.
+- **API propio**: guarda cada respuesta en dos niveles (`server/edge-cache.ts`): en la memoria de cada instancia y en la Cache API de Cloudflare, compartida por las instancias de cada centro de datos (solo en el dominio propio; en `*.workers.dev` y en Node, solo memoria). Si AEMET o Open-Meteo fallan, sirve la copia anterior de hasta 2 h, marcada como antigua (`stale: true` o la cabecera `x-stale`). Solo atiende rutas fijas (`/api/avisos`, `/api/observaciones`, `/api/open-meteo/…`, `/api/salud`).
+- Qué se ha hecho de la auditoría de consumo y qué no: [`API_USAGE_AUDIT.md`](API_USAGE_AUDIT.md#estado-24-10-2026).
 - **Hora**: todas las peticiones usan `timezone=Atlantic/Canary` y `timeformat=unixtime` (instantes UTC sin ambigüedad). Los días se agrupan en hora canaria, y el cambio de hora del 25-10-2026 está cubierto por tests.
 - **Unidades**: °C, km/h enteros, m y s; las fracciones van de 0 a 1 y el UV en enteros. Las observaciones de AEMET pasan de m/s a km/h.
 
@@ -135,14 +149,11 @@ La sección **Ayúdanos** envía los mensajes por correo electrónico a través 
 ### Configurar la clave de Web3Forms
 
 1. Entra en [web3forms.com](https://web3forms.com), escribe el correo donde quieres recibir los mensajes y pulsa *Create Access Key*. La clave (un UUID) llega a ese correo. No hace falta cuenta ni tarjeta.
-2. Pásala al compilar con `--define`. **No se escribe en el código**:
+2. Ponla en un archivo `.env` en la raíz del proyecto (Git lo ignora), una línea `WEB3FORMS_ACCESS_KEY=tu-clave`. **No se escribe en el código.** `npm run build:prod` (y `npm run deploy`) la leen de ahí o del entorno y la pasan a Angular con `--define`, sin depender del shell. En Cloudflare, con despliegue desde Git, va en las variables de build ([`DEPLOYMENT.md`](DEPLOYMENT.md)). Para probarla con el servidor de desarrollo:
 
    ```bash
-   npx ng build --define "QTH_WEB3FORMS_KEY='tu-clave-de-acceso'"
-   npx ng serve --define "QTH_WEB3FORMS_KEY='tu-clave-de-acceso'"   # en local
+   npx ng serve --define "QTH_WEB3FORMS_KEY='tu-clave-de-acceso'"
    ```
-
-   El mismo comando funciona en bash y en PowerShell. En el hosting (Cloudflare Pages, Netlify, Vercel…), guarda la clave como variable de entorno y usa como orden de build `npx ng build --define "QTH_WEB3FORMS_KEY='$WEB3FORMS_ACCESS_KEY'"`.
 3. Sin clave, o con una que no tenga forma de UUID, la página avisa de que el envío aún no está activado y no envía nada. La build de demo usa el mismo servicio real: no hay envíos simulados.
 
 La clave de Web3Forms **no es secreta**: según su documentación puede ser pública, porque solo sirve para enviar correos a la dirección que la creó, y acaba en el JavaScript que descarga el navegador. Se deja fuera del repositorio para no atar el código a un buzón concreto. Con el plan Pro se puede restringir a tu dominio.
@@ -218,9 +229,11 @@ El service worker es el de Angular (`@angular/service-worker`), configurado en `
 
 1. **HTTPS** en el dominio público. Los navegadores solo permiten service workers e instalación en un origen seguro; `localhost` es la única excepción, para desarrollo.
 2. **La web en la raíz del dominio** (`/`). Para servirla en una subruta hay que cambiar `start_url`, `scope` e `id` del manifest, el `<base href>` y compilar con `--base-href`.
-3. **Cabeceras**: `index.html`, `ngsw.json`, `ngsw-worker.js`, `safety-worker.js` y `manifest.webmanifest` sin caché larga (`Cache-Control: no-cache`), para que un despliegue nuevo llegue a las copias instaladas. El manifest con `Content-Type: application/manifest+json`. `public/_headers` ya lo hace en Cloudflare Pages y Netlify; en otro hosting hay que configurarlo a mano.
-4. **Rutas de la SPA**: cualquier ruta sin extensión (`/mar`, `/zonas`…) debe servir `index.html`. Cloudflare Pages lo hace solo si no hay `404.html`; en Netlify hace falta una regla `/* /index.html 200`.
-5. **Build de producción** (`npm run build`): solo esa build incluye `ngsw-worker.js` y `ngsw.json`. `npm start` y la demo no registran service worker.
+3. **Cabeceras**: `index.html`, `ngsw.json`, `ngsw-worker.js`, `safety-worker.js`, `install-prompt.js` y `manifest.webmanifest` sin caché larga (`Cache-Control: no-cache`), para que un despliegue nuevo llegue a las copias instaladas. El manifest con `Content-Type: application/manifest+json`. `public/_headers` ya lo hace en Cloudflare (Workers y Pages) y en Netlify; en otro hosting hay que configurarlo a mano.
+4. **Rutas de la SPA**: cualquier ruta sin extensión (`/mar`, `/zonas`…) debe servir `index.html`. En el Worker lo hace `not_found_handling: "single-page-application"` (`wrangler.jsonc`); en Netlify hace falta una regla `/* /index.html 200`.
+5. **Build de producción** (`npm run build:prod`): solo la build de producción incluye `ngsw-worker.js` y `ngsw.json`. `npm start` y la demo no registran service worker.
+
+Todo esto queda resuelto con el despliegue en Cloudflare de [`DEPLOYMENT.md`](DEPLOYMENT.md). Probado en local con el runtime de Cloudflare: tras publicar una versión nueva, la primera recarga ya la carga, también en la copia controlada por el service worker. Si una página abierta antes del despliegue pide una pantalla diferida cuyo archivo ya no existe, se recarga una vez sola (`core/pwa/stale-version.ts`, con un freno para no entrar en bucle).
 6. Chrome pide además unos segundos de uso real antes de ofrecer la instalación. Hasta entonces, la guía explica cómo hacerlo desde el menú.
 
 Comprobarlo tras desplegar: Chrome DevTools → Application → Manifest (sin errores ni avisos de instalabilidad) y Service workers (activo, controlando la página). En Lighthouse, la categoría PWA ya no existe; los avisos de instalabilidad salen en el panel Application.
@@ -307,15 +320,21 @@ src/app/
   layout/            navegación, selector de zonas, selector de idioma, ajustes,
                      instalación (fila de Ajustes, guía e invitación; las dos últimas con carga diferida)
   features/          today · zones · sea · plans · feedback (rutas con carga diferida)
-server/              API propio (Fetch estándar): avisos y observaciones de AEMET, con tests
-scripts/             verify-sources.ts: comprobación en vivo de todas las fuentes
+server/              API propio (Fetch estándar): avisos y observaciones de AEMET, copia compartida de
+                     Open-Meteo (open-meteo.ts) y caché en dos niveles (edge-cache.ts), con tests
+scripts/             verify-sources.ts: comprobación en vivo de todas las fuentes;
+                     build-production.ts: build para publicar, con sus comprobaciones
+wrangler.jsonc       el Worker de Cloudflare: la web como assets y /api/* con server/api.ts
 ```
 
 ## Despliegue
 
-- **Web**: estática (`npm run build` → `dist/que-tal-hoy/browser`), en cualquier hosting con **HTTPS**. Para que funcione «Ayúdanos», compila con la clave de Web3Forms (ver [Configurar la clave](#configurar-la-clave-de-web3forms)). Para que se pueda instalar como app: en la raíz del dominio, rutas de la SPA hacia `index.html` y las cabeceras de `public/_headers` (ver [Requisitos para que se pueda instalar](#requisitos-para-que-se-pueda-instalar-en-público)).
-- **API**: `server/api.ts` exporta un manejador `fetch` estándar. Sirve tal cual como Cloudflare Worker (`export default`), en Deno, o en cualquier host Node con `node server/dev.ts` (puerto en `PORT`). Variables: `AEMET_API_KEY` (secreto) y `ALLOWED_ORIGIN` (por defecto `*`).
-- La web llama a `/api` en su mismo origen. Si el API vive en otro dominio, cambia `provideHttpDataSources({ proxyUrl: 'https://…/api' })` en `src/app/data-providers.ts`.
+Paso a paso, con lo que hay que configurar a mano y cómo publicar actualizaciones: **[`DEPLOYMENT.md`](DEPLOYMENT.md)**. En resumen:
+
+- **Un Worker de Cloudflare** sirve la web (los archivos de `dist/que-tal-hoy/browser`) y el API (`/api/*`) en el mismo dominio, con HTTPS. `npm run deploy` compila, comprueba y publica.
+- **Seguridad** (`public/_headers`): Content-Security-Policy con scripts solo del propio sitio. Por eso `index.html` no tiene scripts en línea: la captura de la oferta de instalación vive en `public/install-prompt.js` y el CSS crítico no se incrusta (`inlineCritical: false`). Además, `nosniff`, `Referrer-Policy`, `Permissions-Policy` y `Cross-Origin-Opener-Policy`.
+- **API**: `server/api.ts` exporta un manejador `fetch` estándar. Sirve como Cloudflare Worker, en Deno o en cualquier host Node con `node server/dev.ts` (puerto en `PORT`). Variables: `AEMET_API_KEY` (secreto) y `ALLOWED_ORIGIN` (vacío por defecto: solo su propia web, sin CORS; un origen o `*` para abrirlo).
+- La web llama a `/api` en su mismo origen. Si el API vive en otro dominio, cambia `provideHttpDataSources({ proxyUrl: 'https://…/api' })` en `src/app/data-providers.ts` y pon ese origen en `ALLOWED_ORIGIN`.
 - Cabe en el plan gratuito de Cloudflare Workers (10 ms de CPU por petición). Avisos: dos ficheros de ~8 KB. Observaciones: 7 estaciones de ~5 KB, unos 0,3 ms cada una. Cada actualización hace como mucho 15 subpeticiones a AEMET, por debajo del límite de 50.
 
 ## Diseño

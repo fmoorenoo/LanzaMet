@@ -31,4 +31,23 @@ describe('ClockStore', () => {
     document.dispatchEvent(new Event('visibilitychange'));
     expect(formatTime(clock.now())).toBe('10:20');
   });
+
+  it('holds the data beat while the tab is hidden, and moves on when it is seen', () => {
+    let state: DocumentVisibilityState = 'visible';
+    const spy = vi.spyOn(document, 'visibilityState', 'get').mockImplementation(() => state);
+    const clock = TestBed.inject(ClockStore);
+    const first = clock.refreshBeat();
+
+    state = 'hidden';
+    document.dispatchEvent(new Event('visibilitychange'));
+    // Two quarters of an hour in a forgotten tab: no new beat, so no request.
+    vi.advanceTimersByTime(31 * 60_000);
+    expect(clock.quarterKey()).toBe(first + 2);
+    expect(clock.refreshBeat()).toBe(first);
+
+    state = 'visible';
+    document.dispatchEvent(new Event('visibilitychange'));
+    expect(clock.refreshBeat()).toBe(first + 2);
+    spy.mockRestore();
+  });
 });

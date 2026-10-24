@@ -1,0 +1,26 @@
+// One Cloudflare Worker serves the whole site on one domain:
+//  · the Angular build as static assets (any unknown path gets index.html),
+//  · and /api/* through server/api.ts (AEMET and the shared Open-Meteo cache).
+// See DEPLOYMENT.md. Secrets are never written here: `npx wrangler secret put AEMET_API_KEY`.
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "que-tal-hoy",
+  "main": "server/api.ts",
+  "compatibility_date": "2026-10-15",
+  "assets": {
+    "directory": "./dist/que-tal-hoy/browser",
+    "not_found_handling": "single-page-application",
+    // Only the API runs code; every other request is a file (or index.html), served at no CPU cost.
+    "run_worker_first": ["/api/*"]
+  },
+  "vars": {
+    // Leave empty to answer only this site (same origin). Set an origin, or "*", only if
+    // another site must call the API from a browser.
+    "ALLOWED_ORIGIN": ""
+  },
+  "observability": { "enabled": true },
+  // Deploy to the free *.workers.dev address too; the custom domain is added in the dashboard
+  // (Workers & Pages → que-tal-hoy → Settings → Domains & Routes), see DEPLOYMENT.md.
+  "workers_dev": true,
+  "preview_urls": false
+}

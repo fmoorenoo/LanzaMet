@@ -52,5 +52,6 @@ a.tst
 
 # Secrets (AEMET_API_KEY…): never committed
 .dev.vars
+.wrangler/
 .env
 .env.*

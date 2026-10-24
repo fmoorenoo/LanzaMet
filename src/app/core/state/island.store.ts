@@ -28,7 +28,7 @@ export class IslandStore {
     params: () => {
       const all = this.locations.all();
       if (all.length === 0) return undefined;
-      return { all, beat: this.clock.quarterKey(), version: this.refreshStore.version() };
+      return { all, beat: this.clock.refreshBeat(), version: this.refreshStore.version() };
     },
     stream: ({ params }) =>
       forkJoin(

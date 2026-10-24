@@ -1,5 +1,5 @@
 import { DOCUMENT } from '@angular/common';
-import { computed, DestroyRef, inject, Service, signal } from '@angular/core';
+import { computed, DestroyRef, inject, linkedSignal, Service, signal } from '@angular/core';
 import { atIslandHour, TIME } from '../utils/time';
 
 /**
@@ -28,12 +28,29 @@ export class ClockStore {
    */
   readonly quarterKey = computed(() => Math.floor(this.now().getTime() / (15 * TIME.MINUTE)));
 
+  /** The page is on screen. */
+  private readonly visible = signal(true);
+
+  private readonly beat = linkedSignal<{ quarter: number; visible: boolean }, number>({
+    source: () => ({ quarter: this.quarterKey(), visible: this.visible() }),
+    computation: (source, previous) =>
+      source.visible || previous === undefined ? source.quarter : previous.value,
+  });
+
+  /**
+   * The beat data is re-read on: the quarter of an hour, held while the tab
+   * is hidden, so a forgotten tab asks for nothing. It moves on — and stale
+   * data is asked for again — as soon as the page is seen again.
+   */
+  readonly refreshBeat = computed(() => this.beat());
+
   /**
    * Ticks on each minute's turn, so a clock showing it changes with the
    * wall's, and catches up at once when a backgrounded tab comes back.
    */
   constructor() {
     const document = inject(DOCUMENT);
+    this.visible.set(document.visibilityState !== 'hidden');
     let timer: ReturnType<typeof setTimeout> | undefined;
     // A few milliseconds past the turn, so timer drift never lands just before it.
     const schedule = (from: number) => {
@@ -47,6 +64,7 @@ export class ClockStore {
     };
     schedule(Date.now());
     const onVisible = () => {
+      this.visible.set(document.visibilityState !== 'hidden');
       if (document.visibilityState === 'visible') tick();
     };
     document.addEventListener('visibilitychange', onVisible);

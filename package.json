@@ -7,14 +7,18 @@
     "start:demo": "ng serve --configuration demo",
     "api": "node server/dev.ts",
     "build": "ng build",
+    "build:prod": "node scripts/build-production.ts",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "test:api": "node --test server/aemet.test.ts server/api.test.ts",
+    "test:api": "node --test server/aemet.test.ts server/api.test.ts server/open-meteo.test.ts",
     "typecheck:api": "tsc -p server/tsconfig.json",
     "verify:sources": "node scripts/verify-sources.ts",
     "lint": "ng lint",
     "format": "prettier --write \"src/**/*.{ts,html,scss}\" \"server/*.ts\"",
-    "format:check": "prettier --check \"src/**/*.{ts,html,scss}\" \"server/*.ts\""
+    "format:check": "prettier --check \"src/**/*.{ts,html,scss}\" \"server/*.ts\"",
+    "preview": "node scripts/build-production.ts --allow-without-feedback && wrangler dev --port 8788",
+    "deploy": "node scripts/build-production.ts && wrangler deploy",
+    "deploy:check": "node scripts/build-production.ts --allow-without-feedback && wrangler deploy --dry-run --outdir .wrangler/dry-run"
   },
   "private": true,
   "packageManager": "npm@12.0.2",
@@ -43,6 +47,10 @@
     "prettier": "^3.8.1",
     "typescript": "~6.0.2",
     "typescript-eslint": "8.71.0",
-    "vitest": "^5.0.0"
+    "vitest": "^5.0.0",
+    "wrangler": "^4.152.0"
+  },
+  "engines": {
+    "node": ">=24"
   }
 }

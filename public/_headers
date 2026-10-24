@@ -1,8 +1,21 @@
-# Cache headers for Cloudflare Pages and Netlify (other hosts ignore this file).
-# The HTML, the manifest and the service worker's own files are always asked
-# for again, so a new deploy reaches installed copies. Matching rules add up
-# their headers, so nothing here may also match these paths with a long cache.
+# Response headers for the site's files on Cloudflare (Workers static assets;
+# Netlify reads the same format). The API under /api sets its own headers in
+# server/api.ts. Rules that match the same path add up their headers.
 
+# ── Security, for every file ──────────────────────────────────────────────
+# Scripts only from this site (no inline scripts: see public/install-prompt.js
+# and `inlineCritical: false` in angular.json). Styles allow inline because
+# Angular adds each component's styles as a <style> element. Data comes from
+# this site's API, Open-Meteo (direct, as a fallback) and Web3Forms.
+/*
+  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self' https://api.open-meteo.com https://marine-api.open-meteo.com https://air-quality-api.open-meteo.com https://api.web3forms.com; manifest-src 'self'; worker-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=(), browsing-topics=()
+  Cross-Origin-Opener-Policy: same-origin
+
+# ── Always asked for again, so a new deploy reaches installed copies ──────
+# (The hashed JS and CSS never change; Cloudflare revalidates them by ETag.)
 /
   Cache-Control: no-cache
 /index.html
@@ -12,6 +25,8 @@
 /ngsw-worker.js
   Cache-Control: no-cache
 /safety-worker.js
+  Cache-Control: no-cache
+/install-prompt.js
   Cache-Control: no-cache
 /manifest.webmanifest
   Content-Type: application/manifest+json

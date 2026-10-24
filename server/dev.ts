@@ -7,15 +7,18 @@ import { handle, type Env } from './api.ts';
  *
  *   npm run api                                   → http://localhost:8787/api/avisos
  *
- * Local secrets go in `server/.dev.vars` (one `AEMET_API_KEY=…` line), which
- * Git ignores and `wrangler dev` also reads. Variables already set in the
- * environment take precedence.
+ * Local secrets go in `.dev.vars` at the project root (one `AEMET_API_KEY=…`
+ * line), which Git ignores and `wrangler dev` (npm run preview) also reads.
+ * `server/.dev.vars`, the older place, still works. Variables already set in
+ * the environment take precedence.
  */
 
-try {
-  process.loadEnvFile(new URL('./.dev.vars', import.meta.url));
-} catch {
-  // No local secrets: observations stay "not configured".
+for (const file of ['../.dev.vars', './.dev.vars']) {
+  try {
+    process.loadEnvFile(new URL(file, import.meta.url));
+  } catch {
+    // No local secrets there: observations stay "not configured".
+  }
 }
 
 const port = Number(process.env['PORT'] ?? 8787);

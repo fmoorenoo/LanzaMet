@@ -504,3 +504,60 @@ Skills usadas: Emil Kowalski (arrastre, lluvia, transiciones) e Impeccable (cohe
 - Instalarla en dispositivos reales: Android con Chrome y Samsung Internet, iPhone con Safari y Mac con Safari.
 - Desplegar con HTTPS y las cabeceras de `public/_headers`, y comprobar en DevTools → Application que el manifest y el service worker están bien en el dominio público.
 - Si se quiere el diálogo de instalación ampliado de Chrome, añadir `screenshots` al manifest.
+
+## Preparación del despliegue en Cloudflare (24-10-2026)
+
+Todo preparado y probado en local; **no se ha publicado nada**. Pasos manuales y procedimiento de actualización: [`DEPLOYMENT.md`](DEPLOYMENT.md).
+
+### Hecho
+
+1. **Un Worker de Cloudflare** (`wrangler.jsonc`) para la web y el API bajo el mismo dominio.
+   - La build de Angular va como *static assets*, con vuelta a `index.html` en las rutas de la SPA.
+   - Solo `/api/*` ejecuta `server/api.ts`.
+   - La clave de AEMET es un secreto del Worker. Wrangler pasa a dependencia de desarrollo, y `.nvmrc` fija Node 24.
+2. **Build de producción con sus comprobaciones** (`npm run build:prod`, `scripts/build-production.ts`).
+   - Lee `WEB3FORMS_ACCESS_KEY` y, si existe, `PUBLIC_URL` de `.env` o del entorno, sin depender del shell. Antes, en Windows, `$VAR` no se expandía en los scripts de npm.
+   - No deja publicar sin clave de Web3Forms.
+   - Comprueba service worker, cabeceras y manifest; que no haya scripts en línea, código de la demo, ni `.env` o `.dev.vars` entre los archivos; y que la clave haya llegado a la build.
+   - `npm run deploy`, `npm run preview` y `npm run deploy:check`.
+3. **«Ayúdanos» conectado de verdad**: el código ya era correcto. Faltaba una forma fiable de meter la clave en la build de producción, que ahora es obligatoria para desplegar.
+4. **Copia compartida de Open-Meteo** en el API (`/api/open-meteo/…`).
+   - Caché en dos niveles, memoria y Cache API, también para AEMET.
+   - Validación estricta: tres servicios, los parámetros de la web y coordenadas de Lanzarote.
+   - Si falla, Open-Meteo directo como reserva.
+5. **Pestañas ocultas**: no renuevan datos hasta que se vuelven a ver.
+6. **Seguridad**: Content-Security-Policy estricta en scripts y `nosniff`, `Referrer-Policy`, `Permissions-Policy` y `Cross-Origin-Opener-Policy` (`public/_headers`).
+   - El script de instalación pasa a `public/install-prompt.js`.
+   - El CSS crítico deja de incrustarse; sin cambio visual.
+   - El API deja de enviar CORS abierto por defecto (`ALLOWED_ORIGIN` vacío) y añade `nosniff`.
+7. **Actualizaciones**: si una página abierta antes de un despliegue pide una pantalla cuyo archivo ya no existe, se recarga una vez (`core/pwa/stale-version.ts`). El modo SPA de Cloudflare responde a esos archivos con la página.
+8. **Enlace al compartir**: `PUBLIC_URL` en la build, para compartir siempre el dominio propio.
+
+### Validación
+
+- **Tests**: 182 de la web (+8: copia compartida y reservas, pulso con la pestaña oculta y recarga tras despliegue) y 24 del API (+9: validación y caché de Open-Meteo y CORS). **Lint**, **tipos del API**, **formato** y **build de producción** sin errores. El bundle inicial ocupa 499,0 kB, bajo el presupuesto de 500 kB.
+- **Wrangler**: `deploy --dry-run` empaqueta el Worker en 19 kB.
+- **Con el runtime de Cloudflare en local** (`wrangler dev`):
+  - cabeceras en cada archivo; `no-cache` en HTML, manifest y worker; rutas de la SPA; `_headers` no se publica;
+  - `/api/salud` con clave; avisos; 7 estaciones;
+  - la copia de Open-Meteo responde en ~8 ms al segundo visitante y sobrevive a reiniciar el Worker (Cache API);
+  - nada fuera de las rutas fijas.
+- **Chrome sin interfaz por CDP** (la extensión no estaba conectada), en las cinco páginas, a 1440 y 390 px:
+  - 0 violaciones de CSP y 0 errores de JavaScript;
+  - ninguna petición fuera del dominio;
+  - axe (WCAG 2.2 AA y buenas prácticas) sin violaciones;
+  - sin desbordamiento horizontal.
+- **Ayúdanos**: flujo completo con Web3Forms bloqueado en Chrome y su respuesta simulada en la página. Clave dentro de la build, contenido correcto, confirmación «¡Recibido, gracias!» y CSP sin quejas.
+  - En un intento anterior la intercepción falló: **una petición con la clave ficticia `00000000-…` y un texto de prueba llegó a Web3Forms**. No la confirmó, porque esa clave no existe, y la web mostró «No se ha enviado».
+- **Compartir**: hoja de respaldo con la tarjeta de 1200 × 1500 dibujada (imágenes `blob:` permitidas).
+- **PWA**: sin errores de instalabilidad; el service worker guarda 26 archivos, ninguno de `/api`. Tras publicar una versión nueva, la primera recarga ya la trae (cambia `main-*.js`).
+- **Reserva**: sin la ruta compartida, el navegador pide directamente a Open-Meteo y muestra los datos.
+- **Sin datos simulados**: la build comprueba que no lleva el código de la demo.
+- **`npm audit`**: 0 vulnerabilidades en producción. Las 5 que señala son de herramientas de desarrollo (Vite en `@angular/build`, `undici` en el simulador de Wrangler); el arreglo automático bajaría de versión esas herramientas.
+
+### Pendiente
+
+- **Manual** ([`DEPLOYMENT.md`](DEPLOYMENT.md)): cuenta de Cloudflare y `wrangler login`; clave de Web3Forms en `.env`; `npm run deploy`; secreto `AEMET_API_KEY`; dominio propio con «Always Use HTTPS»; `PUBLIC_URL`.
+- Enviar un mensaje real por «Ayúdanos» con la clave definitiva y comprobar que llega al buzón, con y sin correo.
+- Probar en móviles reales: instalar, compartir a WhatsApp y actualizar tras un segundo despliegue.
+- El bundle inicial queda a 1 kB del presupuesto: la próxima función de la pantalla principal tendrá que cargarse de forma diferida o hacer sitio.
