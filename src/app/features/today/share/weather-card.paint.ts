@@ -83,9 +83,13 @@ const SUN = oklch(0.85, 0.15, 82);
 const SUN_EDGE = oklch(0.72, 0.15, 70);
 const MOON = oklch(0.86, 0.06, 95);
 const HEAT = oklch(0.6, 0.16, 40);
-/** The brand's mark, the same image the app shows; on its black ground. */
+/** The brand's mark, the same image the app shows, on the light tile of the app's icon. */
 const BRAND_MARK_SRC = 'icons/logo.png';
-const BRAND_GROUND = '#000';
+/** Height over width of `logo.png` (288 × 172). */
+const BRAND_MARK_ASPECT = 172 / 288;
+const BRAND_GROUND_TOP = toRgb(oklch(1, 0, 0));
+const BRAND_GROUND_BOTTOM = toRgb(oklch(0.95, 0.012, 215));
+const BRAND_EDGE = toRgb(oklch(0.2, 0.02, 250), 0.1);
 
 type Ctx = CanvasRenderingContext2D;
 
@@ -549,13 +553,21 @@ function paintBrandMark(
 ): void {
   ctx.save();
   ctx.beginPath();
-  ctx.roundRect(x, y, size, size, size * 0.31);
-  ctx.clip();
-  ctx.fillStyle = BRAND_GROUND;
-  ctx.fillRect(x, y, size, size);
+  ctx.roundRect(x, y, size, size, size * 0.225);
+  const ground = ctx.createLinearGradient(0, y, 0, y + size);
+  ground.addColorStop(0, BRAND_GROUND_TOP);
+  ground.addColorStop(1, BRAND_GROUND_BOTTOM);
+  ctx.fillStyle = ground;
+  ctx.fill();
+  // A hairline, so the light tile holds its shape on a light sheet.
+  ctx.strokeStyle = BRAND_EDGE;
+  ctx.lineWidth = 2;
+  ctx.stroke();
   if (mark) {
+    const w = size * 0.8;
+    const h = w * BRAND_MARK_ASPECT;
     ctx.imageSmoothingQuality = 'high';
-    ctx.drawImage(mark, x, y, size, size);
+    ctx.drawImage(mark, x + (size - w) / 2, y + (size - h) / 2, w, h);
   }
   ctx.restore();
 }

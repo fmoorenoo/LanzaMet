@@ -10,7 +10,7 @@ import { BrandMark } from '../brand-mark/brand-mark';
   selector: 'lm-app-tile',
   imports: [BrandMark, Icon],
   template: `
-    <lm-brand-mark />
+    <lm-brand-mark tile />
     @if (installed()) {
       <span class="badge"><lm-icon name="check" /></span>
     }

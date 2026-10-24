@@ -172,10 +172,16 @@
     text-decoration: none;
     border-radius: var(--r-sm);
 
+    // By day the mark floats, as wide as the drawing; by night it is a tile.
     lm-brand-mark {
-      width: 2.5rem;
-      height: 2.5rem;
+      width: 3.25rem;
+      height: 2rem;
     }
+  }
+
+  :host-context([data-theme='dark']) .brand lm-brand-mark {
+    width: 3rem;
+    height: 3rem;
   }
 
   .brand-name {
