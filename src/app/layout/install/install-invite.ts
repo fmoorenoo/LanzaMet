@@ -19,7 +19,7 @@ const QUIET_MS = 8000;
  * from either button, closes it for good; Settings keeps the option.
  */
 @Component({
-  selector: 'qth-install-invite',
+  selector: 'lm-install-invite',
   imports: [AppTile, Icon, Tooltip, TranslatePipe],
   template: `
     @if (store.inviteOpen()) {
@@ -29,7 +29,7 @@ const QUIET_MS = 8000;
         [attr.aria-label]="'install.invite.label' | t"
         animate.leave="is-leaving"
       >
-        <qth-app-tile />
+        <lm-app-tile />
         <div class="text">
           <p class="title">{{ 'install.invite.title' | t }}</p>
           <p class="sub">{{ text() | t }}</p>
@@ -47,11 +47,11 @@ const QUIET_MS = 8000;
           type="button"
           class="icon-btn close"
           [attr.aria-label]="'install.invite.dismiss' | t"
-          [qthTooltip]="'install.invite.dismiss' | t"
+          [lmTooltip]="'install.invite.dismiss' | t"
           (click)="dismiss()"
           (keydown.escape)="dismiss()"
         >
-          <qth-icon name="close" />
+          <lm-icon name="close" />
         </button>
       </aside>
     }

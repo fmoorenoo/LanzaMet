@@ -1,4 +1,4 @@
-# Sistema de diseño — ¿Qué tal hoy?
+# Sistema de diseño — LanzaMet
 
 Documentado a partir de lo construido. La fuente de verdad son los tokens de `src/styles/_tokens.scss`; este documento explica sus papeles y las reglas de uso.
 
@@ -72,7 +72,7 @@ Reglas:
 | Componente | Archivo | Notas |
 |---|---|---|
 | Escena | `shared/scene` | `full` (animada) / `mini` (tarjetas); oculta a lectores de pantalla. Paisajes por zona en `scenery.ts`: siete primitivas, un `path` por papel, calculados una vez |
-| Tooltip | `shared/ui/tooltip` | Directiva `qthTooltip` para botones solo con icono: ratón (450 ms) y teclado, Escape, en la capa superior, oculta a lectores de pantalla (el botón lleva su `aria-label`); sin `title` |
+| Tooltip | `shared/ui/tooltip` | Directiva `lmTooltip` para botones solo con icono: ratón (450 ms) y teclado, Escape, en la capa superior, oculta a lectores de pantalla (el botón lleva su `aria-label`); sin `title` |
 | Hoja | `shared/ui/sheet` | `<dialog>` nativo, inferior en móvil y centrada en escritorio |
 | Icono | `shared/ui/icon` | Lucide para la interfaz + iconos propios de identidad; ver «Iconos» |
 | Glifo del cielo | `shared/ui/sky-glyph` | Bicolor: sol cálido, luna pálida, nubes que los tapan |

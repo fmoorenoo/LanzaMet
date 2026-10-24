@@ -43,7 +43,7 @@ import { AFLOAT_PATHS, sceneryArt } from './scenery';
 const RAIN_FADE_MS = 900;
 
 @Component({
-  selector: 'qth-scene',
+  selector: 'lm-scene',
   templateUrl: './scene.html',
   styleUrl: './scene.scss',
   host: {

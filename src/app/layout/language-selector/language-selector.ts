@@ -21,12 +21,12 @@ const OPTIONS: readonly LanguageOption[] = [
  * legend always carries both words, so it reads in either language.
  */
 @Component({
-  selector: 'qth-language-selector',
+  selector: 'lm-language-selector',
   imports: [Icon, TranslatePipe],
   template: `
     <fieldset class="group">
       <legend class="legend lang-legend">
-        <qth-icon name="languages" />
+        <lm-icon name="languages" />
         <span
           >{{ 'settings.language' | t }}
           <span class="lang-other" [attr.lang]="otherLang()" aria-hidden="true"
@@ -62,7 +62,7 @@ const OPTIONS: readonly LanguageOption[] = [
       align-items: center;
       gap: var(--s-2);
 
-      qth-icon {
+      lm-icon {
         width: var(--icon-sm);
         height: var(--icon-sm);
       }

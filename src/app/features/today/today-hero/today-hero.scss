@@ -19,7 +19,7 @@
 
 // The words own the upper sky; on shorter phones the horizon steps down so
 // the sky behind them stays deep (contrast checked at 4.5:1).
-qth-scene {
+lm-scene {
   --horizon: 64%;
 
   @media (max-height: 50rem) {

@@ -17,7 +17,7 @@ import { FeedbackReceipt } from './feedback-form/feedback-form';
  * one authored moment — and focus moves to the heading so it is announced.
  */
 @Component({
-  selector: 'qth-feedback-sent',
+  selector: 'lm-feedback-sent',
   imports: [Icon, TranslatePipe],
   template: `
     <svg class="seal" viewBox="0 0 64 64" aria-hidden="true">
@@ -29,7 +29,7 @@ import { FeedbackReceipt } from './feedback-form/feedback-form';
     </h2>
     <p class="t-body t-muted text">{{ text() | t }}</p>
     <button id="feedback-again" type="button" class="btn again" (click)="again.emit()">
-      <qth-icon name="feedback" />{{ 'feedback.sent.again' | t }}
+      <lm-icon name="feedback" />{{ 'feedback.sent.again' | t }}
     </button>
   `,
   host: {
@@ -93,7 +93,7 @@ import { FeedbackReceipt } from './feedback-form/feedback-form';
     }
     @media (prefers-reduced-motion: reduce) {
       .seal-disc {
-        animation-name: qth-fade-in;
+        animation-name: lm-fade-in;
       }
       .seal-check {
         animation: none;

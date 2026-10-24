@@ -1,12 +1,14 @@
 # Despliegue en Cloudflare
 
-Guía para publicar ¿Qué tal hoy? y sus actualizaciones. Preparado y probado en local el 24-10-2026; **aún no se ha publicado nada**.
+Guía para publicar LanzaMet (<https://lanzamet.com>) y sus actualizaciones.
+
+La web se llamó «¿Qué tal hoy?» hasta el 24-10-2026. Ese día se publicó en pruebas como Worker `que-tal-hoy` (`https://que-tal-hoy.que-tal-hoy.workers.dev`). Con el nombre nuevo, el Worker es `lanzamet`: el antiguo se borra cuando `lanzamet.com` funcione (ver el paso 5).
 
 ## Cómo queda montado
 
-Un solo **Worker de Cloudflare** (`que-tal-hoy`) sirve todo bajo un mismo dominio y con HTTPS:
+Un solo **Worker de Cloudflare** (`lanzamet`) sirve todo bajo un mismo dominio y con HTTPS:
 
-- **La web**: la build de Angular (`dist/que-tal-hoy/browser`) como *static assets*. Cualquier ruta que no sea un archivo (`/mar`, `/zonas`…) devuelve `index.html`. Servir archivos no ejecuta código ni cuenta como petición del Worker: es gratis e ilimitado.
+- **La web**: la build de Angular (`dist/lanzamet/browser`) como *static assets*. Cualquier ruta que no sea un archivo (`/mar`, `/zonas`…) devuelve `index.html`. Servir archivos no ejecuta código ni cuenta como petición del Worker: es gratis e ilimitado.
 - **El API propio**, en `/api/*`: `server/api.ts`, el mismo código que `npm run api`. Hace tres cosas:
   - avisos de AEMET (sin clave);
   - observaciones de AEMET (con la clave como secreto);
@@ -30,7 +32,7 @@ Un solo **Worker de Cloudflare** (`que-tal-hoy`) sirve todo bajo un mismo domini
 |---|---|---|---|
 | `AEMET_API_KEY` | Secreto del Worker (`npx wrangler secret put AEMET_API_KEY` o el panel) | **Sí**: nunca en el repositorio ni en la web | Observaciones de las estaciones («Medido») |
 | `WEB3FORMS_ACCESS_KEY` | En la **build**: archivo `.env` local o variables de build de Cloudflare | No: Web3Forms la diseña pública (solo envía a tu buzón) y acaba en el JavaScript. Se deja fuera del repositorio para no atar el código a un buzón | Que «Ayúdanos» envíe los mensajes |
-| `PUBLIC_URL` | En la build, opcional (`.env` o variables de build) | No | La dirección que llevan los enlaces al compartir, p. ej. `https://quetalhoy.es`. Sin ella se comparte la dirección desde la que se abre la web |
+| `PUBLIC_URL` | En la build, opcional (`.env` o variables de build) | No | La dirección que llevan los enlaces al compartir, p. ej. `https://lanzamet.com`. Sin ella se comparte la dirección desde la que se abre la web |
 | `ALLOWED_ORIGIN` | `wrangler.jsonc` → `vars` | No | Vacío: el API solo atiende a su propia web. Pon un origen solo si otra web debe llamarlo desde el navegador |
 
 Git ignora `.env`, `.dev.vars` y `.wrangler/`.
@@ -77,7 +79,7 @@ npm run deploy
 - no hay código de la demo;
 - la clave está dentro de la build.
 
-Al terminar, Wrangler muestra la dirección `https://que-tal-hoy.<tu-subdominio>.workers.dev`.
+Al terminar, Wrangler muestra la dirección `https://lanzamet.<tu-subdominio>.workers.dev`.
 
 ### 4. Clave de AEMET como secreto
 
@@ -85,15 +87,28 @@ Al terminar, Wrangler muestra la dirección `https://que-tal-hoy.<tu-subdominio>
 npx wrangler secret put AEMET_API_KEY
 ```
 
-Pega la clave cuando la pida: es la misma de `server/.dev.vars`. Se aplica al momento, sin volver a desplegar. Compruébalo en `https://…workers.dev/api/salud`: debe decir `"aemetKey": true`, sin mostrar la clave.
+Pega la clave cuando la pida: es la misma de `server/.dev.vars`. Esto solo funciona en una terminal interactiva. Si no te deja teclearla, usa el comando con tubería del paso 5.4, que la lee del archivo. Se aplica al momento, sin volver a desplegar. Compruébalo en `https://lanzamet.com/api/salud`: debe decir `"aemetKey": true`, sin mostrar la clave.
 
-### 5. Tu dominio (recomendado)
+### 5. El dominio, lanzamet.com
 
-1. El dominio tiene que estar en Cloudflare. En el panel, **Add a domain**, y cambia los *nameservers* en tu registrador por los que te indique Cloudflare. Si lo compras en Cloudflare Registrar, ya está.
-2. **Workers & Pages → que-tal-hoy → Settings → Domains & Routes → Add → Custom domain**. Escribe, por ejemplo, `quetalhoy.es` (y `www.quetalhoy.es` si lo quieres). Cloudflare crea el DNS y el certificado HTTPS solo.
-3. **SSL/TLS → Edge Certificates**: activa **Always Use HTTPS**. HSTS es opcional; actívalo solo cuando el dominio vaya a servirse siempre por HTTPS.
-4. Añade `PUBLIC_URL=https://tu-dominio.es` al `.env` y vuelve a desplegar (`npm run deploy`).
-5. Si quieres que solo funcione el dominio propio, pon `"workers_dev": false` en `wrangler.jsonc` y despliega.
+El dominio ya está declarado en `wrangler.jsonc` (`routes`, con `custom_domain: true`). Cada `npm run deploy` crea o confirma su registro DNS y su certificado HTTPS: no hay que tocar el DNS a mano.
+
+1. **El dominio tiene que estar en la misma cuenta de Cloudflare.** En el panel, en **Account home**, `lanzamet.com` debe aparecer como **Active**.
+   - Si lo compraste en Cloudflare (Domain Registration), ya lo está.
+   - Si lo compraste en otro registrador: en el panel, **Add a domain** → `lanzamet.com` → plan **Free**. Después cambia en tu registrador los *nameservers* por los dos que te indique Cloudflare. Puede tardar de minutos a unas horas en quedar activo.
+   - Si ya tiene registros DNS para `lanzamet.com` (algunos registradores crean una página de aparcamiento), bórralos en **DNS → Records**: el despliegue no puede crear el suyo encima de otro.
+2. En `.env`, `PUBLIC_URL=https://lanzamet.com`, para que los enlaces al compartir lleven siempre el dominio.
+3. Despliega: `npm run deploy`. Al terminar, Wrangler muestra `lanzamet.com (custom domain)`. El certificado tarda unos minutos la primera vez.
+4. Guarda otra vez el secreto de AEMET, ahora en el Worker `lanzamet`. Los secretos son de cada Worker, y el nombre ha cambiado:
+
+   ```bash
+   node -e "process.stdout.write(require('fs').readFileSync('server/.dev.vars','utf8').match(/^AEMET_API_KEY=(.*)$/m)[1].trim())" | npx wrangler secret put AEMET_API_KEY
+   ```
+
+   Ese comando lee la clave de `server/.dev.vars` y se la pasa a Wrangler sin mostrarla. Un `npx wrangler secret put` sin tubería pide teclearla, y solo funciona en una terminal interactiva: en otras guarda un valor vacío.
+5. **SSL/TLS → Edge Certificates**: activa **Always Use HTTPS**. HSTS es opcional; actívalo solo cuando el dominio vaya a servirse siempre por HTTPS.
+6. Opcional, `www.lanzamet.com`: **Rules → Overview → Create rule → Redirect Rule**, con la plantilla **Redirect from WWW to root**. Necesita un registro DNS `www`, de tipo `AAAA` con valor `100::` y proxy activado, para que Cloudflare atienda esas peticiones.
+7. Cuando `https://lanzamet.com` funcione, borra el Worker antiguo: **Workers & Pages → que-tal-hoy → Settings → Delete**. Si quieres que solo funcione el dominio, pon también `"workers_dev": false` en `wrangler.jsonc` y despliega.
 
 La copia compartida de Open-Meteo usa la Cache API de Cloudflare, que **solo funciona en el dominio propio**. En `*.workers.dev` cada instancia del Worker guarda su propia copia en memoria: funciona igual, pero se ahorran menos peticiones.
 
@@ -122,13 +137,13 @@ Qué pasa después:
 - Una copia instalada (PWA) carga la versión nueva la próxima vez que se abra con conexión. Sin conexión, abre la última que tenía.
 - Si alguien tenía la web abierta durante el despliegue y entra en una pantalla que aún no había cargado, la página se recarga una vez sola para traer la versión nueva (`core/pwa/stale-version.ts`).
 
-**Volver atrás**: `npx wrangler rollback` (pide confirmación) o, en el panel, **Workers & Pages → que-tal-hoy → Deployments**. La web y el API vuelven juntos a la versión anterior.
+**Volver atrás**: `npx wrangler rollback` (pide confirmación) o, en el panel, **Workers & Pages → lanzamet → Deployments**. La web y el API vuelven juntos a la versión anterior.
 
 **Ver qué pasa en producción**: `npx wrangler deployments list` (despliegues) y `npx wrangler tail` (registro en vivo del API). Los registros también se ven en el panel (Observability).
 
 ### Desplegar desde Git (opcional)
 
-Para que cada `git push` publique solo: **Workers & Pages → que-tal-hoy → Settings → Builds → Connect** a tu repositorio de GitHub o GitLab y configura:
+Para que cada `git push` publique solo: **Workers & Pages → lanzamet → Settings → Builds → Connect** a tu repositorio de GitHub o GitLab y configura:
 
 | Campo | Valor |
 |---|---|

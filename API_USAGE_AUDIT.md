@@ -67,7 +67,7 @@ Medido en el mismo navegador, después de la primera carga:
 | Capa | Dónde | Duración | ¿Compartida entre visitantes? |
 |---|---|---|---|
 | `ResponseCache` en memoria | Pestaña | 30 min tiempo · 60 min mar · 3 h polvo · 10 min avisos · 20 min observaciones | No |
-| `ResponseCache` en `localStorage` (`qth.cache.om-*`, ~114 KB) | Navegador (todas sus pestañas) | Las mismas, solo Open-Meteo | No |
+| `ResponseCache` en `localStorage` (`lm.cache.om-*`, ~114 KB) | Navegador (todas sus pestañas) | Las mismas, solo Open-Meteo | No |
 | Caché HTTP del navegador para `/api/*` | Navegador | `max-age` 300 s avisos, 600 s observaciones | No |
 | Memoria del API propio (`server/api.ts`) | Instancia del servidor | 10 min avisos, 20 min observaciones (y copia de hasta 2 h si AEMET falla) | **Sí**, entre los visitantes que atiende esa instancia |
 | Open-Meteo | — | No envía `Cache-Control`: el navegador no la guarda por su cuenta | — |

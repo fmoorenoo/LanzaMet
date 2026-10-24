@@ -31,7 +31,7 @@ describe('API', () => {
     assert.equal(response.headers.get('access-control-allow-origin'), null);
     assert.equal(response.headers.get('x-content-type-options'), 'nosniff');
     const body = (await response.json()) as Record<string, unknown>;
-    assert.equal(body['service'], 'que-tal-hoy-api');
+    assert.equal(body['service'], 'lanzamet-api');
     assert.ok(Array.isArray(body['warnings']));
     assert.equal(body['publishedAt'], '2026-10-22T00:37:34.000Z');
     assert.equal(body['stale'], false);
@@ -46,7 +46,7 @@ describe('API', () => {
     const response = await get('/observaciones');
     assert.equal(response.status, 503);
     assert.deepEqual(await response.json(), {
-      service: 'que-tal-hoy-api',
+      service: 'lanzamet-api',
       error: 'not_configured',
     });
   });
@@ -70,7 +70,7 @@ describe('API', () => {
 
   it('reports the key without revealing it', async () => {
     const body = (await (await get('/salud', { AEMET_API_KEY: 'secret' })).json()) as object;
-    assert.deepEqual(body, { service: 'que-tal-hoy-api', ok: true, aemetKey: true });
+    assert.deepEqual(body, { service: 'lanzamet-api', ok: true, aemetKey: true });
   });
 
   it('answers 502 when AEMET fails and nothing is cached', async () => {

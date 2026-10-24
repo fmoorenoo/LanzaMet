@@ -9,7 +9,7 @@ import { IconName, ICONS } from './icons';
  * same 1.75 for every icon, Lucide's and the app's own.
  */
 @Component({
-  selector: 'qth-icon',
+  selector: 'lm-icon',
   template: `
     <svg
       viewBox="0 0 24 24"

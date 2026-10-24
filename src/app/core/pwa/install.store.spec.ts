@@ -16,7 +16,7 @@ const RETURNING: InstallRecord = {
 
 function store(saved: InstallRecord | null = null, userAgent?: string): InstallStore {
   localStorage.clear();
-  if (saved) localStorage.setItem('qth.install', JSON.stringify(saved));
+  if (saved) localStorage.setItem('lm.install', JSON.stringify(saved));
   if (userAgent) vi.spyOn(navigator, 'userAgent', 'get').mockReturnValue(userAgent);
   return TestBed.inject(InstallStore);
 }
@@ -28,12 +28,12 @@ function offer(outcome: 'accepted' | 'dismissed') {
   return { event, prompt };
 }
 
-const saved = (): InstallRecord => JSON.parse(localStorage.getItem('qth.install') ?? 'null');
+const saved = (): InstallRecord => JSON.parse(localStorage.getItem('lm.install') ?? 'null');
 
 describe('InstallStore', () => {
   afterEach(() => {
     localStorage.clear();
-    delete window.qthInstallPrompt;
+    delete window.lmInstallPrompt;
     vi.restoreAllMocks();
   });
 
@@ -64,7 +64,7 @@ describe('InstallStore', () => {
   });
 
   it('keeps an offer that came before the app started', () => {
-    window.qthInstallPrompt = offer('accepted').event;
+    window.lmInstallPrompt = offer('accepted').event;
     expect(store().route()).toBe('prompt');
   });
 

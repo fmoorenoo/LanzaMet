@@ -36,7 +36,7 @@ const memory = new Map<string, Entry>();
 const inflight = new Map<string, Promise<Entry>>();
 
 /** Cache API keys must be URLs; this host never resolves, it only names entries. */
-const CACHE_ORIGIN = 'https://edge-cache.que-tal-hoy.invalid/';
+const CACHE_ORIGIN = 'https://edge-cache.lanzamet.invalid/';
 
 interface CacheLike {
   match(request: Request): Promise<Response | undefined>;

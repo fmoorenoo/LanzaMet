@@ -23,7 +23,7 @@
     transform var(--d-press) var(--ease-out),
     background-color var(--d-fast) ease;
 
-  qth-icon {
+  lm-icon {
     width: var(--icon-sm);
     height: var(--icon-sm);
   }
@@ -44,7 +44,7 @@
   width: var(--sky-control-h);
   padding: 0;
 
-  &[aria-pressed='true'] qth-icon {
+  &[aria-pressed='true'] lm-icon {
     color: var(--sol-400);
   }
 }

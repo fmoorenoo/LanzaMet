@@ -35,7 +35,7 @@ const easeOut = (t: number) => 1 - Math.pow(1 - t, 5);
  * page's scroll whenever the pointer crosses the strip.
  */
 @Directive({
-  selector: '[qthHorizontalScroll]',
+  selector: '[lmHorizontalScroll]',
   exportAs: 'horizontalScroll',
   host: {
     class: 'h-scroll',
@@ -74,7 +74,7 @@ export class HorizontalScroll {
 
   constructor() {
     const element = this.host.nativeElement;
-    element.id ||= `qth-scroller-${nextId++}`;
+    element.id ||= `lm-scroller-${nextId++}`;
     this.id = element.id;
 
     const destroyRef = inject(DestroyRef);

@@ -8,7 +8,7 @@ import { StatusMessage } from '../../shared/ui/status-message/status-message';
 
 /** Concrete suggestions for today, the best one first and shown as a place. */
 @Component({
-  selector: 'qth-plans-page',
+  selector: 'lm-plans-page',
   host: { id: 'plans-page', class: 'page plans-page' },
   imports: [PlanItem, StatusMessage, DataCredit, TranslatePipe],
   template: `
@@ -23,25 +23,25 @@ import { StatusMessage } from '../../shared/ui/status-message/status-message';
       @switch (island.zones().status) {
         @case ('ready') {
           @if (lead(); as first) {
-            <qth-plan-item id="lead-plan" class="enter-settle" [plan]="first" variant="lead" />
+            <lm-plan-item id="lead-plan" class="enter-settle" [plan]="first" variant="lead" />
             @if (rest().length > 0) {
               <section id="more-plans" class="more" aria-labelledby="more-title">
                 <h2 id="more-title" class="t-title">{{ 'plans.more' | t }}</h2>
                 <ul class="list plan-list">
                   @for (plan of rest(); track plan.id; let i = $index) {
                     <li class="enter-rise" [style.--i]="i + 1">
-                      <qth-plan-item [plan]="plan" />
+                      <lm-plan-item [plan]="plan" />
                     </li>
                   }
                 </ul>
               </section>
             }
           } @else {
-            <qth-status-message [title]="'today.noPlan' | t" [text]="'today.noPlan.text' | t" />
+            <lm-status-message [title]="'today.noPlan' | t" [text]="'today.noPlan.text' | t" />
           }
         }
         @case ('error') {
-          <qth-status-message
+          <lm-status-message
             tone="error"
             [title]="'today.compareFailed' | t"
             [text]="island.zones().error | t"
@@ -55,7 +55,7 @@ import { StatusMessage } from '../../shared/ui/status-message/status-message';
       }
 
       <footer id="plans-footer" class="page-foot">
-        <qth-data-credit kind="island" [updatedAt]="island.updatedAt()" />
+        <lm-data-credit kind="island" [updatedAt]="island.updatedAt()" />
       </footer>
     </div>
   `,

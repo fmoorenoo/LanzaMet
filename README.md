@@ -1,4 +1,6 @@
-# ¿Qué tal hoy?
+# LanzaMet
+
+<https://lanzamet.com> · Hasta el 24-10-2026 se llamó «¿Qué tal hoy?»; en el código y en el almacenamiento del navegador, el prefijo pasó de `qth` a `lm` (las preferencias guardadas se migran solas).
 
 Web para entender en tres segundos cómo está el día en Lanzarote: tiempo, viento, mar, mareas y a qué zona ir. Gratuita, sin publicidad ni suscripciones. En español y en inglés.
 
@@ -140,7 +142,7 @@ La sección **Ayúdanos** envía los mensajes por correo electrónico a través 
 **Antispam y envíos repetidos**:
 - Web3Forms filtra el spam en su servidor en todos los envíos.
 - Campo trampa (*honeypot*) oculto: si llega relleno, no se envía nada. Además se manda `botcheck: false`, el campo trampa de Web3Forms.
-- En el dispositivo: un envío no sale antes de 3 s desde que se abre el formulario; tras cada envío hay 30 s de pausa; como mucho 5 por hora; y el mismo mensaje no se envía dos veces en 24 h. Solo se guardan las horas de envío y una huella FNV-1a del último mensaje, nunca su texto (`localStorage`, clave `qth.feedback`).
+- En el dispositivo: un envío no sale antes de 3 s desde que se abre el formulario; tras cada envío hay 30 s de pausa; como mucho 5 por hora; y el mismo mensaje no se envía dos veces en 24 h. Solo se guardan las horas de envío y una huella FNV-1a del último mensaje, nunca su texto (`localStorage`, clave `lm.feedback`).
 - Un segundo clic mientras se envía no duplica el envío.
 - No se usa hCaptcha: obligaría a cargar un script de terceros que también recoge datos. Si un día llega spam, se puede activar en el panel de Web3Forms (es gratis) y añadir su widget al formulario.
 
@@ -152,7 +154,7 @@ La sección **Ayúdanos** envía los mensajes por correo electrónico a través 
 2. Ponla en un archivo `.env` en la raíz del proyecto (Git lo ignora), una línea `WEB3FORMS_ACCESS_KEY=tu-clave`. **No se escribe en el código.** `npm run build:prod` (y `npm run deploy`) la leen de ahí o del entorno y la pasan a Angular con `--define`, sin depender del shell. En Cloudflare, con despliegue desde Git, va en las variables de build ([`DEPLOYMENT.md`](DEPLOYMENT.md)). Para probarla con el servidor de desarrollo:
 
    ```bash
-   npx ng serve --define "QTH_WEB3FORMS_KEY='tu-clave-de-acceso'"
+   npx ng serve --define "LM_WEB3FORMS_KEY='tu-clave-de-acceso'"
    ```
 3. Sin clave, o con una que no tenga forma de UUID, la página avisa de que el envío aún no está activado y no envía nada. La build de demo usa el mismo servicio real: no hay envíos simulados.
 
@@ -162,7 +164,7 @@ La clave de Web3Forms **no es secreta**: según su documentación puede ser púb
 
 ## Instalar la web (PWA)
 
-¿Qué tal hoy? se puede tener entre las apps del móvil o en el escritorio del ordenador sin pasar por ninguna tienda: es la misma web, instalada como aplicación web progresiva (PWA). No hay app nativa.
+LanzaMet se puede tener entre las apps del móvil o en el escritorio del ordenador sin pasar por ninguna tienda: es la misma web, instalada como aplicación web progresiva (PWA). No hay app nativa.
 
 ### Dónde está
 
@@ -200,11 +202,11 @@ La guía (`layout/install/install-guide`) se abre en el dispositivo detectado (`
 
 En el ordenador la guía separa **Como app** («se abre en su propia ventana, con su icono, sin pestañas ni barra de direcciones») de **En marcadores** («se queda en tu navegador, junto a tus otras webs, a un clic»). Todo está en español y en inglés.
 
-**Cuándo consta que está instalada**: al aceptar el diálogo del navegador, al recibir `appinstalled` o al abrirse en modo app. Se guarda en este dispositivo (`localStorage`, clave `qth.install`, junto al recuento de días con visita y de invitaciones; nada más). Desinstalar no deja rastro, así que, si el navegador vuelve a ofrecer la instalación, se olvida. En iOS no hay forma de saberlo desde Safari: la guía se sigue ofreciendo hasta que la web se abre como app.
+**Cuándo consta que está instalada**: al aceptar el diálogo del navegador, al recibir `appinstalled` o al abrirse en modo app. Se guarda en este dispositivo (`localStorage`, clave `lm.install`, junto al recuento de días con visita y de invitaciones; nada más). Desinstalar no deja rastro, así que, si el navegador vuelve a ofrecer la instalación, se olvida. En iOS no hay forma de saberlo desde Safari: la guía se sigue ofreciendo hasta que la web se abre como app.
 
 ### Manifest e iconos
 
-- `public/manifest.webmanifest`: `id` y `start_url` `/`, `display: standalone`, nombre «¿Qué tal hoy? · Lanzarote», nombre corto «Qué tal hoy» (el que se lee bajo el icono), fondo y color de tema `#f8fafb` (el fondo de día, el mismo de `<meta name="theme-color">`), idioma `es`.
+- `public/manifest.webmanifest`: `id` y `start_url` `/`, `display: standalone`, nombre y nombre corto «LanzaMet» (el que se lee bajo el icono), fondo y color de tema `#f8fafb` (el fondo de día, el mismo de `<meta name="theme-color">`), idioma `es`.
 - Iconos en `public/icons/`, sacados de la marca (el sol poniéndose en el Atlántico):
   - `icon.svg`, `icon-192.png` e `icon-512.png` («any»), con las esquinas recortadas y transparentes;
   - `icon-maskable-192.png` e `icon-maskable-512.png` («maskable»), a sangre, con el sol dentro de la zona segura del 80 %;
@@ -331,7 +333,7 @@ wrangler.jsonc       el Worker de Cloudflare: la web como assets y /api/* con se
 
 Paso a paso, con lo que hay que configurar a mano y cómo publicar actualizaciones: **[`DEPLOYMENT.md`](DEPLOYMENT.md)**. En resumen:
 
-- **Un Worker de Cloudflare** sirve la web (los archivos de `dist/que-tal-hoy/browser`) y el API (`/api/*`) en el mismo dominio, con HTTPS. `npm run deploy` compila, comprueba y publica.
+- **Un Worker de Cloudflare** sirve la web (los archivos de `dist/lanzamet/browser`) y el API (`/api/*`) en el mismo dominio, con HTTPS. `npm run deploy` compila, comprueba y publica.
 - **Seguridad** (`public/_headers`): Content-Security-Policy con scripts solo del propio sitio. Por eso `index.html` no tiene scripts en línea: la captura de la oferta de instalación vive en `public/install-prompt.js` y el CSS crítico no se incrusta (`inlineCritical: false`). Además, `nosniff`, `Referrer-Policy`, `Permissions-Policy` y `Cross-Origin-Opener-Policy`.
 - **API**: `server/api.ts` exporta un manejador `fetch` estándar. Sirve como Cloudflare Worker, en Deno o en cualquier host Node con `node server/dev.ts` (puerto en `PORT`). Variables: `AEMET_API_KEY` (secreto) y `ALLOWED_ORIGIN` (vacío por defecto: solo su propia web, sin CORS; un origen o `*` para abrirlo).
 - La web llama a `/api` en su mismo origen. Si el API vive en otro dominio, cambia `provideHttpDataSources({ proxyUrl: 'https://…/api' })` en `src/app/data-providers.ts` y pon ese origen en `ALLOWED_ORIGIN`.

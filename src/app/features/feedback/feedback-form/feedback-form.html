@@ -20,19 +20,19 @@
             [attr.aria-describedby]="kindError() ? 'feedback-kind-error' : null"
           />
           <span class="kind-mark" aria-hidden="true">
-            <qth-icon [name]="option.icon" />
+            <lm-icon [name]="option.icon" />
           </span>
           <span class="kind-text">
             <span class="kind-label">{{ option.label | t }}</span>
             <span class="kind-hint">{{ option.hint | t }}</span>
           </span>
-          <qth-icon class="kind-check" name="check" />
+          <lm-icon class="kind-check" name="check" />
         </label>
       }
     </div>
     @if (kindError()) {
       <p id="feedback-kind-error" class="help is-error">
-        <qth-icon name="alert" />{{ 'feedback.invalid.kind' | t }}
+        <lm-icon name="alert" />{{ 'feedback.invalid.kind' | t }}
       </p>
     }
   </fieldset>
@@ -62,7 +62,7 @@
     ></textarea>
     <p id="feedback-message-help" class="help" [class.is-error]="messageError()">
       @if (messageError(); as error) {
-        <qth-icon name="alert" />{{ error | t }}
+        <lm-icon name="alert" />{{ error | t }}
       } @else {
         {{ limits | t }}
       }
@@ -74,7 +74,7 @@
   <div class="block email">
     <label class="label" for="feedback-email">{{ 'feedback.email.label' | t }}</label>
     <div class="field email-field">
-      <qth-icon name="mail" />
+      <lm-icon name="mail" />
       <input
         id="feedback-email"
         type="email"
@@ -90,7 +90,7 @@
     </div>
     <p id="feedback-email-help" class="help" [class.is-error]="emailError()">
       @if (emailError(); as error) {
-        <qth-icon name="alert" />{{ error | t }}
+        <lm-icon name="alert" />{{ error | t }}
       } @else {
         {{ 'feedback.email.hint' | t }}
       }
@@ -113,7 +113,7 @@
     <div class="outcome">
       @if (failure(); as reason) {
         <div id="feedback-error" class="alert feedback-error" role="alert">
-          <qth-icon name="alert" />
+          <lm-icon name="alert" />
           <p>
             <strong>{{ 'feedback.failed' | t }}.</strong>
             {{ reason | t }}
@@ -130,10 +130,10 @@
       [attr.aria-disabled]="sending() ? 'true' : null"
     >
       <span class="submit-face" [attr.aria-hidden]="sending() ? 'true' : null">
-        <qth-icon name="send" />{{ 'feedback.submit' | t }}
+        <lm-icon name="send" />{{ 'feedback.submit' | t }}
       </span>
       <span class="submit-face submit-face--busy" [attr.aria-hidden]="sending() ? null : 'true'">
-        <qth-icon class="spinner" name="loader" />{{ 'feedback.sending' | t }}
+        <lm-icon class="spinner" name="loader" />{{ 'feedback.sending' | t }}
       </span>
     </button>
   </div>

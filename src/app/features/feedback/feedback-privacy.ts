@@ -18,14 +18,14 @@ const POINTS: readonly MessageKey[] = [
  * form: always a click away, never in the way of writing.
  */
 @Component({
-  selector: 'qth-feedback-privacy',
+  selector: 'lm-feedback-privacy',
   imports: [Icon, TranslatePipe],
   template: `
     <details class="details">
       <summary id="feedback-privacy-toggle" class="summary">
-        <qth-icon class="shield" name="privacy" />
+        <lm-icon class="shield" name="privacy" />
         <span class="summary-text">{{ 'feedback.privacy' | t }}</span>
-        <qth-icon class="chevron" name="chevron-down" />
+        <lm-icon class="chevron" name="chevron-down" />
       </summary>
       <div class="body">
         <ul class="points">
@@ -66,7 +66,7 @@ const POINTS: readonly MessageKey[] = [
         display: none;
       }
 
-      qth-icon {
+      lm-icon {
         width: var(--icon-sm);
         height: var(--icon-sm);
         flex: none;
@@ -89,7 +89,7 @@ const POINTS: readonly MessageKey[] = [
       display: grid;
       gap: var(--s-3);
       padding-bottom: var(--s-2);
-      animation: qth-rise 240ms var(--ease-out) both;
+      animation: lm-rise 240ms var(--ease-out) both;
     }
     .points {
       display: grid;
@@ -120,7 +120,7 @@ const POINTS: readonly MessageKey[] = [
         transition: none;
       }
       .body {
-        animation-name: qth-fade-in;
+        animation-name: lm-fade-in;
       }
     }
   `,

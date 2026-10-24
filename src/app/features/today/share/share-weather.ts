@@ -40,7 +40,7 @@ const isAbort = (error: unknown) => error instanceof DOMException && error.name 
  * share menu opens while the tap still counts as one (Safari allows little time).
  */
 @Component({
-  selector: 'qth-share-weather',
+  selector: 'lm-share-weather',
   imports: [Icon, Sheet, Tooltip, TranslatePipe],
   templateUrl: './share-weather.html',
   styleUrl: './share-weather.scss',

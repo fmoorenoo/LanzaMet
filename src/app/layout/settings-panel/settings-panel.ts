@@ -21,7 +21,7 @@ const STATUS: Readonly<Record<Exclude<SectionStatus, 'empty'>, MessageKey>> = {
 
 /** Language, appearance, installing the web, where the data comes from and — in the demo build — the demo's controls. */
 @Component({
-  selector: 'qth-settings-panel',
+  selector: 'lm-settings-panel',
   imports: [Sheet, NgComponentOutlet, TranslatePipe, LanguageSelector, InstallOption],
   templateUrl: './settings-panel.html',
   styleUrl: './settings-panel.scss',

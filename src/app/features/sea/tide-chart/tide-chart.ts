@@ -32,7 +32,7 @@ const TICK_CLEARANCE_PX = 16;
  * appears, left to right, the way the day unfolds.
  */
 @Component({
-  selector: 'qth-tide-chart',
+  selector: 'lm-tide-chart',
   imports: [TranslatePipe],
   templateUrl: './tide-chart.html',
   styleUrl: './tide-chart.scss',

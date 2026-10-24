@@ -44,7 +44,7 @@ export interface HeroView {
  * so changing place happens where its effect is seen.
  */
 @Component({
-  selector: 'qth-today-hero',
+  selector: 'lm-today-hero',
   imports: [
     Scene,
     Icon,

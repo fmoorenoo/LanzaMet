@@ -9,9 +9,9 @@
     aria-haspopup="dialog"
     (click)="ui.openLocationPicker()"
   >
-    <qth-icon name="pin" />
+    <lm-icon name="pin" />
     {{ place?.name ?? ('common.lanzarote' | t) }}
-    <qth-icon name="chevron-down" />
+    <lm-icon name="chevron-down" />
     <span class="visually-hidden">{{ 'common.changePlace' | t }}</span>
   </button>
 
@@ -55,7 +55,7 @@
           <span class="gauge-water" [style.transform]="gaugeLevel()"></span>
         </span>
         <span class="gauge-arrow">
-          <qth-icon [name]="tide.trend === 'subiendo' ? 'arrow-up' : 'arrow-down'" />
+          <lm-icon [name]="tide.trend === 'subiendo' ? 'arrow-up' : 'arrow-down'" />
         </span>
       </div>
     }
@@ -64,7 +64,7 @@
 
 <div class="content">
   @if (coastalWarnings().length > 0) {
-    <qth-warning-banner id="coastal-warnings" [warnings]="coastalWarnings()" />
+    <lm-warning-banner id="coastal-warnings" [warnings]="coastalWarnings()" />
   }
 
   @switch (tides.status) {
@@ -77,7 +77,7 @@
         >
           <h2 id="curve-title" class="t-title">{{ 'seaPage.curve' | t }}</h2>
           <!-- Without sun times the curve is still drawn, just without the night shaded. -->
-          <qth-tide-chart
+          <lm-tide-chart
             [tide]="data"
             [dayStart]="dayStart()"
             [now]="now()"
@@ -85,7 +85,7 @@
             [sunset]="sun()?.sunset ?? null"
           />
           <p id="tide-source" class="source t-micro t-faint">
-            <qth-icon name="info" />
+            <lm-icon name="info" />
             @for (part of tideSource(); track $index) {
               {{ part | t }}
             }
@@ -107,7 +107,7 @@
                       [class.is-past]="e.isPast"
                       [attr.data-tide]="e.kind === 'pleamar' ? 'high' : 'low'"
                     >
-                      <qth-icon [name]="e.kind === 'pleamar' ? 'tide-up' : 'tide-down'" />
+                      <lm-icon [name]="e.kind === 'pleamar' ? 'tide-up' : 'tide-down'" />
                       <span class="extreme-kind">{{ e.name | t }}</span>
                       <span class="extreme-time t-num">{{
                         'common.value' | t: { value: { time: e.time } }
@@ -124,7 +124,7 @@
     }
     @case ('empty') {
       <section class="block">
-        <qth-status-message
+        <lm-status-message
           [title]="'seaPage.noTideHere' | t"
           [text]="
             nearestWithTide()
@@ -143,7 +143,7 @@
     }
     @case ('error') {
       <section class="block">
-        <qth-status-message
+        <lm-status-message
           tone="error"
           [title]="'seaPage.tideLoadError' | t"
           [text]="tides.error | t"
@@ -174,18 +174,18 @@
       </p>
       @if (s.offshoreKm !== null) {
         <p class="source t-micro t-faint">
-          <qth-icon name="info" />
+          <lm-icon name="info" />
           {{ 'seaPage.offshore' | t: { km: s.offshoreKm } }}
         </p>
       }
     } @else if (forecast.sea().status === 'empty') {
-      <qth-status-message
+      <lm-status-message
         [title]="'seaPage.seaNone' | t"
         [text]="'seaPage.seaNone.text' | t"
         icon="waves"
       />
     } @else if (forecast.sea().status === 'error') {
-      <qth-status-message
+      <lm-status-message
         tone="error"
         [title]="'seaPage.seaError' | t"
         [actionLabel]="'common.retry' | t"
@@ -216,13 +216,13 @@
                 <span class="calm-name">{{ zone.name }}</span>
                 <span class="calm-sub">{{ zone.label | t }} · {{ zone.waves | t }}</span>
               </span>
-              <qth-icon class="chevron" name="chevron-right" />
+              <lm-icon class="chevron" name="chevron-right" />
             </button>
           </li>
         }
       </ol>
     } @else if (island.zones().status === 'error') {
-      <qth-status-message
+      <lm-status-message
         tone="error"
         [title]="'today.compareFailed' | t"
         [actionLabel]="'common.retry' | t"
@@ -234,6 +234,6 @@
   </section>
 
   <footer id="sea-footer" class="page-foot">
-    <qth-data-credit kind="sea" [updatedAt]="forecast.sea().data?.issuedAt ?? null" />
+    <lm-data-credit kind="sea" [updatedAt]="forecast.sea().data?.issuedAt ?? null" />
   </footer>
 </div>

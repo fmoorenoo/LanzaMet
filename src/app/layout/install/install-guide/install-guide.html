@@ -1,10 +1,10 @@
-<qth-sheet [heading]="heading() | t" [(open)]="ui.installGuideOpen">
+<lm-sheet [heading]="heading() | t" [(open)]="ui.installGuideOpen">
   <div id="install-guide" class="guide" [attr.data-view]="view()">
     <!-- The icon as it will sit among the visitor's apps. -->
     <figure class="preview install-preview">
-      <qth-app-tile class="preview-tile" [installed]="installedHere()" />
+      <lm-app-tile class="preview-tile" [installed]="installedHere()" />
       <figcaption class="preview-text">
-        <span class="app-name" aria-hidden="true">Qué tal hoy</span>
+        <span class="app-name" aria-hidden="true">LanzaMet</span>
         <span class="t-micro preview-caption">{{ previewCaption() | t }}</span>
       </figcaption>
     </figure>
@@ -29,7 +29,7 @@
 
     @if (installedHere()) {
       <p class="installed" role="status">
-        <qth-icon name="check" />
+        <lm-icon name="check" />
         {{ (store.justInstalled() ? 'install.done' : 'install.guide.installed') | t }}
       </p>
     }
@@ -41,13 +41,13 @@
         @if (canPrompt()) {
           <p class="method-text">{{ 'install.guide.prompt' | t }}</p>
           <button type="button" class="btn btn--primary install-now" (click)="install()">
-            <qth-icon name="install-desktop" />
+            <lm-icon name="install-desktop" />
             {{ 'install.action.install' | t }}
           </button>
         } @else if (!installedHere()) {
           <ol class="steps">
             <li class="step">
-              <span class="step-icon"><qth-icon [name]="appStep().icon" /></span>
+              <span class="step-icon"><lm-icon [name]="appStep().icon" /></span>
               <span class="step-text">
                 <span class="step-title">{{ appStep().title | t }}</span>
                 @if (appStep().hint; as hint) {
@@ -65,7 +65,7 @@
         </h3>
         <p class="method-text">{{ 'install.desktop.bookmark.text' | t }}</p>
         <p class="keys">
-          <span class="step-icon"><qth-icon name="bookmark" /></span>
+          <span class="step-icon"><lm-icon name="bookmark" /></span>
           <span>
             {{ 'install.desktop.bookmark.press' | t }}
             @for (combo of shortcuts; track $index) {
@@ -88,7 +88,7 @@
     } @else {
       @if (inApp()) {
         <p class="caution">
-          <qth-icon name="info" />
+          <lm-icon name="info" />
           {{ (view() === 'ios' ? 'install.ios.inApp' : 'install.android.inApp') | t }}
         </p>
       }
@@ -97,7 +97,7 @@
         <div class="method">
           <p class="method-text">{{ 'install.guide.prompt' | t }}</p>
           <button type="button" class="btn btn--primary install-now" (click)="install()">
-            <qth-icon name="add-home" />
+            <lm-icon name="add-home" />
             {{ 'install.action.install' | t }}
           </button>
           <p class="step-hint">{{ 'install.guide.prompt.menu' | t }}</p>
@@ -109,7 +109,7 @@
         <ol class="steps install-steps">
           @for (step of steps(); track step.title) {
             <li class="step" [attr.data-step]="$index + 1">
-              <span class="step-icon"><qth-icon [name]="step.icon" /></span>
+              <span class="step-icon"><lm-icon [name]="step.icon" /></span>
               <span class="step-text">
                 <span class="step-title">{{ step.title | t }}</span>
                 @if (step.hint; as hint) {
@@ -124,4 +124,4 @@
 
     <p class="note t-micro">{{ 'install.guide.note' | t }}</p>
   </div>
-</qth-sheet>
+</lm-sheet>

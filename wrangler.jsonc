@@ -4,11 +4,11 @@
 // See DEPLOYMENT.md. Secrets are never written here: `npx wrangler secret put AEMET_API_KEY`.
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "que-tal-hoy",
+  "name": "lanzamet",
   "main": "server/api.ts",
   "compatibility_date": "2026-10-15",
   "assets": {
-    "directory": "./dist/que-tal-hoy/browser",
+    "directory": "./dist/lanzamet/browser",
     "not_found_handling": "single-page-application",
     // Only the API runs code; every other request is a file (or index.html), served at no CPU cost.
     "run_worker_first": ["/api/*"]
@@ -19,8 +19,10 @@
     "ALLOWED_ORIGIN": ""
   },
   "observability": { "enabled": true },
-  // Deploy to the free *.workers.dev address too; the custom domain is added in the dashboard
-  // (Workers & Pages → que-tal-hoy → Settings → Domains & Routes), see DEPLOYMENT.md.
+  // The site's domain. Each deploy makes sure its DNS record and HTTPS certificate exist;
+  // the domain must be in this Cloudflare account (see DEPLOYMENT.md).
+  "routes": [{ "pattern": "lanzamet.com", "custom_domain": true }],
+  // The free *.workers.dev address keeps working too, as a fallback; set to false to close it.
   "workers_dev": true,
   "preview_urls": false
 }

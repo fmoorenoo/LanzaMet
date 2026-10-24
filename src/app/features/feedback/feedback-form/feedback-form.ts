@@ -60,7 +60,7 @@ const NEAR_LIMIT = MESSAGE_MAX_LENGTH * 0.9;
  * has been left or a send was attempted; the only "sent" is the provider's.
  */
 @Component({
-  selector: 'qth-feedback-form',
+  selector: 'lm-feedback-form',
   imports: [FormField, Icon, TranslatePipe],
   templateUrl: './feedback-form.html',
   styleUrl: './feedback-form.scss',

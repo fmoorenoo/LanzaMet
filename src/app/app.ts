@@ -12,7 +12,7 @@ import { UiStore } from './layout/ui.store';
 import { lazyComponent } from './shared/lazy-component';
 
 @Component({
-  selector: 'qth-root',
+  selector: 'lm-root',
   imports: [RouterOutlet, NgComponentOutlet, NavBar, LocationPicker, SettingsPanel, TranslatePipe],
   templateUrl: './app.html',
   styleUrl: './app.scss',

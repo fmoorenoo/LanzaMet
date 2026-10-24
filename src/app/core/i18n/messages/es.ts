@@ -9,11 +9,11 @@
  */
 export const es = {
   // ── App shell ────────────────────────────────────────────────
-  'app.brand': '¿Qué tal hoy?',
+  'app.brand': 'LanzaMet',
   'app.description':
     'Cómo está el día en Lanzarote de un vistazo: tiempo, viento, mar y mareas por zonas.',
   'app.skipLink': 'Saltar al contenido',
-  'app.home': '¿Qué tal hoy? — Inicio',
+  'app.home': 'LanzaMet — Inicio',
 
   'route.today': 'Hoy en Lanzarote',
   'route.zones': 'Zonas',
@@ -452,7 +452,7 @@ export const es = {
   'install.done': 'Instalada. La encontrarás entre tus apps.',
 
   'install.guide.title.mobile': 'Añadir a la pantalla de inicio',
-  'install.guide.title.desktop': 'Tener ¿Qué tal hoy? a mano',
+  'install.guide.title.desktop': 'Tener LanzaMet a mano',
   'install.guide.preview.mobile': 'Así aparecerá entre tus apps',
   'install.guide.preview.desktop': 'Así aparecerá en tu ordenador',
   'install.guide.device': 'Instrucciones para',
@@ -510,8 +510,8 @@ export const es = {
   'install.desktop.shortcut':
     'Para crear un acceso directo, arrastra al escritorio el icono que hay a la izquierda de la dirección.',
 
-  'install.invite.label': 'Instalar ¿Qué tal hoy?',
-  'install.invite.title': 'Ten ¿Qué tal hoy? a mano',
+  'install.invite.label': 'Instalar LanzaMet',
+  'install.invite.title': 'Ten LanzaMet a mano',
   'install.invite.text.mobile': 'Añádela a tu pantalla de inicio y ábrela como una app.',
   'install.invite.text.desktop': 'Instálala y ábrela en su propia ventana, como una app.',
   'install.invite.dismiss': 'Ahora no',

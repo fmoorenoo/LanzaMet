@@ -73,7 +73,7 @@ function gusts(): readonly Gust[] {
 const GUSTS = gusts();
 
 @Component({
-  selector: 'qth-island-map',
+  selector: 'lm-island-map',
   imports: [SkyGlyph],
   templateUrl: './island-map.html',
   styleUrl: './island-map.scss',

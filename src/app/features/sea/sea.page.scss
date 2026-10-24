@@ -143,7 +143,7 @@
   gap: var(--s-2);
   padding-inline: var(--s-1);
 
-  qth-icon {
+  lm-icon {
     width: var(--icon-xs);
     height: var(--icon-xs);
     margin-top: 0.1em;
@@ -151,7 +151,7 @@
 }
 
 // Warnings and the credit span both columns on wide screens.
-qth-warning-banner,
+lm-warning-banner,
 .page-foot {
   grid-column: 1 / -1;
 }
@@ -189,7 +189,7 @@ qth-warning-banner,
   padding: var(--s-2) 0;
   border-top: 1px solid var(--c-line);
 
-  qth-icon {
+  lm-icon {
     grid-area: icon;
     width: var(--icon-md);
     height: var(--icon-md);
@@ -199,7 +199,7 @@ qth-warning-banner,
   &.is-past {
     color: var(--c-ink-3);
 
-    qth-icon {
+    lm-icon {
       color: inherit;
     }
   }

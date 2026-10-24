@@ -7,7 +7,7 @@ import { LocationsStore } from './locations.store';
 function store(saved: Record<string, unknown>): LocationsStore {
   localStorage.clear();
   Object.entries(saved).forEach(([key, value]) =>
-    localStorage.setItem(`qth.${key}`, JSON.stringify(value)),
+    localStorage.setItem(`lm.${key}`, JSON.stringify(value)),
   );
   TestBed.configureTestingModule({
     providers: [{ provide: LocationSource, useValue: { list: () => of(LOCATIONS) } }],

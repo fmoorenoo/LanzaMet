@@ -7,7 +7,7 @@ import { SkyGlyph } from '../../../shared/ui/sky-glyph/sky-glyph';
 
 /** Seven days, each in a few words — and what changes from the day before. */
 @Component({
-  selector: 'qth-day-list',
+  selector: 'lm-day-list',
   imports: [SkyGlyph, TranslatePipe],
   templateUrl: './day-list.html',
   styleUrl: './day-list.scss',

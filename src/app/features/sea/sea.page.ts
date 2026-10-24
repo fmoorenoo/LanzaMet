@@ -24,7 +24,7 @@ const WAVE_AMPLITUDE = [0.8, 2, 3.4, 5, 6.6];
 
 /** The ocean: is the tide coming in or going out, and where is the water calm? */
 @Component({
-  selector: 'qth-sea-page',
+  selector: 'lm-sea-page',
   imports: [Icon, StatusMessage, TideChart, DataCredit, WarningBanner, TranslatePipe],
   templateUrl: './sea.page.html',
   styleUrl: './sea.page.scss',

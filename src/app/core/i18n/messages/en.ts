@@ -6,11 +6,11 @@ import type { Messages } from './es';
  */
 export const en: Messages = {
   // ── App shell ────────────────────────────────────────────────
-  'app.brand': '¿Qué tal hoy?',
+  'app.brand': 'LanzaMet',
   'app.description':
     'How the day looks in Lanzarote at a glance: weather, wind, sea and tides, place by place.',
   'app.skipLink': 'Skip to content',
-  'app.home': '¿Qué tal hoy? — Home',
+  'app.home': 'LanzaMet — Home',
 
   'route.today': 'Today in Lanzarote',
   'route.zones': 'Places',
@@ -449,7 +449,7 @@ export const en: Messages = {
   'install.done': "Installed. You'll find it with your apps.",
 
   'install.guide.title.mobile': 'Add to home screen',
-  'install.guide.title.desktop': 'Keep ¿Qué tal hoy? handy',
+  'install.guide.title.desktop': 'Keep LanzaMet handy',
   'install.guide.preview.mobile': "How it'll look among your apps",
   'install.guide.preview.desktop': "How it'll look on your computer",
   'install.guide.device': 'Instructions for',
@@ -508,8 +508,8 @@ export const en: Messages = {
   'install.desktop.shortcut':
     'For a desktop shortcut, drag the icon to the left of the web address onto your desktop.',
 
-  'install.invite.label': 'Install ¿Qué tal hoy?',
-  'install.invite.title': 'Keep ¿Qué tal hoy? handy',
+  'install.invite.label': 'Install LanzaMet',
+  'install.invite.title': 'Keep LanzaMet handy',
   'install.invite.text.mobile': 'Add it to your home screen and open it like an app.',
   'install.invite.text.desktop': 'Install it and open it in its own window, like an app.',
   'install.invite.dismiss': 'Not now',

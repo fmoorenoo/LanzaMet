@@ -23,7 +23,7 @@ import { IslandMap, MapMarker } from './island-map/island-map';
 
 /** The whole island at a glance: where it blows, where it shines, where to go. */
 @Component({
-  selector: 'qth-zones-page',
+  selector: 'lm-zones-page',
   imports: [IslandMap, Scene, Icon, StatusMessage, DataCredit, Tooltip, TranslatePipe],
   templateUrl: './zones.page.html',
   styleUrl: './zones.page.scss',

@@ -17,7 +17,7 @@ import { ResponseCache } from './response-cache';
  */
 
 /** Every response of the app's API carries this marker. */
-const SERVICE = 'que-tal-hoy-api';
+const SERVICE = 'lanzamet-api';
 const WARNINGS_TTL = 10 * TIME.MINUTE;
 const OBSERVATIONS_TTL = 20 * TIME.MINUTE;
 

@@ -4,12 +4,20 @@
  * guarded and the app always works without it.
  */
 
-const PREFIX = 'qth.';
+const PREFIX = 'lm.';
+/** The app was called "¿Qué tal hoy?" first: its keys move to the new prefix when first read. */
+const LEGACY_PREFIX = 'qth.';
 
 export function readStored<T>(key: string, isValid: (value: unknown) => value is T): T | null {
   try {
-    const raw = globalThis.localStorage?.getItem(PREFIX + key);
-    if (raw == null) return null;
+    const storage = globalThis.localStorage;
+    let raw = storage?.getItem(PREFIX + key);
+    if (raw == null) {
+      raw = storage?.getItem(LEGACY_PREFIX + key);
+      if (raw == null) return null;
+      storage?.setItem(PREFIX + key, raw);
+      storage?.removeItem(LEGACY_PREFIX + key);
+    }
     const parsed: unknown = JSON.parse(raw);
     return isValid(parsed) ? parsed : null;
   } catch {

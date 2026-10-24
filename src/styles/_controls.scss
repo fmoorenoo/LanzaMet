@@ -32,7 +32,7 @@
     transform: none;
   }
 
-  qth-icon {
+  lm-icon {
     width: var(--icon-md);
     height: var(--icon-md);
   }
@@ -82,7 +82,7 @@
     transform: scale(0.94);
   }
 
-  qth-icon {
+  lm-icon {
     width: var(--icon-lg);
     height: var(--icon-lg);
   }
@@ -127,8 +127,8 @@
     color: var(--c-ground);
   }
 
-  qth-icon,
-  qth-sky-glyph {
+  lm-icon,
+  lm-sky-glyph {
     width: var(--icon-sm);
     height: var(--icon-sm);
   }
@@ -285,7 +285,7 @@
     }
   }
 
-  qth-icon {
+  lm-icon {
     width: var(--icon-md);
     height: var(--icon-md);
     flex: none;
@@ -311,7 +311,7 @@
       color-mix(in oklch, var(--c-surface), transparent 40%),
       transparent
     );
-    animation: qth-shimmer 1.4s linear infinite;
+    animation: lm-shimmer 1.4s linear infinite;
   }
 }
 
@@ -350,7 +350,7 @@
   font-size: var(--fs-micro);
   font-weight: 520;
 
-  qth-icon {
+  lm-icon {
     width: var(--icon-xs);
     height: var(--icon-xs);
   }
@@ -416,7 +416,7 @@
 }
 
 // ── Tooltip ───────────────────────────────────────────────────
-// The label of an icon-only control (see the `qthTooltip` directive). It
+// The label of an icon-only control (see the `lmTooltip` directive). It
 // lives in the top layer, so it is styled here, not by any component.
 .tooltip-bubble {
   position: fixed;

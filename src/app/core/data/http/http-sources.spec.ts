@@ -234,7 +234,7 @@ describe('Official AEMET sources', () => {
         http
           .expectOne('/api/observaciones')
           .flush(
-            { service: 'que-tal-hoy-api', error: 'not_configured' },
+            { service: 'lanzamet-api', error: 'not_configured' },
             { status: 503, statusText: 'Unavailable' },
           ),
     );
@@ -258,7 +258,7 @@ describe('Official AEMET sources', () => {
       () => TestBed.inject(WarningSource).active(),
       (http) =>
         http.expectOne('/api/avisos').flush({
-          service: 'que-tal-hoy-api',
+          service: 'lanzamet-api',
           warnings: [warning, { id: 'broken' }],
           publishedAt: '2026-10-22T10:00:00Z',
           retrievedAt: '2026-10-22T14:00:00Z',
@@ -274,7 +274,7 @@ describe('Official AEMET sources', () => {
       (http) =>
         http
           .expectOne('/api/avisos')
-          .flush({ service: 'que-tal-hoy-api' }, { status: 500, statusText: 'Error' }),
+          .flush({ service: 'lanzamet-api' }, { status: 500, statusText: 'Error' }),
     );
     await expect(result).rejects.toBeInstanceOf(DataSourceError);
   });

@@ -18,10 +18,10 @@ const LABEL: Readonly<Record<CreditKind, MessageKey>> = {
  * licence (CC BY 4.0) asks for this credit next to wherever its data appears.
  */
 @Component({
-  selector: 'qth-data-credit',
+  selector: 'lm-data-credit',
   imports: [Icon, TranslatePipe],
   template: `
-    <qth-icon name="info" />
+    <lm-icon name="info" />
     <span>
       @if (isDemo) {
         {{ 'credit.demo' | t }}

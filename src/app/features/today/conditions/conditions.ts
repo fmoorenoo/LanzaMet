@@ -29,7 +29,7 @@ const WAVE_AMPLITUDE = [0.8, 2, 3.4, 5, 6.6];
 
 /** Wind, sea and tide — each as a word first, a number second, and a tiny gauge. */
 @Component({
-  selector: 'qth-conditions',
+  selector: 'lm-conditions',
   imports: [RouterLink, Icon, TranslatePipe],
   templateUrl: './conditions.html',
   styleUrl: './conditions.scss',

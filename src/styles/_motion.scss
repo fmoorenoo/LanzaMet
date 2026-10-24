@@ -35,26 +35,26 @@
   initial-value: oklch(0.42 0.1 240);
 }
 
-@keyframes qth-rise {
+@keyframes lm-rise {
   from {
     opacity: 0;
     transform: translateY(0.5rem);
   }
 }
 
-@keyframes qth-fade-in {
+@keyframes lm-fade-in {
   from {
     opacity: 0;
   }
 }
 
-@keyframes qth-fade-out {
+@keyframes lm-fade-out {
   to {
     opacity: 0;
   }
 }
 
-@keyframes qth-settle {
+@keyframes lm-settle {
   from {
     opacity: 0;
     filter: blur(4px);
@@ -62,7 +62,7 @@
   }
 }
 
-@keyframes qth-shimmer {
+@keyframes lm-shimmer {
   to {
     transform: translateX(100%);
   }
@@ -70,27 +70,27 @@
 
 // Entrance classes: each plays once, when its element is created.
 .enter-rise {
-  animation: qth-rise 320ms var(--ease-out) both;
+  animation: lm-rise 320ms var(--ease-out) both;
   animation-delay: calc(var(--i, 0) * var(--stagger));
 }
 
 .enter-fade {
-  animation: qth-fade-in var(--d-base) ease both;
+  animation: lm-fade-in var(--d-base) ease both;
 }
 
 .enter-settle {
-  animation: qth-settle 360ms var(--ease-out) both;
+  animation: lm-settle 360ms var(--ease-out) both;
 }
 
 // ── Route transitions (View Transitions API) ─────────────────
 // Navigating between tabs happens many times a day: a quick crossfade with a
 // hint of travel, never a slide that makes you wait.
 ::view-transition-old(root) {
-  animation: qth-fade-out 120ms ease both;
+  animation: lm-fade-out 120ms ease both;
 }
 
 ::view-transition-new(root) {
-  animation: qth-rise 240ms var(--ease-out) both;
+  animation: lm-rise 240ms var(--ease-out) both;
 }
 
 // The tab bar stays live through route changes so its capsule can glide;
@@ -106,13 +106,13 @@
 @media (prefers-reduced-motion: reduce) {
   .enter-rise,
   .enter-settle {
-    animation-name: qth-fade-in;
+    animation-name: lm-fade-in;
     animation-duration: 200ms;
     animation-delay: 0ms;
   }
 
   ::view-transition-new(root) {
-    animation-name: qth-fade-in;
+    animation-name: lm-fade-in;
     animation-duration: 160ms;
   }
 }

@@ -32,7 +32,7 @@ const normalise = (text: string) =>
 
 /** Fast, visual place switcher: favourites first, then the island by coast. */
 @Component({
-  selector: 'qth-location-picker',
+  selector: 'lm-location-picker',
   imports: [
     Sheet,
     Icon,

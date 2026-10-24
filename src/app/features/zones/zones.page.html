@@ -8,7 +8,7 @@
 @switch (island.zones().status) {
   @case ('error') {
     <div class="pad">
-      <qth-status-message
+      <lm-status-message
         tone="error"
         [title]="'zones.error' | t"
         [text]="island.zones().error | t"
@@ -26,7 +26,7 @@
     <div class="layout">
       <section id="island-map" class="map-block island-map-section" aria-labelledby="map-title">
         <h2 id="map-title" class="visually-hidden">{{ 'zones.map' | t }}</h2>
-        <qth-island-map
+        <lm-island-map
           [markers]="markers()"
           [selectedId]="focusId()"
           [windFrom]="windFrom()"
@@ -64,7 +64,7 @@
                 (click)="openDay(zone.id)"
               >
                 {{ 'zones.openDay' | t }}
-                <qth-icon name="chevron-right" />
+                <lm-icon name="chevron-right" />
               </button>
               <button
                 type="button"
@@ -72,13 +72,13 @@
                 [class.is-on]="zone.isFavorite"
                 [attr.aria-pressed]="zone.isFavorite"
                 [attr.aria-label]="'common.favorite' | t: { name: zone.name }"
-                [qthTooltip]="
+                [lmTooltip]="
                   (zone.isFavorite ? 'common.favorite.remove' : 'common.favorite.add')
                     | t: { name: zone.name }
                 "
                 (click)="toggleFavorite(zone.id)"
               >
-                <qth-icon [name]="zone.isFavorite ? 'star-filled' : 'star'" />
+                <lm-icon [name]="zone.isFavorite ? 'star-filled' : 'star'" />
               </button>
             </div>
           </div>
@@ -92,7 +92,7 @@
             <li class="card zone-card enter-rise" [attr.data-location-id]="card.id" [style.--i]="i">
               <button type="button" class="card-main" (click)="openDay(card.id)">
                 <span class="card-art">
-                  <qth-scene [state]="card.scene" variant="mini" />
+                  <lm-scene [state]="card.scene" variant="mini" />
                   <span class="card-temp zone-temperature t-num">{{ card.temperature }}°</span>
                 </span>
                 <span class="card-text">
@@ -112,18 +112,18 @@
                 [class.is-on]="card.isFavorite"
                 [attr.aria-pressed]="card.isFavorite"
                 [attr.aria-label]="'common.favorite' | t: { name: card.name }"
-                [qthTooltip]="
+                [lmTooltip]="
                   (card.isFavorite ? 'common.favorite.remove' : 'common.favorite.add')
                     | t: { name: card.name }
                 "
                 (click)="toggleFavorite(card.id)"
               >
-                <qth-icon [name]="card.isFavorite ? 'star-filled' : 'star'" />
+                <lm-icon [name]="card.isFavorite ? 'star-filled' : 'star'" />
               </button>
             </li>
           }
         </ul>
-        <qth-data-credit kind="island" [updatedAt]="island.updatedAt()" />
+        <lm-data-credit kind="island" [updatedAt]="island.updatedAt()" />
       </section>
     </div>
   }

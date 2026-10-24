@@ -68,8 +68,8 @@ describe('Web3FormsTransport', () => {
     const body = JSON.parse(init.body as string) as Record<string, unknown>;
     expect(body).toEqual({
       access_key: KEY,
-      subject: '¿Qué tal hoy? · Error',
-      from_name: '¿Qué tal hoy?',
+      subject: 'LanzaMet · Error',
+      from_name: 'LanzaMet',
       tipo: 'Error',
       mensaje: 'La marea de Famara no cuadra.',
       idioma: 'Español',

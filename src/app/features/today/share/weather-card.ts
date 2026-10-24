@@ -78,7 +78,7 @@ export function cardAlt(card: WeatherCard): Msg {
   });
 }
 
-/** "que-tal-hoy-famara-1800.png" */
+/** "lanzamet-famara-1800.png" */
 export function cardFileName(card: Pick<WeatherCard, 'place' | 'at'>): string {
   const place = card.place
     .normalize('NFD')
@@ -86,5 +86,5 @@ export function cardFileName(card: Pick<WeatherCard, 'place' | 'at'>): string {
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-|-$/g, '');
-  return `que-tal-hoy-${place || 'lanzarote'}-${formatTime(card.at).replace(':', '')}.png`;
+  return `lanzamet-${place || 'lanzarote'}-${formatTime(card.at).replace(':', '')}.png`;
 }

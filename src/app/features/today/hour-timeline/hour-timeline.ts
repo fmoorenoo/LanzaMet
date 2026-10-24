@@ -21,7 +21,7 @@ const CURVE_RANGE = 26;
  * cell units and stretched to fit; its dots are HTML and stay round.
  */
 @Component({
-  selector: 'qth-hour-timeline',
+  selector: 'lm-hour-timeline',
   imports: [SkyGlyph, HorizontalScroll, ScrollControls, TranslatePipe],
   templateUrl: './hour-timeline.html',
   styleUrl: './hour-timeline.scss',

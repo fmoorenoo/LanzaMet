@@ -85,7 +85,7 @@ export function glyphParts(sky: SkyCondition, isDaylight: boolean): readonly Gly
 
 /** Two-tone weather glyph: a warm sun, a pale moon, clouds that occlude them. */
 @Component({
-  selector: 'qth-sky-glyph',
+  selector: 'lm-sky-glyph',
   host: { class: 'sky-glyph', '[attr.data-sky]': 'sky()' },
   template: `
     <svg

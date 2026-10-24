@@ -101,7 +101,7 @@
   background-color: var(--c-surface-sunken);
   color: var(--c-ink);
 
-  qth-icon {
+  lm-icon {
     width: var(--icon-md);
     height: var(--icon-md);
   }
@@ -169,7 +169,7 @@ kbd {
   font-size: var(--fs-small);
   font-weight: 560;
 
-  qth-icon {
+  lm-icon {
     flex: none;
     width: var(--icon-md);
     height: var(--icon-md);
@@ -180,7 +180,7 @@ kbd {
   background-color: var(--c-accent-soft);
   color: var(--c-ink);
 
-  qth-icon {
+  lm-icon {
     color: var(--c-accent);
   }
 }

@@ -206,7 +206,7 @@ Skills usadas: Emil Kowalski (arrastre, lluvia, transiciones) e Impeccable (cohe
    - La línea es discontinua sobre el agua y continua desde el punto de la curva hasta el eje, donde se lee «Ahora · 14:36».
    - La etiqueta nunca se sale de la gráfica, y las horas del eje que taparía se apartan. Su anchura se mide en el navegador, así que vale en los dos idiomas y a cualquier ancho.
 3. **Botones solo con icono**:
-   - Nueva directiva `qthTooltip`. Muestra una etiqueta al pasar el ratón (tras 450 ms, o al instante si ya había otra abierta) y al llegar con el teclado, siempre en el idioma de la web.
+   - Nueva directiva `lmTooltip`. Muestra una etiqueta al pasar el ratón (tras 450 ms, o al instante si ya había otra abierta) y al llegar con el teclado, siempre en el idioma de la web.
    - Cumple WCAG 1.4.13: se cierra con Escape, el puntero puede pasar sobre ella sin que desaparezca y dura mientras dura el hover o el foco. Al pulsar el botón se va.
    - Se dibuja en la capa superior (`popover`), así que ningún contenedor la recorta, tampoco dentro del selector de zonas.
    - Está oculta a los lectores de pantalla, que ya leen el `aria-label` del botón.
@@ -377,7 +377,7 @@ Skills usadas: Emil Kowalski (arrastre, lluvia, transiciones) e Impeccable (cohe
 4. **Envío desacoplado** (`core/feedback`):
    - `FeedbackService` deja solo lo que puede salir del dispositivo (sin correo si es anónimo), aplica las reglas antirrepetición y une los envíos que llegan mientras otro sigue en curso.
    - `FeedbackTransport` es el puerto y `Web3FormsTransport` el adaptador. `provideFeedback()` los enlaza.
-   - La clave se inyecta en el build (`--define QTH_WEB3FORMS_KEY`) y se valida como UUID. Sin clave, la página lo avisa y no envía nada, también en la build de demo.
+   - La clave se inyecta en el build (`--define LM_WEB3FORMS_KEY`) y se valida como UUID. Sin clave, la página lo avisa y no envía nada, también en la build de demo.
 5. **Antispam**:
    - El filtro de servidor de Web3Forms, más `botcheck: false`.
    - Un campo trampa propio.
@@ -561,3 +561,17 @@ Todo preparado y probado en local; **no se ha publicado nada**. Pasos manuales y
 - Enviar un mensaje real por «Ayúdanos» con la clave definitiva y comprobar que llega al buzón, con y sin correo.
 - Probar en móviles reales: instalar, compartir a WhatsApp y actualizar tras un segundo despliegue.
 - El bundle inicial queda a 1 kB del presupuesto: la próxima función de la pantalla principal tendrá que cargarse de forma diferida o hacer sitio.
+
+## Nuevo nombre: LanzaMet (24-10-2026)
+
+La web pasa a llamarse **LanzaMet**, con el dominio `lanzamet.com`.
+
+- **Interfaz**, en los dos idiomas: marca del raíl y de la tarjeta para compartir, títulos de página, guía e invitación para instalar, manifest (nombre y nombre corto «LanzaMet»), título en iOS y correo de «Ayúdanos» («LanzaMet · Error»…).
+- **Código**:
+  - el prefijo `qth` pasa a `lm`: componentes (`<lm-icon>`), directivas (`lmTooltip`), animaciones, constantes de build (`LM_WEB3FORMS_KEY`, `LM_PUBLIC_URL`) y claves del navegador (`lm.…`);
+  - `que-tal-hoy` pasa a `lanzamet`: proyecto de Angular (build en `dist/lanzamet`), paquete, Worker, marca del API (`lanzamet-api`), nombre del archivo al compartir;
+  - el user agent del API pasa a `lanzamet/1.0 (+https://lanzamet.com)`.
+- **Migración**: lo guardado con `qth.` (zona, favoritas, tema, idioma, instalación, envíos) se lee y se pasa a `lm.` la primera vez, sin perder nada (`core/utils/storage.ts`, con test).
+- **Despliegue**: `lanzamet.com` queda declarado como *custom domain* en `wrangler.jsonc` y `PUBLIC_URL=https://lanzamet.com` en `.env`. El Worker de pruebas `que-tal-hoy` se borrará cuando el dominio funcione.
+- **Validación**: 185 tests de la web y 24 del API; lint, tipos, formato, build de producción y *dry run* sin errores. En la vista previa local: título «Hoy en Lanzarote · LanzaMet», raíl «LanzaMet», ningún `qth-` en la página, tarjeta y mensaje para compartir con `lanzamet.com`.
+- Sin cambiar: la carpeta del proyecto en tu disco (`QueTalHoy`), el `id` del manifest (`/`) y el logotipo.

@@ -1,8 +1,8 @@
-<qth-sheet
+<lm-sheet
   [heading]="(isDemo ? 'settings.titleDemo' : 'settings.title') | t"
   [(open)]="ui.settingsOpen"
 >
-  <qth-language-selector id="language-selector" />
+  <lm-language-selector id="language-selector" />
 
   @if (demoControls) {
     <ng-container *ngComponentOutlet="demoControls" />
@@ -31,7 +31,7 @@
 
   <!-- Already running as the app: nothing to install. -->
   @if (install.route() !== 'standalone') {
-    <qth-install-option />
+    <lm-install-option />
   }
 
   @if (!isDemo) {
@@ -85,4 +85,4 @@
       <p class="choice-hint">{{ 'settings.disclaimer' | t }}</p>
     </section>
   }
-</qth-sheet>
+</lm-sheet>

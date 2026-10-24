@@ -1,7 +1,7 @@
 <div class="chart tide-chart-canvas">
   <svg class="art" [attr.viewBox]="viewBox" preserveAspectRatio="none" aria-hidden="true">
     <defs>
-      <linearGradient id="qth-tide-water" x1="0" x2="0" y1="0" y2="1">
+      <linearGradient id="lm-tide-water" x1="0" x2="0" y1="0" y2="1">
         <stop offset="0" class="water-top" />
         <stop offset="1" class="water-bottom" />
       </linearGradient>
@@ -11,7 +11,7 @@
       <rect class="night" [attr.x]="n.evening" y="0" [attr.width]="1000 - n.evening" height="300" />
     }
     <g class="reveal">
-      <path class="water" [attr.d]="area()" fill="url(#qth-tide-water)" />
+      <path class="water" [attr.d]="area()" fill="url(#lm-tide-water)" />
       <path class="surface" [attr.d]="line()" />
     </g>
     <rect class="past" x="0" y="0" [attr.width]="nowX()" height="300" />

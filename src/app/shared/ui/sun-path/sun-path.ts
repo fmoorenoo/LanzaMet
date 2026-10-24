@@ -25,13 +25,13 @@ const fixed = (n: number) => n.toFixed(1);
  * drawing is decorative: the two times and the sentence under them say it all.
  */
 @Component({
-  selector: 'qth-sun-path',
+  selector: 'lm-sun-path',
   imports: [Icon, TranslatePipe],
   template: `
     @if (view(); as v) {
       <div class="sun-row">
         <p class="sun-time" data-event="sunrise">
-          <span class="sun-label"><qth-icon name="sunrise" />{{ 'sun.sunrise' | t }}</span>
+          <span class="sun-label"><lm-icon name="sunrise" />{{ 'sun.sunrise' | t }}</span>
           <time class="sun-clock t-num" [attr.datetime]="v.sunriseIso">{{ v.sunrise }}</time>
         </p>
 
@@ -50,7 +50,7 @@ const fixed = (n: number) => n.toFixed(1);
         </svg>
 
         <p class="sun-time" data-event="sunset">
-          <span class="sun-label">{{ 'sun.sunset' | t }}<qth-icon name="sunset" /></span>
+          <span class="sun-label">{{ 'sun.sunset' | t }}<lm-icon name="sunset" /></span>
           <time class="sun-clock t-num" [attr.datetime]="v.sunsetIso">{{ v.sunset }}</time>
         </p>
       </div>
@@ -61,7 +61,7 @@ const fixed = (n: number) => n.toFixed(1);
       </p>
     } @else {
       <p class="sun-missing">
-        <qth-icon name="sunset" />
+        <lm-icon name="sunset" />
         {{ 'sun.missing' | t }}
       </p>
     }
@@ -103,7 +103,7 @@ const fixed = (n: number) => n.toFixed(1);
       font-weight: 600;
       color: var(--c-ink-2);
 
-      qth-icon {
+      lm-icon {
         width: var(--icon-sm);
         height: var(--icon-sm);
       }
@@ -186,7 +186,7 @@ const fixed = (n: number) => n.toFixed(1);
       font-size: var(--fs-small);
       color: var(--c-ink-2);
 
-      qth-icon {
+      lm-icon {
         width: var(--icon-sm);
         height: var(--icon-sm);
         color: var(--c-ink-3);

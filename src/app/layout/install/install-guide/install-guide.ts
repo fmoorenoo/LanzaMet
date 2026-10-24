@@ -16,7 +16,7 @@ import { bookmarkShortcuts, desktopAppStep, GUIDE_VIEWS, phoneSteps } from '../g
  * Opens on the visitor's device; they can switch if the guess is wrong.
  */
 @Component({
-  selector: 'qth-install-guide',
+  selector: 'lm-install-guide',
   imports: [Sheet, AppTile, Icon, TranslatePipe],
   templateUrl: './install-guide.html',
   styleUrl: './install-guide.scss',

@@ -24,7 +24,7 @@ let closeShowing: (() => void) | null = null;
  * never for keyboard or touch.
  */
 @Directive({
-  selector: '[qthTooltip]',
+  selector: '[lmTooltip]',
   host: {
     '(pointerenter)': 'onPointerEnter($event)',
     '(pointerleave)': 'onPointerLeave()',
@@ -34,7 +34,7 @@ let closeShowing: (() => void) | null = null;
   },
 })
 export class Tooltip {
-  readonly text = input.required<string>({ alias: 'qthTooltip' });
+  readonly text = input.required<string>({ alias: 'lmTooltip' });
 
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
   private readonly document = inject(DOCUMENT);

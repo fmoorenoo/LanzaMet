@@ -20,7 +20,7 @@ export interface BeforeInstallPromptEvent extends Event {
 declare global {
   interface Window {
     /** Kept by the inline script in index.html when the offer comes before the app starts. */
-    qthInstallPrompt?: BeforeInstallPromptEvent;
+    lmInstallPrompt?: BeforeInstallPromptEvent;
   }
 }
 
@@ -106,7 +106,7 @@ export class InstallStore {
     this.save(recordVisit(this.record(), islandDateKey(new Date())));
     this.due = inviteDue(this.record(), Date.now());
 
-    if (win?.qthInstallPrompt) this.receiveOffer(win.qthInstallPrompt);
+    if (win?.lmInstallPrompt) this.receiveOffer(win.lmInstallPrompt);
     win?.addEventListener(
       'beforeinstallprompt',
       (event) => {
@@ -124,7 +124,7 @@ export class InstallStore {
     if (!offer) return 'unavailable';
     this.settle();
     this.offer.set(null);
-    if (this.window) this.window.qthInstallPrompt = undefined;
+    if (this.window) this.window.lmInstallPrompt = undefined;
     try {
       await offer.prompt();
       const { outcome } = await offer.userChoice;

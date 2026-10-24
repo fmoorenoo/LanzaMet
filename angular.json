@@ -10,7 +10,7 @@
   },
   "newProjectRoot": "projects",
   "projects": {
-    "que-tal-hoy": {
+    "lanzamet": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -19,7 +19,7 @@
       },
       "root": "",
       "sourceRoot": "src",
-      "prefix": "qth",
+      "prefix": "lm",
       "architect": {
         "build": {
           "builder": "@angular/build:application",
@@ -80,13 +80,13 @@
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "que-tal-hoy:build:production"
+              "buildTarget": "lanzamet:build:production"
             },
             "development": {
-              "buildTarget": "que-tal-hoy:build:development"
+              "buildTarget": "lanzamet:build:development"
             },
             "demo": {
-              "buildTarget": "que-tal-hoy:build:demo"
+              "buildTarget": "lanzamet:build:demo"
             }
           },
           "defaultConfiguration": "development",

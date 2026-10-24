@@ -211,7 +211,7 @@
     color var(--d-fast) ease,
     transform var(--d-press) var(--ease-out);
 
-  qth-sky-glyph {
+  lm-sky-glyph {
     width: 1.125rem;
     height: 1.125rem;
     color: var(--c-ink-2);
@@ -221,7 +221,7 @@
     background-color: var(--c-ink);
     color: var(--c-ground);
 
-    qth-sky-glyph {
+    lm-sky-glyph {
       color: var(--c-ground);
     }
   }

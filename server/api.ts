@@ -35,11 +35,11 @@ export interface Env {
   readonly ALLOWED_ORIGIN?: string;
 }
 
-const SERVICE = 'que-tal-hoy-api';
+const SERVICE = 'lanzamet-api';
 const CANARIAS_WARNINGS_RSS =
   'https://www.aemet.es/documentos_d/eltiempo/prediccion/avisos/rss/CAP_AFAC65_RSS.xml';
 const OPENDATA = 'https://opendata.aemet.es/opendata/api';
-const USER_AGENT = 'que-tal-hoy/1.0';
+const USER_AGENT = 'lanzamet/1.0 (+https://lanzamet.com)';
 
 const MINUTE = 60_000;
 const WARNINGS_TTL = 10 * MINUTE;

@@ -12,7 +12,7 @@
     >
       {{ 'common.backToNow' | t }}
     </button>
-    <qth-scroll-controls
+    <lm-scroll-controls
       [scroller]="scroll"
       [backLabel]="'hours.previous' | t"
       [forwardLabel]="'hours.next' | t"
@@ -20,7 +20,7 @@
   </div>
 </div>
 
-<div class="scroller hour-scroller" qthHorizontalScroll #scroll="horizontalScroll">
+<div class="scroller hour-scroller" lmHorizontalScroll #scroll="horizontalScroll">
   <div
     class="track hour-track"
     role="group"
@@ -52,7 +52,7 @@
       >
         <span class="day-mark">{{ cell.dayMark | t }}</span>
         <span class="time">{{ cell.label | t }}</span>
-        <qth-sky-glyph [sky]="cell.sky" [isDaylight]="cell.isDaylight" [decorative]="true" />
+        <lm-sky-glyph [sky]="cell.sky" [isDaylight]="cell.isDaylight" [decorative]="true" />
         <span class="temp t-num">{{ cell.temperature }}°</span>
         <span class="curve-dot" aria-hidden="true"></span>
         <!-- The accessible name is the visible time and temperature, plus the rest in words. -->

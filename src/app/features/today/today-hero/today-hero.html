@@ -2,7 +2,7 @@
 
 <div id="weather-landscape" class="stage weather-landscape">
   @if (v) {
-    <qth-scene [state]="v.scene" />
+    <lm-scene [state]="v.scene" />
   } @else {
     <div class="stage-placeholder"></div>
   }
@@ -19,9 +19,9 @@
       aria-haspopup="dialog"
       (click)="ui.openLocationPicker()"
     >
-      <qth-icon class="pin" name="pin" />
+      <lm-icon class="pin" name="pin" />
       <span class="place-name">{{ current()?.name ?? ('common.lanzarote' | t) }}</span>
-      <qth-icon class="chevron" name="chevron-down" />
+      <lm-icon class="chevron" name="chevron-down" />
       <span class="visually-hidden">{{ 'common.changePlace' | t }}</span>
     </button>
     <div class="actions hero-actions">
@@ -49,23 +49,23 @@
         class="sky-button favorite-toggle"
         [attr.aria-pressed]="isFavorite()"
         [attr.aria-label]="'common.favorite' | t: { name: placeName() }"
-        [qthTooltip]="
+        [lmTooltip]="
           (isFavorite() ? 'common.favorite.remove' : 'common.favorite.add')
             | t: { name: placeName() }
         "
         (click)="toggleFavorite()"
       >
-        <qth-icon [name]="isFavorite() ? 'star-filled' : 'star'" />
+        <lm-icon [name]="isFavorite() ? 'star-filled' : 'star'" />
       </button>
       @if (isDemo) {
         <button
           id="hero-settings-button"
           type="button"
           class="sky-button demo settings-button"
-          [qthTooltip]="'today.demoSettings' | t"
+          [lmTooltip]="'today.demoSettings' | t"
           (click)="ui.openSettings()"
         >
-          <qth-icon name="sliders" />
+          <lm-icon name="sliders" />
           <span class="demo-label">{{ 'today.demo' | t }}</span>
           <span class="visually-hidden">{{ 'today.demoSettings' | t }}</span>
         </button>
@@ -75,13 +75,13 @@
           type="button"
           class="sky-button settings-button"
           [attr.aria-label]="'today.settings' | t"
-          [qthTooltip]="'today.settings' | t"
+          [lmTooltip]="'today.settings' | t"
           (click)="ui.openSettings()"
         >
-          <qth-icon name="sliders" />
+          <lm-icon name="sliders" />
         </button>
       }
-      <qth-share-weather [card]="share()" />
+      <lm-share-weather [card]="share()" />
     </div>
   </div>
 
@@ -105,7 +105,7 @@
           class="places favorite-locations"
           role="group"
           [attr.aria-label]="'today.favorites' | t"
-          qthHorizontalScroll
+          lmHorizontalScroll
           #placesScroll="horizontalScroll"
         >
           @for (place of others(); track place.id) {
@@ -119,7 +119,7 @@
             </button>
           }
         </div>
-        <qth-scroll-controls
+        <lm-scroll-controls
           class="places-controls"
           [scroller]="placesScroll"
           [backLabel]="'today.previousFavorites' | t"
@@ -150,7 +150,7 @@
       </div>
     } @else if (error(); as message) {
       <div class="failure hero-error">
-        <qth-status-message
+        <lm-status-message
           tone="error"
           [title]="'today.unknown' | t"
           [text]="message | t"

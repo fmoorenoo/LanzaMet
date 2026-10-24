@@ -1,6 +1,6 @@
 <nav id="main-navigation" class="bar main-navigation" [attr.aria-label]="'nav.label' | t">
   <a id="brand-link" class="brand brand-link" routerLink="/" [attr.aria-label]="'app.home' | t">
-    <qth-brand-mark />
+    <lm-brand-mark />
     <span class="brand-name">{{ 'app.brand' | t }}</span>
   </a>
 
@@ -24,7 +24,7 @@
             ariaCurrentWhenActive="page"
             [routerLinkActiveOptions]="{ exact: item.path === '/' }"
           >
-            <qth-icon class="tab-icon" [name]="item.icon" />
+            <lm-icon class="tab-icon" [name]="item.icon" />
             <span class="tab-label">{{ item.label | t }}</span>
           </a>
         </li>
@@ -38,7 +38,7 @@
     class="settings settings-button"
     (click)="ui.openSettings()"
   >
-    <qth-icon name="sliders" />
+    <lm-icon name="sliders" />
     <span>{{ (isDemo ? 'nav.settingsDemo' : 'nav.settings') | t }}</span>
   </button>
 </nav>

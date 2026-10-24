@@ -35,7 +35,7 @@ import { HeroView, TodayHero } from './today-hero/today-hero';
  * that moment.
  */
 @Component({
-  selector: 'qth-today-page',
+  selector: 'lm-today-page',
   imports: [
     RouterLink,
     TodayHero,

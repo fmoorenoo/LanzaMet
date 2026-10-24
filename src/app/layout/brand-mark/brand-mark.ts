@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 
 /** The sun setting into the Atlantic, drawn as the brand's mark. */
 @Component({
-  selector: 'qth-brand-mark',
+  selector: 'lm-brand-mark',
   template: `
     <svg viewBox="0 0 32 32" aria-hidden="true">
       <rect class="tile" width="32" height="32" rx="10" />

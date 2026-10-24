@@ -1,13 +1,13 @@
 <a id="skip-link" class="skip-link" href="#main-content">{{ 'app.skipLink' | t }}</a>
 
-<qth-nav-bar id="app-navigation" />
+<lm-nav-bar id="app-navigation" />
 
 <main id="main-content" class="main app-main" tabindex="-1">
   <router-outlet />
 </main>
 
-<qth-location-picker id="location-selector" />
-<qth-settings-panel id="settings-panel" />
+<lm-location-picker id="location-selector" />
+<lm-settings-panel id="settings-panel" />
 @if (installGuide(); as guide) {
   <ng-container *ngComponentOutlet="guide" />
 }

@@ -1,7 +1,7 @@
 {
   "id": "/",
-  "name": "¿Qué tal hoy? · Lanzarote",
-  "short_name": "Qué tal hoy",
+  "name": "LanzaMet",
+  "short_name": "LanzaMet",
   "description": "Cómo está el día en Lanzarote de un vistazo: tiempo, viento, mar y mareas por zonas.",
   "lang": "es",
   "dir": "ltr",

@@ -11,7 +11,7 @@ import { AppTile } from './app-tile';
  * says so once it's done. Not rendered when already running as the app.
  */
 @Component({
-  selector: 'qth-install-option',
+  selector: 'lm-install-option',
   imports: [AppTile, TranslatePipe],
   template: `
     <section
@@ -22,7 +22,7 @@ import { AppTile } from './app-tile';
     >
       <h3 id="install-option-title" class="legend">{{ 'install.group' | t }}</h3>
       <div class="row">
-        <qth-app-tile [installed]="installed()" />
+        <lm-app-tile [installed]="installed()" />
         <span class="text choice-text">
           <span class="choice-label">{{ title() | t }}</span>
           <span class="choice-hint">{{ hint() | t }}</span>

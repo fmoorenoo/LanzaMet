@@ -1,7 +1,7 @@
 @let v = view();
 @let weather = forecast.weather();
 
-<qth-today-hero
+<lm-today-hero
   [view]="heroView()"
   [pending]="weather.pending || forecast.sea().status === 'loading'"
   [error]="heroError()"
@@ -13,12 +13,12 @@
 
 <div id="today-details" class="sheet today-sheet">
   @if (official.warnings().length > 0) {
-    <qth-warning-banner id="today-warnings" class="warnings" [warnings]="official.warnings()" />
+    <lm-warning-banner id="today-warnings" class="warnings" [warnings]="official.warnings()" />
   }
 
   @if (v && weather.error) {
     <p id="stale-data-notice" class="stale stale-data-notice" role="status">
-      <qth-icon name="info" />
+      <lm-icon name="info" />
       <span>{{ 'today.stale' | t }}</span>
       <button type="button" class="btn btn--quiet" (click)="forecast.retry()">
         {{ 'common.retry' | t }}
@@ -31,13 +31,13 @@
       <h2 id="now-title" class="visually-hidden">
         {{ 'today.nowTitle' | t: { moment: v.momentLabel } }}
       </h2>
-      <qth-conditions [view]="v.conditions" />
+      <lm-conditions [view]="v.conditions" />
     </section>
 
     <section id="hourly-forecast" class="block today-section" aria-labelledby="hours-title">
-      <qth-hour-timeline [hours]="hours()" [(selected)]="previewIndex">
+      <lm-hour-timeline [hours]="hours()" [(selected)]="previewIndex">
         <h2 timelineTitle id="hours-title" class="t-title">{{ 'today.hours' | t }}</h2>
-      </qth-hour-timeline>
+      </lm-hour-timeline>
     </section>
   } @else if (weather.status !== 'error' && !locations.error()) {
     <div class="block today-section conditions-skeleton" aria-hidden="true">
@@ -63,13 +63,13 @@
     @switch (island.zones().status) {
       @case ('ready') {
         @for (plan of topPlans(); track plan.id) {
-          <qth-plan-item [plan]="plan" />
+          <lm-plan-item [plan]="plan" />
         } @empty {
-          <qth-status-message [title]="'today.noPlan' | t" [text]="'today.noPlan.text' | t" />
+          <lm-status-message [title]="'today.noPlan' | t" [text]="'today.noPlan.text' | t" />
         }
       }
       @case ('error') {
-        <qth-status-message
+        <lm-status-message
           tone="error"
           [title]="'today.compareFailed' | t"
           [text]="island.zones().error | t"
@@ -92,25 +92,25 @@
   @if (details(); as d) {
     <section id="day-facts" class="block today-section" aria-labelledby="details-title">
       <h2 id="details-title" class="t-title">{{ 'today.details' | t }}</h2>
-      <qth-sun-path id="sun-times" [reading]="daylight()" />
+      <lm-sun-path id="sun-times" [reading]="daylight()" />
       <dl class="facts day-facts">
         <div class="fact day-fact" data-fact="feels-like">
-          <dt><qth-icon name="thermometer" />{{ 'fact.feels' | t }}</dt>
+          <dt><lm-icon name="thermometer" />{{ 'fact.feels' | t }}</dt>
           <dd>{{ d.feels | t }}</dd>
         </div>
         <div class="fact day-fact" data-fact="uv">
-          <dt><qth-icon name="sun" />{{ 'fact.uv' | t }}</dt>
+          <dt><lm-icon name="sun" />{{ 'fact.uv' | t }}</dt>
           <dd>{{ d.sun | t }}</dd>
         </div>
         @if (d.water) {
           <div class="fact day-fact" data-fact="water">
-            <dt><qth-icon name="drop" />{{ 'fact.water' | t }}</dt>
+            <dt><lm-icon name="drop" />{{ 'fact.water' | t }}</dt>
             <dd>{{ d.water | t }}</dd>
           </div>
         }
         @if (observed(); as o) {
           <div class="fact day-fact" data-fact="observed">
-            <dt><qth-icon name="pin" />{{ 'fact.observed' | t }}</dt>
+            <dt><lm-icon name="pin" />{{ 'fact.observed' | t }}</dt>
             <dd>
               {{ o.value | t }}
               <span class="fact-source">{{ o.source | t }}</span>
@@ -124,12 +124,12 @@
   @if (weather.data; as forecastData) {
     <section id="daily-forecast" class="block today-section" aria-labelledby="days-title">
       <h2 id="days-title" class="t-title">{{ 'today.days' | t }}</h2>
-      <qth-day-list [days]="forecastData.daily" [today]="todayKey()" />
+      <lm-day-list [days]="forecastData.daily" [today]="todayKey()" />
     </section>
   }
 
   <footer id="today-footer" class="foot page-foot">
-    <qth-data-credit kind="weather" [updatedAt]="updatedAt()" />
+    <lm-data-credit kind="weather" [updatedAt]="updatedAt()" />
     <button
       id="refresh-button"
       type="button"
@@ -137,7 +137,7 @@
       [disabled]="forecast.isRefreshing()"
       (click)="refresh()"
     >
-      <qth-icon name="refresh" />
+      <lm-icon name="refresh" />
       {{ 'common.refresh' | t }}
     </button>
   </footer>

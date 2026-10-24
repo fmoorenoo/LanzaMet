@@ -27,7 +27,7 @@ const DISMISS_FRACTION = 0.3;
  * On touch it can be dragged down to dismiss; a quick flick is enough.
  */
 @Component({
-  selector: 'qth-sheet',
+  selector: 'lm-sheet',
   imports: [Icon, Tooltip, TranslatePipe],
   templateUrl: './sheet.html',
   styleUrl: './sheet.scss',
@@ -36,7 +36,7 @@ export class Sheet {
   readonly heading = input.required<string>();
   readonly open = model(false);
 
-  protected readonly titleId = `qth-sheet-title-${nextId++}`;
+  protected readonly titleId = `lm-sheet-title-${nextId++}`;
   private readonly dialog = viewChild.required<ElementRef<HTMLDialogElement>>('dialog');
   private readonly panel = viewChild.required<ElementRef<HTMLElement>>('panel');
   private readonly document = inject(DOCUMENT);

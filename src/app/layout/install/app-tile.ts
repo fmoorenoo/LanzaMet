@@ -7,12 +7,12 @@ import { BrandMark } from '../brand-mark/brand-mark';
  * that grows onto its corner: the one moment of this feature that moves.
  */
 @Component({
-  selector: 'qth-app-tile',
+  selector: 'lm-app-tile',
   imports: [BrandMark, Icon],
   template: `
-    <qth-brand-mark />
+    <lm-brand-mark />
     @if (installed()) {
-      <span class="badge"><qth-icon name="check" /></span>
+      <span class="badge"><lm-icon name="check" /></span>
     }
   `,
   host: { class: 'app-tile', 'aria-hidden': 'true' },
@@ -26,7 +26,7 @@ import { BrandMark } from '../brand-mark/brand-mark';
       height: var(--tile);
     }
 
-    qth-brand-mark {
+    lm-brand-mark {
       width: 100%;
       height: 100%;
       filter: drop-shadow(0 1px 1px oklch(0.2 0.02 250 / 0.12))
@@ -54,7 +54,7 @@ import { BrandMark } from '../brand-mark/brand-mark';
         transform: scale(0.6);
       }
 
-      qth-icon {
+      lm-icon {
         width: 70%;
         height: 70%;
         stroke-width: 2.5;

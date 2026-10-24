@@ -11,11 +11,11 @@ import { FeedbackError, FeedbackKind, FeedbackSubmission } from './feedback.mode
  * honeypot field. The free plan covers 250 submissions a month.
  *
  * The key is never written in the source: it is passed at build time
- *   ng build --define "QTH_WEB3FORMS_KEY='your-access-key'"
+ *   ng build --define "LM_WEB3FORMS_KEY='your-access-key'"
  * and without it the form says sending is not set up, and sends nothing.
  */
 
-declare const QTH_WEB3FORMS_KEY: string | undefined;
+declare const LM_WEB3FORMS_KEY: string | undefined;
 
 const ENDPOINT = 'https://api.web3forms.com/submit';
 const TIMEOUT_MS = 15_000;
@@ -24,7 +24,7 @@ const ACCESS_KEY = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12
 
 export const WEB3FORMS_ACCESS_KEY = new InjectionToken<string | null>('WEB3FORMS_ACCESS_KEY', {
   factory: () => {
-    const key = typeof QTH_WEB3FORMS_KEY === 'string' ? QTH_WEB3FORMS_KEY.trim() : '';
+    const key = typeof LM_WEB3FORMS_KEY === 'string' ? LM_WEB3FORMS_KEY.trim() : '';
     return ACCESS_KEY.test(key) ? key : null;
   },
 });
@@ -80,8 +80,8 @@ export class Web3FormsTransport extends FeedbackTransport {
     const kind = KIND_LABEL[submission.kind];
     return {
       access_key: accessKey,
-      subject: `¿Qué tal hoy? · ${kind}`,
-      from_name: '¿Qué tal hoy?',
+      subject: `LanzaMet · ${kind}`,
+      from_name: 'LanzaMet',
       tipo: kind,
       mensaje: submission.message,
       idioma: submission.lang === 'es' ? 'Español' : 'Inglés',

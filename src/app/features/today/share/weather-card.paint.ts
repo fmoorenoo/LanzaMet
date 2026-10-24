@@ -94,7 +94,7 @@ type Ctx = CanvasRenderingContext2D;
 export async function loadCardFonts(doc: Document): Promise<void> {
   if (!doc.fonts) return;
   await Promise.all(
-    WEIGHTS.map((weight) => doc.fonts.load(`${weight} 48px ${FONT}`, '¿Qué tal hoy? 0123456789°')),
+    WEIGHTS.map((weight) => doc.fonts.load(`${weight} 48px ${FONT}`, 'LanzaMet 0123456789°')),
   );
 }
 

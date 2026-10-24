@@ -9,7 +9,7 @@ import { FeedbackSent } from './feedback-sent';
 
 /** "Help us": report a bug or suggest something; leaving an email is optional. */
 @Component({
-  selector: 'qth-feedback-page',
+  selector: 'lm-feedback-page',
   host: { id: 'feedback-page', class: 'page feedback-page' },
   imports: [FeedbackForm, FeedbackSent, FeedbackPrivacy, StatusMessage, TranslatePipe],
   template: `
@@ -20,7 +20,7 @@ import { FeedbackSent } from './feedback-sent';
 
     <div class="content">
       @if (!configured) {
-        <qth-status-message
+        <lm-status-message
           id="feedback-not-configured"
           class="notice"
           [title]="'feedback.notConfigured' | t"
@@ -28,12 +28,12 @@ import { FeedbackSent } from './feedback-sent';
         />
       }
       @if (receipt(); as sent) {
-        <qth-feedback-sent [receipt]="sent" (again)="again()" />
+        <lm-feedback-sent [receipt]="sent" (again)="again()" />
       } @else {
-        <qth-feedback-form (sent)="receipt.set($event)" />
+        <lm-feedback-form (sent)="receipt.set($event)" />
       }
 
-      <qth-feedback-privacy id="feedback-privacy" class="privacy" />
+      <lm-feedback-privacy id="feedback-privacy" class="privacy" />
     </div>
   `,
   styles: `

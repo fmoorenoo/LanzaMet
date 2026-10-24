@@ -9,7 +9,7 @@ import { HorizontalScroll } from './horizontal-scroll';
  * overflows; each one is disabled once its end is reached.
  */
 @Component({
-  selector: 'qth-scroll-controls',
+  selector: 'lm-scroll-controls',
   imports: [Icon, Tooltip],
   template: `
     <button
@@ -19,10 +19,10 @@ import { HorizontalScroll } from './horizontal-scroll';
       [disabled]="!scroller().canScrollBack()"
       [attr.aria-controls]="scroller().id"
       [attr.aria-label]="backLabel()"
-      [qthTooltip]="backLabel()"
+      [lmTooltip]="backLabel()"
       (click)="scroller().scrollPage(-1)"
     >
-      <qth-icon name="chevron-left" />
+      <lm-icon name="chevron-left" />
     </button>
     <button
       type="button"
@@ -31,10 +31,10 @@ import { HorizontalScroll } from './horizontal-scroll';
       [disabled]="!scroller().canScrollForward()"
       [attr.aria-controls]="scroller().id"
       [attr.aria-label]="forwardLabel()"
-      [qthTooltip]="forwardLabel()"
+      [lmTooltip]="forwardLabel()"
       (click)="scroller().scrollPage(1)"
     >
-      <qth-icon name="chevron-right" />
+      <lm-icon name="chevron-right" />
     </button>
   `,
   host: {
@@ -80,7 +80,7 @@ import { HorizontalScroll } from './horizontal-scroll';
         cursor: default;
       }
 
-      qth-icon {
+      lm-icon {
         width: var(--icon-md);
         height: var(--icon-md);
       }

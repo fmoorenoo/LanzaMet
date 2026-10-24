@@ -24,7 +24,7 @@ interface NavItem {
  * One capsule of light marks the current tab and glides to the next one.
  */
 @Component({
-  selector: 'qth-nav-bar',
+  selector: 'lm-nav-bar',
   imports: [RouterLink, RouterLinkActive, Icon, BrandMark, TranslatePipe],
   templateUrl: './nav-bar.html',
   styleUrl: './nav-bar.scss',

@@ -95,7 +95,7 @@ describe('language choice', () => {
     TestBed.tick();
     expect(i18n.t('nav.today')).toBe('Today');
     expect(document.documentElement.lang).toBe('en');
-    expect(localStorage.getItem('qth.lang')).toBe('"en"');
+    expect(localStorage.getItem('lm.lang')).toBe('"en"');
 
     i18n.use('es');
     TestBed.tick();
@@ -104,7 +104,7 @@ describe('language choice', () => {
   });
 
   it('respects a remembered choice over the browser', () => {
-    localStorage.setItem('qth.lang', '"en"');
+    localStorage.setItem('lm.lang', '"en"');
     expect(TestBed.inject(I18n).lang()).toBe('en');
   });
 });

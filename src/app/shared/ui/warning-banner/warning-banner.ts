@@ -31,13 +31,13 @@ const PHENOMENA: Readonly<Record<string, MessageKey>> = {
  * English when AEMET publishes it, otherwise in Spanish as issued.
  */
 @Component({
-  selector: 'qth-warning-banner',
+  selector: 'lm-warning-banner',
   imports: [Icon, TranslatePipe],
   template: `
     <ul class="list warning-list">
       @for (w of items(); track w.id) {
         <li class="warning weather-warning" [class]="'is-' + w.level" [attr.data-level]="w.level">
-          <qth-icon name="alert" />
+          <lm-icon name="alert" />
           <span class="text">
             <span class="title">{{ w.title | t }}</span>
             <span class="sub">{{ w.area | t }} · {{ w.when | t }}</span>
@@ -86,7 +86,7 @@ const PHENOMENA: Readonly<Record<string, MessageKey>> = {
     .is-rojo {
       --level: var(--c-poor);
     }
-    qth-icon {
+    lm-icon {
       flex: none;
       width: var(--icon-lg);
       height: var(--icon-lg);

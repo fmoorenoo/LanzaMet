@@ -4,10 +4,10 @@ import { IconName } from '../icon/icons';
 
 /** Inline empty or error state: names the problem and, if possible, the way out. */
 @Component({
-  selector: 'qth-status-message',
+  selector: 'lm-status-message',
   imports: [Icon],
   template: `
-    <qth-icon class="mark" [name]="icon()" />
+    <lm-icon class="mark" [name]="icon()" />
     <div class="copy">
       <p class="t-body t-strong">{{ title() }}</p>
       @if (text()) {
@@ -16,7 +16,7 @@ import { IconName } from '../icon/icons';
       @if (actionLabel()) {
         <button type="button" class="btn btn--quiet action" (click)="action.emit()">
           @if (tone() === 'error') {
-            <qth-icon name="refresh" />
+            <lm-icon name="refresh" />
           }
           {{ actionLabel() }}
         </button>

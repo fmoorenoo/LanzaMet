@@ -5,7 +5,7 @@
   [class.is-busy]="rendering()"
   [attr.aria-label]="label()"
   [attr.aria-busy]="rendering() || null"
-  [qthTooltip]="label()"
+  [lmTooltip]="label()"
   [disabled]="!card()"
   (pointerenter)="warm()"
   (pointerdown)="warm()"
@@ -13,15 +13,15 @@
   (click)="share()"
 >
   <span class="glyphs" aria-hidden="true">
-    <qth-icon class="glyph glyph--share" name="share" />
-    <qth-icon class="glyph glyph--busy" name="loader" />
+    <lm-icon class="glyph glyph--share" name="share" />
+    <lm-icon class="glyph glyph--busy" name="loader" />
   </span>
 </button>
 <span class="visually-hidden" aria-live="polite">{{
   rendering() ? ('share.preparing' | t) : ''
 }}</span>
 
-<qth-sheet [heading]="'share.sheet.title' | t" [(open)]="sheetOpen">
+<lm-sheet [heading]="'share.sheet.title' | t" [(open)]="sheetOpen">
   @if (fallback(); as f) {
     <div id="share-sheet" class="share-sheet">
       @if (f.url) {
@@ -54,7 +54,7 @@
         <div class="actions share-actions">
           @if (f.file && f.canShareFiles) {
             <button type="button" class="btn btn--primary" (click)="shareFile()">
-              <qth-icon name="share" />
+              <lm-icon name="share" />
               {{ 'share.action.share' | t }}
             </button>
           }
@@ -65,7 +65,7 @@
               [href]="f.url"
               [attr.download]="f.file.name"
             >
-              <qth-icon name="download" />
+              <lm-icon name="download" />
               {{ 'share.action.download' | t }}
             </a>
           }
@@ -73,11 +73,11 @@
             <button type="button" class="btn" (click)="copyImage()">
               <span class="faces">
                 <span class="face" [class.is-shown]="copied() !== 'image'">
-                  <qth-icon name="image" />
+                  <lm-icon name="image" />
                   {{ 'share.action.copyImage' | t }}
                 </span>
                 <span class="face" [class.is-shown]="copied() === 'image'" aria-hidden="true">
-                  <qth-icon name="check" />
+                  <lm-icon name="check" />
                   {{ 'share.copied.image' | t }}
                 </span>
               </span>
@@ -86,23 +86,23 @@
           <button type="button" class="btn" (click)="copyText()">
             <span class="faces">
               <span class="face" [class.is-shown]="copied() !== 'text'">
-                <qth-icon name="copy" />
+                <lm-icon name="copy" />
                 {{ (hasLink ? 'share.action.copyTextLink' : 'share.action.copyText') | t }}
               </span>
               <span class="face" [class.is-shown]="copied() === 'text'" aria-hidden="true">
-                <qth-icon name="check" />
+                <lm-icon name="check" />
                 {{ 'share.copied.text' | t }}
               </span>
             </span>
           </button>
           @if (canShareText && !f.canShareFiles) {
             <button type="button" class="btn" (click)="shareText()">
-              <qth-icon name="share" />
+              <lm-icon name="share" />
               {{ 'share.action.textOnly' | t }}
             </button>
           }
           <a class="btn" [href]="whatsapp()" target="_blank" rel="noopener">
-            <qth-icon name="message" />
+            <lm-icon name="message" />
             {{ 'share.action.whatsapp' | t }}
           </a>
         </div>
@@ -127,4 +127,4 @@
       </div>
     </div>
   }
-</qth-sheet>
+</lm-sheet>

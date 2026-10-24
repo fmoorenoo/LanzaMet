@@ -12,11 +12,11 @@ export interface ShareConfig {
   readonly publicUrl: string | null;
 }
 
-declare const QTH_PUBLIC_URL: string | undefined;
+declare const LM_PUBLIC_URL: string | undefined;
 
 export const SHARE_CONFIG = new InjectionToken<ShareConfig>('SHARE_CONFIG', {
   factory: () => {
-    const url = typeof QTH_PUBLIC_URL === 'string' ? QTH_PUBLIC_URL.trim() : '';
+    const url = typeof LM_PUBLIC_URL === 'string' ? LM_PUBLIC_URL.trim() : '';
     return { publicUrl: /^https:\/\/[^/\s]+$/.test(url) ? url : null };
   },
 });

@@ -46,7 +46,7 @@ async function reason(promise: Promise<unknown>): Promise<string | null> {
 describe('FeedbackService', () => {
   beforeEach(() => {
     localStorage.clear();
-    localStorage.setItem('qth.lang', JSON.stringify('es'));
+    localStorage.setItem('lm.lang', JSON.stringify('es'));
     vi.useFakeTimers({ toFake: ['Date'] });
     vi.setSystemTime(NOW);
   });
@@ -87,7 +87,7 @@ describe('FeedbackService', () => {
   it('remembers a delivered message, across reloads, to refuse it twice', async () => {
     const { service, transport } = setup();
     await service.send(draft());
-    expect(localStorage.getItem('qth.feedback')).not.toContain('Playa');
+    expect(localStorage.getItem('lm.feedback')).not.toContain('Playa');
 
     vi.setSystemTime(NOW + 5 * 60_000);
     TestBed.resetTestingModule();

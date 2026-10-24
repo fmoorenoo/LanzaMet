@@ -23,7 +23,7 @@ const KIND: Readonly<Record<PlanKind, { icon: IconName }>> = {
 
 /** One suggestion. Choosing it opens that place's day. */
 @Component({
-  selector: 'qth-plan-item',
+  selector: 'lm-plan-item',
   imports: [Icon, Scene, TranslatePipe],
   templateUrl: './plan-item.html',
   styleUrl: './plan-item.scss',

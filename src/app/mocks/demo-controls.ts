@@ -14,7 +14,7 @@ type TimeOption = 'ahora' | 'amanecer' | 'mediodia' | 'atardecer' | 'noche';
  * demo build shows them, inside the settings sheet.
  */
 @Component({
-  selector: 'qth-demo-controls',
+  selector: 'lm-demo-controls',
   imports: [TranslatePipe],
   template: `
     <p class="intro t-small t-muted">{{ 'demo.intro' | t }}</p>

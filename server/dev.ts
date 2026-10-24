@@ -35,6 +35,6 @@ createServer(async (req, res) => {
   res.writeHead(response.status, Object.fromEntries(response.headers));
   res.end(Buffer.from(await response.arrayBuffer()));
 }).listen(port, () => {
-  console.log(`API de ¿Qué tal hoy? en http://localhost:${port}/api`);
+  console.log(`API de LanzaMet en http://localhost:${port}/api`);
   console.log(`Clave de AEMET OpenData: ${env.AEMET_API_KEY ? 'configurada' : 'no configurada'}`);
 });

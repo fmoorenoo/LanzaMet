@@ -4,5 +4,5 @@
 // Content-Security-Policy can forbid inline scripts (see public/_headers).
 addEventListener('beforeinstallprompt', function (event) {
   event.preventDefault();
-  window.qthInstallPrompt = event;
+  window.lmInstallPrompt = event;
 });

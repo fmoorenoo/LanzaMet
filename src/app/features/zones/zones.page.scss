@@ -47,7 +47,7 @@
     color-mix(in oklch, var(--c-sea) 9%, var(--c-ground));
 }
 
-qth-island-map {
+lm-island-map {
   width: min(100%, 30rem);
   justify-self: center;
   // Room for the labels that sit beside the westernmost markers.

@@ -1,11 +1,11 @@
 <button type="button" class="plan plan-card-button" (click)="open()">
   @if (scene(); as scene) {
     <span class="art">
-      <qth-scene [state]="scene" variant="mini" />
+      <lm-scene [state]="scene" variant="mini" />
     </span>
   }
   <span class="mark" aria-hidden="true">
-    <qth-icon [name]="kind().icon" />
+    <lm-icon [name]="kind().icon" />
   </span>
   <span class="copy plan-copy">
     <span class="title plan-title">{{ plan().title | t }}</span>

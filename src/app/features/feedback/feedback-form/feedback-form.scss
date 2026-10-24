@@ -38,7 +38,7 @@ legend.label {
   line-height: 1.4;
   color: var(--c-ink-2);
 
-  qth-icon {
+  lm-icon {
     width: var(--icon-xs);
     height: var(--icon-xs);
     margin-top: 0.05rem;
@@ -111,7 +111,7 @@ legend.label {
     background-color var(--d-fast) ease,
     color var(--d-fast) ease;
 
-  qth-icon {
+  lm-icon {
     width: var(--icon-md);
     height: var(--icon-md);
   }
@@ -245,9 +245,9 @@ legend.label {
   border-radius: var(--r-md);
   background-color: color-mix(in oklch, var(--c-poor) 9%, var(--c-surface));
   font-size: var(--fs-small);
-  animation: qth-rise 240ms var(--ease-out) both;
+  animation: lm-rise 240ms var(--ease-out) both;
 
-  qth-icon {
+  lm-icon {
     width: var(--icon-lg);
     height: var(--icon-lg);
     flex: none;
@@ -313,7 +313,7 @@ legend.label {
   }
 
   .alert {
-    animation-name: qth-fade-in;
+    animation-name: lm-fade-in;
   }
 
   .spinner {

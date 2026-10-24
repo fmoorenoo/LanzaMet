@@ -3,7 +3,7 @@
  *
  * Reads from the environment, or from a local `.env` file (Git ignores it):
  *   WEB3FORMS_ACCESS_KEY  the Web3Forms key for «Ayúdanos» (required; see DEPLOYMENT.md)
- *   PUBLIC_URL            optional: the address shared links carry, e.g. https://quetalhoy.es
+ *   PUBLIC_URL            optional: the address shared links carry, e.g. https://lanzamet.com
  * and passes them to the Angular build with --define. No shell is involved,
  * so it behaves the same in PowerShell, cmd, bash and Cloudflare's builder.
  *
@@ -20,7 +20,7 @@ import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
-const dir = join(root, 'dist', 'que-tal-hoy', 'browser');
+const dir = join(root, 'dist', 'lanzamet', 'browser');
 const allowWithoutFeedback = process.argv.includes('--allow-without-feedback');
 
 try {
@@ -48,12 +48,12 @@ if (!key && !allowWithoutFeedback) {
   );
 }
 if (publicUrl && !/^https:\/\/[a-z0-9.-]+(:\d+)?$/i.test(publicUrl)) {
-  fail('PUBLIC_URL debe ser solo el origen con https, p. ej. https://quetalhoy.es');
+  fail('PUBLIC_URL debe ser solo el origen con https, p. ej. https://lanzamet.com');
 }
 
 const defines = [
-  ...(key ? ['--define', `QTH_WEB3FORMS_KEY='${key}'`] : []),
-  ...(publicUrl ? ['--define', `QTH_PUBLIC_URL='${publicUrl}'`] : []),
+  ...(key ? ['--define', `LM_WEB3FORMS_KEY='${key}'`] : []),
+  ...(publicUrl ? ['--define', `LM_PUBLIC_URL='${publicUrl}'`] : []),
 ];
 const ng = join(root, 'node_modules', '@angular', 'cli', 'bin', 'ng.js');
 const build = spawnSync(
@@ -89,11 +89,11 @@ const scripts = readdirSync(dir)
   .map((name) => readFileSync(join(dir, name), 'utf8'))
   .join('\n');
 // Only the demo build has the simulator and its controls.
-for (const marker of ['qth-demo-controls', 'Puerto de Arrecife']) {
+for (const marker of ['lm-demo-controls', 'Puerto de Arrecife']) {
   if (scripts.includes(marker)) fail(`La build contiene código de la demo («${marker}»).`);
 }
 if (key && !scripts.includes(key)) fail('La clave de Web3Forms no ha llegado a la build.');
 
-console.log('\n✓ Build de producción lista en dist/que-tal-hoy/browser');
+console.log('\n✓ Build de producción lista en dist/lanzamet/browser');
 console.log(`  Ayúdanos: ${key ? 'clave de Web3Forms incluida' : 'SIN clave (no enviará nada)'}`);
 console.log(`  Enlace al compartir: ${publicUrl || 'la dirección desde la que se abra la web'}`);

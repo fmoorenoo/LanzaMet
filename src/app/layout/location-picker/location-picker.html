@@ -1,6 +1,6 @@
-<qth-sheet [heading]="'picker.title' | t" [(open)]="ui.locationPickerOpen">
+<lm-sheet [heading]="'picker.title' | t" [(open)]="ui.locationPickerOpen">
   <label class="field search location-search">
-    <qth-icon name="search" />
+    <lm-icon name="search" />
     <input
       id="location-search-input"
       type="search"
@@ -21,13 +21,13 @@
     >
       <div class="group-head">
         <h3 id="favorite-locations-title" class="group-title">{{ 'picker.favorites' | t }}</h3>
-        <qth-scroll-controls
+        <lm-scroll-controls
           [scroller]="favoriteScroll"
           [backLabel]="'picker.previous' | t"
           [forwardLabel]="'picker.next' | t"
         />
       </div>
-      <div class="favorites favorite-chips" qthHorizontalScroll #favoriteScroll="horizontalScroll">
+      <div class="favorites favorite-chips" lmHorizontalScroll #favoriteScroll="horizontalScroll">
         @for (row of favorites(); track row.location.id) {
           <button
             type="button"
@@ -37,7 +37,7 @@
             (click)="choose(row.location.id)"
           >
             @if (row.sky; as sky) {
-              <qth-sky-glyph
+              <lm-sky-glyph
                 [sky]="sky.condition"
                 [isDaylight]="sky.isDaylight"
                 [decorative]="true"
@@ -54,7 +54,7 @@
   }
 
   @if (locations.error(); as error) {
-    <qth-status-message
+    <lm-status-message
       tone="error"
       [title]="'picker.error' | t"
       [text]="error | t"
@@ -85,7 +85,7 @@
             >
               <span class="row-glyph">
                 @if (row.sky; as sky) {
-                  <qth-sky-glyph [sky]="sky.condition" [isDaylight]="sky.isDaylight" />
+                  <lm-sky-glyph [sky]="sky.condition" [isDaylight]="sky.isDaylight" />
                 } @else {
                   <span class="skeleton glyph-skeleton"></span>
                 }
@@ -109,13 +109,13 @@
               [class.is-on]="row.isFavorite"
               [attr.aria-pressed]="row.isFavorite"
               [attr.aria-label]="'common.favorite' | t: { name: row.location.name }"
-              [qthTooltip]="
+              [lmTooltip]="
                 (row.isFavorite ? 'common.favorite.remove' : 'common.favorite.add')
                   | t: { name: row.location.name }
               "
               (click)="toggleFavorite(row.location.id)"
             >
-              <qth-icon [name]="row.isFavorite ? 'star-filled' : 'star'" />
+              <lm-icon [name]="row.isFavorite ? 'star-filled' : 'star'" />
             </button>
           </li>
         }
@@ -123,11 +123,11 @@
     </section>
   } @empty {
     @if (query()) {
-      <qth-status-message
+      <lm-status-message
         [title]="'picker.noMatch' | t"
         [text]="'picker.noMatch.text' | t"
         icon="search"
       />
     }
   }
-</qth-sheet>
+</lm-sheet>

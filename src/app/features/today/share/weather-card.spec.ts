@@ -56,9 +56,9 @@ describe('share message', () => {
   });
 
   it('names the file after the place and the hour', () => {
-    expect(cardFileName({ place: 'Órzola', at: now })).toBe('que-tal-hoy-orzola-1436.png');
+    expect(cardFileName({ place: 'Órzola', at: now })).toBe('lanzamet-orzola-1436.png');
     expect(cardFileName({ place: 'Puerto del Carmen', at: now })).toBe(
-      'que-tal-hoy-puerto-del-carmen-1436.png',
+      'lanzamet-puerto-del-carmen-1436.png',
     );
   });
 });
@@ -71,8 +71,8 @@ describe('share link', () => {
   });
 
   it('falls back to where a deployed copy is served from', () => {
-    expect(shareLink({ publicUrl: null }, origin('https://que-tal-hoy.example.net/zonas'))).toBe(
-      'https://que-tal-hoy.example.net',
+    expect(shareLink({ publicUrl: null }, origin('https://lanzamet.example.net/zonas'))).toBe(
+      'https://lanzamet.example.net',
     );
   });
 

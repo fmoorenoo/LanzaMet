@@ -6,7 +6,7 @@ import { I18n } from './i18n.store';
 
 /**
  * Routes name their title with a message key; the document title follows the
- * route and the language ("Hoy en Lanzarote · ¿Qué tal hoy?").
+ * route and the language ("Hoy en Lanzarote · LanzaMet").
  */
 @Service({ autoProvided: false })
 export class I18nTitleStrategy extends TitleStrategy {
