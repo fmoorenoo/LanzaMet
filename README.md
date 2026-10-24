@@ -207,11 +207,13 @@ En el ordenador la guía separa **Como app** («se abre en su propia ventana, co
 ### Manifest e iconos
 
 - `public/manifest.webmanifest`: `id` y `start_url` `/`, `display: standalone`, nombre y nombre corto «LanzaMet» (el que se lee bajo el icono), fondo y color de tema `#f8fafb` (el fondo de día, el mismo de `<meta name="theme-color">`), idioma `es`.
-- Iconos en `public/icons/`, sacados de la marca (el sol poniéndose en el Atlántico):
-  - `icon.svg`, `icon-192.png` e `icon-512.png` («any»), con las esquinas recortadas y transparentes;
-  - `icon-maskable-192.png` e `icon-maskable-512.png` («maskable»), a sangre, con el sol dentro de la zona segura del 80 %;
-  - `apple-touch-icon.png` (180 px), a sangre y sin transparencia, porque iOS rellena la transparencia de negro y redondea él las esquinas.
-- Los PNG se renderizaron desde los SVG con Chrome sin interfaz. Para regenerarlos, abre el SVG a su tamaño en una página con fondo transparente y haz una captura (`chrome --headless --screenshot --default-background-color=00000000 --window-size=512,512`).
+- Iconos en `public/icons/`, sacados del logotipo (el sol poniéndose tras la montaña, sobre el mar, en fondo negro):
+  - `icon-192.png` e `icon-512.png` («any»), con las esquinas recortadas y transparentes;
+  - `icon-maskable-192.png` e `icon-maskable-512.png` («maskable»), a sangre, con el dibujo dentro de la zona segura del 80 %;
+  - `apple-touch-icon.png` (180 px), a sangre y sin transparencia, porque iOS redondea él las esquinas;
+  - `logo.png` (256 px, cuadrado): la marca dentro de la web (`BrandMark`, en el raíl y en el icono de Acceso rápido, que la redondea) y en la tarjeta para compartir.
+- `public/favicon.ico` lleva 16, 32 y 48 px con las esquinas recortadas; `index.html` ofrece además `icon-192.png` para pantallas densas.
+- Todo sale del PNG original del logotipo (1536 × 1024, fondo negro), recortado en cuadrado alrededor del dibujo: más ceñido para el favicon y `logo.png`, con más aire en los iconos y con más aún en los «maskable».
 - `index.html` enlaza el manifest y el `apple-touch-icon`, y declara `apple-mobile-web-app-title` y la barra de estado de iOS por defecto. El color de la barra en modo app lo sigue llevando `ThemeStore`, como en el navegador: el cielo en Hoy y el fondo en las demás pantallas.
 - El manifest va en español, el idioma por defecto: solo puede tener uno, y el nombre es el mismo en los dos.
 

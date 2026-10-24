@@ -83,10 +83,9 @@ const SUN = oklch(0.85, 0.15, 82);
 const SUN_EDGE = oklch(0.72, 0.15, 70);
 const MOON = oklch(0.86, 0.06, 95);
 const HEAT = oklch(0.6, 0.16, 40);
-const BRAND_TILE = oklch(0.36, 0.1, 248);
-const BRAND_SEA = oklch(0.52, 0.13, 240);
-const BRAND_WAVE =
-  'M0 19.5c2.7 0 3.3-1.8 6-1.8s3.3 1.8 6 1.8 3.3-1.8 6-1.8 3.3 1.8 6 1.8 3.3-1.8 6-1.8 2 .9 2 .9V32H0z';
+/** The brand's mark, the same image the app shows; on its black ground. */
+const BRAND_MARK_SRC = 'icons/logo.png';
+const BRAND_GROUND = '#000';
 
 type Ctx = CanvasRenderingContext2D;
 
@@ -98,14 +97,26 @@ export async function loadCardFonts(doc: Document): Promise<void> {
   );
 }
 
+/** The brand's mark, ready to paint; null if it cannot load (the card keeps its ground). */
+async function loadBrandMark(doc: Document): Promise<HTMLImageElement | null> {
+  const img = doc.createElement('img');
+  img.src = BRAND_MARK_SRC;
+  try {
+    await img.decode();
+    return img;
+  } catch {
+    return null;
+  }
+}
+
 export async function renderWeatherCard(
   doc: Document,
   card: WeatherCard,
   options: CardOptions,
 ): Promise<Blob | null> {
-  await loadCardFonts(doc);
+  const [, mark] = await Promise.all([loadCardFonts(doc), loadBrandMark(doc)]);
   const canvas = doc.createElement('canvas');
-  drawWeatherCard(canvas, card, options);
+  drawWeatherCard(canvas, card, options, mark);
   return new Promise((resolve) => canvas.toBlob(resolve, 'image/png'));
 }
 
@@ -113,6 +124,7 @@ export function drawWeatherCard(
   canvas: HTMLCanvasElement,
   card: WeatherCard,
   options: CardOptions,
+  mark: CanvasImageSource | null = null,
 ): void {
   canvas.width = W;
   canvas.height = H;
@@ -147,7 +159,7 @@ export function drawWeatherCard(
     ctx.fillRect(0, 0, W, sceneH * 0.75);
   }
   paintSky(ctx, sky, lightInk ? SKY_INK.light : SKY_INK.dark, lightInk);
-  paintSheet(ctx, sheet, sheetTop, palette, card, options, t);
+  paintSheet(ctx, sheet, sheetTop, palette, card, options, t, mark);
 }
 
 // ── Type ─────────────────────────────────────────────────────────────
@@ -436,6 +448,7 @@ function paintSheet(
   card: WeatherCard,
   options: CardOptions,
   t: (m: Msg | MessageKey) => string,
+  mark: CanvasImageSource | null,
 ): void {
   ctx.save();
   // The app's sheet, risen over the scene: rounded top, a soft shadow above.
@@ -491,7 +504,7 @@ function paintSheet(
   ctx.fillStyle = toRgb(p.line, 0.09);
   ctx.fillRect(PAD, footerY - 40 - 2, W - PAD * 2, 2);
 
-  paintBrandMark(ctx, PAD, footerY, FOOTER_H);
+  paintBrandMark(ctx, mark, PAD, footerY, FOOTER_H);
   const brandX = PAD + FOOTER_H + 22;
   setFont(ctx, 700, 36, -0.02);
   ctx.fillStyle = toRgb(p.ink);
@@ -526,22 +539,24 @@ function hostOf(link: string): string {
   }
 }
 
-/** The brand's mark: the sun setting into the Atlantic, on its rounded tile. */
-function paintBrandMark(ctx: Ctx, x: number, y: number, size: number): void {
+/** The brand's mark on its rounded tile, as the app shows it. */
+function paintBrandMark(
+  ctx: Ctx,
+  mark: CanvasImageSource | null,
+  x: number,
+  y: number,
+  size: number,
+): void {
   ctx.save();
-  ctx.translate(x, y);
-  ctx.scale(size / 32, size / 32);
   ctx.beginPath();
-  ctx.roundRect(0, 0, 32, 32, 10);
+  ctx.roundRect(x, y, size, size, size * 0.31);
   ctx.clip();
-  ctx.fillStyle = toRgb(BRAND_TILE);
-  ctx.fillRect(0, 0, 32, 32);
-  ctx.fillStyle = toRgb(SUN);
-  ctx.beginPath();
-  ctx.arc(16, 16.5, 6.5, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.fillStyle = toRgb(BRAND_SEA);
-  ctx.fill(new Path2D(BRAND_WAVE));
+  ctx.fillStyle = BRAND_GROUND;
+  ctx.fillRect(x, y, size, size);
+  if (mark) {
+    ctx.imageSmoothingQuality = 'high';
+    ctx.drawImage(mark, x, y, size, size);
+  }
   ctx.restore();
 }
 
