@@ -591,3 +591,47 @@ La web pasa a llamarse **LanzaMet**, con el dominio `lanzamet.com`.
 ### Pendiente
 
 - Probar en móviles reales: instalar en Android e iPhone, compartir a WhatsApp, y ver la actualización tras el próximo despliegue.
+
+## Responsive móvil (24-10-2026)
+
+Solo por debajo de 64 rem (móvil y tableta); el escritorio queda igual, comprobado elemento a elemento.
+
+### Hecho
+
+1. **Héroe de Hoy reorganizado**:
+   - fila 1: la zona con su nombre entero (antes «Puerto de…», ahora «Puerto del Carmen» incluso a 320 px) y su estrella, y la hora a la derecha;
+   - fila 2: favoritas, o la hora elegida con «Volver a ahora»;
+   - después, temperatura, veredicto, frase y máxima/mínima;
+   - **Ajustes y Compartir** bajan a la esquina inferior derecha, sobre el mar y al alcance del pulgar, siempre con tinta clara. En el DOM van tras el texto, así que el foco sigue el orden visual; en escritorio vuelven al final de la fila de arriba, en la misma posición que antes.
+2. **Horas justo debajo de la escena**:
+   - el selector es lo primero de la hoja (`order: -1`, sin tocar el DOM);
+   - la escena mide `100svh` menos la barra y el alto real de las horas, y crece solo si su contenido lo pide;
+   - el horizonte se ancla abajo (`--sea-band`), con cielo libre para lo que asoma sobre él (`--sky-gap`);
+   - el veredicto reserva dos líneas, para que cambiar de hora o de zona no mueva nada;
+   - en pantallas bajas, todo un punto más compacto.
+3. **Barra inferior opaca**: `--c-surface` con filete; sin `backdrop-filter` ni transparencias en toda la web.
+4. **Auditoría de las demás pantallas** (Zonas, Mar, Dónde ir, Ayúdanos, Ajustes, selector de zona, compartir):
+   - sin desbordamientos;
+   - selector de zona: los subtítulos pasan a dos líneas en vez de cortarse a 320 px;
+   - Ayúdanos: el campo de correo responde en toda su píldora;
+   - controles del cielo y chips responden en 44 px con pantalla táctil (anillo invisible);
+   - Mar: la etiqueta de una bajamar profunda ya no queda tapada por la píldora «Ahora»;
+   - «Próximas horas» cabe en una línea a 320 px (allí el «Volver a ahora» repetido de su encabezado no se muestra; sigue en la escena).
+
+### Validación
+
+- **Chrome sin interfaz por CDP**, con pantalla táctil y user agent de Android (sin hover), a 320 × 568, 375 × 667, 360 × 780, 390 × 844 y 430 × 932, y en horizontal (844 × 390):
+  - nombre de la zona entero en todos los tamaños y en las ocho zonas;
+  - selector de horas entero en la primera pantalla en 360 × 780, 390 × 844 y 430 × 932 (con el veredicto más largo). En 375 × 667 se ven las horas y sus iconos, y asoma la temperatura; en 320 × 568, el encabezado y el comienzo de la fila;
+  - 0 px de movimiento de la escena y de las horas al elegir ocho horas seguidas en ocho zonas (320, 375 y 390 px);
+  - sin desbordamiento horizontal ni textos cortados en ninguna pantalla u hoja;
+  - todos los controles responden en 44 px (comprobado con `elementFromPoint` en el borde de un cuadrado de 44 px; los enlaces dentro de una frase quedan fuera, como permite WCAG);
+  - los paisajes con elementos altos (Gran Hotel, faro de Playa Blanca, cráter de El Golfo) quedan libres de texto;
+  - Ajustes y Compartir legibles con tinta oscura.
+- **Escritorio**: posición, tamaño, colores, fuente y opacidad de cada elemento de las cinco páginas a 1024, 1280 y 1440 px, antes y después. Los botones de la escena quedan en las mismas coordenadas. Solo cambian el ancho de un contenedor transparente, el orden de dos textos ocultos y valores que dependen de los datos o de la hora (temperaturas por hora, el punto de «ahora» de la marea, una recomendación nueva).
+- **Tests** (185 de la web y 24 del API), **lint**, **formato** y **build de producción**: sin errores; bundle inicial de 499 kB.
+
+### Pendiente
+
+- Probar en móviles reales, sobre todo los toques en los bordes de los botones, la barra con teclado abierto y un iPhone con muesca.
+- En 375 × 667 y más pequeños, las temperaturas por hora piden un desplazamiento mínimo; para que entren habría que quitar algo de la escena.

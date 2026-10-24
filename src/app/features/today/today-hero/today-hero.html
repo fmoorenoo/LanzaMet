@@ -57,31 +57,6 @@
       >
         <lm-icon [name]="isFavorite() ? 'star-filled' : 'star'" />
       </button>
-      @if (isDemo) {
-        <button
-          id="hero-settings-button"
-          type="button"
-          class="sky-button demo settings-button"
-          [lmTooltip]="'today.demoSettings' | t"
-          (click)="ui.openSettings()"
-        >
-          <lm-icon name="sliders" />
-          <span class="demo-label">{{ 'today.demo' | t }}</span>
-          <span class="visually-hidden">{{ 'today.demoSettings' | t }}</span>
-        </button>
-      } @else {
-        <button
-          id="hero-settings-button"
-          type="button"
-          class="sky-button settings-button"
-          [attr.aria-label]="'today.settings' | t"
-          [lmTooltip]="'today.settings' | t"
-          (click)="ui.openSettings()"
-        >
-          <lm-icon name="sliders" />
-        </button>
-      }
-      <lm-share-weather [card]="share()" />
     </div>
   </div>
 
@@ -165,5 +140,36 @@
         <span class="skeleton bone sentence-bone"></span>
       </div>
     }
+  </div>
+  <!--
+    Settings and sharing: on phones at the foot of the scene, within reach of
+    the thumb and clear of the place name; on desktop, at the end of the top row.
+  -->
+  <div class="tools hero-tools">
+    @if (isDemo) {
+      <button
+        id="hero-settings-button"
+        type="button"
+        class="sky-button demo settings-button"
+        [lmTooltip]="'today.demoSettings' | t"
+        (click)="ui.openSettings()"
+      >
+        <lm-icon name="sliders" />
+        <span class="demo-label">{{ 'today.demo' | t }}</span>
+        <span class="visually-hidden">{{ 'today.demoSettings' | t }}</span>
+      </button>
+    } @else {
+      <button
+        id="hero-settings-button"
+        type="button"
+        class="sky-button settings-button"
+        [attr.aria-label]="'today.settings' | t"
+        [lmTooltip]="'today.settings' | t"
+        (click)="ui.openSettings()"
+      >
+        <lm-icon name="sliders" />
+      </button>
+    }
+    <lm-share-weather [card]="share()" />
   </div>
 </div>

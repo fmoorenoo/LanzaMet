@@ -134,3 +134,11 @@
     background-color: var(--c-surface-sunken);
   }
 }
+
+// The narrowest phones: the municipality and the wind take a second line
+// rather than an ellipsis.
+@media (max-width: 23rem) {
+  .row-sub {
+    white-space: normal;
+  }
+}

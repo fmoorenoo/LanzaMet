@@ -456,3 +456,23 @@
     translate: none;
   }
 }
+
+// ── Touch targets ─────────────────────────────────────────────
+// On touch screens a chip answers a finger's height (44 px) without looking
+// any taller: an invisible margin above and below takes the tap.
+@media (pointer: coarse) {
+  .chip {
+    position: relative;
+
+    &::after {
+      content: '';
+      position: absolute;
+      inset: min(0px, calc((100% - 2.75rem) / 2)) 0;
+    }
+  }
+
+  // The text field fills its pill, so a tap anywhere on the pill types.
+  .field input {
+    align-self: stretch;
+  }
+}

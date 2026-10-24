@@ -64,6 +64,12 @@
   @media (prefers-reduced-motion: reduce) {
     transform: none;
   }
+
+  // The narrowest phones: the scene right above already offers "Back to now"
+  // while an hour is previewed, and the heading needs the whole line.
+  @media (max-width: 23rem) {
+    display: none;
+  }
 }
 
 // Native horizontal scroll, free like the favourites': no snapping, so a

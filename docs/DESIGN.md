@@ -44,7 +44,7 @@ Los títulos usan `text-wrap: balance` y los párrafos `pretty`. Las cifras de t
 
 - Escala de 4 px (`--s-1` … `--s-16`); margen lateral de 1,25 rem en móvil y 2 rem en pantallas mayores.
 - Radios generosos, como los muros de Manrique: de 0,5 a 2 rem, más el radio de píldora.
-- Sombras siempre con desplazamiento y difuminado (`--shadow-1`, `-2`, `-sheet`). Material translúcido solo en el cromo flotante (barra inferior), con alternativa para `prefers-reduced-transparency`.
+- Sombras siempre con desplazamiento y difuminado (`--shadow-1`, `-2`, `-sheet`). Sin materiales translúcidos: la barra inferior es opaca (`--c-surface` con un filete `--c-line-strong`), así que nada de la página se ve a través de ella.
 
 ## Movimiento
 
@@ -92,7 +92,12 @@ Cada sección contempla carga (esqueleto con la forma del contenido), datos, vac
 
 ## Adaptación
 
-- **Móvil (base):** escena casi a pantalla completa con la hoja de detalle superpuesta; barra de pestañas inferior con zonas seguras. Son cinco pestañas; «Ayúdanos» («Help us») es la última. Ajustes no está en la barra: se abre desde el cielo. El horizonte baja en pantallas de poca altura para que el texto siempre quede sobre cielo profundo.
+- **Móvil (base, por debajo de 64 rem):** la primera pantalla de Hoy es la escena y, justo debajo, las 24 horas que la cambian: elegir una hora nunca obliga a subir para verla. Barra de pestañas inferior, opaca y con zonas seguras: cinco pestañas, «Ayúdanos» («Help us») la última. Ajustes no está en la barra: se abre desde la escena.
+  - **Altura de la escena:** lo que deja la pantalla tras la barra y las horas (`100svh − --tabbar-h − --safe-bottom − --hours-peek`, con `--hours-peek` de 13 rem, el alto real del encabezado y una fila de horas), y nunca menos de lo que pide su contenido. Sin alturas fijas por dispositivo. Medido con el veredicto más largo: las horas enteras en la primera pantalla de 360 × 780, 390 × 844 y 430 × 932; en 375 × 667 se ven las horas y sus iconos y asoma la temperatura; en 320 × 568, el encabezado y el comienzo de la fila.
+  - **Orden:** fila 1, la zona con su nombre entero y su estrella, y la hora a la derecha; fila 2, favoritas o la hora elegida con «Volver a ahora»; la temperatura, el veredicto, la frase y la máxima y mínima; abajo a la derecha, sobre el mar y al alcance del pulgar, Ajustes y Compartir (siempre con tinta clara: el agua es más oscura que el cielo para el que se elige la tinta). Las horas van primero en la hoja (`order: -1`); el orden del DOM y del foco es el de escritorio.
+  - **Horizonte:** anclado abajo (`calc(100% − --sea-band)`, con `--sea-band` de `clamp(6rem, 14svh, 10rem)`), con 2,5 rem de cielo libre (`--sky-gap`) entre el texto y el horizonte para lo que asoma sobre él: palmeras, el faro, el Gran Hotel, el borde del cráter.
+  - **Sin saltos:** el veredicto reserva siempre dos líneas (`min-height: 2lh`, alineado abajo), así que cambiar de hora o de zona no mueve las horas que se están tocando. Comprobado en ocho zonas y ocho horas seguidas a 320, 375 y 390 px: 0 px.
+  - **Pantallas bajas** (alto ≤ 46 rem): temperatura, veredicto y márgenes un punto más compactos.
 - **Tableta (≥ 48 rem):** el mismo flujo con una medida de lectura más tranquila.
 - **Escritorio (≥ 64 rem):** raíl lateral. Arriba, las cinco pestañas, con «Ayúdanos» la última; Ajustes, solo al pie. En ventanas muy bajas el raíl se desplaza en vez de cortar Ajustes. En Hoy, la escena es una banda panorámica (≈ 3:1, `clamp(26rem, 54vh, 32rem)` de alto) en un contenedor de 84 rem: zona, favoritas y acciones en una línea; la temperatura junto al veredicto, con la máxima y la mínima; el cielo de la derecha queda para el sol y la luna. Debajo, «ahora» (viento, mar y marea en tres columnas desde 72 rem), las 24 horas a todo el ancho —justo bajo la escena que previsualizan— y una rejilla de dos columnas: planes y detalle a la izquierda, los siete días a la derecha. El orden del DOM y del foco es el de móvil. Zonas y Mar pasan a dos columnas a partir de 72 rem.
 - **Horas:**
@@ -101,12 +106,12 @@ Cada sección contempla carga (esqueleto con la forma del contenido), datos, vac
   - La curva se dibuja en unidades de hora y se estira al ancho; sus puntos son HTML y siguen redondos a cualquier ancho.
   - El resaltado va hundido unos píxeles a cada lado, para que las horas vecinas respiren.
   - Cada hora lleva un borde de 1 px en `--c-accent-soft`, el mismo tono que el relleno de la elegida. La elegida conserva ese relleno y pasa a `--c-accent`: más oscuro de día y más luminoso de noche, siempre el verde más visible del tema.
-- **Controles sobre la escena:** `--sky-control-h` (2,5 rem) es la altura de todas las píldoras y botones redondos del cielo (zona, favoritas, estrella, ajustes, compartir), así que se alinean en cualquier idioma. En escritorio comparten una fila y se centran en ella. Por debajo de 23 rem bajan a 2,25 rem, se acercan y la zona pierde el chevron, para que su nombre siga leyéndose.
+- **Controles sobre la escena:** `--sky-control-h` (2,5 rem) es la altura de todas las píldoras y botones redondos del cielo (zona, favoritas, estrella, ajustes, compartir), así que se alinean en cualquier idioma. En escritorio comparten una fila y se centran en ella. Por debajo de 23 rem bajan a 2,25 rem, se acercan y la zona pierde el chevron y el alfiler, para que su nombre se lea entero. Con pantalla táctil (`pointer: coarse`) cada uno responde en 44 px gracias a un anillo invisible (`::after`, en porcentajes de su caja de relleno), sin parecer más grande; los `.chip`, igual en vertical, y los campos de texto llenan su píldora. Con pantalla táctil () cada uno responde en 44 px gracias a un anillo invisible (, en porcentajes de su caja de relleno), sin parecer más grande; lo mismo los , en vertical.
 - **Hora actual:**
-  - En Hoy va en la esquina superior derecha, delante de favorita, ajustes y compartir, como una píldora `.sky-badge` (mismo fondo, borde, altura y radio que esos botones): «Ahora 14:36», o «En Lanzarote» si el reloj de quien visita marca otra hora.
+  - En Hoy va en la esquina superior derecha (en escritorio, delante de favorita, ajustes y compartir; en móvil, sola a la derecha de la fila de la zona), como una píldora `.sky-badge` (mismo fondo, borde, altura y radio que esos botones): «Ahora 14:36», o «En Lanzarote» si el reloj de quien visita marca otra hora.
   - Es la hora de lo que dibuja la escena: al previsualizar una hora muestra esa hora con su día («Hoy 18:00», «Mañana 05:00») y vuelve a la actual con «Volver a ahora». Cada cambio entra desde un leve desenfoque (240 ms, `--ease-out`).
   - En móviles estrechos muestra solo la hora.
-  - En la marea, la marca de «ahora» baja del punto de la curva al eje, donde va la hora, y las horas del eje que taparía se apartan.
+  - En la marea, la marca de «ahora» baja del punto de la curva al eje, donde va la hora, y las horas del eje que taparía se apartan. Si la etiqueta de una bajamar profunda llegaría a la píldora (pasa en móvil, con la gráfica más baja), sube lo justo para dejarla libre, sin dejar de estar bajo su punto; mientras no se tocan, nada se mueve.
 - **Mapa de Zonas:**
   - La tierra va en `--c-land` (arena volcánica de día, picón de noche) y los islotes en `--c-land-islet`.
   - El mar tiene franjas de agua somera y ondas estáticas.

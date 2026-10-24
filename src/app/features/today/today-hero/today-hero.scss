@@ -61,6 +61,7 @@ lm-scene {
 
 .bar,
 .actions,
+.tools,
 .places-row {
   display: flex;
   align-items: center;
@@ -145,16 +146,12 @@ lm-scene {
   letter-spacing: -0.015em;
 }
 
-// On narrow phones the place name needs the room more than the labels, the
-// pin (the chevron already says "choose a place") or wide gaps do.
+// On narrow phones the place name needs the room more than the clock's
+// label or wide gaps do.
 @media (max-width: 26rem) {
   .bar,
   .actions {
     gap: 0.375rem;
-  }
-
-  .pin {
-    display: none;
   }
 
   .place.is-current {
@@ -190,9 +187,10 @@ lm-scene {
   }
 }
 
-// The smallest phones: five controls share the row, so they are a little
-// smaller (36 px, still well past the 24 px target size) and closer, and the
-// chip drops its chevron, so the place keeps its name.
+// The smallest phones: the controls are a little smaller (36 px, still well
+// past the 24 px target size) and closer, and the chip drops its pin and
+// chevron (the chip itself says "choose a place"), so the place keeps its
+// whole name.
 @media (max-width: 23rem) {
   :host {
     --sky-control-h: 2.25rem;
@@ -203,6 +201,14 @@ lm-scene {
     gap: var(--s-1);
   }
 
+  // Room for each favourite's touch ring (see _sky-controls.scss), which the
+  // scrolling row would otherwise clip; the margin keeps the row where it was.
+  .places {
+    padding-block: 4px;
+    margin-block: -2px;
+  }
+
+  .pin,
   .chevron {
     display: none;
   }
@@ -319,6 +325,115 @@ lm-scene {
   }
 }
 
+// ── Phones and tablets ────────────────────────────────────────
+// The first screen holds the scene and, right below it, the hours that
+// change it: choosing an hour never means scrolling back up to see it.
+// The scene takes what the viewport leaves after the tab bar and the hours,
+// and grows past that only if its own content needs the room. Top to bottom:
+// place and favourite with the time; favourites; the words; settings and
+// sharing over the sea, within reach of the thumb.
+@media (width < 64rem) {
+  :host {
+    // The hours section below, as rendered: heading and one row of hours,
+    // less the sheet's rounded lip, which overlaps the scene.
+    --hours-peek: 13rem;
+    // The water at the foot of the scene, which holds the two buttons.
+    --sea-band: clamp(6rem, 14svh, 10rem);
+    // Clear sky between the words and the horizon, for what rises above it
+    // (palms, the lighthouse, the Gran Hotel, the crater's rim).
+    --sky-gap: 2.5rem;
+    display: flex;
+    flex-direction: column;
+    height: auto;
+    min-height: min(calc(100svh - var(--tabbar-h) - var(--safe-bottom) - var(--hours-peek)), 46rem);
+  }
+
+  .inner {
+    flex: 1;
+    height: auto;
+  }
+
+  // The horizon sits at the top of the band, so the words always stand on sky.
+  lm-scene {
+    --horizon: calc(100% - var(--sea-band));
+  }
+
+  // The place leads the row with its star; the time keeps to the right.
+  .actions {
+    display: contents;
+  }
+
+  .favorite-toggle {
+    order: 1;
+  }
+
+  .clock {
+    order: 2;
+    margin-left: auto;
+  }
+
+  .place-name {
+    white-space: nowrap;
+  }
+
+  .copy-wrap {
+    margin-top: clamp(0.75rem, 2.5svh, 2.5rem);
+    padding-bottom: var(--sky-gap);
+  }
+
+  // A shorter screen gets a slightly smaller number, never a cramped one.
+  .temp {
+    font-size: clamp(5rem, min(26vw, 13svh), 9rem);
+  }
+
+  // Room for two lines whatever the verdict says ("Ratos de sol", "Sopla con
+  // ganas"), so choosing another hour or place never moves the hours below.
+  // A one-line verdict sits on the sentence; the spare air goes under the number.
+  .verdict {
+    display: flex;
+    align-items: flex-end;
+    min-height: 2lh;
+    margin-top: var(--s-3);
+  }
+
+  // Two lines where three used to stack; the sun keeps the sky above them.
+  .sentence {
+    max-width: 28ch;
+  }
+
+  // The band's height, with the buttons at its foot, clear of the sheet's lip.
+  // They sit on the water, always darker than the sky the ink is chosen for:
+  // they keep the light ink even when a bright sky turns the words dark.
+  .tools {
+    color: oklch(0.99 0.004 90);
+    justify-content: flex-end;
+    margin-top: auto;
+    padding-top: calc(var(--sea-band) - var(--sky-control-h) - var(--r-xl) - var(--s-3));
+    padding-bottom: calc(var(--r-xl) + var(--s-3));
+  }
+}
+
+// Short phones (iPhone SE and the like): everything a notch tighter, so the
+// hours still start on the first screen.
+@media (width < 64rem) and (max-height: 46rem) {
+  :host {
+    --sky-gap: 2rem;
+  }
+
+  .copy-wrap {
+    margin-top: var(--s-2);
+  }
+
+  .temp {
+    font-size: clamp(4.5rem, min(24vw, 12svh), 9rem);
+  }
+
+  .verdict {
+    margin-top: var(--s-2);
+    font-size: 1.75rem;
+  }
+}
+
 // Desktop: the scene becomes a panorama. Place, favourites and actions share
 // one line; the temperature stands beside the words; the right-hand sky is
 // left to the sun and the moon.
@@ -335,7 +450,7 @@ lm-scene {
 
   .inner {
     display: grid;
-    grid-template: auto 1fr / auto minmax(0, 1fr) auto;
+    grid-template: auto 1fr / auto minmax(0, 1fr) auto auto;
     align-content: start;
     column-gap: var(--s-3);
     padding: var(--s-6) var(--s-8) 0;
@@ -347,6 +462,14 @@ lm-scene {
 
   .actions {
     grid-column: 3;
+  }
+
+  // Settings and sharing close the same row, as close to the star as the
+  // buttons are to each other.
+  .tools {
+    grid-area: 1 / 4;
+    align-self: center;
+    margin-inline-start: calc(var(--s-2) - var(--s-3));
   }
 
   // The row is as tall as the favourites' slot; everything in it sits on its centre line.

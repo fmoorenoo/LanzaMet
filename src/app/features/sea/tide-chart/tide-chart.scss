@@ -113,7 +113,8 @@
   position: absolute;
   display: grid;
   justify-items: center;
-  translate: var(--x) calc(100% + 0.5rem);
+  // A low that would sit on the "now" pill rises by --raise (see placedLabels).
+  translate: var(--x) calc(100% + 0.5rem - var(--raise, 0px));
   font-size: 0.75rem;
   font-weight: 600;
   white-space: nowrap;

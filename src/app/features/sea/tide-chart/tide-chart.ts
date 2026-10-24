@@ -24,6 +24,21 @@ const TOP = 72;
 /** Room the hour labels on the axis need beside "now", in px (half a label and a gap). */
 const TICK_CLEARANCE_PX = 16;
 
+/** Half the widest high or low label («Bajamar», «18:35 · −1,4 m»), in px, with a little air. */
+const EXTREME_HALF_PX = 44;
+
+/**
+ * How far below its point a low's label ends, in px: it is moved down by its
+ * own height (two lines of 0.75rem) and 0.5rem, so it ends two heights and the gap below.
+ */
+const EXTREME_DROP_PX = 2 * 34 + 8;
+
+/** Gap between the chart and the axis, where the "now" pill sits (margin-top of .axis). */
+const AXIS_GAP_PX = 8;
+
+/** Air kept between a raised low label and the "now" pill, in px. */
+const PILL_CLEARANCE_PX = 6;
+
 /**
  * The tide across the island day: water fills the curve, the night is
  * shaded, highs and lows are named, and "now" is marked: the past fades, a
@@ -51,6 +66,7 @@ export class TideChart {
   /** Widths of the chart and of the "now" label, in px, to keep them clear of each other. */
   private readonly width = signal(0);
   private readonly labelWidth = signal(0);
+  private readonly chartHeight = signal(0);
   private readonly nowLabel = viewChild.required<ElementRef<HTMLElement>>('nowLabel');
 
   constructor() {
@@ -60,6 +76,7 @@ export class TideChart {
       const measure = () => {
         this.width.set(host.clientWidth);
         this.labelWidth.set(this.nowLabel().nativeElement.offsetWidth);
+        this.chartHeight.set(host.querySelector<HTMLElement>('.chart')?.clientHeight ?? 0);
       };
       measure();
       const observer = new ResizeObserver(measure);
@@ -184,5 +201,24 @@ export class TideChart {
       covered: Math.abs(tick.left - this.nowLabelLeft()) < reach,
     }));
   });
+
+  /**
+   * A low's label hangs below its point. A deep low's label reaches the axis,
+   * where the "now" pill is: if it would sit on the pill, it rises just enough
+   * to clear it, still under its point. Nothing moves while they are apart.
+   */
+  protected readonly placedLabels = computed(() => {
+    const width = this.width() || 360;
+    const height = this.chartHeight();
+    const reach = this.labelHalf() + (EXTREME_HALF_PX / width) * 100;
+    return this.labels().map((label) => {
+      const beside = Math.abs(label.left - this.nowLabelLeft()) < reach;
+      const bottom = (label.top / 100) * height + EXTREME_DROP_PX;
+      const overlap = bottom + PILL_CLEARANCE_PX - (height + AXIS_GAP_PX);
+      const raise = label.kind !== 'pleamar' && beside && height > 0 && overlap > 0 ? overlap : 0;
+      return { ...label, raise };
+    });
+  });
+
   protected readonly nowTop = computed(() => (this.nowY() / H) * 100);
 }

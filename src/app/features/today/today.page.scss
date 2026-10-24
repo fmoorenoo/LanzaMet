@@ -129,6 +129,15 @@
   gap: var(--s-2);
 }
 
+// Phones and tablets: the hours come first, right under the scene they
+// change, so the first screen holds both. Only the order on screen moves:
+// the DOM (and so focus and reading order) stays the desktop's.
+@media (width < 64rem) {
+  #hourly-forecast {
+    order: -1;
+  }
+}
+
 // Tablet: same flow, a calmer measure.
 @media (min-width: 48rem) {
   .sheet {

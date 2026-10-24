@@ -19,7 +19,7 @@
     <line class="now-stem" [attr.x1]="nowX()" [attr.x2]="nowX()" [attr.y1]="nowY()" y2="300" />
   </svg>
 
-  @for (label of labels(); track label.time) {
+  @for (label of placedLabels(); track label.time) {
     <span
       class="extreme tide-chart-label"
       [attr.data-tide]="label.kind === 'pleamar' ? 'high' : 'low'"
@@ -28,6 +28,7 @@
       [class.is-end]="label.left > 86"
       [style.left.%]="label.left"
       [style.top.%]="label.top"
+      [style.--raise.px]="label.raise"
     >
       <span class="extreme-kind">{{ label.name | t }}</span>
       <span class="t-num"

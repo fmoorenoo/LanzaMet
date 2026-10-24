@@ -296,6 +296,12 @@ Español (por defecto) e inglés británico, cambiables al instante en **Ajustes
   - «Volver a ahora» está siempre en el layout; solo aparece y desaparece con un fundido.
   - En la escena, las favoritas y la hora previsualizada comparten una fila de altura fija, que existe aunque no haya favoritas.
   - Medido en Chrome a 390, 820 y 1440 px, en español e inglés: 0 px de desplazamiento.
+- **Hoy en el móvil** (por debajo de 64 rem; el escritorio no cambia):
+  - La primera pantalla es la escena y, justo debajo, las 24 horas. La escena toma lo que deja la pantalla tras la barra inferior y las horas, y crece solo si su contenido lo necesita.
+  - La zona va con su nombre entero junto a su estrella, y la hora a la derecha. Ajustes y Compartir bajan a la esquina inferior derecha, sobre el mar.
+  - El veredicto reserva dos líneas, así que elegir otra hora o zona no mueve las horas que se están tocando.
+  - Con pantalla táctil, los controles de la escena y los chips responden en 44 px sin cambiar de tamaño, y la barra inferior es opaca.
+  - Detalle y medidas en [`docs/DESIGN.md`](docs/DESIGN.md#adaptación).
 - **Identificadores** para las herramientas del navegador: IDs en inglés para lo único (`weather-hero`, `current-temperature`, `hourly-forecast`, `tide-visualization`, `language-selector`…), clases semánticas para lo repetido y `data-*` para cada instancia (`data-location-id`, `data-index`…). Convención completa en [`docs/DESIGN.md`](docs/DESIGN.md#identificadores).
 - **Iconos**: Lucide para la interfaz, importado icono a icono, y los propios donde dan identidad. Criterios en [`docs/DESIGN.md`](docs/DESIGN.md#iconos).
 

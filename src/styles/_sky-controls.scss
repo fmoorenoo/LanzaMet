@@ -55,3 +55,20 @@
     background-color: color-mix(in oklch, currentColor 20%, transparent);
   }
 }
+
+// On touch screens each control over the sky answers a 44 px finger without
+// looking any bigger: an invisible ring around it takes the tap.
+@media (pointer: coarse) {
+  .sky-chip,
+  .sky-button {
+    position: relative;
+
+    &::after {
+      content: '';
+      position: absolute;
+      // Percentages measure the padding box, inside the border: this grows each
+      // side by exactly what is missing for 44 px, and by nothing when it is there.
+      inset: min(0px, calc((100% - 2.75rem) / 2));
+    }
+  }
+}
