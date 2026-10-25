@@ -725,3 +725,35 @@ Skills usadas: Impeccable (auditoría, dirección, suelo de calidad, detector) y
 
 - Corregido: el Risco ya no se corta. Entra alto por el borde derecho (Peñas del Chache sigue fuera de cuadro) y baja hasta su punta norte; después, un tramo de mar, y luego La Graciosa con Montaña Clara, colocadas para que se vean también en el móvil. La arena del pie, una franja fina bajo el Risco.
 
+
+## Revisión visual: leer más cómodo (25-10-2026)
+
+Auditoría de todas las pantallas con capturas reales (Chrome por CDP, 320–1440 px, claro y oscuro, español e inglés) y mejoras para que la información necesaria se vea con menos esfuerzo. Sin cambios de identidad.
+
+### Hecho
+
+1. **Hoy**:
+   - La línea bajo el veredicto nunca queda vacía: cuando la frase solo repetía cielo y viento, va el sol («Atardece a las 18:15, en 3 h 6 min.», «Amanece a las…», «Mañana amanece a las 07:02»). Claves `today.sun.rises` y `today.sun.sets`; la nominal no se dice nunca.
+   - «Volver a ahora» en el móvil es una flecha y «Ahora» (el texto completo queda para lectores de pantalla), así ya no toca el botón de Compartir ni a 320 px.
+   - Leyenda de las horas en una línea: «Elige una hora para verla arriba» y «Viento» con la escala de color.
+   - Barras de «Próximos días» más largas (5 rem; 6,5 en escritorio) y con el degradado anclado a la escala de la semana: un día de 31° acaba en rojo y uno de 25° no pasa del ámbar.
+   - Error sin datos: el héroe se encoge a su mensaje y no sostiene medio cielo vacío; sin estrella cuando no hay zona.
+   - Viento, mar y marea con chevron las tres: la de viento lleva a las horas (desplaza y enfoca la hora elegida).
+   - Escritorios estrechos (64–80 rem): la tierra de la escena mide lo que le deja el ancho, así los hitos no suben detrás del viento a 1024 px (`--land-h`).
+2. **Zonas**: las tarjetas muestran cifras comparables: viento en km/h con su color (instrumento `inline`) y el mar. El mapa se queda como estaba (en el móvil, las chinchetas solo con cielo y temperatura): se probó con nombres y se descartó.
+3. **Mar**: en la lista del mar más tranquilo la cifra es lo principal y la escala de la barra tiene suelo de 1 m, así 20 cm y 40 cm se distinguen. «Pleamares y bajamares» se queda como estaba (hora a la derecha, altura debajo): se probó en una línea y se descartó.
+4. **Dónde ir**: en el móvil todas las tarjetas apilan una banda de paisaje sobre el texto (el lugar se ve entero). Los datos en una línea: «26° · ↙ 10 km/h · Mar como un plato», con la intensidad del viento en el color de la cifra. Chevron en cada tarjeta y la franja horaria en tinta secundaria con reloj (también en la lista de Hoy); la principal en escritorio aprovecha el lado derecho con datos más grandes.
+5. **Selector de zona**: el subtítulo no se corta y omite el municipio cuando repite el nombre.
+6. **Navegación**: cuatro pestañas (Hoy, Zonas, Mar, Dónde ir). «Ayúdanos» pasa a Ajustes, junto a Legal, como enlace con su explicación.
+7. **Escena**: en las miniaturas (`mini`) el sol y la luna se miden con la tarjeta (unidades de contenedor), no con la pantalla.
+8. **Instrumento de viento**: variante `inline` (flecha y cifra en la tinta del viento, intensidad solo para lectores de pantalla).
+
+### Validación
+
+- Capturas antes y después de todas las pantallas a 320, 390, 1024, 1200 y 1440 px, claro y oscuro, español e inglés, con vista previa de hora, selector, ajustes y estado de error.
+- 201 tests de la web, lint, formato y build de producción (665 kB inicial) sin errores.
+
+### Pendiente
+
+- Repetir axe en Zonas y Dónde ir con los datos en línea (el color del viento usa los mismos tokens de contraste que las horas).
+- Comprobar en móviles reales el toque en «Ahora» del héroe.

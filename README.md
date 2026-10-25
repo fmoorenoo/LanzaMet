@@ -127,8 +127,8 @@ Validación del 22-10-2026 en Arrecife: el modelo adelanta 24–37 min respecto 
 - **Zonas**: mapa ilustrado con el estado y el viento por zona, y tarjetas con miniescena.
 - **Mar**: marea estimada, curva del día suavizada (interpolación monótona, sin máximos ni mínimos inventados), pleamares y bajamares de hoy y mañana, el mar en tres partes en palabras (oleaje, mar de fondo, agua), avisos costeros y zonas de menos a más olas con una barra por zona.
 - **Dónde ir**: recomendaciones derivadas de los datos (playa, sin viento, mar tranquilo, atardecer, paseo, olas), como postales: el paisaje de cada lugar con la luz de ahora, dónde queda en la isla y la temperatura, el viento y el mar para comparar.
-- **Ayúdanos** (`/mejorar`): formulario para avisar de errores y proponer sugerencias o mejoras; el correo es opcional. Ver [Comentarios de los usuarios](#comentarios-de-los-usuarios).
-- **Ajustes**: idioma, apariencia, **acceso rápido** (instalar la web como app o guardarla en marcadores; ver [Instalar la web](#instalar-la-web-pwa)) y un enlace a **Legal y privacidad**.
+- **Ayúdanos** (`/mejorar`, sin pestaña propia: se llega desde Ajustes): formulario para avisar de errores y proponer sugerencias o mejoras; el correo es opcional. Ver [Comentarios de los usuarios](#comentarios-de-los-usuarios).
+- **Ajustes**: idioma, apariencia, **acceso rápido** (instalar la web como app o guardarla en marcadores; ver [Instalar la web](#instalar-la-web-pwa)) y los enlaces a **Ayúdanos** y a **Legal y privacidad**.
 - **Legal y privacidad** (`/legal`, sin pestaña propia: se llega desde Ajustes): aviso de seguridad, privacidad (qué se guarda en el dispositivo, qué ven los servidores y qué envía el formulario de Ayúdanos), condiciones de uso, de dónde salen los datos con sus licencias y el estado de AEMET, y contacto.
 
 ## Comentarios de los usuarios
