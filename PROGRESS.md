@@ -757,3 +757,23 @@ Auditoría de todas las pantallas con capturas reales (Chrome por CDP, 320–144
 
 - Repetir axe en Zonas y Dónde ir con los datos en línea (el color del viento usa los mismos tokens de contraste que las horas).
 - Comprobar en móviles reales el toque en «Ahora» del héroe.
+
+## Cámaras en directo (25-10-2026)
+
+### Hecho
+
+1. **Investigación**: cámaras públicas en directo para las nueve zonas, comprobadas una a una (página con reproductor HLS, YouTube en directo o ipcamlive ese día). **Regla**: solo se enlaza una cámara si muestra la costa (mar y orilla), que es lo que la previsión describe. Cumplen siete: Puerto del Carmen (Playa Grande, Lanzarote Webcam, YouTube en directo), Arrecife (frente marítimo junto al Castillo de San Gabriel, SkylineWebcams), Playa Blanca (la playa del pueblo con la Bocaina detrás, SkylineWebcams), Costa Teguise (Playa de las Cucharas desde el Beach Bar, YouTube en directo), Famara (in2theBeach), Órzola y Arrieta (Playa de La Garita; Ayuntamiento de Haría, ipcamlive). Cuando la vista se emite en YouTube, se enlaza YouTube (Puerto del Carmen y Costa Teguise; para el resto no hay directo en YouTube: Red Star Surf solo incrusta vídeos, no su cámara). Funcionan pero no enseñan la costa, y por eso no se enlazan: Charco de San Ginés (SkylineWebcams), Marina Rubicón y Club La Santa. El panorama de WingCam desde Monte Mina es demasiado lejano para una zona. La Santa y El Golfo: ninguna de costa. Descartadas por no emitir: la de Puerto del Carmen de SkylineWebcams (OFFLINE) y la de Arrecife de WebcamTaxi (403 y «temporalmente fuera de servicio»).
+2. **Catálogo** `core/data/webcams.ts`: URL por idioma, qué muestra y quién la ofrece; `webcamFor(id)` y `WEBCAM_PROVIDERS`.
+3. **Componente** `shared/ui/webcam-link`: punto rojo que respira (quieto con menos movimiento), icono de vídeo y «En directo» / «Live»; variantes `chip`, `overlay` e `inline`; nombre accesible con la vista, el proveedor y la zona, y que se abre en otra web. No renderiza nada sin cámara.
+4. **Dónde sale**: la tarjeta de la zona elegida en el mapa (chip junto a «Ver el día», los dos a 2,625 rem de alto), cada tarjeta de «Todas las zonas» (sobre el paisaje), cada postal de Dónde ir (sobre el paisaje; en las tarjetas en fila de escritorio, en la esquina superior derecha del paisaje para no chocar con la isla ni con el tipo de plan) y «Hoy, en detalle» (fila «En directo: Ver Playa Grande en directo»). En Legal, una entrada que acredita a los proveedores (`Intl.ListFormat`) y avisa de que pueden estar apagadas; se ve también en la demo, porque los enlaces son reales.
+5. Solo enlaces: no se incrusta vídeo ni se carga nada de terceros; la CSP no cambia.
+
+### Validación
+
+- Capturas de Zonas, Dónde ir, Hoy y Legal a 390 y 1440 px, claro y oscuro, español e inglés.
+- 201 tests, lint, formato y build de producción sin errores.
+
+### Pendiente
+
+- Repasar cada trimestre que las cámaras siguen emitiendo (las direcciones de terceros cambian).
+- Buscar cámaras de costa para La Santa (El Quemao) y El Golfo si algún día aparecen.

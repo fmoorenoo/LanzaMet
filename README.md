@@ -131,6 +131,10 @@ Validación del 22-10-2026 en Arrecife: el modelo adelanta 24–37 min respecto 
 - **Ajustes**: idioma, apariencia, **acceso rápido** (instalar la web como app o guardarla en marcadores; ver [Instalar la web](#instalar-la-web-pwa)) y los enlaces a **Ayúdanos** y a **Legal y privacidad**.
 - **Legal y privacidad** (`/legal`, sin pestaña propia: se llega desde Ajustes): aviso de seguridad, privacidad (qué se guarda en el dispositivo, qué ven los servidores y qué envía el formulario de Ayúdanos), condiciones de uso, de dónde salen los datos con sus licencias y el estado de AEMET, y contacto.
 
+## Cámaras en directo
+
+Siete zonas tienen una cámara pública que muestra su costa en directo (`src/app/core/data/webcams.ts`, comprobadas una a una el 25-10-2026): Puerto del Carmen (Playa Grande, Lanzarote Webcam, en YouTube), Arrecife (el frente marítimo junto al Castillo de San Gabriel, SkylineWebcams), Playa Blanca (la playa del pueblo, SkylineWebcams), Costa Teguise (Playa de las Cucharas, Beach Bar Lanzarote, en YouTube), Famara (in2theBeach), Órzola y Arrieta (Playa de La Garita; las dos del Ayuntamiento de Haría). Solo se enlaza una cámara si mira al mar y a la orilla: las del Charco de San Ginés, Marina Rubicón y Club La Santa funcionan, pero no enseñan la costa, así que no aparecen. Cuando la misma vista se emite en YouTube, se enlaza YouTube. Para La Santa y El Golfo no se encontró ninguna cámara de costa. La web solo enlaza a la página del proveedor (en otra pestaña, en el idioma de la interfaz cuando la hay): nunca incrusta el vídeo, así que no carga nada de terceros ni cambia la CSP. El enlace aparece como «En directo» con un punto rojo en la tarjeta del mapa y en las tarjetas de Zonas y Dónde ir, y como «Ver … en directo» en Hoy, en detalle. Legal acredita a los proveedores y avisa de que las cámaras pueden estar apagadas.
+
 ## Comentarios de los usuarios
 
 La sección **Ayúdanos** envía los mensajes por correo electrónico a través de [Web3Forms](https://web3forms.com), sin backend propio.
