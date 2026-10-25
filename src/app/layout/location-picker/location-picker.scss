@@ -107,12 +107,11 @@
   letter-spacing: -0.01em;
 }
 
+// Wraps to a second line rather than losing its end to an ellipsis.
 .row-sub {
   font-size: var(--fs-small);
   color: var(--c-ink-2);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  text-wrap: pretty;
 }
 
 .row-temp {
@@ -132,13 +131,5 @@
 @media (hover: hover) and (pointer: fine) {
   .row:not(.is-current):hover {
     background-color: var(--c-surface-sunken);
-  }
-}
-
-// The narrowest phones: the municipality and the wind take a second line
-// rather than an ellipsis.
-@media (max-width: 23rem) {
-  .row-sub {
-    white-space: normal;
   }
 }

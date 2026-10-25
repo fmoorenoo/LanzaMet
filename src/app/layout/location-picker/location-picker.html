@@ -92,10 +92,16 @@
               </span>
               <span class="row-text">
                 <span class="row-name">{{ row.location.name }}</span>
+                <!-- The municipality only when it adds a word; the sky is never cut short. -->
                 <span class="row-sub">
-                  {{ row.location.municipality }}
+                  @if (row.location.municipality !== row.location.name) {
+                    {{ row.location.municipality }}
+                    @if (row.headline) {
+                      ·
+                    }
+                  }
                   @if (row.headline) {
-                    · {{ row.headline | t }}
+                    {{ row.headline | t }}
                   }
                 </span>
               </span>

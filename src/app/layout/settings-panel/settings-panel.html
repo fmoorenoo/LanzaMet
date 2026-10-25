@@ -34,13 +34,33 @@
     <lm-install-option />
   }
 
-  <!-- Sources, privacy and terms live on their own page; the sheet closes on the way there. -->
-  <a id="legal-link" class="legal-link" routerLink="/legal" (click)="ui.settingsOpen.set(false)">
-    <lm-icon name="privacy" />
-    <span class="choice-text">
-      <span class="choice-label">{{ 'route.legal' | t }}</span>
-      <span class="choice-hint">{{ 'settings.legal.hint' | t }}</span>
-    </span>
-    <lm-icon class="chevron" name="chevron-right" />
-  </a>
+  <!-- Feedback and the legal page live on their own routes; the sheet closes on the way there. -->
+  <nav class="links" [attr.aria-label]="'settings.more' | t">
+    <a
+      id="feedback-link"
+      class="sheet-link feedback-link"
+      routerLink="/mejorar"
+      (click)="ui.settingsOpen.set(false)"
+    >
+      <lm-icon name="feedback" />
+      <span class="choice-text">
+        <span class="choice-label">{{ 'route.feedback' | t }}</span>
+        <span class="choice-hint">{{ 'settings.feedback.hint' | t }}</span>
+      </span>
+      <lm-icon class="chevron" name="chevron-right" />
+    </a>
+    <a
+      id="legal-link"
+      class="sheet-link legal-link"
+      routerLink="/legal"
+      (click)="ui.settingsOpen.set(false)"
+    >
+      <lm-icon name="privacy" />
+      <span class="choice-text">
+        <span class="choice-label">{{ 'route.legal' | t }}</span>
+        <span class="choice-hint">{{ 'settings.legal.hint' | t }}</span>
+      </span>
+      <lm-icon class="chevron" name="chevron-right" />
+    </a>
+  </nav>
 </lm-sheet>

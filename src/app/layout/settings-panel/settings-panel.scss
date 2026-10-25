@@ -1,5 +1,10 @@
+.links {
+  display: grid;
+  gap: var(--s-1);
+}
+
 // A row like the choices above it, that leads somewhere instead of choosing.
-.legal-link {
+.sheet-link {
   display: flex;
   align-items: center;
   gap: var(--s-3);
@@ -32,7 +37,7 @@
 }
 
 @media (hover: hover) and (pointer: fine) {
-  .legal-link:hover {
+  .sheet-link:hover {
     background-color: var(--c-surface-sunken);
   }
 }

@@ -39,7 +39,7 @@ export class NavBar {
     { id: 'zones', path: '/zonas', label: 'nav.zones', icon: 'zones' },
     { id: 'sea', path: '/mar', label: 'nav.sea', icon: 'sea' },
     { id: 'plans', path: '/donde-ir', label: 'nav.plans', icon: 'plans' },
-    { id: 'feedback', path: '/mejorar', label: 'nav.feedback', icon: 'feedback' },
+    // "Ayúdanos" (/mejorar) is reached from Settings: a rare action, not a tab.
   ];
 
   private readonly navigations = this.router.events.pipe(
