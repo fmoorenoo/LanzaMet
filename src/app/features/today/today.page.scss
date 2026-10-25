@@ -180,6 +180,12 @@
       grid-column: 2;
       grid-row: span 2;
     }
+
+    // The hours sit close under wind, sea and tide: the two belong to the
+    // same glance at "now", so they take a short gap, not a section's.
+    > #hourly-forecast {
+      margin-top: calc(var(--s-4) - var(--s-10));
+    }
   }
 
   .warnings,
