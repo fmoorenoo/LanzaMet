@@ -12,14 +12,17 @@ import { Wind } from '../../../core/models';
  * colour, each bar one step, filled by how far into it the speed is. The
  * words carry everything; the arrow, the colour and the bars are for the eye.
  *
- * `hero` sits on the sky and takes its ink; `compact` is one line for cards.
+ * `hero` sits on the sky and takes its ink; `compact` is one line for cards;
+ * `inline` is the shortest: arrow and figure, the figure in the wind's own
+ * ink, for a row of facts that must stay on one line.
  */
 @Component({
   selector: 'lm-wind-gauge',
   imports: [TranslatePipe],
   host: {
     class: 'wind-gauge',
-    '[class.is-compact]': "variant() === 'compact'",
+    '[class.is-compact]': "variant() !== 'hero'",
+    '[class.is-inline]': "variant() === 'inline'",
     '[attr.data-level]': 'reading().level',
     '[style.--wind-hue]': 'hue()',
   },
@@ -41,7 +44,8 @@ import { Wind } from '../../../core/models';
           ></span>
         }
       </span>
-      <span class="word">{{ r.scale | t }}</span>
+      <!-- Inline, the strength is said for screen readers and shown by the figure's colour. -->
+      <span class="word" [class.visually-hidden]="variant() === 'inline'">{{ r.scale | t }}</span>
     </span>
     <!-- Always laid out in the hero, empty in a calm: the line never comes and goes. -->
     @if (variant() === 'hero') {
@@ -208,6 +212,26 @@ import { Wind } from '../../../core/models';
       }
     }
 
+    // Arrow and figure only; the figure takes the wind's ink, so the colour
+    // says how strong it is in the room a word would take.
+    :host(.is-inline) {
+      column-gap: 0.25rem;
+
+      .arrow,
+      .value {
+        color: oklch(var(--wind-ink-l) var(--wind-ink-c) var(--wind-hue));
+        transition: color var(--d-base) ease;
+      }
+
+      .value {
+        font-weight: 680;
+      }
+
+      .strength {
+        display: contents;
+      }
+    }
+
     @media (prefers-reduced-motion: reduce) {
       .arrow,
       .bar-fill {
@@ -218,7 +242,7 @@ import { Wind } from '../../../core/models';
 })
 export class WindGauge {
   readonly wind = input.required<Wind>();
-  readonly variant = input<'hero' | 'compact'>('hero');
+  readonly variant = input<'hero' | 'compact' | 'inline'>('hero');
 
   protected readonly reading = computed(() => readWind(this.wind()));
   protected readonly hue = computed(() => windHue(this.wind().speedKmh));

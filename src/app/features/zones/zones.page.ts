@@ -19,12 +19,13 @@ import { DataCredit } from '../../shared/ui/data-credit/data-credit';
 import { Icon } from '../../shared/ui/icon/icon';
 import { StatusMessage } from '../../shared/ui/status-message/status-message';
 import { Tooltip } from '../../shared/ui/tooltip/tooltip';
+import { WindGauge } from '../../shared/ui/wind-gauge/wind-gauge';
 import { IslandMap, MapMarker } from './island-map/island-map';
 
 /** The whole island at a glance: where it blows, where it shines, where to go. */
 @Component({
   selector: 'lm-zones-page',
-  imports: [IslandMap, Scene, Icon, StatusMessage, DataCredit, Tooltip, TranslatePipe],
+  imports: [IslandMap, Scene, Icon, StatusMessage, DataCredit, Tooltip, WindGauge, TranslatePipe],
   templateUrl: './zones.page.html',
   styleUrl: './zones.page.scss',
   host: { id: 'zones-page', class: 'page zones-page' },
@@ -104,7 +105,7 @@ export class ZonesPage {
         temperature: Math.round(zone.weather.current.temperatureC),
         headline: verdict.headline,
         sentence: verdict.sentence,
-        wind: readWind(zone.weather.current.wind).label,
+        wind: zone.weather.current.wind,
         sea: zone.sea ? readSea(zone.sea.current).label : null,
         scene: zoneScene(zone, now),
         isFavorite: this.locations.isFavorite(zone.location.id),

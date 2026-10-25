@@ -94,10 +94,11 @@
 }
 
 .body {
+  position: relative;
   display: grid;
   align-content: center;
   gap: var(--s-1);
-  padding: var(--s-4) var(--s-5);
+  padding: var(--s-4) var(--s-8) var(--s-4) var(--s-5);
 }
 
 .title {
@@ -114,26 +115,38 @@
   text-wrap: pretty;
 }
 
+// When, in the quiet ink with a clock, never in the accent (it read as a link).
 .when {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3125rem;
   font-size: var(--fs-micro);
   font-weight: 600;
-  color: var(--c-accent);
+  color: var(--c-ink-2);
+
+  lm-icon {
+    width: var(--icon-xs);
+    height: var(--icon-xs);
+    color: var(--c-ink-3);
+  }
 }
 
-// The facts to compare, on a ruled line of their own.
+// The facts to compare, on one ruled line: temperature, wind, sea, parted by
+// middle dots. The wind's strength is in the colour of its figure.
 .facts {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: var(--s-2) var(--s-4);
+  gap: var(--s-1) var(--s-2);
   margin-top: var(--s-2);
   padding-top: var(--s-2);
   border-top: 1px solid var(--c-line);
-}
-
-.fact {
   font-size: var(--fs-small);
   color: var(--c-ink-2);
+}
+
+.sep {
+  color: var(--c-ink-3);
 }
 
 .fact-temp {
@@ -144,6 +157,18 @@
 
 .fact-sea {
   font-weight: 560;
+}
+
+// The card opens the place's day: a chevron at the edge says so.
+.go {
+  position: absolute;
+  top: 50%;
+  right: var(--s-3);
+  width: var(--icon-md);
+  height: var(--icon-md);
+  translate: 0 -50%;
+  color: var(--c-ink-3);
+  transition: translate var(--d-fast) var(--ease-out);
 }
 
 @media (hover: hover) and (pointer: fine) {
@@ -159,10 +184,15 @@
       text-decoration-thickness: 1px;
       text-underline-offset: 0.2em;
     }
+
+    .go {
+      translate: 0.125rem -50%;
+    }
   }
 }
 
 // ── The lead: the day's first idea, wider picture and larger words ──
+// Its facts are larger too: the right-hand half had room to spare.
 :host(.is-lead) {
   --art-w: minmax(0, 0.85fr);
   --where-w: 4.75rem;
@@ -192,15 +222,30 @@
 
   .body {
     gap: var(--s-2);
-    padding: var(--s-6) var(--s-8);
+    padding: var(--s-6) var(--s-10) var(--s-6) var(--s-8);
+  }
+
+  .facts {
+    margin-top: var(--s-3);
+    padding-top: var(--s-3);
+    font-size: var(--fs-body);
+  }
+
+  .fact-temp {
+    font-size: var(--fs-title);
   }
 }
 
-// Phones: a narrower picture; the lead stacks, with a short band of landscape.
+// Phones: every card stacks like the lead, a band of landscape over the
+// words, so the place is seen whole instead of as a sliver beside the text.
 @media (width < 40rem) {
   :host {
-    --art-w: 6.5rem;
-    --where-w: 3rem;
+    --where-w: 3.25rem;
+  }
+
+  .card {
+    grid-template-columns: none;
+    grid-template-rows: 6.5rem auto;
   }
 
   .where {
@@ -208,12 +253,8 @@
     left: var(--s-2);
   }
 
-  .mark {
-    display: none;
-  }
-
   .body {
-    padding: var(--s-3) var(--s-4);
+    padding: var(--s-3) var(--s-8) var(--s-4) var(--s-4);
   }
 
   .title {
@@ -229,16 +270,23 @@
       min-height: 0;
     }
 
-    .mark {
-      display: grid;
-    }
-
     .body {
-      padding: var(--s-4) var(--s-5) var(--s-5);
+      gap: var(--s-1);
+      padding: var(--s-4) var(--s-8) var(--s-5) var(--s-5);
     }
 
     .title {
       font-size: var(--fs-title);
+    }
+
+    .facts {
+      margin-top: var(--s-2);
+      padding-top: var(--s-2);
+      font-size: var(--fs-small);
+    }
+
+    .fact-temp {
+      font-size: var(--fs-lead);
     }
   }
 }

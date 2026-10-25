@@ -26,16 +26,21 @@
   <span class="body">
     <span class="title plan-title">{{ plan().title | t }}</span>
     <span class="reason plan-reason">{{ plan().reason | t }}</span>
-    <span class="when plan-window t-num">{{ when() | t }}</span>
+    <span class="when plan-window t-num"><lm-icon name="clock" />{{ when() | t }}</span>
     @if (facts(); as f) {
+      <!-- One line to compare places by: the wind's strength is in its colour. -->
       <span class="facts plan-facts">
         <span class="visually-hidden">{{ 'plans.now' | t: { place: f.place } }}:</span>
         <span class="fact fact-temp t-num">{{ f.temperature }}°</span>
-        <lm-wind-gauge class="fact" variant="compact" [wind]="f.wind" />
+        <span class="sep" aria-hidden="true">·</span>
+        <lm-wind-gauge class="fact" variant="inline" [wind]="f.wind" />
         @if (f.sea; as sea) {
+          <span class="sep" aria-hidden="true">·</span>
           <span class="fact fact-sea">{{ sea | t }}</span>
         }
       </span>
     }
+    <!-- The card opens the place's day: the chevron says so, as the rows in Today do. -->
+    <lm-icon class="go" name="chevron-right" />
   </span>
 </button>

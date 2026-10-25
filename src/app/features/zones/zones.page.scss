@@ -224,7 +224,14 @@ lm-island-map {
   font-weight: 560;
 }
 
+// Wind, then the sea, parted by space alone: when the sea wraps to its own
+// line in a narrow card, no stray dot leads it.
 .card-facts {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-1) var(--s-3);
+  margin-top: 0.125rem;
   font-size: var(--fs-small);
   color: var(--c-ink-2);
 }

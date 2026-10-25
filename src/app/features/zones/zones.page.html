@@ -98,10 +98,11 @@
                 <span class="card-text">
                   <span class="card-name">{{ card.name }}</span>
                   <span class="card-headline">{{ card.headline | t }}</span>
+                  <!-- Figures to compare across the island: wind in its colour, then the sea. -->
                   <span class="card-facts">
-                    {{ card.wind | t }}
+                    <lm-wind-gauge class="fact" variant="inline" [wind]="card.wind" />
                     @if (card.sea) {
-                      · {{ card.sea | t }}
+                      <span class="fact">{{ card.sea | t }}</span>
                     }
                   </span>
                 </span>

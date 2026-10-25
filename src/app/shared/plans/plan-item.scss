@@ -49,11 +49,13 @@
   color: var(--c-ink-2);
 }
 
+// When: the same quiet ink here and on the Where-to-go cards, never the
+// accent, which reads as a link.
 .when {
   margin-top: 0.125rem;
   font-size: var(--fs-micro);
-  font-weight: 560;
-  color: var(--c-ink-3);
+  font-weight: 600;
+  color: var(--c-ink-2);
 }
 
 // The lead suggestion shows the place itself.
