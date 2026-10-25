@@ -61,6 +61,14 @@
   --c-material: oklch(0.99 0.004 230 / 0.9);
   --c-material-edge: oklch(1 0 0 / 0.6);
 
+  // Wind by strength: each speed brings its own hue (`windHue`: green → orange
+  // → red); these set the tint behind the figure and the ink on it, so every
+  // hue keeps the same contrast (≥ 7:1 in both themes).
+  --wind-bg-l: 0.93;
+  --wind-bg-c: 0.085;
+  --wind-ink-l: 0.4;
+  --wind-ink-c: 0.13;
+
   // Condition quality — never used alone: always paired with words or shape.
   --c-good: oklch(0.55 0.13 152);
   --c-fair: oklch(0.64 0.14 72);
@@ -178,6 +186,11 @@
   --c-good: oklch(0.76 0.13 152);
   --c-fair: oklch(0.8 0.13 78);
   --c-poor: oklch(0.72 0.15 32);
+
+  --wind-bg-l: 0.34;
+  --wind-bg-c: 0.07;
+  --wind-ink-l: 0.88;
+  --wind-ink-c: 0.12;
 
   --glyph-cloud-fill: var(--noche-700);
   --glyph-rain: var(--atlantico-400);

@@ -53,21 +53,17 @@
         </span>
         <!-- The accessible name is the visible text, with the rest in words. -->
         <span class="visually-hidden">, {{ cell.detail | t }}:</span>
-        <span class="wind">
-          <span class="wind-value t-num">
-            <svg
-              class="wind-arrow"
-              viewBox="0 0 24 24"
-              aria-hidden="true"
-              [style.rotate]="cell.windTo"
-            >
-              <path d="M12 20.5V4M6.5 9.5 12 4l5.5 5.5" />
-            </svg>
-            {{ cell.windSpeed }}<span class="visually-hidden"> km/h</span>
-          </span>
-          <span class="wind-bar" aria-hidden="true">
-            <span class="wind-fill" [style.transform]="'scaleY(' + cell.windShare + ')'"></span>
-          </span>
+        <!-- The wind's speed in its own colour: green when light, red when strong. -->
+        <span class="wind t-num" [style.--wind-hue]="cell.windHue">
+          <svg
+            class="wind-arrow"
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+            [style.rotate]="cell.windTo"
+          >
+            <path d="M12 20.5V4M6.5 9.5 12 4l5.5 5.5" />
+          </svg>
+          {{ cell.windSpeed }} km/h
         </span>
       </button>
     }
@@ -76,7 +72,7 @@
 <p class="legend hour-legend" aria-hidden="true">
   <span>{{ 'hours.hint' | t }}</span>
   <span class="legend-wind">
-    <span class="legend-bars"><span></span><span></span><span></span></span>
+    <span class="legend-scale"></span>
     {{ 'hours.wind' | t }}
   </span>
 </p>

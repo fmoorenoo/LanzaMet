@@ -3,7 +3,7 @@ import { translate } from '../i18n/translate';
 import { TideForecast } from '../models';
 import { describeSwell, describeWaves, readSea, seaFacets, waterFeel } from './sea.insight';
 import { readTide, tideHeight } from './tide.insight';
-import { readWind, toCardinal, windShare, windSteps } from './wind.insight';
+import { readWind, toCardinal, windHue, windShare, windSteps } from './wind.insight';
 
 /** The rules return descriptors; read them in a language to check the words. */
 const es = (text: Msg | MessageKey | null | undefined) => (text ? translate(text, 'es') : null);
@@ -57,6 +57,18 @@ describe('wind', () => {
     expect(windSteps(200)).toBe(5);
     expect(windShare(30)).toBe(0.5);
     expect(windShare(90)).toBe(1);
+  });
+
+  it('colours the wind green when light, orange when moderate, red when strong', () => {
+    expect(windHue(0)).toBe(150);
+    expect(windHue(10)).toBeGreaterThan(130); // green
+    expect(windHue(24)).toBeGreaterThan(60); // yellow-orange
+    expect(windHue(24)).toBeLessThan(95);
+    expect(windHue(45)).toBeLessThan(40); // red
+    expect(windHue(120)).toBe(25);
+    // Never lighter for more wind.
+    const hues = [0, 5, 10, 15, 20, 25, 30, 35, 40, 50, 60].map(windHue);
+    expect(hues).toEqual([...hues].sort((a, b) => b - a));
   });
 });
 

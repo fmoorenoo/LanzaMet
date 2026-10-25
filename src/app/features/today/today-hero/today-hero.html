@@ -71,39 +71,6 @@
       >
         {{ 'common.backToNow' | t }}
       </button>
-
-      <!--
-        Favourites as a page indicator, the way a phone's weather app pages
-        through places: one mark each, the place on screen drawn long. A swipe
-        across the scene moves between them too.
-      -->
-      @if (pages().length > 1) {
-        <div
-          id="favorite-locations"
-          class="pages favorite-locations"
-          role="group"
-          [attr.aria-label]="'today.favorites' | t"
-        >
-          @for (page of pages(); track page.id) {
-            <button
-              type="button"
-              class="page favorite-location"
-              [class.is-current]="page.current"
-              [class.is-saved]="page.saved"
-              [attr.data-location-id]="page.id"
-              [attr.aria-current]="page.current ? 'true' : null"
-              [attr.aria-label]="
-                (page.current ? 'today.showPlace.current' : 'today.showPlace')
-                  | t: { name: page.name }
-              "
-              [lmTooltip]="page.name"
-              (click)="selectPlace(page.id, page.index)"
-            >
-              <span class="page-mark"></span>
-            </button>
-          }
-        </div>
-      }
     </div>
 
     <!-- Secondary actions, together and quiet, at the end of the line. -->

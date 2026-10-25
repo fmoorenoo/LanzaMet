@@ -687,3 +687,12 @@ Skills usadas: Impeccable (auditoría, dirección, suelo de calidad, detector) y
 - Probar en móviles reales el gesto de deslizar entre favoritas (sobre todo junto al desplazamiento vertical en iOS) y la lectura del héroe al sol.
 - Valorar si las postales de Dónde ir en el móvil necesitan una versión más compacta de los datos para comparar (hoy pasan a dos líneas).
 - El API desplegado ya acepta el punto de mar de Arrieta (dentro de sus límites); si la copia compartida fallara, la web pide a Open-Meteo directamente.
+
+### Ajustes tras la revisión (25-10-2026)
+
+1. **Favoritas**: fuera las marcas de página del héroe. Siguen a un toque en el nombre de la zona (el selector las muestra arriba, con cielo y temperatura) y deslizando la escena.
+2. **Hora** a 1,5 rem, con su etiqueta más pequeña al lado.
+3. **Jerarquía de color sobre el cielo**: blanco para zona, temperatura, viento, veredicto y hora; arena para el cielo en palabras; un tono frío y pálido para lo secundario. Con un cielo claro, los mismos papeles en tintas oscuras.
+4. **Viento del héroe** más grande (cifra a 2,5 rem, flecha a 2,75 rem) y con la intensidad en una píldora de su color y barras en ese color.
+5. **Horas**: la hora más grande; fuera la barra de viento. El viento es una fila de color al pie de cada hora con la flecha y «km/h», verde con poco viento y rojo con mucho, pasando por naranjas (`windHue`, anclado a la escala de Beaufort agrupada; test incluido).
+6. **Validación**: 197 tests de la web; axe sin violaciones en Hoy y Dónde ir (390 y 1440 px, claro y oscuro, español e inglés), contraste de las filas de color incluido; 0 px de salto al elegir horas en cuatro zonas a 390, 375 y 1440 px.

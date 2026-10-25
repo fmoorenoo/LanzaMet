@@ -50,7 +50,8 @@ const SWIPE_SLOPE = 1.4;
  * place, large), how warm, what the sky is doing, how the wind blows, and
  * then the verdict in words, all over the day drawn as a scene. Changing
  * place happens here too, where its effect is seen: the name opens the
- * picker, the page marks and a swipe move between favourites.
+ * picker (favourites first), and a swipe across the scene moves to the next
+ * or previous favourite.
  */
 @Component({
   selector: 'lm-today-hero',
@@ -139,10 +140,10 @@ export class TodayHero {
   }
 
   /**
-   * The places to page through: the favourites in their order, and the place
-   * on screen at the end when it is not one of them.
+   * The places a swipe moves through: the favourites in their order, and the
+   * place on screen at the end when it is not one of them.
    */
-  protected readonly pages = computed(() => {
+  private readonly pages = computed(() => {
     const current = this.current();
     const list = this.locations.favorites().map((l) => ({ id: l.id, name: l.name, saved: true }));
     if (current && !list.some((p) => p.id === current.id)) {
@@ -161,8 +162,8 @@ export class TodayHero {
     if (id) this.locations.toggleFavorite(id);
   }
 
-  /** Another place; the words slide in from the side it lies on among the pages. */
-  protected selectPlace(id: LocationId, index: number): void {
+  /** Another place; the words slide in from the side it lies on among the favourites. */
+  private selectPlace(id: LocationId, index: number): void {
     const from = this.pages().findIndex((p) => p.current);
     if (id === this.current()?.id) return;
     this.locations.select(id);
@@ -176,7 +177,7 @@ export class TodayHero {
   }
 
   // ── Swiping between favourites ───────────────────────────────
-  // Touch and pen only (a mouse has the page marks), never from a control,
+  // Touch and pen only (a mouse has the picker), never from a control,
   // and only across: `touch-action: pan-y` leaves vertical scrolling to the page.
   protected swipe: { x: number; y: number; t: number; id: number } | null = null;
 

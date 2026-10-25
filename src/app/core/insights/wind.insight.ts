@@ -70,6 +70,31 @@ export function windShare(speedKmh: number): number {
 }
 
 /**
+ * The colour of a speed, as an OKLCH hue: green while the wind is light,
+ * through yellow and orange as it turns moderate, to red when it is strong.
+ * Anchored to the scale above (km/h → hue), eased in between, so 18 and
+ * 22 km/h look close while 12 and 35 look far apart.
+ */
+const WIND_HUES: readonly (readonly [number, number])[] = [
+  [0, 150],
+  [12, 138],
+  [20, 95],
+  [29, 60],
+  [40, 38],
+  [50, 25],
+];
+
+export function windHue(speedKmh: number): number {
+  const s = Math.max(0, speedKmh);
+  const last = WIND_HUES[WIND_HUES.length - 1];
+  if (s >= last[0]) return last[1];
+  const i = WIND_HUES.findIndex(([kmh]) => kmh > s) - 1;
+  const [k0, h0] = WIND_HUES[i];
+  const [k1, h1] = WIND_HUES[i + 1];
+  return Math.round(h0 + ((h1 - h0) * (s - k0)) / (k1 - k0));
+}
+
+/**
  * Where a speed sits on the five-step scale, 0–5: whole steps for the levels
  * passed, plus how far into the current one. Gauges fill by this, so each
  * segment is one level and its fill is the speed within it.

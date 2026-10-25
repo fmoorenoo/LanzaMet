@@ -1,7 +1,6 @@
 import { Component, computed, ElementRef, input, model, viewChildren } from '@angular/core';
 import { skyPhrase } from '../../../core/insights/sky.insight';
-import { readWind } from '../../../core/insights/wind.insight';
-import { clamp } from '../../../core/utils/math';
+import { readWind, windHue } from '../../../core/insights/wind.insight';
 import { WeatherSnapshot } from '../../../core/models';
 import { msg } from '../../../core/i18n/i18n.model';
 import { hourLabel } from '../../../core/i18n/phrases';
@@ -11,21 +10,12 @@ import { HorizontalScroll } from '../../../shared/ui/horizontal-scroll/horizonta
 import { ScrollControls } from '../../../shared/ui/horizontal-scroll/scroll-controls';
 import { SkyGlyph } from '../../../shared/ui/sky-glyph/sky-glyph';
 
-/** Bars never vanish: even a calm hour keeps a sliver, so the baseline reads as wind. */
-const MIN_WIND_SHARE = 0.08;
-
 /**
- * The top of the bars' scale: the windiest hour in the strip, but never less
- * than this, so the differences between hours show without a calm day's
- * breeze filling the bars as if it were a gale (the colour says how strong).
- */
-const WIND_SCALE_FLOOR_KMH = 35;
-
-/**
- * The next 24 hours: the time, the sky and the temperature on one line, and
- * the wind underneath as a number with its direction and a bar that grows
- * with its speed, so the bars across the strip draw how the wind will change.
- * Choosing an hour previews it in the scene above; arrow keys walk the hours.
+ * The next 24 hours: the time, the sky and the temperature, and the wind
+ * underneath as its direction and speed, tinted by strength (green when
+ * light, through orange, to red when strong), so a glance along the strip
+ * shows how the wind will change. Choosing an hour previews it in the scene
+ * above; arrow keys walk the hours.
  */
 @Component({
   selector: 'lm-hour-timeline',
@@ -40,10 +30,6 @@ export class HourTimeline {
   readonly selected = model<number | null>(null);
 
   private readonly buttons = viewChildren<ElementRef<HTMLButtonElement>>('cell');
-
-  private readonly windTop = computed(() =>
-    Math.max(WIND_SCALE_FLOOR_KMH, ...this.hours().map((h) => h.wind.speedKmh)),
-  );
 
   protected readonly cells = computed(() =>
     this.hours().map((hour, i, all) => {
@@ -60,8 +46,7 @@ export class HourTimeline {
         isDaylight: hour.isDaylight,
         windLevel: wind.level,
         windSpeed: Math.round(hour.wind.speedKmh),
-        // Bars share one scale across the strip.
-        windShare: clamp(hour.wind.speedKmh / this.windTop(), MIN_WIND_SHARE, 1).toFixed(3),
+        windHue: windHue(hour.wind.speedKmh),
         // The arrow points where the wind goes.
         windTo: `${(hour.wind.fromDegrees + 180) % 360}deg`,
         detail: msg('hours.cellDetail', {

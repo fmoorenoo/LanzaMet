@@ -3,22 +3,21 @@
   min-width: 0;
 
   // Each hour: wider than tall, the sky and the number side by side.
-  --cell-w: 4.875rem;
+  --cell-w: 5.25rem;
   --cell-inset: 0.1875rem;
   --glyph: 1.75rem;
   --temp-size: 1.0625rem;
-  // The tallest wind bar; every hour shares the scale, so heights compare.
-  --wind-bar-h: 1.5rem;
+  --time-size: 0.9375rem;
 }
 
 // Desktop: a little more air per hour, bigger weather marks and temperatures.
 @media (min-width: 64rem) {
   :host {
-    --cell-w: 5.5rem;
+    --cell-w: 5.75rem;
     --cell-inset: 0.25rem;
     --glyph: 2rem;
     --temp-size: 1.1875rem;
-    --wind-bar-h: 1.75rem;
+    --time-size: 1rem;
   }
 }
 
@@ -97,7 +96,8 @@
   align-items: center;
   row-gap: var(--s-1);
   width: var(--cell-w);
-  padding: var(--s-3) var(--s-2) var(--s-2);
+  // The wind's row runs to the card's edges, so the bottom has no padding.
+  padding: var(--s-3) var(--s-2) 1px;
   border-radius: var(--r-md);
   transition: transform var(--d-press) var(--ease-out);
 
@@ -148,8 +148,8 @@
   display: inline-flex;
   align-items: baseline;
   gap: 0.25rem;
-  font-size: var(--fs-micro);
-  font-weight: 560;
+  font-size: var(--time-size);
+  font-weight: 600;
   color: var(--c-ink-2);
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
@@ -161,7 +161,7 @@
 }
 
 .day-mark {
-  font-size: 0.6875rem;
+  font-size: var(--fs-micro);
   font-weight: 720;
   color: var(--c-accent);
 }
@@ -184,79 +184,48 @@
   letter-spacing: -0.015em;
 }
 
-// ── Wind: the number with its direction over a bar of its speed ──
+// ── Wind: direction and speed on a tint of its strength ───────
+// The hue comes from the speed (`windHue`): green when light, orange as it
+// turns moderate, red when strong. Tint and ink are set per theme in the
+// tokens, so every hue reads at the same contrast.
+// The wind's row: the card's foot, edge to edge inside its border.
 .wind {
-  display: grid;
-  justify-items: center;
-  gap: 0.1875rem;
-  width: 100%;
-  padding-top: var(--s-2);
-  border-top: 1px solid var(--c-line);
-}
-
-.wind-value {
-  display: inline-flex;
+  justify-self: stretch;
+  display: flex;
   align-items: center;
-  gap: 0.125rem;
-  font-size: var(--fs-micro);
-  font-weight: 640;
-  color: var(--c-ink-2);
-
-  [data-wind-level='2'] & {
-    color: var(--c-ink);
-  }
-
-  [data-wind-level='3'] &,
-  [data-wind-level='4'] & {
-    color: var(--c-ink);
-    font-weight: 720;
-  }
+  justify-content: center;
+  gap: 0.1875rem;
+  height: 1.75rem;
+  margin: var(--s-1) calc(var(--cell-inset) + 1px - var(--s-2)) 0;
+  border-radius: 0 0 calc(var(--r-md) - 1px) calc(var(--r-md) - 1px);
+  background-color: oklch(var(--wind-bg-l) var(--wind-bg-c) var(--wind-hue));
+  color: oklch(var(--wind-ink-l) var(--wind-ink-c) var(--wind-hue));
+  font-size: 0.78125rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  transition:
+    background-color var(--d-fast) ease,
+    color var(--d-fast) ease;
 }
 
 .wind-arrow {
+  flex: none;
   width: 0.8125rem;
   height: 0.8125rem;
   fill: none;
   stroke: currentColor;
-  stroke-width: 2.4;
+  stroke-width: 2.6;
   stroke-linecap: round;
   stroke-linejoin: round;
 }
 
-// Bars stand on a shared baseline and share one scale, so the strip reads as
-// a profile of the wind across the hours.
-.wind-bar {
-  position: relative;
-  width: 1.125rem;
-  height: var(--wind-bar-h);
-}
-
-.wind-fill {
-  position: absolute;
-  inset: 0;
-  border-radius: 3px 3px 1px 1px;
-  background-color: color-mix(in oklch, var(--c-ink-3) 55%, transparent);
-  transform-origin: bottom;
-
-  [data-wind-level='1'] & {
-    background-color: var(--c-ink-3);
-  }
-
-  [data-wind-level='2'] & {
-    background-color: var(--c-fair);
-  }
-
-  [data-wind-level='3'] &,
-  [data-wind-level='4'] & {
-    background-color: var(--c-poor);
-  }
-}
-
 .legend {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: var(--s-4);
+  gap: var(--s-1) var(--s-4);
   margin-top: var(--s-2);
   font-size: var(--fs-micro);
   color: var(--c-ink-3);
@@ -269,31 +238,17 @@
   white-space: nowrap;
 }
 
-.legend-bars {
-  display: inline-flex;
-  align-items: flex-end;
-  gap: 2px;
-  height: 0.75rem;
-
-  span {
-    width: 4px;
-    border-radius: 2px 2px 1px 1px;
-    background-color: var(--c-ink-3);
-
-    &:nth-child(1) {
-      height: 40%;
-    }
-
-    &:nth-child(2) {
-      height: 70%;
-      background-color: var(--c-fair);
-    }
-
-    &:nth-child(3) {
-      height: 100%;
-      background-color: var(--c-poor);
-    }
-  }
+// The colour scale itself, from light to strong wind.
+.legend-scale {
+  width: 2.25rem;
+  height: 0.5rem;
+  border-radius: var(--r-pill);
+  background: linear-gradient(
+    90deg in oklch,
+    oklch(0.72 0.15 150),
+    oklch(0.72 0.15 75),
+    oklch(0.64 0.18 25)
+  );
 }
 
 @media (hover: hover) and (pointer: fine) {

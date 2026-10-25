@@ -1,14 +1,16 @@
 import { Component, computed, input } from '@angular/core';
 import { msg } from '../../../core/i18n/i18n.model';
 import { TranslatePipe } from '../../../core/i18n/t.pipe';
-import { readWind, windSteps } from '../../../core/insights/wind.insight';
+import { readWind, windHue, windSteps } from '../../../core/insights/wind.insight';
 import { Wind } from '../../../core/models';
 
 /**
  * The wind at a glance: an arrow pointing where it blows, the speed in km/h,
- * and its strength on the five-step scale (see WIND_LEVEL_MAX) as a word and
- * a ramp of bars, each bar one step, filled by how far into it the speed is.
- * The words carry everything; the arrow and the bars are drawn for the eye.
+ * and its strength on the five-step scale (see WIND_LEVEL_MAX) as a word on
+ * a tint of its colour (green when light, through orange, to red when
+ * strong, `windHue`, the same as the hours) and a ramp of bars in that
+ * colour, each bar one step, filled by how far into it the speed is. The
+ * words carry everything; the arrow, the colour and the bars are for the eye.
  *
  * `hero` sits on the sky and takes its ink; `compact` is one line for cards.
  */
@@ -19,6 +21,7 @@ import { Wind } from '../../../core/models';
     class: 'wind-gauge',
     '[class.is-compact]': "variant() === 'compact'",
     '[attr.data-level]': 'reading().level',
+    '[style.--wind-hue]': 'hue()',
   },
   template: `
     @let r = reading();
@@ -33,7 +36,7 @@ import { Wind } from '../../../core/models';
     <span class="strength">
       <span class="bars" aria-hidden="true">
         @for (fill of bars(); track $index) {
-          <span class="bar" [style.--h]="0.45 + $index * 0.1375"
+          <span class="bar" [style.--h]="0.4 + $index * 0.15"
             ><span class="bar-fill" [style.transform]="'scaleY(' + fill + ')'"></span
           ></span>
         }
@@ -55,27 +58,27 @@ import { Wind } from '../../../core/models';
       grid-template-columns: auto auto auto;
       grid-template-areas: 'arrow speed strength' '. more more';
       align-items: center;
-      column-gap: 0.625rem;
-      row-gap: 0.125rem;
+      column-gap: 0.75rem;
+      row-gap: 0.25rem;
     }
 
     .arrow {
       grid-area: arrow;
       display: grid;
       place-items: center;
-      width: 2.25rem;
-      height: 2.25rem;
+      width: 2.75rem;
+      height: 2.75rem;
       border-radius: 50%;
-      border: 1px solid color-mix(in oklch, currentColor 30%, transparent);
+      border: 1.5px solid color-mix(in oklch, currentColor 40%, transparent);
       // On-screen movement: the arrow turns, it never jumps.
       transition: rotate 600ms var(--ease-in-out);
 
       svg {
-        width: 1.125rem;
-        height: 1.125rem;
+        width: 1.375rem;
+        height: 1.375rem;
         fill: none;
         stroke: currentColor;
-        stroke-width: 2;
+        stroke-width: 2.2;
         stroke-linecap: round;
         stroke-linejoin: round;
       }
@@ -85,71 +88,83 @@ import { Wind } from '../../../core/models';
       grid-area: speed;
       display: inline-flex;
       align-items: baseline;
-      gap: 0.25rem;
+      gap: 0.3125rem;
     }
 
     .value {
-      font-size: 1.75rem;
-      font-weight: 640;
-      letter-spacing: -0.03em;
+      font-size: 2.5rem;
+      font-weight: 620;
+      letter-spacing: -0.035em;
       line-height: 1;
     }
 
     .unit {
-      font-size: var(--fs-small);
-      font-weight: 600;
-      opacity: 0.86;
+      font-size: var(--fs-body);
+      font-weight: 620;
+      color: var(--gauge-ink-2, currentColor);
     }
 
     .strength {
       grid-area: strength;
       display: inline-flex;
       align-items: center;
-      gap: 0.5rem;
-      padding-left: 0.625rem;
-      border-left: 1px solid color-mix(in oklch, currentColor 28%, transparent);
+      gap: 0.625rem;
     }
 
-    // A ramp: each bar a step of the scale, a little taller than the last.
+    // A ramp in the wind's own colour: each bar a step, a little taller than the last.
     .bars {
       display: inline-flex;
       align-items: flex-end;
       gap: 3px;
-      height: 1.125rem;
+      height: 1.5rem;
     }
 
     .bar {
       position: relative;
-      width: 5px;
+      width: 6px;
       height: calc(var(--h) * 100%);
       overflow: hidden;
       border-radius: 2px;
-      background-color: color-mix(in oklch, currentColor 26%, transparent);
+      background-color: color-mix(in oklch, currentColor 24%, transparent);
     }
 
     .bar-fill {
       position: absolute;
       inset: 0;
-      background-color: currentColor;
+      background-color: oklch(var(--gauge-bar-l, 0.86) 0.15 var(--wind-hue));
       transform-origin: bottom;
-      transition: transform var(--d-base) var(--ease-out);
+      transition:
+        transform var(--d-base) var(--ease-out),
+        background-color var(--d-base) ease;
     }
 
+    // The strength as a word on a tint of its colour. Over the sky it is always
+    // the light tint, which stands out on any sky, day or night.
     .word {
+      display: inline-flex;
+      align-items: center;
+      height: 1.75rem;
+      padding: 0 0.625rem;
+      border-radius: var(--r-pill);
+      background-color: oklch(0.93 0.085 var(--wind-hue));
+      color: oklch(0.4 0.13 var(--wind-hue));
       font-size: var(--fs-small);
-      font-weight: 680;
-      letter-spacing: 0.005em;
+      font-weight: 700;
+      text-shadow: none;
+      transition:
+        background-color var(--d-base) ease,
+        color var(--d-base) ease;
     }
 
     .more {
       grid-area: more;
       min-height: 1lh;
-      font-size: var(--fs-micro);
+      font-size: var(--fs-small);
       font-weight: 560;
-      opacity: 0.88;
+      color: var(--gauge-ink-2, currentColor);
     }
 
-    // One line, for cards and lists on a surface: the strength takes its colour.
+    // One line, for cards and lists on a surface: tint and ink follow the theme.
     :host(.is-compact) {
       grid-template-areas: 'arrow speed strength';
       column-gap: 0.375rem;
@@ -168,47 +183,29 @@ import { Wind } from '../../../core/models';
 
       .value {
         font-size: var(--fs-body);
+        letter-spacing: -0.01em;
       }
 
       .unit {
         font-size: var(--fs-micro);
         color: var(--c-ink-2);
-        opacity: 1;
       }
 
       .strength {
-        padding-left: 0.375rem;
         gap: 0.375rem;
-        border-left-color: var(--c-line-strong);
       }
 
       .bars {
-        height: 0.875rem;
-        gap: 2px;
-      }
-
-      .bar {
-        width: 4px;
-        background-color: var(--c-line-strong);
-      }
-
-      .bar-fill {
-        background-color: var(--c-ink-2);
+        display: none;
       }
 
       .word {
+        height: 1.375rem;
+        padding: 0 0.5rem;
+        background-color: oklch(var(--wind-bg-l) var(--wind-bg-c) var(--wind-hue));
+        color: oklch(var(--wind-ink-l) var(--wind-ink-c) var(--wind-hue));
         font-size: var(--fs-micro);
-        color: var(--c-ink-2);
       }
-    }
-
-    :host(.is-compact[data-level='2']) .bar-fill {
-      background-color: var(--c-fair);
-    }
-
-    :host(.is-compact[data-level='3']) .bar-fill,
-    :host(.is-compact[data-level='4']) .bar-fill {
-      background-color: var(--c-poor);
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -224,8 +221,9 @@ export class WindGauge {
   readonly variant = input<'hero' | 'compact'>('hero');
 
   protected readonly reading = computed(() => readWind(this.wind()));
+  protected readonly hue = computed(() => windHue(this.wind().speedKmh));
 
-  /** The arrow points where the wind goes (it blows from `fromDegrees`); none in a calm. */
+  /** The arrow points where the wind goes (it blows from `fromDegrees`). */
   protected readonly rotation = computed(() => `${(this.wind().fromDegrees + 180) % 360}deg`);
 
   protected readonly bars = computed(() => {
