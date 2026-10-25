@@ -1,4 +1,4 @@
-import { cone, horizonPaths, RAIN_DROPS, rainDropCount, relief, ridge } from './geometry';
+import { cone, horizonPaths, RAIN_DROPS, rainDropCount, relief } from './geometry';
 
 const value = (style: string, name: string) =>
   parseFloat(new RegExp(`--${name}:(-?[\\d.]+)`).exec(style)?.[1] ?? 'NaN');
@@ -56,12 +56,9 @@ describe('relief', () => {
     for (const x of starts(hill.surf)) expect(Math.abs(x - 600)).toBeLessThan(200);
   });
 
-  it('cuts gullies only into high, steep land, never into low ground', () => {
-    expect(relief([ridge(0, 1200, 12, 60)], 5).gullies).toBe('');
+  it('models the slopes with light and shade only, no strokes', () => {
     const cliff = relief([cone(600, 90, 160)], 5);
-    expect(starts(cliff.gullies).length).toBeGreaterThan(2);
-    // Each gully comes with its lit rib.
-    expect(starts(cliff.ribs).length).toBe(starts(cliff.gullies).length);
+    expect(Object.keys(cliff).sort()).toEqual(['light', 'shade', 'surf']);
   });
 
   it('draws the same relief on every render', () => {
@@ -71,6 +68,6 @@ describe('relief', () => {
   });
 
   it('has nothing to model where there is no land', () => {
-    expect(relief([], 1)).toEqual({ light: '', shade: '', gullies: '', ribs: '', surf: '' });
+    expect(relief([], 1)).toEqual({ light: '', shade: '', surf: '' });
   });
 });

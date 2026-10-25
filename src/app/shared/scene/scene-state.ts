@@ -52,10 +52,9 @@ export interface SceneState {
     readonly farRidge: string;
     readonly near: string;
     readonly nearTop: string;
-    /** Modelling of near land: its lit crest, its shaded foot, the gullies down it. */
+    /** Modelling of near land: its lit crest and its shaded foot. */
     readonly nearLight: string;
     readonly nearShade: string;
-    readonly gully: string;
   };
   /** The band of light along the horizon: warm with a low sun, pale by day. */
   readonly glow: { readonly color: string; readonly strength: number };
@@ -420,7 +419,6 @@ export function buildScene(input: SceneInput): SceneState {
       nearTop: toCss(mix(landNear, mix(low, sunLight, sunUp ? 0.3 : 0), 0.26 + 0.16 * daylight)),
       nearLight: toCss(mix(landNear, mix(low, sunLight, sunUp ? 0.45 : 0), 0.3 + 0.2 * daylight)),
       nearShade: toCss(mix(landNear, oklch(0.12, 0.015, 262), 0.4)),
-      gully: toCss(mix(landNear, oklch(0.1, 0.01, 40), 0.5)),
     },
     glow: { color: toCss(glow), strength: glowStrength },
     shore: toCss(shore),

@@ -109,19 +109,17 @@ export function silhouette(features: readonly Feature[]): string {
 /**
  * The modelling of near land, drawn over its flat fill: a lit band along the
  * crest and a shaded band at the foot (each following the outline at a share
- * of the height, slightly waved, the way lava and ash settle), gullies cut
- * down the steeper slopes, and the line of surf where the land meets the sea.
+ * of the height, slightly waved, the way lava and ash settle), and the line
+ * of surf where the land meets the sea. No strokes on the slopes: the shape
+ * of the hill is carried by light and shade alone.
  */
 export interface Relief {
   readonly light: string;
   readonly shade: string;
-  readonly gullies: string;
-  /** The lit edge beside each gully. */
-  readonly ribs: string;
   readonly surf: string;
 }
 
-const NO_RELIEF: Relief = { light: '', shade: '', gullies: '', ribs: '', surf: '' };
+const NO_RELIEF: Relief = { light: '', shade: '', surf: '' };
 
 /** The band of land between two shares of its height (0 the crest … 1 the waterline). */
 function band(features: readonly Feature[], from: number, to: number, step = 4): string {
@@ -155,30 +153,7 @@ export function relief(features: readonly Feature[], seed: number): Relief {
   if (features.length === 0) return NO_RELIEF;
   const { width, height } = HORIZON_VIEWBOX;
   const random = seeded(seed);
-  let gullies = '';
-  let ribs = '';
   let surf = '';
-  let x = 6;
-  while (x < width) {
-    const h = heightAt(features, x);
-    // Downhill is where the land falls away; the gully leans that way.
-    const slope = (heightAt(features, x + 4) - heightAt(features, x - 4)) / 8;
-    const steep = Math.min(1, Math.abs(slope) * 2.4);
-    // Steep faces are cut often, gentle tops hardly at all; spacing varies.
-    x += 8 + random() * 14 + (1 - steep) * 10;
-    if (h < 22 || random() > 0.2 + steep * 0.75) continue;
-    const lean = -Math.sign(slope || 1) * (1.5 + random() * 4 + steep * 4);
-    const top = height - h + 2 + random() * (h * 0.18);
-    const bottom = height - h * (0.12 + random() * 0.4);
-    if (bottom - top < 8) continue;
-    const gully = (dx: number) =>
-      `M${(x + dx).toFixed(1)} ${top.toFixed(1)}` +
-      `Q${(x + dx + lean * 0.35).toFixed(1)} ${((top + bottom) / 2).toFixed(1)} ` +
-      `${(x + dx + lean).toFixed(1)} ${bottom.toFixed(1)}`;
-    gullies += gully(0);
-    // The lit rib beside each gully, on the side the light comes from.
-    ribs += gully(-1.4);
-  }
   // Surf: short broken strokes where land stands at the waterline.
   for (let x = 0; x < width; x += 7) {
     if (heightAt(features, x) > 2 && heightAt(features, x + 7) > 2 && random() > 0.25) {
@@ -188,8 +163,6 @@ export function relief(features: readonly Feature[], seed: number): Relief {
   return {
     light: band(features, 0, 0.24),
     shade: band(features, 0.55, 1),
-    gullies,
-    ribs,
     surf,
   };
 }

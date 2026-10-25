@@ -258,24 +258,10 @@ function fillPath(ctx: Ctx, d: string, color: string) {
   ctx.fill(new Path2D(d));
 }
 
-/** The modelling of near land (`.relief-light`, `.relief-shade`, `.gullies`). */
-function paintRelief(ctx: Ctx, s: SceneState, relief: Relief, gullies = true) {
+/** The modelling of near land (`.relief-light`, `.relief-shade`). */
+function paintRelief(ctx: Ctx, s: SceneState, relief: Relief) {
   fillPath(ctx, relief.light, paint(s.land.nearLight, 0.55));
   fillPath(ctx, relief.shade, paint(s.land.nearShade, 0.5));
-  if (gullies) paintGullies(ctx, s, relief);
-}
-
-function paintGullies(ctx: Ctx, s: SceneState, relief: Relief) {
-  if (!relief.gullies) return;
-  ctx.save();
-  ctx.lineCap = 'round';
-  ctx.strokeStyle = paint(s.land.nearLight, 0.35);
-  ctx.lineWidth = 0.9;
-  ctx.stroke(new Path2D(relief.ribs));
-  ctx.strokeStyle = paint(s.land.gully, 0.4);
-  ctx.lineWidth = 1.3;
-  ctx.stroke(new Path2D(relief.gullies));
-  ctx.restore();
 }
 
 function paintLand(ctx: Ctx, s: SceneState) {
@@ -294,11 +280,10 @@ function paintLand(ctx: Ctx, s: SceneState) {
   if (art.terrain) {
     ctx.fillStyle = near;
     ctx.fill(new Path2D(art.terrain));
-    paintRelief(ctx, s, art.relief, false);
+    paintRelief(ctx, s, art.relief);
   }
   fillPath(ctx, art.beach, paint(s.shore));
   art.strata.forEach((band, i) => fillPath(ctx, band, paint(s.built.rock[i % 3])));
-  paintGullies(ctx, s, art.relief);
   fillPath(ctx, art.lagoon, paint(s.built.lagoon));
   fillPath(ctx, art.accent, paint(s.built.accent));
   fillPath(ctx, art.accentShade, paint(s.built.accentShade));

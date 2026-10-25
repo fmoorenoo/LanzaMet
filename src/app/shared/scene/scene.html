@@ -89,11 +89,9 @@
   <g [attr.id]="ids.land">
     @let near = horizon().nearRelief;
     <path class="land-near" [attr.d]="horizon().near" [attr.fill]="ids.nearUrl" />
-    <!-- Modelling: a lit crest, a shaded foot, gullies down the slopes. -->
+    <!-- Modelling: a lit crest and a shaded foot. -->
     <path class="relief-light" [attr.d]="near.light" [style.fill]="s.land.nearLight" />
     <path class="relief-shade" [attr.d]="near.shade" [style.fill]="s.land.nearShade" />
-    <path class="ribs" [attr.d]="near.ribs" [style.stroke]="s.land.nearLight" />
-    <path class="gullies" [attr.d]="near.gullies" [style.stroke]="s.land.gully" />
     <g class="scenery">
       @if (art.terrain) {
         <path [attr.d]="art.terrain" [attr.fill]="ids.nearUrl" />
@@ -105,10 +103,6 @@
       }
       @for (band of art.strata; track $index) {
         <path [attr.d]="band" [style.fill]="s.built.rock[$index % 3]" />
-      }
-      @if (art.relief.gullies) {
-        <path class="ribs" [attr.d]="art.relief.ribs" [style.stroke]="s.land.nearLight" />
-        <path class="gullies" [attr.d]="art.relief.gullies" [style.stroke]="s.land.gully" />
       }
       @if (art.lagoon) {
         <path [attr.d]="art.lagoon" [style.fill]="s.built.lagoon" />

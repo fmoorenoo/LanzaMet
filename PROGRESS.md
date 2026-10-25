@@ -710,3 +710,7 @@ Skills usadas: Impeccable (auditoría, dirección, suelo de calidad, detector) y
 4. **Menos mar**: horizonte al 72 % de la escena en escritorio (antes 64 %) y franja de mar de `clamp(4,5rem, 10svh, 7rem)` en móvil (antes hasta 8,5 rem); la tierra crece hasta 13 rem de alto en pantallas anchas.
 5. La tarjeta para compartir pinta las mismas capas.
 6. **Validación**: 201 tests (nuevos: relieve determinista, barrancos solo en tierra alta y empinada, espuma solo donde hay tierra, segunda línea de sierra); axe sin violaciones; 0 px de salto; capturas de las nueve zonas en escritorio y de tres en móvil.
+
+### Sin trazos en las laderas (25-10-2026)
+
+- Fuera los barrancos y sus aristas de luz (los trazos que simulaban textura en Famara, Playa Blanca, El Golfo y el resto). El relieve queda en la banda de luz de la cresta y la de sombra al pie. También en la tarjeta para compartir.
