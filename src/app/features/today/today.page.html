@@ -117,6 +117,14 @@
             </dd>
           </div>
         }
+        @if (webcam(); as cam) {
+          <div class="fact day-fact" data-fact="webcam">
+            <dt><lm-icon name="camera" />{{ 'fact.webcam' | t }}</dt>
+            <dd>
+              <lm-webcam-link [locationId]="cam" variant="inline" />
+            </dd>
+          </div>
+        }
       </dl>
     </section>
   }

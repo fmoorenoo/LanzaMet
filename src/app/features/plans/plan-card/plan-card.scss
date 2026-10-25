@@ -1,6 +1,24 @@
 :host {
+  position: relative;
   display: block;
   min-width: 0;
+}
+
+// The live camera on the landscape. In a row card the picture is narrow and
+// the plan's mark holds its foot, so the chip takes the top-right corner of
+// the picture (the island sits top-left); the lead's wide picture has room
+// at its foot, and so does the band on phones.
+.live {
+  position: absolute;
+  top: var(--s-3);
+  right: calc(100% - var(--art-w) + var(--s-3));
+}
+
+:host(.is-lead) .live {
+  top: auto;
+  right: auto;
+  left: var(--s-3);
+  bottom: var(--s-3);
 }
 
 // A card in a row: the place as a narrow picture on the left, the reasons
@@ -246,6 +264,20 @@
   .card {
     grid-template-columns: none;
     grid-template-rows: 6.5rem auto;
+  }
+
+  // The band is 6.5 rem tall (8.5 for the lead): the camera sits at its foot.
+  .live,
+  :host(.is-lead) .live {
+    top: calc(6.5rem - 1.625rem - var(--s-2));
+    right: auto;
+    bottom: auto;
+    left: var(--s-2);
+  }
+
+  :host(.is-lead) .live {
+    top: calc(8.5rem - 1.625rem - var(--s-3));
+    left: var(--s-3);
   }
 
   .where {

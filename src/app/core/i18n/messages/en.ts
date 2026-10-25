@@ -395,6 +395,12 @@ export const en: Messages = {
   'fact.observed.calm': 'barely any wind',
   'fact.observed.wind': 'wind {from} at {speed} km/h',
   'fact.observed.source': '{station} (AEMET), at {time}',
+  'fact.webcam': 'Live',
+
+  // ── Live cameras ─────────────────────────────────────────────
+  'webcam.live': 'Live',
+  'webcam.watch': 'Watch {view} live',
+  'webcam.detail': ': {view}, camera by {provider} ({place}). Opens on another website.',
 
   'conditions.wind.hours': 'See the wind hour by hour',
   'conditions.sea.none': 'No sea forecast',
@@ -491,6 +497,9 @@ export const en: Messages = {
   'legal.source.map.credit': 'OpenStreetMap contributors',
   'legal.source.map.text':
     'ODbL licence. Coastline simplified and bundled with the site: never fetched live.',
+  'legal.source.webcams': 'Live cameras',
+  'legal.source.webcams.text':
+    'Links to public cameras run by {providers}. They open on their own websites, which we do not control, and may be off or show something else.',
   'legal.status.ready': 'Connected',
   'legal.status.error': 'No connection right now',
   'legal.status.unavailable': 'Not available in this installation',

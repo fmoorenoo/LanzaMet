@@ -12,6 +12,7 @@ import { PLAN_KIND } from '../../../shared/plans/plan-item';
 import { Scene } from '../../../shared/scene/scene';
 import { zoneScene } from '../../../shared/scene/scene-state';
 import { Icon } from '../../../shared/ui/icon/icon';
+import { WebcamLink } from '../../../shared/ui/webcam-link/webcam-link';
 import { WindGauge } from '../../../shared/ui/wind-gauge/wind-gauge';
 import { ISLAND_PATHS, MAP_SIZE, project } from '../../zones/island-map/island-geometry';
 
@@ -25,7 +26,7 @@ import { ISLAND_PATHS, MAP_SIZE, project } from '../../zones/island-map/island-g
  */
 @Component({
   selector: 'lm-plan-card',
-  imports: [Icon, Scene, WindGauge, TranslatePipe],
+  imports: [Icon, Scene, WindGauge, WebcamLink, TranslatePipe],
   templateUrl: './plan-card.html',
   styleUrl: './plan-card.scss',
   host: {

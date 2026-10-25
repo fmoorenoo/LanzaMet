@@ -24,6 +24,8 @@ import { buildScene } from '../../shared/scene/scene-state';
 import { Icon } from '../../shared/ui/icon/icon';
 import { StatusMessage } from '../../shared/ui/status-message/status-message';
 import { SunPath } from '../../shared/ui/sun-path/sun-path';
+import { WebcamLink } from '../../shared/ui/webcam-link/webcam-link';
+import { webcamFor } from '../../core/data/webcams';
 import { Conditions, ConditionsView } from './conditions/conditions';
 import { DayList } from './day-list/day-list';
 import { HourTimeline } from './hour-timeline/hour-timeline';
@@ -74,6 +76,7 @@ function sunLineAt(daily: readonly DailyForecast[], day: DailyForecast, at: Date
     DataCredit,
     WarningBanner,
     SunPath,
+    WebcamLink,
     TranslatePipe,
   ],
   templateUrl: './today.page.html',
@@ -270,6 +273,12 @@ export class TodayPage {
           ? msg('common.celsius', { value: Math.round(sea.current.waterTemperatureC) })
           : null,
     };
+  });
+
+  /** The place's id when a public live camera shows it; the facts then link to it. */
+  protected readonly webcam = computed(() => {
+    const id = this.location()?.id;
+    return id && webcamFor(id) ? id : null;
   });
 
   protected readonly todayKey = computed(() => islandDateKey(this.clock.now()));

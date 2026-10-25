@@ -45,6 +45,7 @@ import {
   Thermometer,
   TriangleAlert,
   Undo2,
+  Video,
   Wind,
   X,
 } from 'lucide';
@@ -137,6 +138,9 @@ export const ICONS = {
   'menu-lines': lucide(Menu),
   'install-desktop': lucide(MonitorDown),
   bookmark: lucide(BookmarkPlus),
+
+  // A live camera on a place
+  camera: lucide(Video),
 
   // Conditions
   wind: lucide(Wind),

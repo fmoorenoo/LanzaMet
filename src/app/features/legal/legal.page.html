@@ -46,8 +46,10 @@
     <h2 id="sources-title" class="t-title">{{ 'legal.sources' | t }}</h2>
     @if (isDemo) {
       <p class="t-muted">{{ 'credit.demo' | t }}</p>
-    } @else {
-      <ul class="points sources data-source-list">
+    }
+    <!-- The cameras are real links even in the demo, so their credit always shows. -->
+    <ul class="points sources data-source-list">
+      @if (!isDemo) {
         <li data-source="forecast">
           <span class="label">{{ 'legal.source.forecast' | t }}</span>
           <span>
@@ -96,8 +98,12 @@
             >. {{ 'legal.source.map.text' | t }}
           </span>
         </li>
-      </ul>
-    }
+      }
+      <li data-source="webcams">
+        <span class="label">{{ 'legal.source.webcams' | t }}</span>
+        <span>{{ 'legal.source.webcams.text' | t: { providers: webcamProviders() } }}</span>
+      </li>
+    </ul>
   </section>
 
   <section id="legal-contact" class="section" aria-labelledby="legal-contact-title">

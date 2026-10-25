@@ -94,6 +94,7 @@ lm-island-map {
 }
 
 .focus {
+  position: relative;
   display: flex;
   flex-wrap: wrap;
   align-items: flex-end;
@@ -103,6 +104,14 @@ lm-island-map {
   border-radius: var(--r-lg);
   background-color: var(--c-surface);
   box-shadow: var(--shadow-1);
+
+  // The star keeps the card's corner, as on the cards below, so the two
+  // actions have the whole width on a phone.
+  > .focus-actions > .star {
+    position: absolute;
+    top: var(--s-2);
+    right: var(--s-2);
+  }
 }
 
 .focus-text {
@@ -110,6 +119,7 @@ lm-island-map {
   gap: 0.125rem;
   min-width: 12rem;
   flex: 1;
+  padding-right: var(--s-10);
 }
 
 .focus-name {
@@ -130,10 +140,30 @@ lm-island-map {
   font-weight: 600;
 }
 
+// "En directo" and "Ver el día" stand together at one height, a touch
+// taller than the chips elsewhere: the live chip sets it and the button
+// takes it.
 .focus-actions {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: var(--s-2);
+  width: 100%;
+
+  lm-webcam-link,
+  .btn {
+    --focus-action-h: 2.625rem;
+    // Side by side where they fit; each on its own full line where they don't.
+    flex: 1 1 auto;
+  }
+
+  lm-webcam-link {
+    --chip-h: var(--focus-action-h);
+  }
+
+  .btn {
+    min-height: var(--focus-action-h);
+  }
 }
 
 .star {
@@ -168,6 +198,13 @@ lm-island-map {
     top: var(--s-2);
     right: var(--s-2);
   }
+
+  // The live camera, at the foot of the landscape (the art is 0.5 rem in).
+  .card-live {
+    position: absolute;
+    left: calc(var(--s-2) + 0.3125rem);
+    bottom: calc(var(--s-2) + 0.3125rem);
+  }
 }
 
 .card-main {
@@ -186,10 +223,11 @@ lm-island-map {
   }
 }
 
+// Wide enough for the live chip to sit inside the picture.
 .card-art {
   position: relative;
   flex: none;
-  width: 6.5rem;
+  width: 7.5rem;
   min-height: 6.5rem;
   border-radius: var(--r-md);
   overflow: hidden;

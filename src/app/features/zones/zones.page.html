@@ -57,6 +57,7 @@
               <p class="t-small t-muted">{{ zone.sentence | t }}</p>
             </div>
             <div class="focus-actions">
+              <lm-webcam-link [locationId]="zone.id" />
               <button
                 id="open-zone-day"
                 type="button"
@@ -107,6 +108,8 @@
                   </span>
                 </span>
               </button>
+              <!-- Over the landscape, outside the card's button: a link in a button is not allowed. -->
+              <lm-webcam-link class="card-live" [locationId]="card.id" variant="overlay" />
               <button
                 type="button"
                 class="icon-btn star favorite-toggle"

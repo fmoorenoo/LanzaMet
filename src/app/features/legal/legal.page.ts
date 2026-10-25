@@ -1,7 +1,9 @@
 import { Component, computed, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { DATA_MODE } from '../../core/data/http/data-config';
+import { WEBCAM_PROVIDERS } from '../../core/data/webcams';
 import { msg, MessageKey } from '../../core/i18n/i18n.model';
+import { I18n } from '../../core/i18n/i18n.store';
 import { TranslatePipe } from '../../core/i18n/t.pipe';
 import { OfficialStore } from '../../core/state/official.store';
 import { SectionStatus } from '../../core/state/section-state';
@@ -42,8 +44,14 @@ const TERMS: readonly MessageKey[] = [
 })
 export class LegalPage {
   private readonly official = inject(OfficialStore);
+  private readonly i18n = inject(I18n);
 
   protected readonly isDemo = inject(DATA_MODE) === 'demo';
+
+  /** "Ayuntamiento de Haría, Marina Rubicón y SkylineWebcams", in the visitor's language. */
+  protected readonly webcamProviders = computed(() =>
+    new Intl.ListFormat(this.i18n.locale(), { type: 'conjunction' }).format(WEBCAM_PROVIDERS),
+  );
   protected readonly privacy = PRIVACY;
   protected readonly feedbackPrivacy = FEEDBACK_PRIVACY_POINTS;
   protected readonly terms = TERMS;

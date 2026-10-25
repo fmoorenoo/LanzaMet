@@ -398,6 +398,12 @@ export const es = {
   'fact.observed.calm': 'sin apenas viento',
   'fact.observed.wind': 'viento {from} a {speed} km/h',
   'fact.observed.source': '{station} (AEMET), a las {time}',
+  'fact.webcam': 'En directo',
+
+  // ── Live cameras ─────────────────────────────────────────────
+  'webcam.live': 'En directo',
+  'webcam.watch': 'Ver {view} en directo',
+  'webcam.detail': ': {view}, cámara de {provider} ({place}). Se abre en otra web.',
 
   'conditions.wind.hours': 'Ver el viento hora a hora',
   'conditions.sea.none': 'Sin previsión del mar',
@@ -494,6 +500,9 @@ export const es = {
   'legal.source.map.credit': 'colaboradores de OpenStreetMap',
   'legal.source.map.text':
     'Licencia ODbL. Contorno simplificado e incluido en la web: no se consulta en vivo.',
+  'legal.source.webcams': 'Cámaras en directo',
+  'legal.source.webcams.text':
+    'Enlaces a cámaras públicas de {providers}. Se abren en su web, que no controlamos, y pueden estar apagadas o mostrar otra cosa.',
   'legal.status.ready': 'Conectado',
   'legal.status.error': 'Sin conexión ahora',
   'legal.status.unavailable': 'No disponible en esta instalación',
