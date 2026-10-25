@@ -25,18 +25,8 @@
     class="track hour-track"
     role="group"
     [attr.aria-label]="'hours.label' | t"
-    [style.--hours]="cells().length"
     (keydown)="onKeydown($event)"
   >
-    <svg
-      class="curve temperature-curve"
-      [attr.viewBox]="'0 0 ' + cells().length + ' 60'"
-      preserveAspectRatio="none"
-      aria-hidden="true"
-    >
-      <path class="curve-line" [attr.d]="curve()" />
-    </svg>
-
     @for (cell of cells(); track cell.index) {
       <button
         #cell
@@ -44,21 +34,40 @@
         class="cell hour-cell"
         [attr.data-index]="cell.index"
         [attr.data-time]="cell.time"
+        [attr.data-wind-level]="cell.windLevel"
         [class.is-active]="cell.index === activeIndex()"
+        [class.is-new-day]="cell.dayMark"
         [attr.aria-pressed]="cell.index === activeIndex()"
         [attr.tabindex]="cell.index === activeIndex() ? 0 : -1"
-        [style.--y]="cell.y"
         (click)="choose(cell.index)"
       >
-        <span class="day-mark">{{ cell.dayMark | t }}</span>
-        <span class="time">{{ cell.label | t }}</span>
-        <lm-sky-glyph [sky]="cell.sky" [isDaylight]="cell.isDaylight" [decorative]="true" />
-        <span class="temp t-num">{{ cell.temperature }}°</span>
-        <span class="curve-dot" aria-hidden="true"></span>
-        <!-- The accessible name is the visible time and temperature, plus the rest in words. -->
-        <span class="visually-hidden">, {{ cell.detail | t }}</span>
-        <span class="wind" [attr.data-level]="cell.windLevel">
-          <span class="wind-bar" [style.transform]="'scaleX(' + cell.windScale + ')'"></span>
+        <span class="time">
+          @if (cell.dayMark; as day) {
+            <span class="day-mark">{{ day | t }}</span>
+          }
+          {{ cell.label | t }}
+        </span>
+        <span class="sky">
+          <lm-sky-glyph [sky]="cell.sky" [isDaylight]="cell.isDaylight" [decorative]="true" />
+          <span class="temp t-num">{{ cell.temperature }}°</span>
+        </span>
+        <!-- The accessible name is the visible text, with the rest in words. -->
+        <span class="visually-hidden">, {{ cell.detail | t }}:</span>
+        <span class="wind">
+          <span class="wind-value t-num">
+            <svg
+              class="wind-arrow"
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+              [style.rotate]="cell.windTo"
+            >
+              <path d="M12 20.5V4M6.5 9.5 12 4l5.5 5.5" />
+            </svg>
+            {{ cell.windSpeed }}<span class="visually-hidden"> km/h</span>
+          </span>
+          <span class="wind-bar" aria-hidden="true">
+            <span class="wind-fill" [style.transform]="'scaleY(' + cell.windShare + ')'"></span>
+          </span>
         </span>
       </button>
     }
@@ -66,5 +75,8 @@
 </div>
 <p class="legend hour-legend" aria-hidden="true">
   <span>{{ 'hours.hint' | t }}</span>
-  <span class="legend-wind"><span class="legend-bar"></span>{{ 'hours.wind' | t }}</span>
+  <span class="legend-wind">
+    <span class="legend-bars"><span></span><span></span><span></span></span>
+    {{ 'hours.wind' | t }}
+  </span>
 </p>

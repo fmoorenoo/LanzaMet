@@ -97,6 +97,8 @@ export const es = {
   'place.summary.famara': 'Seis kilómetros de arena bajo el Risco. Olas y viento.',
   'place.summary.la-santa': 'Pueblo pesquero sobre la lava, frente a la ola de El Quemao.',
   'place.summary.orzola': 'Pueblo marinero frente a La Graciosa, con caletas de arena blanca.',
+  'place.summary.arrieta':
+    'Pueblo marinero con la playa de La Garita, su muelle y la Casa Juanita, la casa azul.',
   'place.summary.el-golfo': 'Un cráter partido por el mar, playa negra y el Charco Verde.',
 
   // ── Sky and sun ──────────────────────────────────────────────
@@ -141,7 +143,7 @@ export const es = {
   'wind.from': 'del {dir}',
   'wind.level.0.label': 'Sin viento',
   'wind.level.0.phrase': 'sin apenas viento',
-  'wind.level.1.label': 'Brisa suave',
+  'wind.level.1.label': 'Viento flojo',
   'wind.level.1.phrase': 'brisa suave',
   'wind.level.2.label': 'Viento moderado',
   'wind.level.2.phrase': 'viento moderado',
@@ -149,6 +151,17 @@ export const es = {
   'wind.level.3.phrase': 'viento fuerte',
   'wind.level.4.label': 'Viento muy fuerte',
   'wind.level.4.phrase': 'viento muy fuerte',
+  // The Beaufort scale grouped in five steps (see WIND_LEVEL_MAX).
+  'wind.scale.0': 'Calma',
+  'wind.scale.1': 'Flojo',
+  'wind.scale.2': 'Moderado',
+  'wind.scale.3': 'Fuerte',
+  'wind.scale.4': 'Muy fuerte',
+  'wind.title': 'Viento',
+  'wind.strength': 'Intensidad: {scale}',
+  'wind.gusts': 'rachas de {gust}',
+  'wind.unit': 'km/h',
+  'wind.more': '{^from} · {gusts}',
   'wind.labelFrom': '{label} {from}',
   'wind.detail': '{speed} km/h',
   'wind.detailGusts': '{speed} km/h, rachas de {gust}',
@@ -172,6 +185,19 @@ export const es = {
   'sea.waves.m': 'Olas de {m} m',
   'sea.water': 'Agua a {temp} °C',
   'sea.swell': 'Mar de fondo {from}, {height} m cada {period} s',
+  'sea.swell.from': 'Llega {from}',
+  'sea.swell.short': 'Ondas cortas, de viento cercano',
+  'sea.swell.mid': 'Ondas medias',
+  'sea.swell.long': 'Ondas largas, llegan de lejos',
+  'sea.swell.numbers': '{height} m cada {period} s',
+  'sea.swell.detail': '{character} · {numbers}',
+  'sea.swell.none': 'Apenas hay',
+  'sea.swell.none.text': 'Sin ondas que lleguen de lejos',
+  'sea.wavesEvery': 'Cada {period} s',
+  'sea.waterFeel.cold': 'Fría',
+  'sea.waterFeel.cool': 'Fresca',
+  'sea.waterFeel.pleasant': 'Agradable',
+  'sea.waterFeel.warm': 'Templada',
 
   'tide.kind.pleamar': 'Pleamar',
   'tide.kind.bajamar': 'Bajamar',
@@ -304,8 +330,8 @@ export const es = {
   'today.clock.zone': 'Hora de Canarias',
   'today.todayRange': 'Máxima {max}° · mínima {min}°',
   'today.favorites': 'Tus zonas favoritas',
-  'today.previousFavorites': 'Zonas favoritas anteriores',
-  'today.moreFavorites': 'Más zonas favoritas',
+  'today.showPlace': 'Ver {name}',
+  'today.showPlace.current': '{name}, en pantalla',
   'today.settings': 'Ajustes y fuentes de datos',
   'today.demo': 'Demo',
   'today.demoSettings': 'Datos ficticios: abrir ajustes de la demo',
@@ -387,7 +413,7 @@ export const es = {
   'hours.label': 'Próximas 24 horas. Usa las flechas para recorrerlas.',
   'hours.cellDetail': '{sky}, {wind}',
   'hours.hint': 'Elige una hora para verla en la escena',
-  'hours.wind': 'viento',
+  'hours.wind': 'Viento en km/h',
   'hours.previous': 'Horas anteriores',
   'hours.next': 'Horas siguientes',
 
@@ -609,9 +635,6 @@ export const es = {
   'seaPage.extremesEstimated': 'Pleamares y bajamares (estimadas)',
   'seaPage.source.station': 'Mareógrafo: {name}.',
   'seaPage.source.reference': 'Predicción de referencia: {name}.',
-  'seaPage.source.model':
-    'Estimación del modelo oceánico {name}. No es una tabla oficial ni sirve para navegar.',
-  'seaPage.source.datum': 'Alturas sobre el nivel medio del mar.',
   'seaPage.source.demo': 'Datos ficticios.',
   'seaPage.noTideHere': 'Esta zona no tiene previsión de mareas',
   'seaPage.nearest': 'La más cercana con datos es {place}.',
@@ -624,6 +647,11 @@ export const es = {
   'seaPage.seaNone.text': 'El modelo marítimo no tiene datos para esta zona.',
   'seaPage.seaError': 'No hemos podido cargar el estado del mar',
   'seaPage.calmest': 'Dónde está el mar más tranquilo',
+  'seaPage.facet.waves': 'Oleaje',
+  'seaPage.facet.swell': 'Mar de fondo',
+  'seaPage.facet.water': 'Agua',
+  'seaPage.waterNone': 'Sin dato',
+  'seaPage.calmestHint': 'De menos a más olas, según la previsión',
 
   // ── Plans page ───────────────────────────────────────────────
   'plans.lead':
@@ -631,6 +659,7 @@ export const es = {
   'plans.leadDemo':
     'Sugerencias según el tiempo de cada zona. En esta versión son ejemplos con datos ficticios.',
   'plans.more': 'Más ideas',
+  'plans.now': 'Ahora en {place}',
   'plans.loading': 'Cargando sugerencias',
 
   // ── Feedback ─────────────────────────────────────────────────

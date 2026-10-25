@@ -15,49 +15,37 @@
     <span class="visually-hidden">{{ 'common.changePlace' | t }}</span>
   </button>
 
-  <div class="head-row">
-    <div
-      id="tide-summary"
-      class="head-text tide-summary pendable"
-      [class.is-pending]="tides.pending"
-    >
-      @switch (tides.status) {
-        @case ('ready') {
-          @if (reading(); as tide) {
-            <h1 class="t-display">{{ tide.headline | t }}</h1>
-            <p class="t-lead t-muted">
-              {{ 'seaPage.next' | t: { next: tide.nextLabel, until: tide.untilNext } }}
-            </p>
-          }
-        }
-        @case ('empty') {
-          <h1 class="t-display">{{ 'seaPage.noTide.title' | t: { place: place?.name ?? '' } }}</h1>
-          <p class="t-lead t-muted">{{ 'seaPage.noTide.text' | t }}</p>
-        }
-        @case ('error') {
-          <h1 class="t-display">{{ 'seaPage.tideError' | t }}</h1>
-        }
-        @default {
-          <span class="skeleton title-skeleton"></span>
-          <span class="skeleton lead-skeleton"></span>
+  <div
+    id="tide-summary"
+    class="head-text tide-summary pendable"
+    [class.is-pending]="tides.pending"
+    [class.is-rising]="reading()?.trend === 'subiendo'"
+  >
+    @switch (tides.status) {
+      @case ('ready') {
+        @if (reading(); as tide) {
+          <h1 class="t-display">
+            <span class="trend" aria-hidden="true">
+              <lm-icon [name]="tide.trend === 'subiendo' ? 'tide-up' : 'tide-down'" />
+            </span>
+            {{ tide.headline | t }}
+          </h1>
+          <p class="t-lead t-muted">
+            {{ 'seaPage.next' | t: { next: tide.nextLabel, until: tide.untilNext } }}
+          </p>
         }
       }
-    </div>
-
-    @if (reading(); as tide) {
-      <div
-        id="tide-gauge"
-        class="gauge tide-gauge"
-        [class.is-rising]="tide.trend === 'subiendo'"
-        aria-hidden="true"
-      >
-        <span class="gauge-tube">
-          <span class="gauge-water" [style.transform]="gaugeLevel()"></span>
-        </span>
-        <span class="gauge-arrow">
-          <lm-icon [name]="tide.trend === 'subiendo' ? 'arrow-up' : 'arrow-down'" />
-        </span>
-      </div>
+      @case ('empty') {
+        <h1 class="t-display">{{ 'seaPage.noTide.title' | t: { place: place?.name ?? '' } }}</h1>
+        <p class="t-lead t-muted">{{ 'seaPage.noTide.text' | t }}</p>
+      }
+      @case ('error') {
+        <h1 class="t-display">{{ 'seaPage.tideError' | t }}</h1>
+      }
+      @default {
+        <span class="skeleton title-skeleton"></span>
+        <span class="skeleton lead-skeleton"></span>
+      }
     }
   </div>
 </header>
@@ -84,12 +72,14 @@
             [sunrise]="sun()?.sunrise ?? null"
             [sunset]="sun()?.sunset ?? null"
           />
-          <p id="tide-source" class="source t-micro t-faint">
-            <lm-icon name="info" />
-            @for (part of tideSource(); track $index) {
-              {{ part | t }}
-            }
-          </p>
+          @if (tideSource().length > 0) {
+            <p id="tide-source" class="source t-micro t-faint">
+              <lm-icon name="info" />
+              @for (part of tideSource(); track $index) {
+                {{ part | t }}
+              }
+            </p>
+          }
         </section>
 
         <section id="tide-extremes" class="block tide-extremes" aria-labelledby="extremes-title">
@@ -162,16 +152,55 @@
       {{ 'seaPage.seaTitle' | t: { place: place?.name ?? '' } }}
     </h2>
     @if (sea(); as s) {
-      <p class="sea-state">
-        <span class="t-strong">{{ s.label | t }}.</span>
-        {{ s.waves | t }}.
-        @if (s.swell) {
-          {{ s.swell | t }}.
-        }
-        @if (s.water) {
-          {{ s.water | t }}.
-        }
-      </p>
+      <p class="sea-headline sea-state" [attr.data-level]="s.level">{{ s.label | t }}</p>
+      <dl class="facets sea-facets">
+        <div class="facet sea-facet" data-facet="waves">
+          <dt>
+            <svg class="facet-mark wave-mark" viewBox="0 0 48 24" aria-hidden="true">
+              <path [attr.d]="s.wavePath" />
+            </svg>
+            {{ 'seaPage.facet.waves' | t }}
+          </dt>
+          <dd>
+            <span class="facet-title">{{ s.facets.waves.title | t }}</span>
+            @if (s.facets.waves.detail; as detail) {
+              <span class="facet-detail t-num">{{ detail | t }}</span>
+            }
+          </dd>
+        </div>
+        <div class="facet sea-facet" data-facet="swell">
+          <dt>
+            <span class="facet-mark swell-mark" aria-hidden="true">
+              @if (s.swellTo; as to) {
+                <svg viewBox="0 0 24 24" [style.rotate]="to">
+                  <path d="M12 20.5V4M6.5 9.5 12 4l5.5 5.5" />
+                </svg>
+              } @else {
+                <svg viewBox="0 0 24 24"><path d="M5 12h14" /></svg>
+              }
+            </span>
+            {{ 'seaPage.facet.swell' | t }}
+          </dt>
+          <dd>
+            <span class="facet-title">{{ s.facets.swell.title | t }}</span>
+            <span class="facet-detail t-num">{{ s.facets.swell.detail | t }}</span>
+          </dd>
+        </div>
+        <div class="facet sea-facet" data-facet="water">
+          <dt>
+            <lm-icon class="facet-mark" name="drop" />
+            {{ 'seaPage.facet.water' | t }}
+          </dt>
+          <dd>
+            @if (s.facets.water; as water) {
+              <span class="facet-title">{{ water.title | t }}</span>
+              <span class="facet-detail t-num">{{ water.detail | t }}</span>
+            } @else {
+              <span class="facet-title is-missing">{{ 'seaPage.waterNone' | t }}</span>
+            }
+          </dd>
+        </div>
+      </dl>
       @if (s.offshoreKm !== null) {
         <p class="source t-micro t-faint">
           <lm-icon name="info" />
@@ -197,24 +226,31 @@
   </section>
 
   <section id="calmest-sea" class="block calmest-sea" aria-labelledby="calm-title">
-    <h2 id="calm-title" class="t-title">{{ 'seaPage.calmest' | t }}</h2>
+    <div class="calm-head">
+      <h2 id="calm-title" class="t-title">{{ 'seaPage.calmest' | t }}</h2>
+      <p class="t-micro t-faint">{{ 'seaPage.calmestHint' | t }}</p>
+    </div>
     @if (calmest().length > 0) {
       <ol class="calm calm-sea-list">
-        @for (zone of calmest(); track zone.id; let i = $index) {
+        @for (zone of calmest(); track zone.id) {
           <li>
             <button
               type="button"
               class="calm-row calm-sea-row"
+              [class.is-here]="zone.isHere"
               [attr.data-location-id]="zone.id"
+              [attr.data-level]="zone.level"
               (click)="openDay(zone.id)"
             >
-              <span class="calm-rank t-num">{{ i + 1 }}</span>
-              <svg class="calm-wave" viewBox="0 0 48 24" aria-hidden="true">
-                <path [attr.d]="zone.path" />
-              </svg>
               <span class="calm-text">
                 <span class="calm-name">{{ zone.name }}</span>
-                <span class="calm-sub">{{ zone.label | t }} · {{ zone.waves | t }}</span>
+                <span class="calm-sub">{{ zone.label | t }}</span>
+              </span>
+              <span class="calm-measure">
+                <span class="calm-bar" aria-hidden="true">
+                  <span class="calm-fill" [style.transform]="'scaleX(' + zone.share + ')'"></span>
+                </span>
+                <span class="calm-waves t-num">{{ zone.waves | t }}</span>
               </span>
               <lm-icon class="chevron" name="chevron-right" />
             </button>

@@ -5,6 +5,8 @@
   min-height: 34rem;
   color: oklch(0.99 0.004 90);
   transition: color var(--d-atmos) ease;
+  // Swipes across the scene page through favourites; scrolling stays the page's.
+  touch-action: pan-y;
 }
 
 :host(.is-ink-dark) {
@@ -33,14 +35,15 @@ lm-scene {
   background: linear-gradient(var(--atlantico-700), var(--atlantico-500) 62%, var(--atlantico-700));
 }
 
-// Keeps light text legible over bright cloud without darkening the whole sky.
+// Keeps light text legible over bright cloud without darkening the whole sky:
+// deepest behind the place and the number, gone by the horizon.
 .shade {
   position: absolute;
   inset: 0 0 auto;
-  height: 75%;
+  height: 78%;
   background: linear-gradient(
     oklch(0.16 0.04 262 / 0.36),
-    oklch(0.16 0.04 262 / 0.3) 60%,
+    oklch(0.16 0.04 262 / 0.24) 55%,
     transparent
   );
   transition: opacity var(--d-atmos) ease;
@@ -56,71 +59,228 @@ lm-scene {
   display: flex;
   flex-direction: column;
   height: 100%;
-  padding: calc(var(--safe-top) + var(--s-3)) var(--gutter) 0;
+  padding: calc(var(--safe-top) + var(--s-4)) var(--gutter) 0;
 }
 
+// Light text gets a soft local halo for legibility over cloud; dark text needs none.
 .bar,
-.actions,
-.tools,
-.places-row {
-  display: flex;
-  align-items: center;
-  gap: var(--s-2);
+.copy {
+  text-shadow:
+    0 1px 2px oklch(0.18 0.05 262 / 0.22),
+    0 0 1.5rem oklch(0.18 0.05 262 / 0.24);
+
+  :host(.is-ink-dark) & {
+    text-shadow: none;
+  }
 }
 
-.actions {
-  margin-left: auto;
-}
-
-// Always laid out, with or without content: see the template.
-.slot {
+// ── The top line: place, then time and favourites, then the tools ──
+.bar {
   display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas:
+    'place place'
+    'meta tools';
   align-items: center;
-  min-width: 0;
-  // The chips plus the 2px ring of room their focus outline needs.
-  min-height: calc(var(--sky-control-h) + 4px);
-  margin-top: var(--s-2);
+  column-gap: var(--s-3);
 }
 
-.places-row {
-  min-width: 0;
-}
-
-.places {
+.place-line {
+  grid-area: place;
   display: flex;
-  flex: 1;
+  align-items: center;
+  gap: var(--s-1);
   min-width: 0;
-  gap: var(--s-2);
-  margin: 0 calc(var(--gutter) * -1);
-  padding: 2px var(--gutter);
-  overflow-x: auto;
-  scrollbar-width: none;
 }
 
-.place.is-current {
-  flex: 0 1 auto;
+// The name is the button: no pill around it, just the words and a chevron.
+.place {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
   min-width: 0;
-  padding-inline: var(--s-3) var(--s-4);
-  background-color: color-mix(in oklch, currentColor 18%, transparent);
-  font-size: 0.9375rem;
-  font-weight: 680;
+  min-height: 2.75rem;
+  padding: 0 var(--s-2);
+  margin-inline-start: calc(var(--s-2) * -1);
+  border-radius: var(--r-md);
+  color: inherit;
+  transition:
+    transform var(--d-press) var(--ease-out),
+    background-color var(--d-fast) ease;
+
+  &:active {
+    transform: scale(0.98);
+  }
+
+  &:focus-visible {
+    outline-color: currentColor;
+  }
 }
 
 .place-name {
   min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-// Same height as the place button (`.sky-chip`), only lighter.
-.place--quick {
-  padding-inline: var(--s-3);
-  background-color: transparent;
-  font-size: var(--fs-micro);
+  font-size: clamp(1.5rem, 6.6vw, 2.125rem);
+  font-weight: 660;
+  letter-spacing: -0.028em;
+  line-height: 1.1;
+  white-space: nowrap;
 }
 
 .chevron {
-  opacity: 0.75;
+  flex: none;
+  width: var(--icon-md);
+  height: var(--icon-md);
+  margin-top: 0.15em;
+  opacity: 0.8;
+}
+
+.star {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 50%;
+  color: inherit;
+  transition:
+    transform var(--d-press) var(--ease-out),
+    background-color var(--d-fast) ease;
+
+  lm-icon {
+    width: var(--icon-lg);
+    height: var(--icon-lg);
+    transition: color var(--d-fast) ease;
+  }
+
+  &[aria-pressed='true'] lm-icon {
+    color: var(--sol-400);
+  }
+
+  &:active {
+    transform: scale(0.92);
+  }
+
+  &:focus-visible {
+    outline-color: currentColor;
+  }
+}
+
+.meta {
+  grid-area: meta;
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  min-width: 0;
+  min-height: 2.75rem;
+}
+
+.clock {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.3125rem;
+  font-size: var(--fs-small);
+  white-space: nowrap;
+}
+
+.clock-label {
+  font-weight: 560;
+  color: color-mix(in oklch, currentColor 84%, transparent);
+}
+
+.clock-time {
+  font-weight: 680;
+  letter-spacing: -0.01em;
+}
+
+// Always in the layout; it only fades in while an hour is previewed.
+.moment-reset {
+  min-height: 2.75rem;
+  padding-inline: var(--s-2);
+  margin-inline: calc(var(--s-2) * -1);
+  border-radius: var(--r-pill);
+  color: inherit;
+  font-size: var(--fs-small);
+  font-weight: 620;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.22em;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity var(--d-fast) ease,
+    visibility 0s var(--d-fast);
+
+  &.is-shown {
+    opacity: 1;
+    visibility: visible;
+    transition-delay: 0s;
+  }
+
+  &:not(.is-shown) {
+    position: absolute;
+  }
+
+  &:focus-visible {
+    outline-color: currentColor;
+  }
+}
+
+// ── Favourites, as page marks ─────────────────────────────────
+.pages {
+  display: flex;
+  align-items: center;
+  margin-inline: calc(var(--s-1) * -1);
+}
+
+// Each mark answers a 24 × 44 px target (WCAG 2.5.8) however small it looks.
+.page {
+  display: grid;
+  place-items: center;
+  width: 1.5rem;
+  height: 2.75rem;
+  color: inherit;
+
+  &:focus-visible {
+    outline-color: currentColor;
+    outline-offset: -4px;
+    border-radius: var(--r-pill);
+  }
+}
+
+.page-mark {
+  width: 0.375rem;
+  height: 0.375rem;
+  border-radius: var(--r-pill);
+  background-color: currentColor;
+  opacity: 0.5;
+  // A handful of tiny marks: the long one's width moving is not worth a layer.
+  transition:
+    width var(--d-base) var(--ease-out),
+    opacity var(--d-fast) ease;
+
+  .is-current & {
+    width: 1.125rem;
+    opacity: 1;
+  }
+
+  // The place on screen when it is not one of the favourites: an open mark.
+  .page:not(.is-saved) & {
+    background-color: transparent;
+    box-shadow: inset 0 0 0 1.5px currentColor;
+  }
+}
+
+.page.is-current {
+  width: 1.75rem;
+}
+
+// ── Settings and sharing ──────────────────────────────────────
+.tools {
+  grid-area: tools;
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
 }
 
 .demo {
@@ -129,173 +289,93 @@ lm-scene {
   font-size: var(--fs-micro);
 }
 
-// The numbers carry it: larger than the pill's text, with little padding.
-.clock {
-  gap: 0.3125rem;
-  padding-inline: 0.625rem;
-}
-
-.clock-label {
-  font-weight: 520;
-  color: color-mix(in oklch, currentColor 82%, transparent);
-}
-
-.clock-time {
-  font-size: 1.1875rem;
-  font-weight: 650;
-  letter-spacing: -0.015em;
-}
-
-// On narrow phones the place name needs the room more than the clock's
-// label or wide gaps do.
-@media (max-width: 26rem) {
-  .bar,
-  .actions {
-    gap: 0.375rem;
+@media (hover: hover) and (pointer: fine) {
+  .place:hover,
+  .star:hover {
+    background-color: color-mix(in oklch, currentColor 12%, transparent);
   }
 
-  .place.is-current {
-    padding-inline-start: var(--s-4);
-    font-size: var(--fs-small);
-  }
-
-  .clock {
-    padding-inline: 0.4375rem;
-  }
-
-  .clock-time {
-    font-size: 1.125rem;
-  }
-
-  .demo {
-    width: var(--sky-control-h);
-    padding: 0;
-  }
-
-  .demo-label {
-    display: none;
-  }
-
-  // The time alone says "now"; screen readers still hear the word.
-  .clock-label {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-    clip-path: inset(50%);
-    white-space: nowrap;
+  .page:hover .page-mark {
+    opacity: 0.85;
   }
 }
 
-// The smallest phones: the controls are a little smaller (36 px, still well
-// past the 24 px target size) and closer, and the chip drops its pin and
-// chevron (the chip itself says "choose a place"), so the place keeps its
-// whole name.
-@media (max-width: 23rem) {
-  :host {
-    --sky-control-h: 2.25rem;
-  }
-
-  .bar,
-  .actions {
-    gap: var(--s-1);
-  }
-
-  // Room for each favourite's touch ring (see _sky-controls.scss), which the
-  // scrolling row would otherwise clip; the margin keeps the row where it was.
-  .places {
-    padding-block: 4px;
-    margin-block: -2px;
-  }
-
-  .pin,
-  .chevron {
-    display: none;
-  }
-
-  .place.is-current {
-    padding-inline: var(--s-3);
-  }
-
-  .clock {
-    padding-inline: 0.375rem;
-  }
-
-  .clock-time {
-    font-size: 1.0625rem;
-  }
-}
-
+// ── The reading ───────────────────────────────────────────────
 .copy-wrap {
-  margin-top: clamp(1rem, 4svh, 3rem);
+  margin-top: clamp(0.75rem, 3svh, 2.25rem);
 }
 
-// Light text gets a soft local halo for legibility over cloud; dark text needs none.
 .copy {
-  text-shadow:
-    0 1px 2px oklch(0.18 0.05 262 / 0.2),
-    0 0 1.5rem oklch(0.18 0.05 262 / 0.22);
-
-  :host(.is-ink-dark) & {
-    text-shadow: none;
-  }
+  display: grid;
+  justify-items: start;
 }
 
-.moment {
+.reading {
   display: flex;
   align-items: center;
-  gap: var(--s-3);
-  height: var(--sky-control-h);
-  font-size: var(--fs-small);
-  font-weight: 650;
-}
-
-.moment-reset {
-  min-height: var(--sky-control-h);
-  padding-inline: var(--s-2);
-  margin-inline: calc(var(--s-2) * -1);
-  border-radius: var(--r-pill);
-  color: inherit;
-  font-weight: 560;
-  text-decoration: underline;
-  text-underline-offset: 0.2em;
+  gap: var(--s-5);
 }
 
 .temp {
   margin-left: -0.05em;
+  line-height: 0.88;
 }
 
-// The island's time, in the same pill as the buttons beside it.
-// The words keep to the left; the sun and moon own the right-hand sky.
-.verdict {
-  margin-top: var(--s-4);
+.state {
+  display: grid;
+  gap: var(--s-1);
+  min-width: 0;
+}
+
+.condition {
   max-width: 11ch;
+  font-size: var(--fs-title);
+  font-weight: 620;
+  letter-spacing: -0.016em;
+  line-height: 1.15;
+  text-wrap: balance;
+}
+
+.range {
+  font-size: var(--fs-small);
+  font-weight: 600;
+  color: color-mix(in oklch, currentColor 88%, transparent);
+}
+
+.wind {
+  margin-top: var(--s-5);
+}
+
+.words {
+  margin-top: var(--s-5);
+}
+
+.verdict {
+  max-width: 15ch;
+  font-size: 1.75rem;
+  font-weight: 680;
+  letter-spacing: -0.026em;
+  line-height: 1.1;
+  text-wrap: balance;
 }
 
 .sentence {
   margin-top: var(--s-2);
-  max-width: 23ch;
-}
-
-.sentence,
-.range {
+  max-width: 30ch;
   color: color-mix(in oklch, currentColor 90%, transparent);
-}
-
-.range {
-  margin-top: var(--s-2);
-  font-size: var(--fs-small);
-  font-weight: 600;
+  text-wrap: pretty;
 }
 
 .failure {
   max-width: 24rem;
+  margin-top: var(--s-6);
   color: var(--c-ink);
 }
 
 .loading {
   display: grid;
-  gap: var(--s-3);
+  gap: var(--s-4);
+  margin-top: var(--s-4);
 }
 
 .bone {
@@ -305,40 +385,29 @@ lm-scene {
 }
 
 .temp-bone {
-  width: 9rem;
+  width: 13rem;
   height: 6rem;
   border-radius: var(--r-md);
 }
 
-.sentence-bone {
+.wind-bone {
   width: 12rem;
-  height: 1.1rem;
-}
-
-@media (min-width: 48rem) {
-  :host {
-    height: min(72svh, 46rem);
-  }
-
-  .verdict {
-    max-width: 14ch;
-  }
+  height: 2.5rem;
+  border-radius: var(--r-pill);
 }
 
 // ── Phones and tablets ────────────────────────────────────────
 // The first screen holds the scene and, right below it, the hours that
 // change it: choosing an hour never means scrolling back up to see it.
 // The scene takes what the viewport leaves after the tab bar and the hours,
-// and grows past that only if its own content needs the room. Top to bottom:
-// place and favourite with the time; favourites; the words; settings and
-// sharing over the sea, within reach of the thumb.
+// and grows past that only if its own content needs the room.
 @media (width < 64rem) {
   :host {
     // The hours section below, as rendered: heading and one row of hours,
     // less the sheet's rounded lip, which overlaps the scene.
-    --hours-peek: 13rem;
-    // The water at the foot of the scene, which holds the two buttons.
-    --sea-band: clamp(6rem, 14svh, 10rem);
+    --hours-peek: 11.5rem;
+    // The water at the foot of the scene.
+    --sea-band: clamp(5rem, 12svh, 8.5rem);
     // Clear sky between the words and the horizon, for what rises above it
     // (palms, the lighthouse, the Gran Hotel, the crater's rim).
     --sky-gap: 2.5rem;
@@ -351,6 +420,7 @@ lm-scene {
   .inner {
     flex: 1;
     height: auto;
+    padding-bottom: calc(var(--sea-band) + var(--r-xl));
   }
 
   // The horizon sits at the top of the band, so the words always stand on sky.
@@ -358,88 +428,116 @@ lm-scene {
     --horizon: calc(100% - var(--sea-band));
   }
 
-  // The place leads the row with its star; the time keeps to the right.
-  .actions {
-    display: contents;
-  }
-
-  .favorite-toggle {
-    order: 1;
-  }
-
-  .clock {
-    order: 2;
-    margin-left: auto;
-  }
-
-  .place-name {
-    white-space: nowrap;
-  }
-
   .copy-wrap {
-    margin-top: clamp(0.75rem, 2.5svh, 2.5rem);
     padding-bottom: var(--sky-gap);
   }
 
   // A shorter screen gets a slightly smaller number, never a cramped one.
   .temp {
-    font-size: clamp(5rem, min(26vw, 13svh), 9rem);
+    font-size: clamp(4.75rem, min(25vw, 12.5svh), 8rem);
   }
 
   // Room for two lines whatever the verdict says ("Ratos de sol", "Sopla con
-  // ganas"), so choosing another hour or place never moves the hours below.
-  // A one-line verdict sits on the sentence; the spare air goes under the number.
+  // ganas"), and two for its sentence, present or not, so choosing another
+  // hour or place never moves the hours below.
   .verdict {
     display: flex;
     align-items: flex-end;
     min-height: 2lh;
-    margin-top: var(--s-3);
   }
 
-  // Two lines where three used to stack; the sun keeps the sky above them.
+  // A notch smaller on phones, so even the longest sentence fits its two lines.
   .sentence {
-    max-width: 28ch;
+    min-height: 2lh;
+    max-width: 46ch;
+    font-size: var(--fs-small);
   }
 
-  // The band's height, with the buttons at its foot, clear of the sheet's lip.
-  // They sit on the water, always darker than the sky the ink is chosen for:
-  // they keep the light ink even when a bright sky turns the words dark.
-  .tools {
-    color: oklch(0.99 0.004 90);
-    justify-content: flex-end;
-    margin-top: auto;
-    padding-top: calc(var(--sea-band) - var(--sky-control-h) - var(--r-xl) - var(--s-3));
-    padding-bottom: calc(var(--r-xl) + var(--s-3));
+  // The sky in one line or two: the same room either way, the words sitting
+  // on the high and low.
+  .condition {
+    display: flex;
+    align-items: flex-end;
+    min-height: 2lh;
   }
 }
 
 // Short phones (iPhone SE and the like): everything a notch tighter, so the
-// hours still start on the first screen.
+// hours still start on the first screen; the sentence gives way first.
 @media (width < 64rem) and (max-height: 46rem) {
   :host {
-    --sky-gap: 2rem;
+    --sky-gap: 1.75rem;
   }
 
   .copy-wrap {
-    margin-top: var(--s-2);
+    margin-top: var(--s-1);
   }
 
   .temp {
-    font-size: clamp(4.5rem, min(24vw, 12svh), 9rem);
+    font-size: clamp(4.25rem, min(22vw, 11svh), 8rem);
+  }
+
+  .wind,
+  .words {
+    margin-top: var(--s-3);
   }
 
   .verdict {
-    margin-top: var(--s-2);
-    font-size: 1.75rem;
+    font-size: 1.5rem;
+  }
+
+  .sentence {
+    display: none;
   }
 }
 
-// Desktop: the scene becomes a panorama. Place, favourites and actions share
-// one line; the temperature stands beside the words; the right-hand sky is
-// left to the sun and the moon.
+// The narrowest phones: controls a little smaller (36 px, still well past the
+// 24 px target size) and closer, the clock's label left to screen readers.
+@media (max-width: 23rem) {
+  :host {
+    --sky-control-h: 2.25rem;
+  }
+
+  .tools {
+    gap: var(--s-1);
+  }
+
+  .meta {
+    gap: var(--s-2);
+  }
+
+  .demo {
+    width: var(--sky-control-h);
+    padding: 0;
+  }
+
+  .demo-label {
+    display: none;
+  }
+
+  .clock-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}
+
+@media (min-width: 48rem) {
+  .verdict {
+    font-size: 2rem;
+  }
+}
+
+// ── Desktop: the scene as a panorama ──────────────────────────
+// One line across the top: the place, then the time and the favourites,
+// the tools at the end. Below, the number and the sky with the wind under
+// them, and the verdict beside them; the right-hand sky is the sun's.
 @media (min-width: 64rem) {
   :host {
-    height: clamp(26rem, 54vh, 32rem);
+    height: clamp(28rem, 58vh, 34rem);
     min-height: 0;
     margin: var(--s-4) var(--s-4) 0;
   }
@@ -449,65 +547,64 @@ lm-scene {
   }
 
   .inner {
-    display: grid;
-    grid-template: auto 1fr / auto minmax(0, 1fr) auto auto;
-    align-content: start;
-    column-gap: var(--s-3);
-    padding: var(--s-6) var(--s-8) 0;
+    padding: var(--s-6) var(--s-8) var(--s-6);
   }
 
   .bar {
-    display: contents;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-areas: 'place meta tools';
+    column-gap: var(--s-5);
   }
 
-  .actions {
-    grid-column: 3;
+  .place-name {
+    font-size: 2.25rem;
   }
 
-  // Settings and sharing close the same row, as close to the star as the
-  // buttons are to each other.
-  .tools {
-    grid-area: 1 / 4;
-    align-self: center;
-    margin-inline-start: calc(var(--s-2) - var(--s-3));
-  }
-
-  // The row is as tall as the favourites' slot; everything in it sits on its centre line.
-  .place.is-current,
-  .actions {
-    align-self: center;
-  }
-
-  .slot {
-    grid-area: 1 / 2;
-    margin: 0;
-  }
-
-  .places {
-    margin: 0;
-    padding: 2px;
+  .meta {
+    padding-left: var(--s-5);
+    border-left: 1px solid color-mix(in oklch, currentColor 26%, transparent);
   }
 
   .copy-wrap {
-    grid-column: 1 / -1;
-    margin-top: clamp(1.5rem, 6vh, 3.5rem);
+    margin-top: clamp(1.5rem, 5vh, 3rem);
   }
 
   .copy {
-    display: grid;
-    grid-template-columns: auto minmax(0, 30rem);
+    grid-template-columns: auto minmax(0, 28rem);
     justify-content: start;
+    grid-template-areas:
+      'reading words'
+      'wind words';
     align-items: center;
-    column-gap: var(--s-8);
+    column-gap: var(--s-12);
+  }
+
+  .reading {
+    grid-area: reading;
+  }
+
+  .temp {
+    font-size: 8.5rem;
+  }
+
+  .wind {
+    grid-area: wind;
+  }
+
+  .words {
+    grid-area: words;
+    margin-top: 0;
+    padding-left: var(--s-12);
+    border-left: 1px solid color-mix(in oklch, currentColor 24%, transparent);
   }
 
   .verdict {
-    margin-top: 0;
-    max-width: 16ch;
-    font-size: 3rem;
+    font-size: 2.75rem;
+    max-width: 14ch;
   }
 
   .sentence {
-    max-width: 34ch;
+    font-size: var(--fs-lead);
+    max-width: 32ch;
   }
 }

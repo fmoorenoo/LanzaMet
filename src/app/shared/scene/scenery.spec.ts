@@ -47,13 +47,20 @@ describe('scenery', () => {
     expect(sceneryArt('el-golfo').strata.length).toBeGreaterThan(3);
     expect(sceneryArt('el-golfo').lagoon).not.toBe('');
     expect(sceneryArt('playa-grande').fronds).not.toBe('');
+    // Arrieta: La Garita's sand, the blue Casa Juanita, the pier with its light and boats.
+    const garita = sceneryArt('garita');
+    expect(garita.beach).not.toBe('');
+    expect(garita.accent).not.toBe('');
+    expect(garita.breakwater).not.toBe('');
+    expect(garita.lamps).toHaveLength(1);
+    expect(garita.afloat.filter((a) => a.kind === 'boat').length).toBeGreaterThan(1);
   });
 
   it('keeps tall landmarks right of the words, and everything on the land or the sea', () => {
     const { width, height } = HORIZON_VIEWBOX;
     for (const { scenery } of LOCATIONS) {
       const art = sceneryArt(scenery);
-      const built = [art.walls, art.shade, art.glass, art.windows].flatMap(points);
+      const built = [art.walls, art.shade, art.glass, art.windows, art.accent].flatMap(points);
       for (const p of built) {
         expect(p.x).toBeGreaterThanOrEqual(0);
         expect(p.x).toBeLessThanOrEqual(width);

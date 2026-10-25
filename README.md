@@ -20,7 +20,7 @@ npm run start:demo   # web con datos simulados (escenarios, hora y red ajustable
 npm test             # tests unitarios de la web (Vitest)
 npm run test:api     # tests del API (node:test, con ficheros reales de AEMET)
 npm run typecheck:api
-npm run verify:sources  # comprueba en vivo todas las fuentes para las 7 zonas
+npm run verify:sources  # comprueba en vivo todas las fuentes para las 9 zonas
 npm run lint
 npm run build        # build de producción en dist/, sin clave de Web3Forms
 
@@ -68,9 +68,10 @@ El tiempo se pide en las coordenadas de cada zona. Para el mar no sirve: el mode
 | Famara | 29,116 / −13,557 | 29,120 / −13,604 ² | 29,208 / −13,708 | 18 km |
 | La Santa | 29,112 / −13,655 | 29,120 / −13,604 ² | 29,125 / −13,792 | 13 km |
 | Órzola | 29,223 / −13,450 | 29,218 / −13,469 | 29,292 / −13,458 | 8 km |
+| Arrieta | 29,132 / −13,462 | 29,158 / −13,460 | 29,125 / −13,292 ³ | 17 km |
 | El Golfo | 28,982 / −13,831 | 28,952 / −13,828 | 28,958 / −13,875 | 5 km |
 
-¹ ² Zonas que comparten celda: el modelo no las distingue y muestran los mismos valores (salvo el ajuste de temperatura por altitud). No se inventan diferencias. En la fase 3 se retiró **Papagayo**, que repetía las celdas de Playa Blanca: quien la tuviera guardada pasa a Playa Blanca (`RETIRED_LOCATIONS`). **La Santa** se retiró entonces por lo mismo y ha vuelto: su tiempo es el de Famara, pero su mar se lee en una celda propia, al oeste de su bahía. La pantalla Mar indica a cuántos kilómetros está el punto de mar abierto y que en la orilla las olas pueden ser distintas.
+¹ ² Zonas que comparten celda: el modelo no las distingue y muestran los mismos valores (salvo el ajuste de temperatura por altitud). No se inventan diferencias. En la fase 3 se retiró **Papagayo**, que repetía las celdas de Playa Blanca: quien la tuviera guardada pasa a Playa Blanca (`RETIRED_LOCATIONS`). **La Santa** se retiró entonces por lo mismo y ha vuelto: su tiempo es el de Famara, pero su mar se lee en una celda propia, al oeste de su bahía. ³ Las dos celdas frente a Arrieta están enmascaradas como costa (al pedirlas, el modelo salta a otra celda); la primera de mar abierto hacia el este, la que mira su costa, está a unos 17 km. Comprobado el 25-10-2026: olas, mar de fondo, agua y nivel del mar propios. La pantalla Mar indica a cuántos kilómetros está el punto de mar abierto y que en la orilla las olas pueden ser distintas.
 
 ### Mareas: estimación, no tabla oficial
 
@@ -83,7 +84,7 @@ Por eso la marea es una **estimación** a partir del nivel del mar del modelo SM
 
 - dice «Bajamar *hacia* las 17:30» y no «a las»;
 - titula «Pleamares y bajamares (estimadas)»;
-- advierte: «Estimación del modelo oceánico… No es una tabla oficial ni sirve para navegar»;
+- el pie de la página dice «Oleaje y marea estimada de modelos de Météo-France», y Legal, que no es una tabla oficial ni sirve para navegar (la frase ya no va dentro de la gráfica);
 - da las alturas con signo, sobre el nivel medio del mar (−0,9 m / +0,5 m).
 
 Validación del 22-10-2026 en Arrecife: el modelo adelanta 24–37 min respecto a una predicción armónica independiente (tide-forecast.com: bajamar 05:29, pleamar 11:39 y bajamar 17:57, hora canaria). Un test lo comprueba con una tolerancia de 45 min. Open-Meteo advierte de que la precisión en la costa es limitada.
@@ -92,14 +93,14 @@ Validación del 22-10-2026 en Arrecife: el modelo adelanta 24–37 min respecto 
 
 - **Avisos**: funcionan sin clave. El API propio lee el RSS oficial de Canarias (`CAP_AFAC65_RSS.xml`, ~7 KB) y el paquete «estado completo» que enlaza (`.tar.gz`, ~8 KB, un CAP 1.2 por aviso). Se queda con los niveles amarillo, naranja y rojo de las zonas 659101 y 659101C que no hayan caducado, en español y sin cancelaciones. El navegador no puede leer esos ficheros (AEMET no envía CORS).
 - **Observaciones**: funcionan con clave, verificadas contra el API real el 22-10-2026. El API pide una a una las **7 estaciones de AEMET en Lanzarote** (OpenData solo acepta una estación por petición): C018J Tías-Las Vegas (376 m), C019V Yaiza-Playa Blanca (6 m), C029O Aeropuerto (14 m), C029R Arrecife-Granja Cabildo (108 m), C038N Haría (277 m), C048W Tinajo (275 m) y C839X La Graciosa (19 m). Cada estación ocupa ~5 KB y se procesa en ~0,3 ms; el listado nacional (`todas`) son 3,4 MB y ~270 ms, por eso no se usa. Las horas llegan en UTC (`+0000`) y el viento en m/s, que se pasa a km/h.
-- **Qué estación representa a cada zona**: solo una estación baja (≤ 150 m), a 10 km como máximo y con lectura de las últimas 3 h. Las estaciones de interior no describen la costa; Haría, por ejemplo, está detrás del Risco de Famara. Por eso Famara y El Golfo no muestran «Medido»: mejor nada que una lectura de otro sitio. Puerto del Carmen usa el Aeropuerto; Arrecife y Costa Teguise, Granja Cabildo; Playa Blanca, Playa Blanca; Órzola, La Graciosa.
+- **Qué estación representa a cada zona**: solo una estación baja (≤ 150 m), a 10 km como máximo y con lectura de las últimas 3 h. Las estaciones de interior no describen la costa; Haría, por ejemplo, está detrás del Risco de Famara. Por eso Famara y El Golfo no muestran «Medido»: mejor nada que una lectura de otro sitio. Puerto del Carmen usa el Aeropuerto; Arrecife y Costa Teguise, Granja Cabildo; Playa Blanca, Playa Blanca; Órzola, La Graciosa. Arrieta tampoco muestra «Medido»: Haría está a 277 m y La Graciosa a 12 km.
 - **Clave**: gratuita en <https://opendata.aemet.es/centrodedescargas/altaUsuario>. En local va en `.dev.vars` en la raíz del proyecto, una sola línea `AEMET_API_KEY=…`. Git ignora ese archivo y lo leen tanto `npm run api` como `npm run preview` (`wrangler dev`). `server/.dev.vars`, el sitio anterior, sigue valiendo para `npm run api`. En producción se guarda como secreto del Worker (`npx wrangler secret put AEMET_API_KEY`), nunca en el frontend. `http://localhost:8787/api/salud` dice si hay clave sin revelarla.
 
 ## Caché y actualización
 
 > Consumo real por visitante, límites de los proveedores, capacidad estimada y recomendación a largo plazo: [`API_USAGE_AUDIT.md`](API_USAGE_AUDIT.md).
 
-- **Una petición por fuente para toda la isla.** Open-Meteo admite listas de coordenadas: las 7 zonas cuestan 3 peticiones (tiempo, mar con 7 puntos distintos y polvo), por muchas pantallas que las usen. Las peticiones simultáneas se comparten (`ResponseCache`).
+- **Una petición por fuente para toda la isla.** Open-Meteo admite listas de coordenadas: las 9 zonas cuestan 3 peticiones (tiempo, mar con 9 puntos distintos y polvo), por muchas pantallas que las usen. Las peticiones simultáneas se comparten (`ResponseCache`).
 - **Caducidad según el modelo**: tiempo 30 min, mar 60 min, polvo 3 h, avisos 10 min, observaciones 20 min. Las respuestas de Open-Meteo se guardan en `localStorage`, así que recargar dentro de ese plazo no pide nada.
 - **Actualización automática**: los stores se revisan cada 15 min (`ClockStore.refreshBeat`) y la caché decide si eso llega a la red. **Con la pestaña oculta ese pulso se detiene**: una pestaña olvidada no pide nada. Al volver a verla, se vuelve a pedir lo caducado. «Actualizar» vuelve a pedir lo que tenga más de 1 min, y al recuperar la conexión se piden los datos enseguida.
 - **Copia compartida de Open-Meteo** (`/api/open-meteo/{forecast,marine,air-quality}`, `server/open-meteo.ts`):
@@ -122,10 +123,10 @@ Validación del 22-10-2026 en Arrecife: el modelo adelanta 24–37 min respecto 
 
 ## Pantallas
 
-- **Hoy**: escena atmosférica generada a partir de los datos (cielo según hora y nubosidad, calima, lluvia, sol o luna, horizonte de cada zona, olas según el mar y nivel del agua según la marea), veredicto, máxima y mínima, viento, mar y marea, 24 h, dónde ir, amanecer y atardecer con el recorrido del sol, detalles (con la medida de AEMET si existe), 7 días y avisos oficiales. En escritorio la escena es una banda panorámica y el detalle va en dos columnas.
+- **Hoy**: escena atmosférica generada a partir de los datos (cielo según hora y nubosidad, calima, lluvia, sol o luna, horizonte de cada zona, olas según el mar y nivel del agua según la marea); encima, la zona en grande, la temperatura, el cielo en palabras, el viento (km/h, dirección e intensidad en la escala de Beaufort agrupada) y el veredicto, y las favoritas como marcas de página que también se recorren deslizando la escena. Debajo, viento, mar y marea, 24 h con una barra de viento por hora, dónde ir, amanecer y atardecer con el recorrido del sol, detalles (con la medida de AEMET si existe), 7 días y avisos oficiales. En escritorio la escena es una banda panorámica y el detalle va en dos columnas.
 - **Zonas**: mapa ilustrado con el estado y el viento por zona, y tarjetas con miniescena.
-- **Mar**: marea estimada, curva del día, pleamares y bajamares de hoy y mañana, oleaje, mar de fondo, agua, avisos costeros y zonas más tranquilas.
-- **Dónde ir**: recomendaciones derivadas de los datos (playa, sin viento, mar tranquilo, atardecer, paseo, olas).
+- **Mar**: marea estimada, curva del día suavizada (interpolación monótona, sin máximos ni mínimos inventados), pleamares y bajamares de hoy y mañana, el mar en tres partes en palabras (oleaje, mar de fondo, agua), avisos costeros y zonas de menos a más olas con una barra por zona.
+- **Dónde ir**: recomendaciones derivadas de los datos (playa, sin viento, mar tranquilo, atardecer, paseo, olas), como postales: el paisaje de cada lugar con la luz de ahora, dónde queda en la isla y la temperatura, el viento y el mar para comparar.
 - **Ayúdanos** (`/mejorar`): formulario para avisar de errores y proponer sugerencias o mejoras; el correo es opcional. Ver [Comentarios de los usuarios](#comentarios-de-los-usuarios).
 - **Ajustes**: idioma, apariencia, **acceso rápido** (instalar la web como app o guardarla en marcadores; ver [Instalar la web](#instalar-la-web-pwa)) y un enlace a **Legal y privacidad**.
 - **Legal y privacidad** (`/legal`, sin pestaña propia: se llega desde Ajustes): aviso de seguridad, privacidad (qué se guarda en el dispositivo, qué ven los servidores y qué envía el formulario de Ayúdanos), condiciones de uso, de dónde salen los datos con sus licencias y el estado de AEMET, y contacto.

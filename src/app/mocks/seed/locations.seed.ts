@@ -92,6 +92,14 @@ export const CLIMATE_TRAITS: Readonly<Record<LocationId, ClimateTraits>> = {
     tideDelayMin: 6,
     waterOffsetC: -0.5,
   },
+  arrieta: {
+    windFactor: 1.08,
+    cloudiness: 0.22,
+    temperatureOffsetC: -0.6,
+    swellFactor: 0.95,
+    tideDelayMin: 3,
+    waterOffsetC: -0.3,
+  },
   'el-golfo': {
     windFactor: 1,
     cloudiness: 0.06,

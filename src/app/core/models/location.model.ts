@@ -9,7 +9,7 @@ export type PlaceKind = 'ciudad' | 'pueblo' | 'playa' | 'costa';
 
 /** What the place looks like from its shore; drives the scene's horizon. */
 export type HorizonProfile =
-  'abierto' | 'risco' | 'bahia' | 'graciosa' | 'fuerteventura' | 'bocaina' | 'volcanes';
+  'abierto' | 'risco' | 'bahia' | 'graciosa' | 'fuerteventura' | 'bocaina' | 'volcanes' | 'corona';
 
 /**
  * The place's own landmarks, drawn in front of its horizon: what someone who
@@ -23,6 +23,7 @@ export type SceneryId =
   | 'famara'
   | 'la-santa'
   | 'orzola'
+  | 'garita'
   | 'el-golfo';
 
 export type ShoreKind = 'arena-dorada' | 'arena-negra' | 'roca';

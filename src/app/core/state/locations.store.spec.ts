@@ -29,13 +29,20 @@ describe('LocationsStore', () => {
     expect(locations.favorites().map((l) => l.id)).toEqual(['famara', 'playa-blanca', 'arrecife']);
   });
 
-  it('no longer lists the retired places, and lists La Santa again', () => {
+  it('no longer lists the retired places, and lists La Santa again and Arrieta', () => {
     const ids = store({})
       .all()
       .map((l) => l.id);
     expect(ids).not.toContain('papagayo');
     expect(ids).toContain('la-santa');
-    expect(ids).toHaveLength(8);
+    expect(ids).toContain('arrieta');
+    expect(ids).toHaveLength(9);
+  });
+
+  it('keeps Arrieta as a favourite and as the chosen place', () => {
+    const locations = store({ selected: 'arrieta', favorites: ['arrieta', 'orzola'] });
+    expect(locations.selected()?.id).toBe('arrieta');
+    expect(locations.favorites().map((l) => l.id)).toEqual(['arrieta', 'orzola']);
   });
 
   it('keeps La Santa when it was saved, rather than moving it to Famara', () => {

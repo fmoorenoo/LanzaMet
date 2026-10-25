@@ -1,0 +1,247 @@
+:host {
+  display: block;
+  min-width: 0;
+}
+
+// A postcard: the place on top, the reasons below, on one surface.
+.card {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  text-align: left;
+  border-radius: var(--r-lg);
+  background-color: var(--c-surface);
+  box-shadow: var(--shadow-1);
+  transition:
+    transform var(--d-press) var(--ease-out),
+    box-shadow var(--d-base) ease;
+
+  &:active {
+    transform: scale(0.985);
+  }
+
+  &:focus-visible {
+    outline-offset: 4px;
+  }
+}
+
+.art {
+  position: relative;
+  display: block;
+  // A card the grid widens (see the plans page) sets a wider frame.
+  aspect-ratio: var(--art-ratio, 16 / 8);
+  overflow: hidden;
+  isolation: isolate;
+}
+
+// The landscape, which leans in a touch under the pointer.
+.view {
+  position: absolute;
+  inset: 0;
+  transition: transform 600ms var(--ease-out);
+}
+
+// The island in miniature, in the corner of the sky, the place marked on it.
+.where {
+  position: absolute;
+  top: var(--s-3);
+  left: var(--s-3);
+  width: 2.75rem;
+  height: auto;
+  overflow: visible;
+  filter: drop-shadow(0 1px 2px oklch(0.18 0.05 262 / 0.3));
+}
+
+.where-land {
+  fill: oklch(1 0 0 / 0.86);
+
+  &.is-islet {
+    fill: oklch(1 0 0 / 0.6);
+  }
+}
+
+.where-halo {
+  fill: oklch(0.85 0.15 82 / 0.45);
+}
+
+.where-dot {
+  fill: var(--timanfaya-500);
+  stroke: oklch(1 0 0);
+  stroke-width: 10;
+}
+
+// The kind of plan sits on the seam between picture and words.
+.mark {
+  position: absolute;
+  right: var(--s-4);
+  bottom: var(--s-3);
+  display: grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  background-color: var(--c-surface);
+  color: var(--c-accent);
+  box-shadow: var(--shadow-1);
+
+  lm-icon {
+    width: var(--icon-md);
+    height: var(--icon-md);
+  }
+}
+
+.body {
+  display: grid;
+  align-content: start;
+  gap: var(--s-1);
+  padding: var(--s-4) var(--s-5) var(--s-5);
+}
+
+.title {
+  font-size: 1.1875rem;
+  font-weight: 660;
+  letter-spacing: -0.018em;
+  line-height: 1.2;
+  text-wrap: balance;
+}
+
+.reason {
+  font-size: var(--fs-small);
+  color: var(--c-ink-2);
+  text-wrap: pretty;
+}
+
+.when {
+  font-size: var(--fs-micro);
+  font-weight: 600;
+  color: var(--c-accent);
+}
+
+// The facts to compare, on a ruled line of their own.
+.facts {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-2) var(--s-4);
+  margin-top: var(--s-3);
+  padding-top: var(--s-3);
+  border-top: 1px solid var(--c-line);
+}
+
+.fact {
+  font-size: var(--fs-small);
+  color: var(--c-ink-2);
+}
+
+.fact-temp {
+  font-size: var(--fs-body);
+  font-weight: 680;
+  color: var(--c-ink);
+}
+
+.fact-sea {
+  font-weight: 560;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .card:hover {
+    box-shadow: var(--shadow-2);
+
+    .view {
+      transform: scale(1.03);
+    }
+
+    .title {
+      text-decoration: underline;
+      text-decoration-thickness: 1px;
+      text-underline-offset: 0.2em;
+    }
+  }
+}
+
+// ── The lead: wide, the place large, the reasons beside it ────
+:host(.is-lead) {
+  .art {
+    aspect-ratio: 16 / 9;
+  }
+
+  .where {
+    width: 3.5rem;
+  }
+
+  .title {
+    font-size: var(--fs-display);
+    font-weight: 680;
+    letter-spacing: -0.026em;
+    line-height: 1.08;
+  }
+
+  .reason {
+    font-size: var(--fs-body);
+  }
+
+  .body {
+    gap: var(--s-2);
+    padding: var(--s-5) var(--s-6) var(--s-6);
+  }
+}
+
+@media (min-width: 48rem) {
+  :host(.is-lead) {
+    .card {
+      grid-template-rows: none;
+      grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+    }
+
+    .art {
+      aspect-ratio: auto;
+      min-height: 19rem;
+    }
+
+    .body {
+      align-content: center;
+      padding: var(--s-8);
+    }
+  }
+}
+
+// On phones the other ideas are rows: the place on the left, reasons beside it.
+@media (width < 40rem) {
+  :host(:not(.is-lead)) {
+    .card {
+      grid-template-rows: none;
+      grid-template-columns: 7rem minmax(0, 1fr);
+    }
+
+    .art {
+      aspect-ratio: auto;
+      min-height: 100%;
+    }
+
+    .where {
+      top: var(--s-2);
+      left: var(--s-2);
+      width: 2rem;
+    }
+
+    .mark {
+      display: none;
+    }
+
+    .body {
+      padding: var(--s-3) var(--s-4) var(--s-4);
+    }
+
+    .title {
+      font-size: var(--fs-body);
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .view {
+    transition: none;
+  }
+}

@@ -1,6 +1,7 @@
 import { Component, computed, ElementRef, input, model, viewChildren } from '@angular/core';
 import { skyPhrase } from '../../../core/insights/sky.insight';
 import { readWind } from '../../../core/insights/wind.insight';
+import { clamp } from '../../../core/utils/math';
 import { WeatherSnapshot } from '../../../core/models';
 import { msg } from '../../../core/i18n/i18n.model';
 import { hourLabel } from '../../../core/i18n/phrases';
@@ -10,15 +11,21 @@ import { HorizontalScroll } from '../../../shared/ui/horizontal-scroll/horizonta
 import { ScrollControls } from '../../../shared/ui/horizontal-scroll/scroll-controls';
 import { SkyGlyph } from '../../../shared/ui/sky-glyph/sky-glyph';
 
-/** Vertical room of the temperature curve, px: highest point at the top, lowest at the bottom. */
-const CURVE_TOP = 22;
-const CURVE_RANGE = 26;
+/** Bars never vanish: even a calm hour keeps a sliver, so the baseline reads as wind. */
+const MIN_WIND_SHARE = 0.08;
 
 /**
- * The next 24 hours as a landscape of temperature, with the wind underneath.
+ * The top of the bars' scale: the windiest hour in the strip, but never less
+ * than this, so the differences between hours show without a calm day's
+ * breeze filling the bars as if it were a gale (the colour says how strong).
+ */
+const WIND_SCALE_FLOOR_KMH = 35;
+
+/**
+ * The next 24 hours: the time, the sky and the temperature on one line, and
+ * the wind underneath as a number with its direction and a bar that grows
+ * with its speed, so the bars across the strip draw how the wind will change.
  * Choosing an hour previews it in the scene above; arrow keys walk the hours.
- * Cell width lives in CSS (it grows on desktop), so the curve is drawn in
- * cell units and stretched to fit; its dots are HTML and stay round.
  */
 @Component({
   selector: 'lm-hour-timeline',
@@ -34,47 +41,35 @@ export class HourTimeline {
 
   private readonly buttons = viewChildren<ElementRef<HTMLButtonElement>>('cell');
 
-  private readonly range = computed(() => {
-    const temps = this.hours().map((h) => h.temperatureC);
-    return { min: Math.min(...temps), max: Math.max(...temps) };
-  });
-
-  private y(temperature: number): number {
-    const { min, max } = this.range();
-    const t = max === min ? 0.5 : (temperature - min) / (max - min);
-    return CURVE_TOP + (1 - t) * CURVE_RANGE;
-  }
+  private readonly windTop = computed(() =>
+    Math.max(WIND_SCALE_FLOOR_KMH, ...this.hours().map((h) => h.wind.speedKmh)),
+  );
 
   protected readonly cells = computed(() =>
     this.hours().map((hour, i, all) => {
       const date = toDate(hour.time);
       const newDay = i > 0 && islandDateKey(date) !== islandDateKey(toDate(all[i - 1].time));
       const wind = readWind(hour.wind);
-      const temperature = Math.round(hour.temperatureC);
       return {
         index: i,
         time: hour.time,
         label: i === 0 ? msg('common.now') : hourLabel(date),
         dayMark: newDay ? msg('common.value', { value: { weekday: date, style: 'short' } }) : null,
-        temperature,
+        temperature: Math.round(hour.temperatureC),
         sky: hour.sky,
         isDaylight: hour.isDaylight,
         windLevel: wind.level,
-        windScale: 0.2 + wind.strength * 0.8,
-        y: this.y(hour.temperatureC),
+        windSpeed: Math.round(hour.wind.speedKmh),
+        // Bars share one scale across the strip.
+        windShare: clamp(hour.wind.speedKmh / this.windTop(), MIN_WIND_SHARE, 1).toFixed(3),
+        // The arrow points where the wind goes.
+        windTo: `${(hour.wind.fromDegrees + 180) % 360}deg`,
         detail: msg('hours.cellDetail', {
           sky: skyPhrase(hour.sky, hour.isDaylight),
-          wind: wind.phrase,
+          wind: wind.labelFrom,
         }),
       };
     }),
-  );
-
-  /** The curve through the middle of each cell, x in cells, y in px. */
-  protected readonly curve = computed(() =>
-    this.cells()
-      .map((c, i) => `${i === 0 ? 'M' : 'L'}${c.index + 0.5} ${c.y.toFixed(1)}`)
-      .join(''),
   );
 
   protected readonly activeIndex = computed(() => this.selected() ?? 0);

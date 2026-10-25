@@ -126,16 +126,28 @@ export function onLanzarote({ latitude, longitude }: GeoPoint): boolean {
 }
 
 /**
- * Which side of its marker a label sits on: clear of La Graciosa and the El Río
- * strait (Órzola), and readable in the dense south-east.
+ * Which side of its marker a label sits on. Markers stay where the places
+ * are; only the labels move, and they keep clear of each other and of every
+ * marker from 320 px up (checked in the browser at 320–1440 px).
+ *
+ * The north has three places close together. Órzola's label rises above it,
+ * over open sea east of La Graciosa; Arrieta's hangs below its marker,
+ * leaning right, clear of Famara's marker; Famara's rises above and to the left, over
+ * the Risco, so it runs neither east into Arrieta nor up into Órzola. Arrieta
+ * cannot take the right: the frame ends 6 km east of it. Puerto del Carmen's
+ * label rises to the left, over the empty interior, clear of El Golfo's,
+ * Playa Blanca's and Arrecife's.
  */
-export const LABEL_SIDE: Readonly<Record<string, 'left' | 'right' | 'below' | 'above'>> = {
-  orzola: 'below',
-  famara: 'right',
+export const LABEL_SIDE: Readonly<
+  Record<string, 'left' | 'right' | 'below' | 'below-right' | 'above' | 'above-left'>
+> = {
+  orzola: 'above',
+  arrieta: 'below-right',
+  famara: 'above-left',
   'la-santa': 'left',
   'el-golfo': 'left',
   'playa-blanca': 'left',
-  'puerto-del-carmen': 'left',
+  'puerto-del-carmen': 'above-left',
   arrecife: 'below',
   'costa-teguise': 'right',
 };

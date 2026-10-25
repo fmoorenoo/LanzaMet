@@ -95,6 +95,8 @@ export const en: Messages = {
   'place.summary.famara': 'Six kilometres of sand beneath the Risco cliffs. Waves and wind.',
   'place.summary.la-santa': 'A fishing village on the lava, facing the El Quemao wave.',
   'place.summary.orzola': 'A fishing village facing La Graciosa, with white-sand coves.',
+  'place.summary.arrieta':
+    'A fishing village with La Garita beach, its harbour and Casa Juanita, the blue house.',
   'place.summary.el-golfo': 'A crater split by the sea, a black beach and the Green Lagoon.',
 
   // ── Sky and sun ──────────────────────────────────────────────
@@ -139,7 +141,7 @@ export const en: Messages = {
   'wind.from': 'from the {dir}',
   'wind.level.0.label': 'No wind',
   'wind.level.0.phrase': 'barely any wind',
-  'wind.level.1.label': 'Light breeze',
+  'wind.level.1.label': 'Light wind',
   'wind.level.1.phrase': 'a light breeze',
   'wind.level.2.label': 'Moderate wind',
   'wind.level.2.phrase': 'a moderate wind',
@@ -147,6 +149,16 @@ export const en: Messages = {
   'wind.level.3.phrase': 'a strong wind',
   'wind.level.4.label': 'Very strong wind',
   'wind.level.4.phrase': 'a very strong wind',
+  'wind.scale.0': 'Calm',
+  'wind.scale.1': 'Light',
+  'wind.scale.2': 'Moderate',
+  'wind.scale.3': 'Strong',
+  'wind.scale.4': 'Very strong',
+  'wind.title': 'Wind',
+  'wind.strength': 'Strength: {scale}',
+  'wind.gusts': 'gusts of {gust}',
+  'wind.unit': 'km/h',
+  'wind.more': '{^from} · {gusts}',
   'wind.labelFrom': '{label} {from}',
   'wind.detail': '{speed} km/h',
   'wind.detailGusts': '{speed} km/h, gusts of {gust}',
@@ -170,6 +182,19 @@ export const en: Messages = {
   'sea.waves.m': 'Waves of {m} m',
   'sea.water': 'Water at {temp} °C',
   'sea.swell': 'Swell {from}, {height} m every {period} s',
+  'sea.swell.from': 'Coming {from}',
+  'sea.swell.short': 'Short waves, from nearby wind',
+  'sea.swell.mid': 'Medium waves',
+  'sea.swell.long': 'Long waves, from far away',
+  'sea.swell.numbers': '{height} m every {period} s',
+  'sea.swell.detail': '{character} · {numbers}',
+  'sea.swell.none': 'Hardly any',
+  'sea.swell.none.text': 'No waves arriving from afar',
+  'sea.wavesEvery': 'Every {period} s',
+  'sea.waterFeel.cold': 'Cold',
+  'sea.waterFeel.cool': 'Cool',
+  'sea.waterFeel.pleasant': 'Pleasant',
+  'sea.waterFeel.warm': 'Warm',
 
   'tide.kind.pleamar': 'High tide',
   'tide.kind.bajamar': 'Low tide',
@@ -304,8 +329,8 @@ export const en: Messages = {
   'today.clock.zone': 'Canary Islands time',
   'today.todayRange': 'High {max}° · low {min}°',
   'today.favorites': 'Your favourite places',
-  'today.previousFavorites': 'Previous favourite places',
-  'today.moreFavorites': 'More favourite places',
+  'today.showPlace': 'Show {name}',
+  'today.showPlace.current': '{name}, on screen',
   'today.settings': 'Settings and data sources',
   'today.demo': 'Demo',
   'today.demoSettings': 'Fictitious data: open the demo settings',
@@ -385,7 +410,7 @@ export const en: Messages = {
   'hours.label': 'Next 24 hours. Use the arrow keys to move through them.',
   'hours.cellDetail': '{sky}, {wind}',
   'hours.hint': 'Choose an hour to see it in the scene',
-  'hours.wind': 'wind',
+  'hours.wind': 'Wind in km/h',
   'hours.previous': 'Earlier hours',
   'hours.next': 'Later hours',
 
@@ -608,9 +633,6 @@ export const en: Messages = {
   'seaPage.extremesEstimated': 'High and low tides (estimated)',
   'seaPage.source.station': 'Tide gauge: {name}.',
   'seaPage.source.reference': 'Reference prediction: {name}.',
-  'seaPage.source.model':
-    "Estimate from the {name} ocean model. It isn't an official table and mustn't be used for navigation.",
-  'seaPage.source.datum': 'Heights above mean sea level.',
   'seaPage.source.demo': 'Fictitious data.',
   'seaPage.noTideHere': 'This place has no tide forecast',
   'seaPage.nearest': 'The nearest place with data is {place}.',
@@ -623,6 +645,11 @@ export const en: Messages = {
   'seaPage.seaNone.text': 'The marine model has no data for this place.',
   'seaPage.seaError': "We couldn't load the state of the sea",
   'seaPage.calmest': 'Where the sea is calmest',
+  'seaPage.facet.waves': 'Waves',
+  'seaPage.facet.swell': 'Swell',
+  'seaPage.facet.water': 'Water',
+  'seaPage.waterNone': 'No reading',
+  'seaPage.calmestHint': 'From the fewest waves to the most, as forecast',
 
   // ── Plans page ───────────────────────────────────────────────
   'plans.lead':
@@ -630,6 +657,7 @@ export const en: Messages = {
   'plans.leadDemo':
     "Suggestions based on each place's weather. In this version they are examples with fictitious data.",
   'plans.more': 'More ideas',
+  'plans.now': 'Now in {place}',
   'plans.loading': 'Loading suggestions',
 
   // ── Feedback ─────────────────────────────────────────────────

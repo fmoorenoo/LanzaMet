@@ -4,7 +4,9 @@ Documentado a partir de lo construido. La fuente de verdad son los tokens de `sr
 
 ## Dirección
 
-**La escena es el dato.** La pantalla principal no muestra un fondo decorativo: dibuja el día a partir de la previsión. El cielo depende de la hora y del sol de la zona; las nubes, la calima y la lluvia, de las condiciones; la velocidad de las nubes, del viento; la amplitud de las olas, del estado del mar, y el nivel del agua sobre la orilla, de la marea. Cada zona tiene su horizonte (La Graciosa desde el norte, el Risco sobre Famara, Fuerteventura desde el sur, Lobos desde la Bocaina, los volcanes de Timanfaya) y su paisaje propio: el Gran Hotel sobre El Reducto, el paseo de palmeras de Puerto del Carmen, el faro de Pechiguera, las escolleras y los windsurfistas de Las Cucharas, el muelle de Órzola o el medio cráter de El Golfo con el Charco de los Clicos. Se dibujan con las mismas formas planas que el resto de la escena y toman su luz: cal al sol, tonos cálidos al atardecer, ventanas encendidas de noche.
+**La escena es el dato.** La pantalla principal no muestra un fondo decorativo: dibuja el día a partir de la previsión. El cielo depende de la hora y del sol de la zona; las nubes, la calima y la lluvia, de las condiciones; la velocidad de las nubes, del viento; la amplitud de las olas, del estado del mar, y el nivel del agua sobre la orilla, de la marea. Cada zona tiene su horizonte (La Graciosa desde el norte, el Risco sobre Famara, Fuerteventura desde el sur, Lobos desde la Bocaina, los volcanes de Timanfaya) y su paisaje propio: el Gran Hotel sobre El Reducto, el paseo de palmeras de Puerto del Carmen, el faro de Pechiguera, las escolleras y los windsurfistas de Las Cucharas, el muelle de Órzola o el medio cráter de El Golfo con el Charco de los Clicos. Arrieta se ve desde el agua: la arena de La Garita al sur, el pueblo blanco, el muelle con su luz y sus barcas, la Casa Juanita azul sobre las rocas y, detrás, las laderas del macizo de Haría hasta Monte Corona. Toman la luz de la escena: cal al sol, tonos cálidos al atardecer, ventanas encendidas de noche.
+
+**Atlántico a contraluz** (fase 8). La escena deja de ser una pila de formas planas y se construye con perspectiva atmosférica, como se ve la isla desde la orilla: la sierra lejana se funde en el aire al pie (`farMist`), una neblina separa lo lejano de lo cercano, la tierra cercana recibe luz en su cresta, el horizonte tiene un resplandor (cálido con el sol bajo, un filo pálido de día) y una línea de luz donde el mar toca el cielo; el sol tiene núcleo, borde y un halo amplio; las nubes son cúmulos de base plana, iluminados arriba y en sombra abajo; el mar refleja el cielo bajo junto al horizonte y se oscurece hacia la orilla, y las franjas de mar de fondo se funden en el agua en lugar de acabar en un borde, con un brillo fino en las crestas. Todo son degradados SVG y CSS (ids únicos por escena); sin filtros ni desenfoques. La tarjeta para compartir pinta las mismas capas.
 
 Las palabras van primero ("Hoy apetece playa") y los números después. Nunca se muestran grados de dirección, presión, coordenadas ni códigos meteorológicos.
 
@@ -24,7 +26,7 @@ El mundo visual sale de la isla: blanco de cal, negro de picón, verde de las ve
 
 - Contraste medido sobre el render: todos los pares de texto ≥ 5,3:1 en ambos temas. El texto sobre la escena da ≥ 4,5:1 en los cinco escenarios, de amanecer a noche, a 360, 390 y 1440 px.
 - El tema oscuro es una noche volcánica compuesta a propósito, no una inversión. Sigue al sol de la zona elegida (*Según la hora*) o se fija desde Ajustes.
-- La escena mezcla en OKLab: la arena que se oscurece de noche pasa por el gris, no por el verde. Las paletas del cielo son fotogramas clave anclados al amanecer, al mediodía y al atardecer.
+- La escena mezcla en OKLab: la arena que se oscurece de noche pasa por el gris, no por el verde. En CSS, un tinte sobre blanco se mezcla `in oklab`: `in oklch` contra un blanco de matiz 0 hace girar el color (el azul del mar pasaba por el rosa). Las paletas del cielo son fotogramas clave anclados al amanecer, al mediodía y al atardecer.
 
 ## Tipografía
 
@@ -39,6 +41,30 @@ Una sola familia: **Bricolage Grotesque** variable (peso, anchura y tamaño ópt
 | `.t-body` / `.t-small` / `.t-micro` | 1 / 0,875 / 0,8125 rem | 400–520 | Texto y metadatos |
 
 Los títulos usan `text-wrap: balance` y los párrafos `pretty`. Las cifras de tablas y horas llevan `.t-num` (cifras tabulares).
+
+### Jerarquía del héroe
+
+| Rol | Tamaño | Peso / tracking |
+|---|---|---|
+| Zona (el botón que abre el selector) | clamp(1,5–2,125 rem) · 2,25 rem en escritorio | 660, −0,028 em |
+| Temperatura | `.t-hero`, clamp(4,75–8 rem) en móvil · 8,5 rem en escritorio | 300 |
+| Cielo en palabras | `--fs-title` | 620, −0,016 em |
+| Viento (cifra) | 1,75 rem | 640, −0,03 em |
+| Veredicto | 1,75 rem · 2 rem en tableta · 2,75 rem en escritorio | 680, −0,026 em |
+
+## Escala del viento
+
+Beaufort (OMM) agrupada en cinco pasos, los que se notan en una playa (`WIND_LEVEL_MAX` en `wind.insight.ts`):
+
+| Nivel | Palabra | km/h | Beaufort |
+|---|---|---|---|
+| 0 | Calma | < 6 | 0–1 |
+| 1 | Flojo | 6–19 | 2–3 |
+| 2 | Moderado | 20–28 | 4 |
+| 3 | Fuerte | 29–49 | 5–6 |
+| 4 | Muy fuerte | ≥ 50 | 7+ |
+
+El nivel decide los veredictos y las recomendaciones; la palabra va junto a la cifra en el héroe, en Dónde ir y en las horas. Las etiquetas largas son «Viento flojo», «Viento moderado»…; en las frases se conserva la voz de la isla («brisa suave»).
 
 ## Espacio, forma y profundidad
 
@@ -71,7 +97,10 @@ Reglas:
 
 | Componente | Archivo | Notas |
 |---|---|---|
-| Escena | `shared/scene` | `full` (animada) / `mini` (tarjetas); oculta a lectores de pantalla. Paisajes por zona en `scenery.ts`: siete primitivas, un `path` por papel, calculados una vez |
+| Escena | `shared/scene` | `full` (animada) / `mini` (tarjetas); oculta a lectores de pantalla. Paisajes por zona en `scenery.ts`: primitivas (casas, pueblos, torre, palmera, faro, escollera, casa pintada, arena) y un `path` por papel, calculados una vez. Capas de luz: resplandor del horizonte, halo del sol, neblina, línea del horizonte y degradados por capa en tierra, nubes y mar |
+| Instrumento de viento | `shared/ui/wind-gauge` | Flecha hacia donde sopla (gira, 600 ms `--ease-in-out`), km/h y la intensidad en palabra y en una rampa de cinco barras, una por nivel, llenas según lo avanzado dentro del nivel (`windSteps`). `hero` toma la tinta del cielo y añade dirección y rachas; `compact` es una línea para tarjetas, con las barras en ámbar (moderado) o lava (fuerte) |
+| Postal de Dónde ir | `features/plans/plan-card` | El paisaje del lugar con la luz de ahora (escena `mini`), la isla en miniatura con el lugar marcado, el tipo de plan en la costura, título, motivo, franja horaria y, tras un filete, temperatura, viento (instrumento `compact`) y mar para comparar. `lead`: ancha, en dos columnas desde 48 rem. En móvil las demás son filas (paisaje a la izquierda). En la rejilla, las que se ensanchan para que ninguna fila quede coja toman un encuadre 21:8 |
+| Curva de marea | `features/sea/tide-chart` | Interpolación cúbica monótona (Fritsch–Carlson, `core/utils/curve.ts`) por la serie horaria y las pleamares y bajamares estimadas: pasa por cada valor, no inventa crestas ni valles entre horas y es plana en cada pleamar y bajamar. «Ahora» se sitúa sobre la curva dibujada |
 | Tooltip | `shared/ui/tooltip` | Directiva `lmTooltip` para botones solo con icono: ratón (450 ms) y teclado, Escape, en la capa superior, oculta a lectores de pantalla (el botón lleva su `aria-label`); sin `title` |
 | Hoja | `shared/ui/sheet` | `<dialog>` nativo, inferior en móvil y centrada en escritorio |
 | Icono | `shared/ui/icon` | Lucide para la interfaz + iconos propios de identidad; ver «Iconos» |
@@ -81,7 +110,7 @@ Reglas:
 | Arco del sol | `shared/ui/sun-path` | Amanecer y atardecer reales, el tramo recorrido y cuánto queda; sin datos, lo dice |
 | Scroll horizontal | `shared/ui/horizontal-scroll` | Directiva (bordes fundidos; arrastre con ratón que, al soltar, sigue con la inercia de la mano y se frena con `--ease-out`, sin ajuste a rejilla) + botones anterior/siguiente |
 | Selector de idioma | `layout/language-selector` | Segmentado sobre radios reales; cada idioma escrito en su lengua, sin banderas |
-| Controles sobre el cielo | `styles/_sky-controls.scss` | `.sky-chip`, `.sky-button`: toman la tinta de la escena; `.sky-badge`, la misma píldora para texto que no es un control (la hora) |
+| Controles sobre el cielo | `styles/_sky-controls.scss` | `.sky-button` (Compartir, Ajustes): redondo, con la tinta de la escena; la zona, la estrella, la hora y las favoritas son texto e iconos sin píldora |
 | Controles | `styles/_controls.scss` | `.btn`, `.icon-btn`, `.chip`, `.choice`, `.field`, `.switch`, `.skeleton`, `.pendable` |
 | Interruptor | `styles/_controls.scss` | `.switch`: checkbox nativo con `role="switch"` y la pista y el pulgar dibujados debajo. Pista apagada en `--c-ink-3` (borde ≥ 3:1 en los dos temas) y encendida en `--c-accent`. El pulgar se desliza en 240 ms con `--ease-out`; con menos movimiento salta y solo funde el color |
 | Comentarios | `features/feedback` | Tarjetas de tipo sobre radios reales, cada una en una fila (icono a la izquierda, título sobre la ayuda y la marca a la derecha, siempre reservada; una por fila en móvil y 2 × 2 desde 36 rem; la elegida, en verde, con una marca que crece desde 0,6), mensaje con contador discreto y un error que dice cuánto sobra, correo opcional sin más condiciones, botón con dos caras en la misma celda (Enviar ↔ Enviando…, fundido con desenfoque, sin cambiar de tamaño) y una confirmación con el único momento animado de la página: el disco crece y la marca se dibuja. La privacidad va plegada en una línea discreta bajo el botón («Cómo tratamos tus datos», `<details>` nativo) |
@@ -93,26 +122,28 @@ Cada sección contempla carga (esqueleto con la forma del contenido), datos, vac
 ## Adaptación
 
 - **Móvil (base, por debajo de 64 rem):** la primera pantalla de Hoy es la escena y, justo debajo, las 24 horas que la cambian: elegir una hora nunca obliga a subir para verla. Barra de pestañas inferior, opaca y con zonas seguras: cinco pestañas, «Ayúdanos» («Help us») la última. Ajustes no está en la barra: se abre desde la escena.
-  - **Altura de la escena:** lo que deja la pantalla tras la barra y las horas (`100svh − --tabbar-h − --safe-bottom − --hours-peek`, con `--hours-peek` de 13 rem, el alto real del encabezado y una fila de horas), y nunca menos de lo que pide su contenido. Sin alturas fijas por dispositivo. Medido con el veredicto más largo: las horas enteras en la primera pantalla de 360 × 780, 390 × 844 y 430 × 932; en 375 × 667 se ven las horas y sus iconos y asoma la temperatura; en 320 × 568, el encabezado y el comienzo de la fila.
-  - **Orden:** fila 1, la zona con su nombre entero y su estrella, y la hora a la derecha; fila 2, favoritas o la hora elegida con «Volver a ahora»; la temperatura, el veredicto, la frase y la máxima y mínima; abajo a la derecha, sobre el mar y al alcance del pulgar, Ajustes y Compartir (siempre con tinta clara: el agua es más oscura que el cielo para el que se elige la tinta). Las horas van primero en la hoja (`order: -1`); el orden del DOM y del foco es el de escritorio.
+  - **Altura de la escena:** lo que deja la pantalla tras la barra y las horas (`100svh − --tabbar-h − --safe-bottom − --hours-peek`, con `--hours-peek` de 11,5 rem (13 antes de que las horas fueran más bajas), el alto real del encabezado y una fila de horas), y nunca menos de lo que pide su contenido. Sin alturas fijas por dispositivo. Medido con el veredicto más largo: las horas enteras en la primera pantalla de 360 × 780, 390 × 844 y 430 × 932; en 375 × 667 se ven las horas y sus iconos y asoma la temperatura; en 320 × 568, el encabezado y el comienzo de la fila.
+  - **Orden:** fila 1, la zona en grande (el propio nombre abre el selector, sin píldora) y su estrella; fila 2, la hora («Ahora 11:06», o la hora elegida con «Volver a ahora») y las favoritas como marcas de página, y a la derecha Compartir y Ajustes juntos; luego la temperatura con el cielo en palabras y la máxima y mínima al lado, el instrumento de viento y el veredicto. La frase del veredicto se omite cuando solo repite el cielo y el viento (`verdict.plain`). Las horas van primero en la hoja (`order: -1`); el orden del DOM y del foco es el de escritorio.
+  - **Favoritas:** marcas de página como en la app del tiempo del móvil: un punto por favorita y uno largo para la que está en pantalla (abierto si esa zona no es favorita). Cada marca responde en 24 × 44 px, lleva tooltip con el nombre y `aria-current`. Deslizar la escena en horizontal (táctil o lápiz, nunca desde un control; `touch-action: pan-y` deja el desplazamiento vertical a la página) pasa a la favorita vecina; las palabras entran desde ese lado (260 ms, `--ease-out`; con menos movimiento, solo un fundido).
   - **Horizonte:** anclado abajo (`calc(100% − --sea-band)`, con `--sea-band` de `clamp(6rem, 14svh, 10rem)`), con 2,5 rem de cielo libre (`--sky-gap`) entre el texto y el horizonte para lo que asoma sobre él: palmeras, el faro, el Gran Hotel, el borde del cráter.
   - **Sin saltos:** el veredicto reserva siempre dos líneas (`min-height: 2lh`, alineado abajo), así que cambiar de hora o de zona no mueve las horas que se están tocando. Comprobado en ocho zonas y ocho horas seguidas a 320, 375 y 390 px: 0 px.
   - **Pantallas bajas** (alto ≤ 46 rem): temperatura, veredicto y márgenes un punto más compactos.
 - **Tableta (≥ 48 rem):** el mismo flujo con una medida de lectura más tranquila.
-- **Escritorio (≥ 64 rem):** raíl lateral. Arriba, las cinco pestañas, con «Ayúdanos» la última; Ajustes, solo al pie. En ventanas muy bajas el raíl se desplaza en vez de cortar Ajustes. En Hoy, la escena es una banda panorámica (≈ 3:1, `clamp(26rem, 54vh, 32rem)` de alto) en un contenedor de 84 rem: zona, favoritas y acciones en una línea; la temperatura junto al veredicto, con la máxima y la mínima; el cielo de la derecha queda para el sol y la luna. Debajo, «ahora» (viento, mar y marea en tres columnas desde 72 rem), las 24 horas a todo el ancho —justo bajo la escena que previsualizan— y una rejilla de dos columnas: planes y detalle a la izquierda, los siete días a la derecha. El orden del DOM y del foco es el de móvil. Zonas y Mar pasan a dos columnas a partir de 72 rem.
+- **Escritorio (≥ 64 rem):** raíl lateral. Arriba, las cinco pestañas, con «Ayúdanos» la última; Ajustes, solo al pie. En ventanas muy bajas el raíl se desplaza en vez de cortar Ajustes. En Hoy, la escena es una banda panorámica (`clamp(28rem, 58vh, 34rem)` de alto) en un contenedor de 84 rem: zona, hora con favoritas (tras un filete) y acciones en una línea; debajo, la temperatura con el cielo y, bajo ellos, el viento; a su derecha, tras otro filete, el veredicto y su frase; el cielo de la derecha queda para el sol y la luna. Debajo, «ahora» (viento, mar y marea en tres columnas desde 72 rem), las 24 horas a todo el ancho —justo bajo la escena que previsualizan— y una rejilla de dos columnas: planes y detalle a la izquierda, los siete días a la derecha. El orden del DOM y del foco es el de móvil. Zonas y Mar pasan a dos columnas a partir de 72 rem.
 - **Horas:**
-  - Cada hora mide 3,75 rem en móvil y 4,5 rem en escritorio, con glifos de 2 y 2,375 rem.
-  - Las filas de cada hora son variables CSS, y de ellas se deriva la posición de la curva de temperatura: cambiar un tamaño no descoloca los puntos.
-  - La curva se dibuja en unidades de hora y se estira al ancho; sus puntos son HTML y siguen redondos a cualquier ancho.
+  - Más anchas que altas: 4,875 rem en móvil y 5,5 rem en escritorio. Arriba la hora (con el día en verde al empezar uno nuevo); en una línea, el glifo (1,75 / 2 rem) y la temperatura; tras un filete, el viento.
+  - **Viento:** la flecha hacia donde sopla y los km/h, y debajo una barra que crece con la velocidad. Todas comparten escala (la hora más ventosa de la tira, nunca menos de 35 km/h), así que la tira dibuja cómo cambia el viento a lo largo del día; el color dice la intensidad (gris flojo, ámbar moderado, lava fuerte). Leyenda: «Viento en km/h».
+  - Ya no hay curva de temperatura: la cifra va junto al cielo y cada hora es un 30 % más baja.
   - El resaltado va hundido unos píxeles a cada lado, para que las horas vecinas respiren.
   - Cada hora lleva un borde de 1 px en `--c-accent-soft`, el mismo tono que el relleno de la elegida. La elegida conserva ese relleno y pasa a `--c-accent`: más oscuro de día y más luminoso de noche, siempre el verde más visible del tema.
-- **Controles sobre la escena:** `--sky-control-h` (2,5 rem) es la altura de todas las píldoras y botones redondos del cielo (zona, favoritas, estrella, ajustes, compartir), así que se alinean en cualquier idioma. En escritorio comparten una fila y se centran en ella. Por debajo de 23 rem bajan a 2,25 rem, se acercan y la zona pierde el chevron y el alfiler, para que su nombre se lea entero. Con pantalla táctil (`pointer: coarse`) cada uno responde en 44 px gracias a un anillo invisible (`::after`, en porcentajes de su caja de relleno), sin parecer más grande; los `.chip`, igual en vertical, y los campos de texto llenan su píldora. Con pantalla táctil () cada uno responde en 44 px gracias a un anillo invisible (, en porcentajes de su caja de relleno), sin parecer más grande; lo mismo los , en vertical.
+- **Controles sobre la escena:** solo Compartir y Ajustes son botones redondos (`.sky-button`, `--sky-control-h` de 2,5 rem); la zona y la estrella son texto e icono sin píldora, con un fondo tenue al pasar el ratón. En escritorio comparten una fila y se centran en ella. Por debajo de 23 rem bajan a 2,25 rem, se acercan y la zona pierde el chevron y el alfiler, para que su nombre se lea entero. Con pantalla táctil (`pointer: coarse`) cada uno responde en 44 px gracias a un anillo invisible (`::after`, en porcentajes de su caja de relleno), sin parecer más grande; los `.chip`, igual en vertical, y los campos de texto llenan su píldora. Con pantalla táctil () cada uno responde en 44 px gracias a un anillo invisible (, en porcentajes de su caja de relleno), sin parecer más grande; lo mismo los , en vertical.
 - **Hora actual:**
-  - En Hoy va en la esquina superior derecha (en escritorio, delante de favorita, ajustes y compartir; en móvil, sola a la derecha de la fila de la zona), como una píldora `.sky-badge` (mismo fondo, borde, altura y radio que esos botones): «Ahora 14:36», o «En Lanzarote» si el reloj de quien visita marca otra hora.
+  - En Hoy va en la segunda fila (en escritorio, tras la zona y un filete), como texto sin píldora: «Ahora 14:36», o «En Lanzarote» si el reloj de quien visita marca otra hora.
   - Es la hora de lo que dibuja la escena: al previsualizar una hora muestra esa hora con su día («Hoy 18:00», «Mañana 05:00») y vuelve a la actual con «Volver a ahora». Cada cambio entra desde un leve desenfoque (240 ms, `--ease-out`).
   - En móviles estrechos muestra solo la hora.
   - En la marea, la marca de «ahora» baja del punto de la curva al eje, donde va la hora, y las horas del eje que taparía se apartan. Si la etiqueta de una bajamar profunda llegaría a la píldora (pasa en móvil, con la gráfica más baja), sube lo justo para dejarla libre, sin dejar de estar bajo su punto; mientras no se tocan, nada se mueve.
 - **Mapa de Zonas:**
+  - Los marcadores están donde están los lugares; solo se mueven las etiquetas (`LABEL_SIDE`): Órzola encima, Arrieta abajo a la derecha, Famara arriba a la izquierda (sobre el Risco) y Puerto del Carmen arriba a la izquierda. Comprobado midiendo en el navegador de 320 a 1440 px, con cada zona del norte elegida: ninguna etiqueta toca otra ni otro marcador, ni sale de la pantalla. El contorno no se toca.
   - La tierra va en `--c-land` (arena volcánica de día, picón de noche) y los islotes en `--c-land-islet`.
   - El mar tiene franjas de agua somera y ondas estáticas.
   - El viento son ráfagas sueltas por encima de la tierra y por debajo de los marcadores.
@@ -124,6 +155,9 @@ Cada sección contempla carga (esqueleto con la forma del contenido), datos, vac
   - Los controles que van y vienen están siempre en el layout y solo cambian de opacidad y visibilidad («Volver a ahora»).
   - Los contenidos que se turnan comparten una ranura cuya altura sale de su propio contenido (la fila de favoritas y la hora previsualizada).
   - La barra de desplazamiento tiene su carril reservado (`scrollbar-gutter: stable`), así que una hoja modal no ensancha la página.
+
+- **Mar:** el titular lleva una marca de la marea (sube o baja). La curva va en un panel con un soplo del color del mar, sin sombra. La frase «Estimación del modelo oceánico…» sale de la gráfica: la estimación se dice en «Pleamares y bajamares (estimadas)», en el pie y en Legal. El mar de la zona: el estado en grande («Mar movido») y tres partes, palabras primero y cifras después: Oleaje («Olas de 1,5 m», «Cada 7 s», con un glifo de olas de su altura), Mar de fondo («Llega del norte», «Ondas largas, llegan de lejos · 1,1 m cada 12 s», con una flecha) y Agua («Templada», «23 °C»; bandas orientativas: fría < 19, fresca < 21, agradable < 23, templada). Tres columnas en tableta; en escritorio, junto a la curva, apiladas. Las zonas más tranquilas, de menos a más olas, con una barra por zona (escala: la más alta, nunca menos de 2 m) y la zona elegida en verde; en escritorio, en dos columnas que se leen hacia abajo.
+- **Dónde ir:** cabecera con el resumen de la isla y el aviso de que son orientativas; la primera idea como postal ancha y las demás en una rejilla (1, 2 o 3 columnas) que nunca termina en una tarjeta sola.
 
 ## Iconos
 

@@ -1,0 +1,41 @@
+<button type="button" class="card plan-card-button" (click)="open()">
+  <span class="art">
+    @if (scene(); as scene) {
+      <span class="view">
+        <lm-scene [state]="scene" variant="mini" />
+      </span>
+    }
+    @if (pin(); as p) {
+      <!-- Where the place is on the island, drawn small on the sky. -->
+      <svg
+        class="where island-locator"
+        [attr.viewBox]="'0 0 ' + map.width + ' ' + map.height"
+        aria-hidden="true"
+      >
+        <path class="where-land" [attr.d]="outline.lanzarote" />
+        <path class="where-land is-islet" [attr.d]="outline.islets" />
+        <circle class="where-halo" [attr.cx]="p.x" [attr.cy]="p.y" r="62" />
+        <circle class="where-dot" [attr.cx]="p.x" [attr.cy]="p.y" r="30" />
+      </svg>
+    }
+    <span class="mark" aria-hidden="true">
+      <lm-icon [name]="icon()" />
+    </span>
+  </span>
+
+  <span class="body">
+    <span class="title plan-title">{{ plan().title | t }}</span>
+    <span class="reason plan-reason">{{ plan().reason | t }}</span>
+    <span class="when plan-window t-num">{{ when() | t }}</span>
+    @if (facts(); as f) {
+      <span class="facts plan-facts">
+        <span class="visually-hidden">{{ 'plans.now' | t: { place: f.place } }}:</span>
+        <span class="fact fact-temp t-num">{{ f.temperature }}°</span>
+        <lm-wind-gauge class="fact" variant="compact" [wind]="f.wind" />
+        @if (f.sea; as sea) {
+          <span class="fact fact-sea">{{ sea | t }}</span>
+        }
+      </span>
+    }
+  </span>
+</button>

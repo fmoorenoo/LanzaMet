@@ -25,16 +25,34 @@ export interface SceneState {
   /** sRGB of the top of the sky, for the browser's status bar. */
   readonly topHex: string;
   readonly sea: {
+    /** Just under the horizon, where the water mirrors the low sky. */
+    readonly horizon: string;
     readonly far: string;
     readonly near: string;
     readonly shallow: string;
+    /** The near wave's crest, where light passes through the water. */
+    readonly shallowTop: string;
     /** Fills for the far and middle swell lines. */
     readonly swellFar: string;
     readonly swellMid: string;
+    /** Light caught along the swell's crests, and how much of it. */
+    readonly sheen: string;
+    readonly sheenOpacity: number;
     /** Opacity of the foam on the breaking line. */
     readonly foam: number;
   };
-  readonly land: { readonly far: string; readonly near: string };
+  /**
+   * Land by distance: the far range fades into the air at its foot (aerial
+   * perspective), the near land catches a little light along its top.
+   */
+  readonly land: {
+    readonly far: string;
+    readonly farMist: string;
+    readonly near: string;
+    readonly nearTop: string;
+  };
+  /** The band of light along the horizon: warm with a low sun, pale by day. */
+  readonly glow: { readonly color: string; readonly strength: number };
   readonly shore: string;
   /** Colours of the place's own landmarks (see scenery.ts). */
   readonly built: {
@@ -54,8 +72,13 @@ export interface SceneState {
     /** Volcanic rock bands, ochre, rust and black. */
     readonly rock: readonly [string, string, string];
     readonly sails: readonly [string, string, string];
+    /** A house painted in colour (Casa Juanita's blue), lit and shaded. */
+    readonly accent: string;
+    readonly accentShade: string;
   };
+  /** Clouds: their sunlit tops and the shaded, flat undersides. */
   readonly cloud: string;
+  readonly cloudShade: string;
   readonly sun: {
     readonly x: number;
     readonly y: number;
@@ -214,6 +237,10 @@ const MANRIQUE_GREEN = oklch(0.5, 0.1, 158);
 const PALM = oklch(0.4, 0.07, 138);
 const LAGOON = oklch(0.6, 0.14, 152);
 const ROCK = [oklch(0.54, 0.09, 52), oklch(0.44, 0.1, 36), oklch(0.31, 0.03, 40)] as const;
+// Casa Juanita's blue.
+const JUANITA_BLUE = oklch(0.56, 0.13, 252);
+const WHITE = oklch(1, 0, 0);
+const LOW_SUN = oklch(0.84, 0.15, 60);
 const SAILS = [oklch(0.68, 0.17, 38), oklch(0.66, 0.12, 205), oklch(0.85, 0.15, 95)] as const;
 
 function mixPalette(a: Palette, b: Palette, t: number): Palette {
@@ -318,11 +345,27 @@ export function buildScene(input: SceneInput): SceneState {
   const moonPos = arc(nightProgress, 56);
   const moonVisible = sunUp ? 0 : clamp(1 - Math.max(0, clouds - 0.6) * 2);
 
-  const cloud = mix(
+  const cloudBase = mix(
     mix(oklch(0.34, 0.02, 262), oklch(0.97, 0.01, 240), daylight),
     mid,
     0.18 + 0.3 * (1 - daylight) + (lowSun ? 0.25 : 0),
   );
+  // A low sun gilds the tops; the flat undersides take the colour of the air
+  // below them, a cool grey by day and the sky's own dusk after sunset.
+  const sunLight = lowSun ? LOW_SUN : oklch(0.96, 0.1, 96);
+  const cloud = lowSun && sunUp ? mix(cloudBase, LOW_SUN, 0.32) : cloudBase;
+  const cloudShade = mix(
+    cloudBase,
+    mix(mix(oklch(0.64, 0.035, 252), low, lowSun ? 0.45 : 0.15), NIGHT_SHADE, 1 - daylight),
+    0.5 + 0.12 * clouds,
+  );
+
+  // The horizon's band of light: strongest with the sun low, a faint pale
+  // seam by day, the last of the dusk at night.
+  const glowStrength = clamp(
+    (sunUp ? (lowSun ? 0.85 : 0.3) * clamp(sunVisible + 0.3) : 0) + (1 - daylight) * 0.12,
+  );
+  const glow = lowSun || !sunUp ? mix(low, LOW_SUN, sunUp ? 0.55 : 0.15) : mix(low, WHITE, 0.4);
 
   const seaLevel: SeaLevel = input.sea
     ? seaLevelFor(input.sea.waveHeightM)
@@ -340,22 +383,36 @@ export function buildScene(input: SceneInput): SceneState {
   const tones = <T extends readonly [Oklch, Oklch, Oklch]>(set: T, toward: number) =>
     [toCss(lit(set[0], toward)), toCss(lit(set[1], toward)), toCss(lit(set[2], toward))] as const;
 
+  const landFar = mix(low, PICON, 0.38);
+  const landNear = mix(low, PICON_DARK, 0.7);
+  const shallow =
+    input.location.shore === 'arena-dorada'
+      ? mix(seaNear, shift(SHALLOW), 0.42 * daylight)
+      : seaNear;
+
   return {
     sky: { top: toCss(top), mid: toCss(mid), low: toCss(low) },
     topHex: toHex(top),
     sea: {
+      horizon: toCss(mix(seaFar, low, 0.38)),
       far: toCss(seaFar),
       near: toCss(seaNear),
-      shallow: toCss(
-        input.location.shore === 'arena-dorada'
-          ? mix(seaNear, shift(SHALLOW), 0.42 * daylight)
-          : seaNear,
-      ),
-      swellFar: toCss(mix(seaFar, seaNear, 0.3)),
-      swellMid: toCss(mix(seaFar, seaNear, 0.65)),
+      shallow: toCss(shallow),
+      shallowTop: toCss(mix(shallow, mix(low, SHALLOW, 0.5), 0.22 + 0.18 * daylight)),
+      // A shade darker than the water around them: the troughs between swells.
+      swellFar: toCss(mix(seaFar, seaNear, 0.5)),
+      swellMid: toCss(mix(seaFar, seaNear, 0.85)),
+      sheen: toCss(mix(mix(low, sunLight, sunUp ? 0.35 : 0), WHITE, 0.25)),
+      sheenOpacity: 0.1 + 0.22 * daylight * (1 - clouds * 0.6),
       foam: 0.2 + 0.45 * daylight,
     },
-    land: { far: toCss(mix(low, PICON, 0.38)), near: toCss(mix(low, PICON_DARK, 0.7)) },
+    land: {
+      far: toCss(landFar),
+      farMist: toCss(mix(landFar, low, 0.62)),
+      near: toCss(landNear),
+      nearTop: toCss(mix(landNear, mix(low, sunLight, sunUp ? 0.3 : 0), 0.26 + 0.16 * daylight)),
+    },
+    glow: { color: toCss(glow), strength: glowStrength },
     shore: toCss(shore),
     built: {
       wall: toCss(wall),
@@ -370,13 +427,16 @@ export function buildScene(input: SceneInput): SceneState {
       lagoon: toCss(lit(LAGOON, 0.1, 0.8)),
       rock: tones(ROCK, 0.12),
       sails: tones(SAILS, 0.1),
+      accent: toCss(lit(JUANITA_BLUE, 0.1, 0.62)),
+      accentShade: toCss(lit(mix(JUANITA_BLUE, PICON_DARK, 0.35), 0.1, 0.66)),
     },
     cloud: toCss(cloud),
+    cloudShade: toCss(cloudShade),
     sun: {
       x: sunPos.x,
       y: sunPos.y,
       visible: sunVisible,
-      color: toCss(lowSun ? oklch(0.84, 0.15, 60) : oklch(0.96, 0.1, 96)),
+      color: toCss(sunLight),
       lowSun,
     },
     moon: { x: moonPos.x, y: moonPos.y, visible: moonVisible },

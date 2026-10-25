@@ -3,7 +3,7 @@ import { RouterLink } from '@angular/router';
 import { msg, Msg } from '../../core/i18n/i18n.model';
 import { TranslatePipe } from '../../core/i18n/t.pipe';
 import { readSea } from '../../core/insights/sea.insight';
-import { readUv } from '../../core/insights/sky.insight';
+import { readUv, skyPhrase } from '../../core/insights/sky.insight';
 import { drawingSunTimes, readDaylight } from '../../core/insights/sun.insight';
 import { readTide } from '../../core/insights/tide.insight';
 import { dayVerdict } from '../../core/insights/verdict.insight';
@@ -155,6 +155,8 @@ export class TodayPage {
       ? {
           scene: v.scene,
           temperature: v.temperature,
+          condition: skyPhrase(v.weather.sky, v.weather.isDaylight),
+          wind: v.weather.wind,
           range: v.range,
           verdict: v.verdict,
           momentLabel: v.momentLabel,

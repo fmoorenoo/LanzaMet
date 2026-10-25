@@ -257,6 +257,18 @@
   bottom: calc(50% + 0.75rem);
 }
 
+// Below and leaning right: the label's left end just before the marker.
+.side-below-right .label {
+  left: calc(50% - 0.75rem);
+  top: calc(50% + 0.75rem);
+}
+
+// Above and leaning left: the label's right end just past the marker.
+.side-above-left .label {
+  right: calc(50% - 0.75rem);
+  bottom: calc(50% + 0.875rem);
+}
+
 // Still wind: each gust rests at its own point of the crossing.
 @media (prefers-reduced-motion: reduce) {
   .gust {

@@ -1,6 +1,6 @@
 import { Component, computed, inject } from '@angular/core';
 import { Router } from '@angular/router';
-import { describeWaves, readSea, seaLevelFor } from '../../core/insights/sea.insight';
+import { describeWaves, readSea, seaFacets, seaLevelFor } from '../../core/insights/sea.insight';
 import { msg, Msg } from '../../core/i18n/i18n.model';
 import { TranslatePipe } from '../../core/i18n/t.pipe';
 import { extremesBetween, readTide, tideHeight } from '../../core/insights/tide.insight';
@@ -20,6 +20,7 @@ import { StatusMessage } from '../../shared/ui/status-message/status-message';
 import { WarningBanner } from '../../shared/ui/warning-banner/warning-banner';
 import { TideChart } from './tide-chart/tide-chart';
 
+/** Height of the waves drawn in the "Oleaje" glyph, by sea level. */
 const WAVE_AMPLITUDE = [0.8, 2, 3.4, 5, 6.6];
 
 /** The ocean: is the tide coming in or going out, and where is the water calm? */
@@ -86,35 +87,41 @@ export class SeaPage {
     }));
   });
 
-  protected readonly gaugeLevel = computed(() => {
-    const level = this.reading()?.level ?? 0.5;
-    return `translate3d(0, ${((1 - level) * 78).toFixed(1)}%, 0)`;
-  });
-
   protected readonly sea = computed(() => {
     const data = this.forecast.sea().data;
     const here = this.location();
     if (!data) return null;
     return {
       ...readSea(data.current),
+      facets: seaFacets(data.current),
+      wavePath: `M2 12q4.5 ${-WAVE_AMPLITUDE[seaLevelFor(data.current.waveHeightM)]} 9 0t9 0t9 0t9 0t9 0`,
+      /** The swell's arrow points where it travels: away from where it comes from. */
+      swellTo:
+        data.current.swell && data.current.swell.heightM >= 0.2
+          ? `${(data.current.swell.fromDegrees + 180) % 360}deg`
+          : null,
       /** Marine models describe open water, not the shoreline; say how far out. */
       offshoreKm: here ? Math.round(distanceKm(here.position, data.point)) : null,
     };
   });
 
-  /** Where the tide comes from, said plainly — an estimate is never passed off as official. */
+  /**
+   * An official source is named under the curve. A model's estimate says so
+   * in the headings ("estimadas") and in the credit at the foot of the page,
+   * not in the chart itself.
+   */
   protected readonly tideSource = computed<Msg[]>(() => {
     const tides = this.forecast.tides().data;
     if (!tides) return [];
     const { source } = tides;
-    const origin = source.official
-      ? msg(source.kind === 'station' ? 'seaPage.source.station' : 'seaPage.source.reference', {
-          name: source.name,
-        })
-      : msg('seaPage.source.model', { name: source.name });
     return [
-      origin,
-      ...(tides.datum === 'mean-sea-level' ? [msg('seaPage.source.datum')] : []),
+      ...(source.official
+        ? [
+            msg(source.kind === 'station' ? 'seaPage.source.station' : 'seaPage.source.reference', {
+              name: source.name,
+            }),
+          ]
+        : []),
       ...(this.isDemo ? [msg('seaPage.source.demo')] : []),
     ];
   });
@@ -123,24 +130,32 @@ export class SeaPage {
     this.official.warnings().filter((w) => w.coastal),
   );
 
-  /** Places ordered from calmest to roughest water. */
-  protected readonly calmest = computed(() =>
-    (this.island.zones().data ?? [])
-      .flatMap((z) => (z.sea ? [{ location: z.location, sea: z.sea.current }] : []))
+  /**
+   * Places ordered from calmest to roughest water, each with a bar of its
+   * wave height against the roughest (never less than 2 m at the top, so a
+   * calm day's ripples don't fill the bars).
+   */
+  protected readonly calmest = computed(() => {
+    const zones = (this.island.zones().data ?? []).flatMap((z) =>
+      z.sea ? [{ location: z.location, sea: z.sea.current }] : [],
+    );
+    const top = Math.max(2, ...zones.map((z) => z.sea.waveHeightM));
+    return zones
       .map((z) => {
         const height = z.sea.waveHeightM;
-        const amplitude = WAVE_AMPLITUDE[seaLevelFor(height)];
         return {
           id: z.location.id,
           name: z.location.name,
+          level: seaLevelFor(height),
           label: readSea(z.sea).label,
           waves: describeWaves(height),
           height,
-          path: `M2 12q4.5 ${-amplitude} 9 0t9 0t9 0t9 0t9 0`,
+          share: Math.max(0.04, height / top).toFixed(3),
+          isHere: z.location.id === this.location()?.id,
         };
       })
-      .sort((a, b) => a.height - b.height),
-  );
+      .sort((a, b) => a.height - b.height);
+  });
 
   /** For places without tide data: the closest place that has it. */
   protected readonly nearestWithTide = computed(() => {

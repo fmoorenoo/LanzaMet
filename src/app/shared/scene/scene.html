@@ -1,12 +1,49 @@
 @let s = state();
 @let art = scenery();
 
+<!-- Shared paints for this scene, named per instance so pages with many scenes keep unique ids. -->
+<svg class="paints" width="0" height="0" focusable="false">
+  <defs>
+    <linearGradient [attr.id]="ids.cloud" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0" [style.stop-color]="s.cloud" />
+      <stop [attr.offset]="cloudShadeFrom" [style.stop-color]="s.cloud" />
+      <stop offset="1" [style.stop-color]="s.cloudShade" />
+    </linearGradient>
+    <linearGradient [attr.id]="ids.far" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0.15" [style.stop-color]="s.land.far" />
+      <stop offset="1" [style.stop-color]="s.land.farMist" />
+    </linearGradient>
+    <!-- Swell bands fade into the water below them instead of ending in an edge. -->
+    <linearGradient [attr.id]="ids.swellFar" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0.1" [style.stop-color]="s.sea.swellFar" />
+      <stop offset="0.75" [style.stop-color]="s.sea.swellFar" style="stop-opacity: 0" />
+    </linearGradient>
+    <linearGradient [attr.id]="ids.swellMid" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0.1" [style.stop-color]="s.sea.swellMid" />
+      <stop offset="0.8" [style.stop-color]="s.sea.swellMid" style="stop-opacity: 0" />
+    </linearGradient>
+    <!-- The near wave: light through its crest, deepening below. -->
+    <linearGradient [attr.id]="ids.shallow" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0.18" [style.stop-color]="s.sea.shallowTop" />
+      <stop offset="0.5" [style.stop-color]="s.sea.shallow" />
+      <stop offset="1" [style.stop-color]="s.sea.near" />
+    </linearGradient>
+    <linearGradient [attr.id]="ids.near" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0" [style.stop-color]="s.land.nearTop" />
+      <stop offset="0.7" [style.stop-color]="s.land.near" />
+    </linearGradient>
+  </defs>
+</svg>
+
 <div
   class="sky"
   [style.--sky-top]="s.sky.top"
   [style.--sky-mid]="s.sky.mid"
   [style.--sky-low]="s.sky.low"
 ></div>
+
+<!-- The band of light along the horizon. -->
+<div class="glow" [style.color]="s.glow.color" [style.opacity]="s.glow.strength"></div>
 
 <svg class="stars" viewBox="0 0 100 100" preserveAspectRatio="none" [style.opacity]="s.stars">
   @for (star of stars; track $index) {
@@ -15,6 +52,7 @@
 </svg>
 
 <div class="track sun-track" [style.transform]="sunTransform()" [style.opacity]="s.sun.visible">
+  <div class="bloom" [style.color]="s.sun.color"></div>
   <div class="sun" [style.color]="s.sun.color" [class.is-low]="s.sun.lowSun"></div>
 </div>
 
@@ -22,7 +60,7 @@
   <div class="moon"></div>
 </div>
 
-<div class="clouds" [style.color]="s.cloud">
+<div class="clouds">
   @for (cloud of clouds; track $index) {
     <div
       #cloudTrack
@@ -32,24 +70,37 @@
       [style.opacity]="cloudOpacity($index)"
     >
       <svg class="cloud" viewBox="0 0 200 80" [style.width.%]="cloud.width">
-        <path [attr.d]="cloudPath" />
+        <path [attr.d]="cloudPaths[cloud.shape]" [attr.fill]="ids.cloudUrl" />
       </svg>
     </div>
   }
 </div>
 
+<!-- The far range alone, so the mist can lie between it and what is near. -->
+<svg class="land land--far" viewBox="0 0 1200 150" preserveAspectRatio="xMaxYMax slice">
+  <path [attr.d]="horizon().far" [attr.fill]="ids.farUrl" />
+</svg>
+
+<div class="mist" [style.color]="s.sky.low"></div>
+
 <svg class="land" viewBox="0 0 1200 150" preserveAspectRatio="xMaxYMax slice">
-  <path class="land-far" [attr.d]="horizon().far" [style.fill]="s.land.far" />
-  <path class="land-near" [attr.d]="horizon().near" [style.fill]="s.land.near" />
+  <path class="land-near" [attr.d]="horizon().near" [attr.fill]="ids.nearUrl" />
   <g class="scenery">
     @if (art.terrain) {
-      <path [attr.d]="art.terrain" [style.fill]="s.land.near" />
+      <path [attr.d]="art.terrain" [attr.fill]="ids.nearUrl" />
+    }
+    @if (art.beach) {
+      <path [attr.d]="art.beach" [style.fill]="s.shore" />
     }
     @for (band of art.strata; track $index) {
       <path [attr.d]="band" [style.fill]="s.built.rock[$index % 3]" />
     }
     @if (art.lagoon) {
       <path [attr.d]="art.lagoon" [style.fill]="s.built.lagoon" />
+    }
+    @if (art.accent) {
+      <path [attr.d]="art.accent" [style.fill]="s.built.accent" />
+      <path [attr.d]="art.accentShade" [style.fill]="s.built.accentShade" />
     }
     @if (art.walls) {
       <!-- Glass first: a tower's floor lines and edges are walls drawn over it. -->
@@ -84,7 +135,19 @@
 
 <div class="haze" [style.opacity]="s.haze"></div>
 
-<div class="sea" [style.--sea-far]="s.sea.far" [style.--sea-near]="s.sea.near">
+<div
+  class="sea"
+  [style.--sea-horizon]="s.sea.horizon"
+  [style.--sea-far]="s.sea.far"
+  [style.--sea-near]="s.sea.near"
+>
+  <!-- Where sea meets sky: a hairline of light. -->
+  <div
+    class="seam"
+    [style.color]="s.glow.color"
+    [style.opacity]="0.35 + s.glow.strength * 0.5"
+  ></div>
+
   <div
     class="track glint-track"
     [style.transform]="glint().transform"
@@ -99,7 +162,14 @@
         <path
           [attr.d]="waves()[0].body"
           [style.d]="cssPath(waves()[0].body)"
-          [style.fill]="s.sea.swellFar"
+          [attr.fill]="ids.swellFarUrl"
+        />
+        <path
+          class="sheen"
+          [attr.d]="waves()[0].crest"
+          [style.d]="cssPath(waves()[0].crest)"
+          [style.stroke]="s.sea.sheen"
+          [style.opacity]="s.sea.sheenOpacity"
         />
       </svg>
     </div>
@@ -111,7 +181,14 @@
         <path
           [attr.d]="waves()[1].body"
           [style.d]="cssPath(waves()[1].body)"
-          [style.fill]="s.sea.swellMid"
+          [attr.fill]="ids.swellMidUrl"
+        />
+        <path
+          class="sheen"
+          [attr.d]="waves()[1].crest"
+          [style.d]="cssPath(waves()[1].crest)"
+          [style.stroke]="s.sea.sheen"
+          [style.opacity]="s.sea.sheenOpacity * 0.8"
         />
       </svg>
     </div>
@@ -127,7 +204,7 @@
         <path
           [attr.d]="waves()[2].body"
           [style.d]="cssPath(waves()[2].body)"
-          [style.fill]="s.sea.shallow"
+          [attr.fill]="ids.shallowUrl"
         />
         <path
           class="foam"

@@ -635,3 +635,55 @@ Solo por debajo de 64 rem (móvil y tableta); el escritorio queda igual, comprob
 
 - Probar en móviles reales, sobre todo los toques en los bordes de los botones, la barra con teclado abierto y un iPhone con muesca.
 - En 375 × 667 y más pequeños, las temperaturas por hora piden un desplazamiento mínimo; para que entren habría que quitar algo de la escena.
+
+
+## Fase 8 — Rediseño visual y Arrieta (25-10-2026)
+
+Skills usadas: Impeccable (auditoría, dirección, suelo de calidad, detector) y Emil Kowalski (decisiones de movimiento, gestos, estabilidad). Dirección: **«Atlántico a contraluz»**, una evolución de la identidad existente, no una nueva: misma paleta, tipografía, menú y arquitectura; la mejora sale de la composición, la jerarquía y una escena con perspectiva atmosférica. PRODUCT.md no existe; la dirección se tomó del encargo, que fijaba qué conservar.
+
+### Hecho
+
+1. **Escena** (Hoy, Zonas, Dónde ir y la tarjeta para compartir):
+   - resplandor en el horizonte (cálido con el sol bajo, un filo pálido de día), halo amplio alrededor del sol y un disco con núcleo y borde;
+   - cúmulos de base plana, iluminados arriba y en sombra abajo (tres formas en lugar de una);
+   - la sierra lejana se funde en el aire al pie, una neblina la separa de lo cercano y la tierra cercana recibe luz en su cresta;
+   - el mar refleja el cielo bajo junto al horizonte, con una línea de luz donde se tocan; las franjas de mar de fondo se funden en el agua y llevan un brillo fino en las crestas; la ola cercana es clara en la cresta y oscura abajo;
+   - 46 estrellas sembradas en lugar de 12;
+   - solo degradados SVG/CSS con ids únicos por escena: sin filtros, sin desenfoques, las mismas animaciones de antes.
+2. **Héroe de Hoy**, reorganizado por orden de lectura: la zona en grande (el propio nombre abre el selector) con su estrella; la hora; la temperatura con el cielo en palabras y la máxima y mínima; el **viento** (flecha hacia donde sopla, km/h, intensidad en palabra y en una rampa de cinco barras, dirección y rachas); el veredicto. La frase se omite cuando solo repite cielo y viento.
+   - **Favoritas** como marcas de página (patrón de la app del tiempo del móvil) y deslizando la escena; sin chips. Compartir y Ajustes, juntos y discretos.
+   - **Escala del viento documentada**: Beaufort (OMM) agrupada en cinco pasos: calma < 6, flojo 6–19, moderado 20–28, fuerte 29–49, muy fuerte ≥ 50 km/h. Antes, 30 y 45 sin referencia.
+3. **Horas**: más anchas y un 30 % más bajas (hora; glifo y temperatura en una línea; viento). El viento lleva flecha, km/h y una barra a escala común de la tira, coloreada por intensidad, para leer cómo cambia a lo largo del día. Fuera la curva de temperatura.
+4. **Arrieta**, zona completa:
+   - coordenadas de OpenStreetMap (29,1318 / −13,4618, el pueblo; La Garita al sur, Casa Juanita al noreste);
+   - celda propia del modelo del tiempo (29,158 / −13,460) y punto de mar propio al este (29,125 / −13,292, a 17 km: las dos celdas más cercanas están enmascaradas);
+   - marea estimada, previsión horaria y diaria, favoritas, selector (norte), Zonas, Mar, Dónde ir, demo, `verify:sources`, textos en los dos idiomas;
+   - sin estación de AEMET representativa (Haría a 277 m, La Graciosa a 12 km);
+   - **paisaje propio** (`garita`), visto desde el agua: la arena de La Garita, el pueblo blanco, el muelle con su luz y sus barcas, la **Casa Juanita** azul sobre las rocas y, detrás, el macizo de Haría hasta Monte Corona (horizonte nuevo `corona`).
+5. **Mapa de Zonas**: Arrieta en su sitio. Etiquetas recolocadas sin mover marcadores ni deformar la costa: Órzola encima, Arrieta abajo a la derecha, Famara y Puerto del Carmen arriba a la izquierda.
+6. **Mar**:
+   - curva de marea **suave y fiel**: interpolación cúbica monótona (Fritsch–Carlson) por la serie horaria y las pleamares y bajamares estimadas; pasa por cada valor, no inventa máximos ni mínimos entre horas y es plana en cada extremo. «Ahora» va sobre la curva dibujada;
+   - fuera de la gráfica la frase «Estimación del modelo oceánico…»: la estimación sigue dicha en «Pleamares y bajamares (estimadas)», en el pie y en Legal;
+   - el mar de la zona en palabras: el estado en grande y tres partes (oleaje, mar de fondo con su origen y su carácter, agua con una sensación orientativa), cifras después;
+   - zonas de menos a más olas con una barra por zona y la elegida en verde; fuera el tubo de marea de la cabecera.
+7. **Dónde ir**: postales con el paisaje de cada lugar en la luz de ahora, la isla en miniatura con el lugar marcado, el tipo de plan, el motivo, la franja y, para comparar, temperatura, viento y mar. La primera, ancha; las demás en una rejilla que nunca acaba en una tarjeta sola (filas en el móvil). Resumen de la isla en la cabecera; los textos siguen diciendo que son orientativas.
+8. **Sistema**: `.sky-chip` y `.sky-badge` retirados (ya no los usa nada); mezclas sobre blanco en OKLab; aviso del presupuesto de estilos por componente de 6 a 8 kB (el error sigue en 10 kB): el héroe ocupa 7,1 kB y la escena 6,6 kB.
+
+### Validación
+
+- **Tests**: 196 de la web (antes 185; nuevos: curva monótona, escala de Beaufort y relleno de la rampa, partes del mar y sensación del agua, Arrieta en el catálogo, sus favoritas, su paisaje y su estación) y 24 del API. **Lint**, **formato**, **tipos del API**, builds de **producción** (con sus comprobaciones) y de **demo** sin errores. Bundle inicial: 658,8 kB (177,3 kB transferidos), dentro del aviso de 700 kB.
+- **`verify:sources`** contra los API reales: 9 previsiones, 9 puntos de mar y 9 series de polvo. Arrieta: 23,9 °C, viento de 19 km/h del nordeste; olas de 1,6 m, mar de fondo de 1 m cada 6,5 s, agua a 23 °C y serie de nivel del mar.
+- **Chrome sin interfaz por CDP** (la extensión no estaba conectada):
+  - capturas de Hoy, Mar, Dónde ir y Zonas a 320, 375, 390 y 1440 px, de día, al atardecer y de noche, temas claro y oscuro, español e inglés;
+  - **0 px de salto** del héroe y de las horas al elegir 11 horas seguidas en cuatro zonas, a 390, 375 y 1440 px (reservando el hueco del cielo, la frase y la línea del viento);
+  - **mapa**: ninguna etiqueta toca otra ni otro marcador, ni sale de la pantalla, a 320, 360, 390, 600, 768, 1024, 1280 y 1440 px, con Arrieta, Famara y Órzola elegidas;
+  - **deslizar** con eventos táctiles reales pasa de Puerto del Carmen a Famara;
+  - sin desbordamiento horizontal a 320 px; la tarjeta para compartir (1200 × 1500) pinta las capas nuevas.
+- **axe-core** (WCAG 2.2 AA y buenas prácticas) sin violaciones en Hoy, Mar, Dónde ir y Zonas, a 390 y 1440 px, español e inglés, claro y oscuro. Lo encontró: las marcas de favoritas medían 22 px de ancho; ahora 24.
+- **Impeccable detect**: sin hallazgos en los ficheros de interfaz cambiados.
+
+### Pendiente
+
+- Probar en móviles reales el gesto de deslizar entre favoritas (sobre todo junto al desplazamiento vertical en iOS) y la lectura del héroe al sol.
+- Valorar si las postales de Dónde ir en el móvil necesitan una versión más compacta de los datos para comparar (hoy pasan a dos líneas).
+- El API desplegado ya acepta el punto de mar de Arrieta (dentro de sus límites); si la copia compartida fallara, la web pide a Open-Meteo directamente.

@@ -12,7 +12,8 @@ import {
   viewChildren,
 } from '@angular/core';
 import {
-  CLOUD_PATH,
+  CLOUD_PATHS,
+  CLOUD_SHADE_FROM,
   CLOUDS,
   horizonPaths,
   RAIN_DROPS,
@@ -42,6 +43,9 @@ import { AFLOAT_PATHS, sceneryArt } from './scenery';
 /** The rain layer's fade (`--d-atmos`): streaks stay until it has faded out. */
 const RAIN_FADE_MS = 900;
 
+/** Scenes on the page so far: each names its gradients after its own number. */
+let sceneCount = 0;
+
 @Component({
   selector: 'lm-scene',
   templateUrl: './scene.html',
@@ -63,8 +67,30 @@ export class Scene {
   readonly variant = input<'full' | 'mini'>('full');
 
   protected readonly clouds = CLOUDS;
-  protected readonly cloudPath = CLOUD_PATH;
+  protected readonly cloudPaths = CLOUD_PATHS;
+  protected readonly cloudShadeFrom = CLOUD_SHADE_FROM;
   protected readonly stars = STARS;
+
+  /** Gradient ids, unique on the page (Zonas draws many scenes at once). */
+  protected readonly ids = (() => {
+    const n = ++sceneCount;
+    const id = (role: string) => `lm-scene-${n}-${role}`;
+    const url = (role: string) => `url(#${id(role)})`;
+    return {
+      cloud: id('cloud'),
+      far: id('far'),
+      near: id('near'),
+      swellFar: id('swell-far'),
+      swellMid: id('swell-mid'),
+      shallow: id('shallow'),
+      cloudUrl: url('cloud'),
+      farUrl: url('far'),
+      nearUrl: url('near'),
+      swellFarUrl: url('swell-far'),
+      swellMidUrl: url('swell-mid'),
+      shallowUrl: url('shallow'),
+    };
+  })();
 
   protected readonly horizon = computed(() => horizonPaths(this.state().horizon));
   protected readonly shore = computed(() => shorePath(this.state().shoreKind));

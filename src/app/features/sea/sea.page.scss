@@ -6,20 +6,12 @@
 .page-head {
   display: grid;
   gap: var(--s-5);
-  padding: calc(var(--safe-top) + var(--s-6)) var(--gutter) var(--s-6);
+  padding: calc(var(--safe-top) + var(--s-6)) var(--gutter) var(--s-8);
 }
 
 .place-chip {
   justify-self: start;
   padding-inline: var(--s-3) var(--s-4);
-}
-
-.head-row {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: var(--s-5);
-  max-width: 40rem;
 }
 
 .head-text {
@@ -28,7 +20,25 @@
   min-width: 0;
 
   h1 {
-    max-width: 14ch;
+    max-width: 16ch;
+  }
+}
+
+// The way the water is moving, as a mark before the words.
+.trend {
+  display: inline-grid;
+  place-items: center;
+  width: 0.95em;
+  height: 0.95em;
+  margin-right: 0.2em;
+  vertical-align: -0.12em;
+  border-radius: var(--r-sm);
+  background-color: color-mix(in oklch, var(--c-sea) 12%, transparent);
+  color: var(--c-sea);
+
+  lm-icon {
+    width: 0.62em;
+    height: 0.62em;
   }
 }
 
@@ -43,89 +53,26 @@
   height: 1.1rem;
 }
 
-// A tide gauge: how full the water is, and which way it is moving.
-.gauge {
-  flex: none;
-  display: flex;
-  align-items: center;
-  gap: var(--s-2);
-}
-
-.gauge-tube {
-  position: relative;
-  width: 2.75rem;
-  height: 6.5rem;
-  overflow: hidden;
-  border-radius: var(--r-pill);
-  background-color: var(--c-surface-sunken);
-  box-shadow: inset 0 0 0 1px var(--c-line);
-}
-
-.gauge-water {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(to bottom, var(--atlantico-400), var(--atlantico-500));
-  transition: transform var(--d-tide) var(--ease-in-out);
-}
-
-.gauge-arrow {
-  display: grid;
-  place-items: center;
-  width: 2rem;
-  height: 2rem;
-  color: var(--c-sea);
-  // The arrow drifts the way the water is going: up when rising, down when falling.
-  animation: drift-down 1.8s var(--ease-in-out) infinite;
-
-  .is-rising & {
-    animation-name: drift-up;
-  }
-}
-
-@keyframes drift-up {
-  0% {
-    opacity: 0;
-    transform: translateY(6px);
-  }
-  40%,
-  60% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0;
-    transform: translateY(-6px);
-  }
-}
-
-@keyframes drift-down {
-  0% {
-    opacity: 0;
-    transform: translateY(-6px);
-  }
-  40%,
-  60% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0;
-    transform: translateY(6px);
-  }
-}
-
 .content {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  gap: var(--s-10);
+  gap: var(--s-12);
   padding: 0 var(--gutter);
 }
 
+// The day's tide on a pane of water: a breath of the sea's colour, no card shadow.
 .panel {
   display: grid;
-  gap: var(--s-6);
+  gap: var(--s-5);
   padding: var(--s-5) var(--s-4) var(--s-4);
   border-radius: var(--r-xl);
-  background-color: var(--c-surface);
-  box-shadow: var(--shadow-1);
+  // Mixed in OKLab: against white, OKLCH would swing the hue through pink.
+  background: linear-gradient(
+    to bottom,
+    color-mix(in oklab, var(--c-sea) 7%, var(--c-surface)),
+    var(--c-surface) 70%
+  );
+  border: 1px solid color-mix(in oklab, var(--c-sea) 16%, transparent);
 
   h2 {
     padding-inline: var(--s-1);
@@ -144,6 +91,7 @@
   padding-inline: var(--s-1);
 
   lm-icon {
+    flex: none;
     width: var(--icon-xs);
     height: var(--icon-xs);
     margin-top: 0.1em;
@@ -158,9 +106,11 @@ lm-warning-banner,
 
 .block {
   display: grid;
+  align-content: start;
   gap: var(--s-4);
 }
 
+// ── Highs and lows ────────────────────────────────────────────
 .days {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -221,9 +171,102 @@ lm-warning-banner,
   color: var(--c-ink-3);
 }
 
-.sea-state {
-  max-width: 36ch;
+// ── The sea here: one line in words, then its three parts ─────
+.sea-headline {
+  font-size: var(--fs-display);
+  font-weight: 680;
+  letter-spacing: -0.026em;
+  line-height: 1.1;
+  text-wrap: balance;
+}
+
+.facets {
+  display: grid;
+  border-top: 1px solid var(--c-line-strong);
+}
+
+.facet {
+  display: grid;
+  grid-template-columns: 8.5rem minmax(0, 1fr);
+  gap: var(--s-3);
+  align-items: baseline;
+  padding: var(--s-4) 0;
+
+  & + & {
+    border-top: 1px solid var(--c-line);
+  }
+
+  dt {
+    display: flex;
+    align-items: center;
+    gap: var(--s-2);
+    font-size: var(--fs-small);
+    font-weight: 600;
+    color: var(--c-ink-2);
+  }
+
+  dd {
+    display: grid;
+    gap: 0.125rem;
+    margin: 0;
+  }
+}
+
+.facet-mark {
+  flex: none;
+  width: 1.5rem;
+  height: 1.5rem;
+  color: var(--c-sea);
+}
+
+.wave-mark {
+  overflow: visible;
+
+  path {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2.2;
+    stroke-linecap: round;
+  }
+}
+
+.swell-mark {
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background-color: color-mix(in oklch, var(--c-sea) 12%, transparent);
+
+  svg {
+    width: 0.9375rem;
+    height: 0.9375rem;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2.4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+}
+
+.facet-title {
   font-size: var(--fs-lead);
+  font-weight: 640;
+  letter-spacing: -0.012em;
+
+  &.is-missing {
+    color: var(--c-ink-3);
+    font-weight: 500;
+  }
+}
+
+.facet-detail {
+  font-size: var(--fs-small);
+  color: var(--c-ink-2);
+}
+
+// ── Calmest water: a ranked list with a bar for each place's waves ──
+.calm-head {
+  display: grid;
+  gap: var(--s-1);
 }
 
 .calm {
@@ -231,9 +274,10 @@ lm-warning-banner,
 }
 
 .calm-row {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(7rem, 42%) auto;
   align-items: center;
-  gap: var(--s-3);
+  gap: var(--s-4);
   width: 100%;
   min-height: 3.75rem;
   padding: var(--s-2) 0;
@@ -246,38 +290,55 @@ lm-warning-banner,
   }
 }
 
-.calm-rank {
-  width: 1.25rem;
-  font-weight: 700;
-  color: var(--c-ink-3);
-}
-
-.calm-wave {
-  width: 3rem;
-  height: 1.5rem;
-  flex: none;
-  overflow: visible;
-
-  path {
-    fill: none;
-    stroke: var(--c-sea);
-    stroke-width: 2;
-    stroke-linecap: round;
-  }
-}
-
 .calm-text {
-  flex: 1;
   min-width: 0;
   display: grid;
 }
 
 .calm-name {
   font-weight: 620;
+
+  .is-here & {
+    color: var(--c-accent);
+  }
 }
 
 .calm-sub {
   font-size: var(--fs-small);
+  color: var(--c-ink-2);
+}
+
+.calm-measure {
+  display: grid;
+  gap: var(--s-1);
+}
+
+.calm-bar {
+  height: 0.375rem;
+  overflow: hidden;
+  border-radius: var(--r-pill);
+  background-color: color-mix(in oklch, var(--c-sea) 10%, transparent);
+}
+
+.calm-fill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background-color: color-mix(in oklch, var(--c-sea) 55%, transparent);
+  transform-origin: left;
+
+  [data-level='3'] & {
+    background-color: var(--c-sea);
+  }
+
+  [data-level='4'] & {
+    background-color: var(--atlantico-700);
+  }
+}
+
+.calm-waves {
+  font-size: var(--fs-micro);
+  font-weight: 600;
   color: var(--c-ink-2);
 }
 
@@ -292,6 +353,27 @@ lm-warning-banner,
     text-decoration: underline;
     text-decoration-thickness: 1px;
     text-underline-offset: 0.2em;
+  }
+}
+
+@media (min-width: 36rem) {
+  .facets {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    border-top: 0;
+  }
+
+  .facet {
+    grid-template-columns: 1fr;
+    align-content: start;
+    gap: var(--s-2);
+    padding: var(--s-4) var(--s-5) 0 0;
+    border-top: 1px solid var(--c-line-strong);
+
+    & + & {
+      padding-left: var(--s-5);
+      border-top: 1px solid var(--c-line-strong);
+      border-left: 1px solid var(--c-line);
+    }
   }
 }
 
@@ -312,7 +394,7 @@ lm-warning-banner,
     max-width: 72rem;
     grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
     align-items: start;
-    column-gap: var(--s-10);
+    column-gap: var(--s-12);
   }
 
   .page-head {
@@ -322,14 +404,38 @@ lm-warning-banner,
   .panel {
     grid-row: span 2;
   }
-}
 
-@media (prefers-reduced-motion: reduce) {
-  .gauge-arrow {
-    animation: none;
+  // Beside the curve the column is narrow: the three parts stack again.
+  .sea-state-section .facets {
+    grid-template-columns: 1fr;
+    border-top: 1px solid var(--c-line-strong);
   }
 
-  .gauge-water {
-    transition-duration: 0ms;
+  .sea-state-section .facet {
+    grid-template-columns: 8.5rem minmax(0, 1fr);
+    align-items: baseline;
+    padding: var(--s-4) 0;
+    border-top: 0;
+
+    & + & {
+      padding-left: 0;
+      border-left: 0;
+      border-top: 1px solid var(--c-line);
+    }
+  }
+
+  .calmest-sea {
+    grid-column: 1 / -1;
+  }
+
+  // Two columns read down, then across, so the ranking keeps its order.
+  .calm {
+    display: block;
+    columns: 2;
+    column-gap: var(--s-12);
+
+    li {
+      break-inside: avoid;
+    }
   }
 }

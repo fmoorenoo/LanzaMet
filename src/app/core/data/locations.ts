@@ -30,6 +30,9 @@ const SEA = {
   northwest: { latitude: 29.208333, longitude: -13.708333 },
   westOfLaSanta: { latitude: 29.125, longitude: -13.791667 },
   north: { latitude: 29.291667, longitude: -13.458333 },
+  // The two cells off Arrieta are masked as coast; this is the first open one
+  // due east, about 16 km out (checked on 2026-10-25).
+  eastOfArrieta: { latitude: 29.125, longitude: -13.291667 },
   west: { latitude: 28.958333, longitude: -13.875 },
 } as const satisfies Record<string, GeoPoint>;
 
@@ -124,6 +127,21 @@ export const LOCATIONS: readonly Location[] = [
     shore: 'roca',
     scenery: 'orzola',
     coverage: { sea: SEA.north, tide: { kind: 'model' } },
+  },
+  {
+    // The village, as OpenStreetMap places it; Playa de La Garita lies just
+    // south (29.126 / −13.465) and Casa Juanita on the point to the north-east.
+    id: 'arrieta',
+    name: 'Arrieta',
+    municipality: 'Haría',
+    area: 'norte',
+    kind: 'pueblo',
+    position: { latitude: 29.1318, longitude: -13.4618 },
+    facing: 'E',
+    horizon: 'corona',
+    shore: 'arena-dorada',
+    scenery: 'garita',
+    coverage: { sea: SEA.eastOfArrieta, tide: { kind: 'model' } },
   },
   {
     id: 'el-golfo',

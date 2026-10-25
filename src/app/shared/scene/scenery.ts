@@ -17,7 +17,8 @@ import {
  * Reducto, the palms of Puerto del Carmen's promenade, the Pechiguera
  * lighthouse facing Lobos, Las Cucharas' breakwaters and windsurfers,
  * La Santa's village on the lava and the El Quemao wave, Órzola's harbour,
- * El Golfo's half crater over the green lagoon.
+ * Arrieta's pier and blue Casa Juanita, El Golfo's half crater over the
+ * green lagoon.
  *
  * A few primitives (houses, a slab tower, palms, a lighthouse, a breakwater,
  * boats and sails) build them all. Every shape of one role shares one path,
@@ -51,6 +52,11 @@ export interface SceneryArt {
   /** Bands of a cliff face, painted with the scene's rock colours in turn. */
   readonly strata: readonly string[];
   readonly lagoon: string;
+  /** A beach along the far shore, painted like the scene's own sand. */
+  readonly beach: string;
+  /** A house painted in colour (Casa Juanita's blue) and its shaded side. */
+  readonly accent: string;
+  readonly accentShade: string;
   /** Sunlit walls, their shaded sides, small windows, and glass. */
   readonly walls: string;
   readonly shade: string;
@@ -75,6 +81,9 @@ class Sketch {
   terrain: readonly Feature[] = [];
   strata: string[] = [];
   lagoon = '';
+  beach = '';
+  accent = '';
+  accentShade = '';
   walls = '';
   shade = '';
   windows = '';
@@ -155,6 +164,37 @@ class Sketch {
     return this;
   }
 
+  /**
+   * Casa Juanita: a square two-storey house on the rocks by Arrieta's pier,
+   * painted blue, with white sills, a white cornice and the flat roof's
+   * parapet; the shaded side a deeper blue.
+   */
+  bluehouse(x: number, w: number, h: number): this {
+    const base = this.ground(x + w / 2) + 1.5;
+    const top = base - h;
+    this.accent += rect(x, top, w, h);
+    const side = w * 0.28;
+    this.accentShade += rect(x + w - side, top, side, h);
+    // Cornice and parapet, white like the trim.
+    this.walls += rect(x - 0.6, top - 1.6, w + 1.2, 1.6);
+    this.walls += rect(x - 0.6, top + h * 0.48, w + 1.2, 0.8);
+    // Two rows of tall windows with white frames, on the lit face.
+    for (const row of [top + 2.4, top + h * 0.48 + 2.2]) {
+      for (let wx = x + 2; wx + 2.4 <= x + w - side - 1; wx += 4.6) {
+        this.walls += rect(wx, row, 2.4, 3.6);
+        this.windows += rect(wx + 0.5, row + 0.5, 1.4, 2.6);
+      }
+    }
+    return this;
+  }
+
+  /** A strip of sand on the far shore, from `from` to `to`, a few units deep. */
+  sand(from: number, to: number, depth: number): this {
+    const y = BASE + 0.5;
+    this.beach += `M${f(from)} ${f(y)}Q${f((from + to) / 2)} ${f(y - depth * 2)} ${f(to)} ${f(y)}Z`;
+    return this;
+  }
+
   /** A palm: a leaning trunk and drooping fronds, as strokes. */
   palm(x: number, h: number, lean: number, base = this.ground(x) + 1): this {
     const tx = x + lean;
@@ -214,6 +254,9 @@ class Sketch {
       terrain: silhouette(this.terrain),
       strata: this.strata,
       lagoon: this.lagoon,
+      beach: this.beach,
+      accent: this.accent,
+      accentShade: this.accentShade,
       walls: this.walls,
       shade: this.shade,
       windows: this.windows,
@@ -362,6 +405,45 @@ const SCENERIES: Readonly<Record<SceneryId, () => SceneryArt>> = {
       .float('boat', 792, 160, 0.95)
       .float('ferry', 470, 153.5, 0.7)
       .art();
+  },
+
+  // Arrieta from the water: La Garita's sand along the low shore to the south,
+  // the white village behind it, and to the north the pier with its light,
+  // fishing boats at their moorings and Casa Juanita, the blue house, on the
+  // rocks at the water's edge. Monte Corona is the horizon's.
+  garita: () => {
+    const sketch = new Sketch();
+    sketch.terrain = [
+      profile(
+        [
+          [420, 0],
+          [470, 3],
+          [620, 4],
+          [700, 6],
+          [880, 7],
+          [1040, 10],
+          [1200, 12],
+          [1260, 12],
+        ],
+        0.8,
+      ),
+    ];
+    return (
+      sketch
+        .sand(470, 690, 1.6)
+        .village(560, 700, 6, 70, { w: [9, 14], h: [4, 7] })
+        // The houses stop short of the point, where the blue house stands alone.
+        .village(700, 895, 12, 71, { w: [9, 16], h: [5, 10] })
+        .village(1046, 1185, 9, 72, { w: [10, 17], h: [6, 12] })
+        .bluehouse(918, 20, 15)
+        .palm(752, 26, 3)
+        .palm(1012, 32, -3)
+        .mole(944, 1010, 4, true)
+        .float('boat', 968, 159, 0.8)
+        .float('boat', 1036, 161, 0.95)
+        .float('boat', 852, 158, 0.7)
+        .art()
+    );
   },
 
   // El Golfo: the half crater, its face banded ochre, rust and black, and the

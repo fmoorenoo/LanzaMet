@@ -1,6 +1,7 @@
-import { Oklch, oklch, parseOklch, toRgb } from '../../core/utils/color';
+import { mix, Oklch, oklch, parseOklch, toRgb } from '../../core/utils/color';
 import {
-  CLOUD_PATH,
+  CLOUD_PATHS,
+  CLOUD_SHADE_FROM,
   CLOUDS,
   HORIZON_VIEWBOX,
   horizonPaths,
@@ -63,8 +64,11 @@ export function paintScene(ctx: Ctx, s: SceneState, box: SceneBox): void {
   ctx.clip();
 
   paintSky(ctx, s, box, horizonY);
+  paintGlow(ctx, s, box, horizonY);
   paintLights(ctx, s, box, horizonY);
   paintClouds(ctx, s, box, horizonY);
+  withLand(ctx, box, horizonY, () => paintFarLand(ctx, s));
+  paintMist(ctx, s, box, horizonY);
   withLand(ctx, box, horizonY, () => paintLand(ctx, s));
   paintHaze(ctx, s, box);
   paintSea(ctx, s, box, horizonY);
@@ -99,22 +103,49 @@ function paintSky(
   }
 }
 
+/** The band of light along the horizon (`.glow`). */
+function paintGlow(ctx: Ctx, s: SceneState, { width: w }: SceneBox, horizonY: number) {
+  if (s.glow.strength <= 0.01) return;
+  const color = parseOklch(s.glow.color);
+  const top = horizonY * (1 - 0.46);
+  const band = ctx.createLinearGradient(0, horizonY, 0, top);
+  band.addColorStop(0, toRgb(color, 0.72));
+  band.addColorStop(0.38, toRgb(color, 0.26));
+  band.addColorStop(1, toRgb(color, 0));
+  ctx.save();
+  ctx.globalAlpha = s.glow.strength;
+  ctx.fillStyle = band;
+  ctx.fillRect(0, top, w, horizonY - top);
+  ctx.restore();
+}
+
 function paintLights(ctx: Ctx, s: SceneState, { width: w }: SceneBox, horizonY: number) {
   if (s.sun.visible > 0.01) {
     const x = (s.sun.x / 100) * w;
     const y = (s.sun.y / 100) * horizonY;
     const size = w * (s.sun.lowSun ? 0.19 : 0.15);
     const color = parseOklch(s.sun.color);
+    ctx.save();
+    ctx.globalAlpha = s.sun.visible;
+    // The bloom (`.bloom`): a wide, faint patch of scattered light.
+    const reach = Math.min(w * 0.7, 640 * (w / 1200) * 1.6) / 2;
+    const bloom = ctx.createRadialGradient(x, y, 0, x, y, reach * Math.SQRT2);
+    bloom.addColorStop(0, toRgb(color, 0.34));
+    bloom.addColorStop(0.34, toRgb(color, 0.1));
+    bloom.addColorStop(0.66, toRgb(color, 0));
+    ctx.fillStyle = bloom;
+    ctx.beginPath();
+    ctx.arc(x, y, reach, 0, Math.PI * 2);
+    ctx.fill();
     // CSS's `radial-gradient(circle, …)` reaches the box's corner; the disc clips it.
     const glow = ctx.createRadialGradient(x, y, 0, x, y, size * Math.SQRT1_2);
     glow.addColorStop(0, toRgb(SUN_CORE));
-    glow.addColorStop(0.12, toRgb(SUN_CORE));
-    glow.addColorStop(0.26, toRgb(color));
-    glow.addColorStop(0.29, toRgb(color, 0.55));
-    glow.addColorStop(0.44, toRgb(color, 0.22));
+    glow.addColorStop(0.14, toRgb(SUN_CORE));
+    glow.addColorStop(0.22, toRgb(mix(color, WHITE, 0.4)));
+    glow.addColorStop(0.255, toRgb(color));
+    glow.addColorStop(0.27, toRgb(color, 0.42));
+    glow.addColorStop(0.42, toRgb(color, 0.16));
     glow.addColorStop(0.7, toRgb(color, 0));
-    ctx.save();
-    ctx.globalAlpha = s.sun.visible;
     ctx.fillStyle = glow;
     ctx.beginPath();
     ctx.arc(x, y, size / 2, 0, Math.PI * 2);
@@ -161,8 +192,7 @@ function paintLights(ctx: Ctx, s: SceneState, { width: w }: SceneBox, horizonY: 
 function paintClouds(ctx: Ctx, s: SceneState, { width: w }: SceneBox, horizonY: number) {
   const visible = visibleClouds(s, false);
   if (visible === 0) return;
-  const path = new Path2D(CLOUD_PATH);
-  ctx.fillStyle = paint(s.cloud);
+  const paths = CLOUD_PATHS.map((d) => new Path2D(d));
   CLOUDS.forEach((cloud, i) => {
     const opacity = cloudOpacity(s, i, visible);
     if (opacity <= 0) return;
@@ -171,9 +201,42 @@ function paintClouds(ctx: Ctx, s: SceneState, { width: w }: SceneBox, horizonY: 
     ctx.globalAlpha = opacity;
     ctx.translate((cloud.rest / 100) * w, (cloud.top / 100) * horizonY);
     ctx.scale(width / 200, width / 200);
-    ctx.fill(path);
+    // Lit top, shaded base, over the shape's own height (objectBoundingBox in the SVG).
+    const top = CLOUD_TOPS[cloud.shape];
+    const shade = ctx.createLinearGradient(0, top, 0, 70);
+    shade.addColorStop(0, paint(s.cloud));
+    shade.addColorStop(CLOUD_SHADE_FROM, paint(s.cloud));
+    shade.addColorStop(1, paint(s.cloudShade));
+    ctx.fillStyle = shade;
+    ctx.fill(paths[cloud.shape]);
     ctx.restore();
   });
+}
+
+/** Highest point of each cloud shape, in its 200×80 box: where its gradient starts. */
+const CLOUD_TOPS = CLOUD_PATHS.map((d) =>
+  Math.min(...[...d.matchAll(/-?\d+(?:\.\d+)?/g)].filter((_, i) => i % 2 === 1).map(Number)),
+);
+
+function paintFarLand(ctx: Ctx, s: SceneState) {
+  const { far } = horizonPaths(s.horizon);
+  if (!far) return;
+  const fade = ctx.createLinearGradient(0, 0, 0, HORIZON_VIEWBOX.height);
+  fade.addColorStop(0.15, paint(s.land.far));
+  fade.addColorStop(1, paint(s.land.farMist));
+  ctx.fillStyle = fade;
+  ctx.fill(new Path2D(far));
+}
+
+/** The mist at the far range's foot (`.mist`). */
+function paintMist(ctx: Ctx, s: SceneState, { width: w, height: h }: SceneBox, horizonY: number) {
+  const depth = Math.min(Math.max(h * 0.06, 16), 52);
+  const color = parseOklch(s.sky.low);
+  const mist = ctx.createLinearGradient(0, horizonY, 0, horizonY - depth);
+  mist.addColorStop(0, toRgb(color, 0.62));
+  mist.addColorStop(1, toRgb(color, 0));
+  ctx.fillStyle = mist;
+  ctx.fillRect(0, horizonY - depth, w, depth);
 }
 
 /** Runs `draw` in the horizon's 1200×150 units, its bottom right on the waterline's right end. */
@@ -195,11 +258,21 @@ function fillPath(ctx: Ctx, d: string, color: string) {
 function paintLand(ctx: Ctx, s: SceneState) {
   const horizon = horizonPaths(s.horizon);
   const art = sceneryArt(s.scenery);
-  fillPath(ctx, horizon.far, paint(s.land.far));
-  fillPath(ctx, horizon.near, paint(s.land.near));
-  fillPath(ctx, art.terrain, paint(s.land.near));
+  // Near land catches light along its top (the SVG's bounding-box gradient,
+  // close enough over the horizon's 150 units for a still picture).
+  const near = ctx.createLinearGradient(0, HORIZON_VIEWBOX.height * 0.3, 0, HORIZON_VIEWBOX.height);
+  near.addColorStop(0, paint(s.land.nearTop));
+  near.addColorStop(0.7, paint(s.land.near));
+  for (const d of [horizon.near, art.terrain]) {
+    if (!d) continue;
+    ctx.fillStyle = near;
+    ctx.fill(new Path2D(d));
+  }
+  fillPath(ctx, art.beach, paint(s.shore));
   art.strata.forEach((band, i) => fillPath(ctx, band, paint(s.built.rock[i % 3])));
   fillPath(ctx, art.lagoon, paint(s.built.lagoon));
+  fillPath(ctx, art.accent, paint(s.built.accent));
+  fillPath(ctx, art.accentShade, paint(s.built.accentShade));
   if (art.walls) {
     // Glass first: a tower's floor lines and edges are walls drawn over it.
     fillPath(ctx, art.glass, paint(s.built.glass));
@@ -256,10 +329,14 @@ function paintSea(ctx: Ctx, s: SceneState, box: SceneBox, horizonY: number) {
   ctx.clip();
 
   const sea = ctx.createLinearGradient(0, horizonY, 0, h);
-  sea.addColorStop(0, paint(s.sea.far));
+  sea.addColorStop(0, paint(s.sea.horizon));
+  sea.addColorStop(0.24, paint(s.sea.far));
   sea.addColorStop(1, paint(s.sea.near));
   ctx.fillStyle = sea;
   ctx.fillRect(0, horizonY, w, seaH);
+  // The seam of light where sea meets sky.
+  ctx.fillStyle = paint(s.glow.color, 0.35 + s.glow.strength * 0.5);
+  ctx.fillRect(0, horizonY, w, unit);
 
   paintGlint(ctx, s, box, horizonY);
 
@@ -282,8 +359,47 @@ function paintSea(ctx: Ctx, s: SceneState, box: SceneBox, horizonY: number) {
     ctx.fill(path);
   };
 
-  fillIn(waves[0].body, swell(0.03, 0.32, 0), paint(s.sea.swellFar));
-  fillIn(waves[1].body, swell(0.2, 0.42, 0), paint(s.sea.swellMid));
+  const sheen = (d: string, matrix: DOMMatrix, opacity: number) => {
+    const path = new Path2D();
+    path.addPath(new Path2D(d), matrix);
+    ctx.strokeStyle = paint(s.sea.sheen, opacity);
+    ctx.lineWidth = unit;
+    ctx.stroke(path);
+  };
+
+  /** A vertical gradient over a swell's own box (the SVG's objectBoundingBox). */
+  const across = (top: number, height: number, shift: number, stops: [number, string][]) => {
+    const boxH = height * seaH;
+    const y0 = horizonY + top * seaH + shift * boxH;
+    const gradient = ctx.createLinearGradient(0, y0, 0, y0 + boxH);
+    for (const [offset, color] of stops) gradient.addColorStop(offset, color);
+    return gradient;
+  };
+  const fadeIn = (d: string, matrix: DOMMatrix, fill: CanvasGradient) => {
+    const path = new Path2D();
+    path.addPath(new Path2D(d), matrix);
+    ctx.fillStyle = fill;
+    ctx.fill(path);
+  };
+
+  fadeIn(
+    waves[0].body,
+    swell(0.03, 0.32, 0),
+    across(0.03, 0.32, 0, [
+      [0.1, paint(s.sea.swellFar)],
+      [0.75, paint(s.sea.swellFar, 0)],
+    ]),
+  );
+  sheen(waves[0].crest, swell(0.03, 0.32, 0), s.sea.sheenOpacity);
+  fadeIn(
+    waves[1].body,
+    swell(0.2, 0.42, 0),
+    across(0.2, 0.42, 0, [
+      [0.1, paint(s.sea.swellMid)],
+      [0.8, paint(s.sea.swellMid, 0)],
+    ]),
+  );
+  sheen(waves[1].crest, swell(0.2, 0.42, 0), s.sea.sheenOpacity * 0.8);
   fillIn(
     shorePath(s.shoreKind),
     new DOMMatrix().translate(0, horizonY + 0.3 * seaH).scale(w / 100, (0.7 * seaH) / 100),
@@ -291,8 +407,17 @@ function paintSea(ctx: Ctx, s: SceneState, box: SceneBox, horizonY: number) {
   );
 
   // The waterline rises and falls with the tide; the foam keeps its hairline weight.
-  const front = swell(0.46, 0.74, (0.5 - s.tide) * 0.3);
-  fillIn(waves[2].body, front, paint(s.sea.shallow));
+  const tideShift = (0.5 - s.tide) * 0.3;
+  const front = swell(0.46, 0.74, tideShift);
+  fadeIn(
+    waves[2].body,
+    front,
+    across(0.46, 0.74, tideShift, [
+      [0.18, paint(s.sea.shallowTop)],
+      [0.5, paint(s.sea.shallow)],
+      [1, paint(s.sea.near)],
+    ]),
+  );
   const crest = new Path2D();
   crest.addPath(new Path2D(waves[2].crest), front);
   ctx.strokeStyle = toRgb(WHITE, s.sea.foam);

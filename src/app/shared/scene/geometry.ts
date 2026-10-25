@@ -213,6 +213,32 @@ const PROFILES: Readonly<
     far: [cone(560, 30, 150, 16), cone(380, 18, 110)],
     near: [cone(920, 76, 230, 44), cone(1140, 54, 170, 24), ridge(800, 1300, 10, 80)],
   },
+  // Arrieta seen from the water: the low coast of La Garita to the south
+  // (left), and behind the village the slopes of the Haría massif climbing
+  // north to Monte Corona, its crater broken on one side.
+  corona: {
+    far: [
+      profile(
+        [
+          [470, 0],
+          [540, 5],
+          [640, 11],
+          [730, 19],
+          [800, 28],
+          [860, 37],
+          [905, 41],
+          [950, 49],
+          [990, 47],
+          [1030, 56],
+          [1200, 64],
+          [1260, 66],
+        ],
+        1.1,
+      ),
+      cone(1100, 90, 118, 20),
+    ],
+    near: [ridge(560, 1300, 9, 70, 0.1)],
+  },
 };
 
 const horizonCache = new Map<HorizonProfile, { far: string; near: string }>();
@@ -281,32 +307,44 @@ export const SEA_SPEED: Readonly<Record<SeaLevel, number>> = {
  * when nothing drifts (mini scenes, reduced motion), and its phase and pace.
  */
 export const CLOUDS = [
-  { top: 14, width: 30, rest: 8, phase: 0.1, seconds: 150, layer: 1 },
-  { top: 30, width: 22, rest: 58, phase: 0.55, seconds: 120, layer: 2 },
-  { top: 8, width: 26, rest: 70, phase: 0.8, seconds: 170, layer: 1 },
-  { top: 40, width: 18, rest: 24, phase: 0.3, seconds: 105, layer: 2 },
-  { top: 22, width: 34, rest: 40, phase: 0.95, seconds: 190, layer: 1 },
-  { top: 46, width: 20, rest: 82, phase: 0.68, seconds: 95, layer: 2 },
+  { top: 14, width: 30, rest: 8, phase: 0.1, seconds: 150, layer: 1, shape: 0 },
+  { top: 30, width: 22, rest: 58, phase: 0.55, seconds: 120, layer: 2, shape: 1 },
+  { top: 8, width: 26, rest: 70, phase: 0.8, seconds: 170, layer: 1, shape: 2 },
+  { top: 40, width: 18, rest: 24, phase: 0.3, seconds: 105, layer: 2, shape: 1 },
+  { top: 22, width: 34, rest: 40, phase: 0.95, seconds: 190, layer: 1, shape: 2 },
+  { top: 46, width: 20, rest: 82, phase: 0.68, seconds: 95, layer: 2, shape: 0 },
 ] as const;
 
-/** Night sky: [x %, y % of the sky, radius]. */
-export const STARS: readonly (readonly [number, number, number])[] = [
-  [8, 12, 0.35],
-  [18, 34, 0.25],
-  [27, 8, 0.3],
-  [36, 24, 0.22],
-  [44, 44, 0.2],
-  [52, 16, 0.32],
-  [61, 30, 0.22],
-  [68, 6, 0.28],
-  [76, 22, 0.32],
-  [84, 40, 0.2],
-  [91, 12, 0.26],
-  [96, 32, 0.22],
-];
+/** Night sky: [x %, y % of the sky, radius], scattered from a fixed seed, fainter lower down. */
+function stars(): readonly (readonly [number, number, number])[] {
+  const random = seeded(29_1318);
+  return Array.from({ length: 46 }, (_, i) => {
+    const x = (i * 0.6180339887 + random() * 0.08) % 1;
+    const y = Math.pow(random(), 1.4) * 64;
+    // A few bright ones; most are pinpricks.
+    const r = random() < 0.14 ? 0.32 + random() * 0.1 : 0.1 + random() * 0.16;
+    return [Number((x * 100).toFixed(1)), Number(y.toFixed(1)), Number(r.toFixed(2))] as const;
+  });
+}
 
-export const CLOUD_PATH =
-  'M22 70C8 70 2 58 10 49 6 34 24 25 39 31 46 14 74 8 92 20 104 6 138 6 148 27 168 22 188 36 183 52 196 58 192 72 176 72Z';
+export const STARS = stars();
+
+/**
+ * Cumulus as they float over the island in the trade wind: rounded heaps on
+ * top, a flat base where the air reaches condensation, in a 200×80 box
+ * (base at y = 70). Painted top-lit, the base in shade.
+ */
+export const CLOUD_PATHS = [
+  // A broad heap.
+  'M10 70C2 70 2 58 12 55C10 44 22 36 34 40C38 26 56 20 68 28C76 12 104 8 116 22C124 14 144 14 152 28C166 24 182 34 180 48C192 50 196 62 188 70Z',
+  // A small, taller tower.
+  'M30 70C18 70 16 58 26 54C24 40 40 32 52 38C58 20 84 14 96 28C108 18 130 22 134 38C148 36 160 48 156 58C166 60 168 70 158 70Z',
+  // A long, low bank, the trade wind's usual cloud.
+  'M6 70C0 70 0 62 8 60C12 52 26 50 34 54C42 44 60 42 70 48C80 38 100 38 108 46C118 40 136 40 144 48C156 44 172 48 174 56C188 56 198 64 192 70Z',
+] as const;
+
+/** Where a cloud's lit top gives way to its shaded base, 0–1 of its height. */
+export const CLOUD_SHADE_FROM = 0.5;
 
 // ── Rain ─────────────────────────────────────────────────────────────
 

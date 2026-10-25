@@ -2,29 +2,23 @@
   display: block;
   min-width: 0;
 
-  // Each hour: its width and the rows it stacks. The curve's position is
-  // derived from them, so changing a size keeps the dots on the line.
-  --cell-w: 3.75rem;
+  // Each hour: wider than tall, the sky and the number side by side.
+  --cell-w: 4.875rem;
   --cell-inset: 0.1875rem;
-  --glyph: 2rem;
-  --row-day: 1rem;
-  --row-time: 1.25rem;
-  --row-glyph: calc(var(--glyph) + var(--s-2));
-  --row-temp: 3.75rem;
-  --cell-pad-top: var(--s-2);
-  // Top of the temperature band, plus the gap that lets each label sit just above its dot.
-  --curve-top: calc(
-    var(--cell-pad-top) + var(--row-day) + var(--row-time) + var(--row-glyph) + 0.4375rem
-  );
+  --glyph: 1.75rem;
+  --temp-size: 1.0625rem;
+  // The tallest wind bar; every hour shares the scale, so heights compare.
+  --wind-bar-h: 1.5rem;
 }
 
 // Desktop: a little more air per hour, bigger weather marks and temperatures.
 @media (min-width: 64rem) {
   :host {
-    --cell-w: 4.5rem;
+    --cell-w: 5.5rem;
     --cell-inset: 0.25rem;
-    --glyph: 2.375rem;
-    --temp-size: 1.0625rem;
+    --glyph: 2rem;
+    --temp-size: 1.1875rem;
+    --wind-bar-h: 1.75rem;
   }
 }
 
@@ -65,9 +59,9 @@
     transform: none;
   }
 
-  // The narrowest phones: the scene right above already offers "Back to now"
+  // Phones and tablets: the scene right above already offers "Back to now"
   // while an hour is previewed, and the heading needs the whole line.
-  @media (max-width: 23rem) {
+  @media (width < 64rem) {
     display: none;
   }
 }
@@ -90,25 +84,7 @@
 .track {
   position: relative;
   display: flex;
-  width: calc(var(--hours) * var(--cell-w));
-}
-
-// The curve sits behind the temperatures; each cell's label rides on it.
-.curve {
-  position: absolute;
-  top: var(--curve-top);
-  width: 100%;
-  height: 60px;
-  overflow: visible;
-  pointer-events: none;
-}
-
-.curve-line {
-  fill: none;
-  stroke: var(--c-line-strong);
-  stroke-width: 1.5;
-  vector-effect: non-scaling-stroke;
-  stroke-linejoin: round;
+  width: max-content;
 }
 
 .cell {
@@ -116,11 +92,12 @@
   isolation: isolate;
   flex: none;
   display: grid;
-  grid-template-rows: var(--row-day) var(--row-time) var(--row-glyph) var(--row-temp) 0.5rem;
+  grid-template-rows: 1.25rem calc(var(--glyph) + var(--s-1)) auto;
   justify-items: center;
   align-items: center;
+  row-gap: var(--s-1);
   width: var(--cell-w);
-  padding: var(--cell-pad-top) 0 var(--s-3);
+  padding: var(--s-3) var(--s-2) var(--s-2);
   border-radius: var(--r-md);
   transition: transform var(--d-press) var(--ease-out);
 
@@ -161,6 +138,39 @@
     border-color: var(--c-accent);
   }
 
+  // A new day begins: its first hour says which.
+  &.is-new-day::before {
+    border-left-color: var(--c-accent);
+  }
+}
+
+.time {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.25rem;
+  font-size: var(--fs-micro);
+  font-weight: 560;
+  color: var(--c-ink-2);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+
+  .is-active & {
+    color: var(--c-ink);
+    font-weight: 700;
+  }
+}
+
+.day-mark {
+  font-size: 0.6875rem;
+  font-weight: 720;
+  color: var(--c-accent);
+}
+
+.sky {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3125rem;
+
   lm-sky-glyph {
     width: var(--glyph);
     height: var(--glyph);
@@ -168,76 +178,76 @@
   }
 }
 
-.day-mark {
-  font-size: 0.6875rem;
-  font-weight: 700;
-  color: var(--c-accent);
-}
-
-.time {
-  font-size: var(--fs-micro);
-  font-weight: 560;
-  color: var(--c-ink-2);
-  font-variant-numeric: tabular-nums;
-
-  .is-active & {
-    color: var(--c-ink);
-    font-weight: 680;
-  }
-}
-
 .temp {
-  align-self: start;
-  font-size: var(--temp-size, 1rem);
-  font-weight: 600;
-  letter-spacing: -0.01em;
-  transform: translateY(calc((var(--y) - 22) * 1px));
-  transition: transform var(--d-base) var(--ease-out);
+  font-size: var(--temp-size);
+  font-weight: 640;
+  letter-spacing: -0.015em;
 }
 
-.curve-dot {
-  position: absolute;
-  left: 50%;
-  top: var(--curve-top);
-  width: 0.4375rem;
-  height: 0.4375rem;
-  margin: -0.21875rem;
-  border-radius: 50%;
-  background-color: var(--c-surface);
-  box-shadow: inset 0 0 0 1.5px var(--c-ink-3);
-  transform: translateY(calc(var(--y) * 1px));
-  transition:
-    background-color var(--d-fast) ease,
-    box-shadow var(--d-fast) ease,
-    transform var(--d-base) var(--ease-out);
+// ── Wind: the number with its direction over a bar of its speed ──
+.wind {
+  display: grid;
+  justify-items: center;
+  gap: 0.1875rem;
+  width: 100%;
+  padding-top: var(--s-2);
+  border-top: 1px solid var(--c-line);
+}
 
-  .is-active & {
-    background-color: var(--c-accent);
-    box-shadow: inset 0 0 0 1.5px var(--c-accent);
+.wind-value {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.125rem;
+  font-size: var(--fs-micro);
+  font-weight: 640;
+  color: var(--c-ink-2);
+
+  [data-wind-level='2'] & {
+    color: var(--c-ink);
+  }
+
+  [data-wind-level='3'] &,
+  [data-wind-level='4'] & {
+    color: var(--c-ink);
+    font-weight: 720;
   }
 }
 
-.wind {
-  width: 60%;
-  height: 0.25rem;
-  border-radius: var(--r-pill);
-  background-color: var(--c-line);
-  overflow: hidden;
+.wind-arrow {
+  width: 0.8125rem;
+  height: 0.8125rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
+// Bars stand on a shared baseline and share one scale, so the strip reads as
+// a profile of the wind across the hours.
 .wind-bar {
-  display: block;
-  height: 100%;
-  border-radius: inherit;
-  background-color: var(--c-ink-3);
-  transform-origin: left;
+  position: relative;
+  width: 1.125rem;
+  height: var(--wind-bar-h);
+}
 
-  [data-level='2'] & {
+.wind-fill {
+  position: absolute;
+  inset: 0;
+  border-radius: 3px 3px 1px 1px;
+  background-color: color-mix(in oklch, var(--c-ink-3) 55%, transparent);
+  transform-origin: bottom;
+
+  [data-wind-level='1'] & {
+    background-color: var(--c-ink-3);
+  }
+
+  [data-wind-level='2'] & {
     background-color: var(--c-fair);
   }
 
-  [data-level='3'] &,
-  [data-level='4'] & {
+  [data-wind-level='3'] &,
+  [data-wind-level='4'] & {
     background-color: var(--c-poor);
   }
 }
@@ -256,13 +266,34 @@
   display: inline-flex;
   align-items: center;
   gap: var(--s-2);
+  white-space: nowrap;
 }
 
-.legend-bar {
-  width: 1.25rem;
-  height: 0.25rem;
-  border-radius: var(--r-pill);
-  background: linear-gradient(90deg, var(--c-ink-3), var(--c-fair), var(--c-poor));
+.legend-bars {
+  display: inline-flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 0.75rem;
+
+  span {
+    width: 4px;
+    border-radius: 2px 2px 1px 1px;
+    background-color: var(--c-ink-3);
+
+    &:nth-child(1) {
+      height: 40%;
+    }
+
+    &:nth-child(2) {
+      height: 70%;
+      background-color: var(--c-fair);
+    }
+
+    &:nth-child(3) {
+      height: 100%;
+      background-color: var(--c-poor);
+    }
+  }
 }
 
 @media (hover: hover) and (pointer: fine) {

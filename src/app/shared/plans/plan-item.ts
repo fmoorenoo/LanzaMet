@@ -12,7 +12,7 @@ import { zoneScene } from '../scene/scene-state';
 import { Icon } from '../ui/icon/icon';
 import { IconName } from '../ui/icon/icons';
 
-const KIND: Readonly<Record<PlanKind, { icon: IconName }>> = {
+export const PLAN_KIND: Readonly<Record<PlanKind, { icon: IconName }>> = {
   playa: { icon: 'beach' },
   resguardo: { icon: 'shelter' },
   'mar-calmo': { icon: 'swim' },
@@ -43,7 +43,7 @@ export class PlanItem {
   private readonly clock = inject(ClockStore);
   private readonly router = inject(Router);
 
-  protected readonly kind = computed(() => KIND[this.plan().kind]);
+  protected readonly kind = computed(() => PLAN_KIND[this.plan().kind]);
 
   protected readonly when = computed(() => {
     const window = this.plan().window;

@@ -24,6 +24,11 @@
   inherits: false;
   initial-value: oklch(0.86 0.06 220);
 }
+@property --sea-horizon {
+  syntax: '<color>';
+  inherits: false;
+  initial-value: oklch(0.62 0.08 230);
+}
 @property --sea-far {
   syntax: '<color>';
   inherits: false;

@@ -13,6 +13,7 @@ import { TideForecast } from '../../../core/models';
 import { msg } from '../../../core/i18n/i18n.model';
 import { TranslatePipe } from '../../../core/i18n/t.pipe';
 import { tideHeight } from '../../../core/insights/tide.insight';
+import { monotoneCurve } from '../../../core/utils/curve';
 import { TIME, toDate } from '../../../core/utils/time';
 
 const W = 1000;
@@ -107,40 +108,40 @@ export class TideChart {
     return FLOOR - ((heightM - min) / (max - min)) * (FLOOR - TOP);
   }
 
-  private readonly points = computed(() => {
+  /**
+   * The hourly series and the highs and lows found between its hours, as one
+   * smooth curve: monotone, so it passes through every value without a crest
+   * or trough the data does not have, and flat at each named high and low.
+   */
+  private readonly curve = computed(() => {
     const start = this.dayStart().getTime();
     const end = start + 24 * TIME.HOUR;
-    return this.tide()
-      .series.filter((p) => {
-        const t = toDate(p.time).getTime();
-        return t >= start && t <= end;
-      })
-      .map((p) => ({ x: this.x(toDate(p.time)), y: this.y(p.heightM) }));
+    const within = (time: string) => {
+      const t = toDate(time).getTime();
+      return t >= start && t <= end;
+    };
+    const { series, extremes } = this.tide();
+    return monotoneCurve(
+      [...series.filter((p) => within(p.time)), ...extremes.filter((e) => within(e.time))].map(
+        (p) => ({ x: this.x(toDate(p.time)), y: this.y(p.heightM) }),
+      ),
+    );
   });
 
-  protected readonly line = computed(() =>
-    this.points()
-      .map((p, i) => `${i === 0 ? 'M' : 'L'}${p.x.toFixed(1)} ${p.y.toFixed(1)}`)
-      .join(''),
-  );
+  protected readonly line = computed(() => this.curve().path);
 
   protected readonly area = computed(() => {
-    const pts = this.points();
+    const pts = this.curve().points;
     if (pts.length === 0) return '';
     return `${this.line()}L${pts[pts.length - 1].x.toFixed(1)} ${H}L${pts[0].x.toFixed(1)} ${H}Z`;
   });
 
   protected readonly nowX = computed(() => Math.min(W, Math.max(0, this.x(this.now()))));
 
-  protected readonly nowY = computed(() => {
-    const pts = this.points();
-    const x = this.nowX();
-    const i = pts.findIndex((p) => p.x >= x);
-    if (i <= 0) return pts[0]?.y ?? FLOOR;
-    const a = pts[i - 1];
-    const b = pts[i];
-    return a.y + ((b.y - a.y) * (x - a.x)) / (b.x - a.x);
-  });
+  /** Where the water is now: on the drawn curve itself, not between its points. */
+  protected readonly nowY = computed(() =>
+    this.curve().points.length > 0 ? this.curve().at(this.nowX()) : FLOOR,
+  );
 
   protected readonly night = computed(() => {
     const sunrise = this.sunrise();

@@ -55,6 +55,8 @@ describe('representative observation', () => {
     expect(pick('famara')).toBeNull();
     expect(pick('el-golfo')).toBeNull();
     expect(pick('la-santa')).toBeNull();
+    // Arrieta: Haría is 277 m up, La Graciosa's helipad 12 km away.
+    expect(pick('arrieta')).toBeNull();
   });
 
   it('ignores readings more than three hours old', () => {

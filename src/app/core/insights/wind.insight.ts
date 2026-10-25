@@ -28,8 +28,10 @@ export type WindLevel = 0 | 1 | 2 | 3 | 4;
 
 export interface WindReading {
   readonly level: WindLevel;
-  /** "Brisa suave" */
+  /** "Viento flojo" */
   readonly label: Msg;
+  /** The level alone, for a scale: "Flojo" */
+  readonly scale: Msg;
   /** For sentences: "brisa suave" */
   readonly phrase: Msg;
   /** "del nordeste" */
@@ -45,11 +47,43 @@ export interface WindReading {
   readonly strength: number;
 }
 
-/** Upper speed (km/h, exclusive) of each level, from "no wind" to "very strong". */
-const LEVEL_MAX: readonly number[] = [6, 20, 30, 45, Infinity];
+/**
+ * Upper speed (km/h, exclusive) of each level: the Beaufort scale (WMO), its
+ * forces grouped the way people feel them on a beach.
+ *
+ * | Level | Name       | km/h  | Beaufort | On the shore                          |
+ * |-------|------------|-------|----------|---------------------------------------|
+ * | 0     | Calma      | < 6   | 0–1      | Smoke rises, flags hang               |
+ * | 1     | Flojo      | 6–19  | 2–3      | Felt on the face, flags stir          |
+ * | 2     | Moderado   | 20–28 | 4        | Dry sand and loose paper lift         |
+ * | 3     | Fuerte     | 29–49 | 5–6      | Sand stings, umbrellas hard to hold   |
+ * | 4     | Muy fuerte | ≥ 50  | 7+       | Hard to walk against                  |
+ */
+export const WIND_LEVEL_MAX: readonly number[] = [6, 20, 29, 50, Infinity];
+
+/** Above this the scale is full: the speed at which bars and gauges stop growing. */
+export const WIND_SCALE_TOP_KMH = 60;
+
+/** 0–1, how far up the scale a speed is, for bars and gauges (linear to WIND_SCALE_TOP_KMH). */
+export function windShare(speedKmh: number): number {
+  return clamp(speedKmh / WIND_SCALE_TOP_KMH);
+}
+
+/**
+ * Where a speed sits on the five-step scale, 0–5: whole steps for the levels
+ * passed, plus how far into the current one. Gauges fill by this, so each
+ * segment is one level and its fill is the speed within it.
+ */
+export function windSteps(speedKmh: number): number {
+  const index = WIND_LEVEL_MAX.findIndex((max) => speedKmh < max);
+  const level = index === -1 ? 4 : index;
+  const from = level === 0 ? 0 : WIND_LEVEL_MAX[level - 1];
+  const to = level === 4 ? WIND_SCALE_TOP_KMH + 10 : WIND_LEVEL_MAX[level];
+  return level + clamp((speedKmh - from) / (to - from));
+}
 
 export function readWind(wind: Wind): WindReading {
-  const index = LEVEL_MAX.findIndex((max) => wind.speedKmh < max);
+  const index = WIND_LEVEL_MAX.findIndex((max) => wind.speedKmh < max);
   const level = (index === -1 ? 4 : index) as WindLevel;
   const direction = toCardinal(wind.fromDegrees);
   const label = msg(`wind.level.${level}.label`);
@@ -57,6 +91,7 @@ export function readWind(wind: Wind): WindReading {
   return {
     level,
     label,
+    scale: msg(`wind.scale.${level}`),
     phrase: msg(`wind.level.${level}.phrase`),
     from,
     labelFrom: msg('wind.labelFrom', { label, from }),

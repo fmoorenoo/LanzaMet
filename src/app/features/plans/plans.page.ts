@@ -2,19 +2,26 @@ import { Component, computed, inject } from '@angular/core';
 import { DATA_MODE } from '../../core/data/http/data-config';
 import { TranslatePipe } from '../../core/i18n/t.pipe';
 import { IslandStore } from '../../core/state/island.store';
-import { PlanItem } from '../../shared/plans/plan-item';
 import { DataCredit } from '../../shared/ui/data-credit/data-credit';
 import { StatusMessage } from '../../shared/ui/status-message/status-message';
+import { PlanCard } from './plan-card/plan-card';
 
-/** Concrete suggestions for today, the best one first and shown as a place. */
+/**
+ * Where to go today, as a way of discovering the island: the best idea first
+ * and wide, the others as postcards of their places, each with the facts to
+ * compare (temperature, wind, sea). Suggestions, never guarantees.
+ */
 @Component({
   selector: 'lm-plans-page',
   host: { id: 'plans-page', class: 'page plans-page' },
-  imports: [PlanItem, StatusMessage, DataCredit, TranslatePipe],
+  imports: [PlanCard, StatusMessage, DataCredit, TranslatePipe],
   template: `
     <header id="plans-header" class="page-head page-header">
       <h1 class="t-display">{{ 'route.plans' | t }}</h1>
-      <p class="t-lead t-muted lead">
+      @if (island.zones().status === 'ready') {
+        <p id="island-summary" class="summary t-lead">{{ island.summary() | t }}</p>
+      }
+      <p class="lead t-small t-muted">
         {{ (isDemo ? 'plans.leadDemo' : 'plans.lead') | t }}
       </p>
     </header>
@@ -23,14 +30,14 @@ import { StatusMessage } from '../../shared/ui/status-message/status-message';
       @switch (island.zones().status) {
         @case ('ready') {
           @if (lead(); as first) {
-            <lm-plan-item id="lead-plan" class="enter-settle" [plan]="first" variant="lead" />
+            <lm-plan-card id="lead-plan" class="enter-settle" [plan]="first" variant="lead" />
             @if (rest().length > 0) {
               <section id="more-plans" class="more" aria-labelledby="more-title">
                 <h2 id="more-title" class="t-title">{{ 'plans.more' | t }}</h2>
-                <ul class="list plan-list">
+                <ul class="grid plan-list">
                   @for (plan of rest(); track plan.id; let i = $index) {
                     <li class="enter-rise" [style.--i]="i + 1">
-                      <lm-plan-item [plan]="plan" />
+                      <lm-plan-card [plan]="plan" />
                     </li>
                   }
                 </ul>
@@ -67,10 +74,14 @@ import { StatusMessage } from '../../shared/ui/status-message/status-message';
     .page-head {
       display: grid;
       gap: var(--s-3);
-      padding: calc(var(--safe-top) + var(--s-8)) var(--gutter) var(--s-6);
+      padding: calc(var(--safe-top) + var(--s-8)) var(--gutter) var(--s-8);
+    }
+    .summary {
+      max-width: 32ch;
+      font-weight: 560;
     }
     .lead {
-      max-width: 36ch;
+      max-width: 52ch;
     }
     .content {
       display: grid;
@@ -80,22 +91,32 @@ import { StatusMessage } from '../../shared/ui/status-message/status-message';
     }
     .more {
       display: grid;
-      gap: var(--s-2);
+      gap: var(--s-4);
     }
-    .list li + li {
-      border-top: 1px solid var(--c-line);
-    }
-    .page-foot {
-      grid-column: 1 / -1;
+    .grid {
+      display: grid;
+      gap: var(--s-4);
     }
     .lead-skeleton {
-      height: 16rem;
+      height: 22rem;
       border-radius: var(--r-lg);
+    }
+    // The grid never ends on a lone card: with a count that does not fill the
+    // last row, the first ideas widen to take the spare columns.
+    @media (min-width: 40rem) and (width < 72rem) {
+      .grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: var(--s-5);
+      }
+      .grid > li:first-child:nth-last-child(odd) {
+        grid-column: span 2;
+        --art-ratio: 21 / 8;
+      }
     }
     @media (min-width: 48rem) {
       .page-head,
       .content {
-        max-width: 44rem;
+        max-width: 52rem;
         margin-inline: auto;
       }
       .page-head {
@@ -105,11 +126,20 @@ import { StatusMessage } from '../../shared/ui/status-message/status-message';
     @media (min-width: 72rem) {
       .page-head,
       .content {
-        max-width: 68rem;
+        max-width: 72rem;
       }
-      .content {
-        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-        align-items: start;
+      .grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: var(--s-5);
+      }
+      .grid > li:first-child:nth-last-child(3n + 2),
+      .grid > li:first-child:nth-last-child(3n + 4),
+      .grid > li:nth-child(3):nth-last-child(3n + 2) {
+        grid-column: span 2;
+        --art-ratio: 21 / 8;
+      }
+      .grid > li:only-child {
+        grid-column: 1 / -1;
       }
     }
   `,

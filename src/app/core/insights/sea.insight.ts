@@ -48,6 +48,73 @@ export function describeSwell(swell: WaveComponent | null): Msg | null {
   });
 }
 
+/**
+ * The sea taken apart for reading at a glance, words first and figures
+ * second: the waves, the swell that comes from far away, and the water.
+ */
+export interface SeaFacets {
+  readonly waves: { readonly title: Msg; readonly detail: Msg | null; readonly level: SeaLevel };
+  readonly swell: {
+    readonly title: Msg;
+    readonly detail: Msg;
+    /** Where it comes from, for an arrow; null when there is none to speak of. */
+    readonly fromDegrees: number | null;
+  };
+  readonly water: { readonly title: Msg; readonly detail: Msg } | null;
+}
+
+/**
+ * Swell by its period: short waves were raised by wind nearby, long ones
+ * have travelled from storms far away (and carry more energy for their size).
+ */
+function swellCharacter(periodS: number): Msg {
+  if (periodS < 8) return msg('sea.swell.short');
+  if (periodS < 11) return msg('sea.swell.mid');
+  return msg('sea.swell.long');
+}
+
+/** How the water feels to get into: orientative bands for Lanzarote's 18–24 °C. */
+export function waterFeel(temperatureC: number): Msg {
+  if (temperatureC < 19) return msg('sea.waterFeel.cold');
+  if (temperatureC < 21) return msg('sea.waterFeel.cool');
+  if (temperatureC < 23) return msg('sea.waterFeel.pleasant');
+  return msg('sea.waterFeel.warm');
+}
+
+export function seaFacets(sea: SeaSnapshot): SeaFacets {
+  const swell = sea.swell && sea.swell.heightM >= MIN_SWELL_M ? sea.swell : null;
+  return {
+    waves: {
+      title: describeWaves(sea.waveHeightM),
+      detail:
+        sea.waveHeightM >= 0.15 && sea.wavePeriodS > 0
+          ? msg('sea.wavesEvery', { period: Math.round(sea.wavePeriodS) })
+          : null,
+      level: seaLevelFor(sea.waveHeightM),
+    },
+    swell: swell
+      ? {
+          title: msg('sea.swell.from', { from: fromDirection(swell.fromDegrees) }),
+          detail: msg('sea.swell.detail', {
+            character: swellCharacter(swell.periodS),
+            numbers: msg('sea.swell.numbers', {
+              height: { decimal: swell.heightM, digits: 1 },
+              period: Math.round(swell.periodS),
+            }),
+          }),
+          fromDegrees: swell.fromDegrees,
+        }
+      : { title: msg('sea.swell.none'), detail: msg('sea.swell.none.text'), fromDegrees: null },
+    water:
+      sea.waterTemperatureC === null
+        ? null
+        : {
+            title: waterFeel(sea.waterTemperatureC),
+            detail: msg('common.celsius', { value: Math.round(sea.waterTemperatureC) }),
+          },
+  };
+}
+
 export function readSea(sea: SeaSnapshot): SeaReading {
   const level = seaLevelFor(sea.waveHeightM);
   return {

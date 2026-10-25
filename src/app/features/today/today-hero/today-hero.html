@@ -11,24 +11,41 @@
 
 <div class="inner hero-content">
   <div class="bar hero-toolbar">
-    <button
-      #placeButton
-      id="location-selector-button"
-      type="button"
-      class="sky-chip place is-current location-button"
-      aria-haspopup="dialog"
-      (click)="ui.openLocationPicker()"
-    >
-      <lm-icon class="pin" name="pin" />
-      <span class="place-name">{{ current()?.name ?? ('common.lanzarote' | t) }}</span>
-      <lm-icon class="chevron" name="chevron-down" />
-      <span class="visually-hidden">{{ 'common.changePlace' | t }}</span>
-    </button>
-    <div class="actions hero-actions">
+    <!-- The place leads: its whole name, large, and the name itself opens the picker. -->
+    <div class="place-line">
+      <button
+        #placeButton
+        id="location-selector-button"
+        type="button"
+        class="place location-button"
+        aria-haspopup="dialog"
+        (click)="ui.openLocationPicker()"
+      >
+        <span class="place-name">{{ current()?.name ?? ('common.lanzarote' | t) }}</span>
+        <lm-icon class="chevron" name="chevron-down" />
+        <span class="visually-hidden">{{ 'common.changePlace' | t }}</span>
+      </button>
+      <button
+        id="favorite-toggle"
+        type="button"
+        class="star favorite-toggle"
+        [attr.aria-pressed]="isFavorite()"
+        [attr.aria-label]="'common.favorite' | t: { name: placeName() }"
+        [lmTooltip]="
+          (isFavorite() ? 'common.favorite.remove' : 'common.favorite.add')
+            | t: { name: placeName() }
+        "
+        (click)="toggleFavorite()"
+      >
+        <lm-icon [name]="isFavorite() ? 'star-filled' : 'star'" />
+      </button>
+    </div>
+
+    <div class="meta">
       <!-- Outside the live region below: a clock announced every minute is noise. -->
       <!-- The time of the moment drawn; while previewing an hour, that hour and its day. -->
       @let clock = time();
-      <p id="current-time" class="sky-badge clock current-time" [class.is-preview]="clock.day">
+      <p id="current-time" class="clock current-time" [class.is-preview]="clock.day">
         <span class="clock-label">
           @if (clock.day; as day) {
             {{ day | t }}
@@ -43,83 +60,110 @@
           <span class="visually-hidden">{{ 'today.clock.zone' | t }}</span>
         }
       </p>
+      <!-- Always laid out; it only shows while an hour is previewed, so nothing moves. -->
       <button
-        id="favorite-toggle"
+        id="preview-reset"
         type="button"
-        class="sky-button favorite-toggle"
-        [attr.aria-pressed]="isFavorite()"
-        [attr.aria-label]="'common.favorite' | t: { name: placeName() }"
-        [lmTooltip]="
-          (isFavorite() ? 'common.favorite.remove' : 'common.favorite.add')
-            | t: { name: placeName() }
-        "
-        (click)="toggleFavorite()"
+        class="moment-reset preview-moment"
+        [class.is-shown]="isPreview()"
+        [inert]="!isPreview()"
+        (click)="resetToNow()"
       >
-        <lm-icon [name]="isFavorite() ? 'star-filled' : 'star'" />
+        {{ 'common.backToNow' | t }}
       </button>
-    </div>
-  </div>
 
-  <!--
-    One slot of fixed height for the favourites or, while previewing an hour,
-    its label. It is there even when it is empty, so swapping one for the
-    other (or showing the label without favourites) moves nothing below.
-  -->
-  <div class="slot hero-slot">
-    @if (isPreview() && v) {
-      <p id="preview-moment" class="moment preview-moment enter-fade">
-        <span>{{ v.momentLabel | t }}</span>
-        <button type="button" class="moment-reset" (click)="resetToNow()">
-          {{ 'common.backToNow' | t }}
-        </button>
-      </p>
-    } @else if (others().length > 0) {
-      <div class="places-row">
+      <!--
+        Favourites as a page indicator, the way a phone's weather app pages
+        through places: one mark each, the place on screen drawn long. A swipe
+        across the scene moves between them too.
+      -->
+      @if (pages().length > 1) {
         <div
           id="favorite-locations"
-          class="places favorite-locations"
+          class="pages favorite-locations"
           role="group"
           [attr.aria-label]="'today.favorites' | t"
-          lmHorizontalScroll
-          #placesScroll="horizontalScroll"
         >
-          @for (place of others(); track place.id) {
+          @for (page of pages(); track page.id) {
             <button
               type="button"
-              class="sky-chip place--quick favorite-location"
-              [attr.data-location-id]="place.id"
-              (click)="selectPlace(place.id)"
+              class="page favorite-location"
+              [class.is-current]="page.current"
+              [class.is-saved]="page.saved"
+              [attr.data-location-id]="page.id"
+              [attr.aria-current]="page.current ? 'true' : null"
+              [attr.aria-label]="
+                (page.current ? 'today.showPlace.current' : 'today.showPlace')
+                  | t: { name: page.name }
+              "
+              [lmTooltip]="page.name"
+              (click)="selectPlace(page.id, page.index)"
             >
-              {{ place.name }}
+              <span class="page-mark"></span>
             </button>
           }
         </div>
-        <lm-scroll-controls
-          class="places-controls"
-          [scroller]="placesScroll"
-          [backLabel]="'today.previousFavorites' | t"
-          [forwardLabel]="'today.moreFavorites' | t"
-        />
-      </div>
-    }
+      }
+    </div>
+
+    <!-- Secondary actions, together and quiet, at the end of the line. -->
+    <div class="tools hero-tools">
+      <lm-share-weather [card]="share()" />
+      @if (isDemo) {
+        <button
+          id="hero-settings-button"
+          type="button"
+          class="sky-button demo settings-button"
+          [lmTooltip]="'today.demoSettings' | t"
+          (click)="ui.openSettings()"
+        >
+          <lm-icon name="sliders" />
+          <span class="demo-label">{{ 'today.demo' | t }}</span>
+          <span class="visually-hidden">{{ 'today.demoSettings' | t }}</span>
+        </button>
+      } @else {
+        <button
+          id="hero-settings-button"
+          type="button"
+          class="sky-button settings-button"
+          [attr.aria-label]="'today.settings' | t"
+          [lmTooltip]="'today.settings' | t"
+          (click)="ui.openSettings()"
+        >
+          <lm-icon name="sliders" />
+        </button>
+      }
+    </div>
   </div>
 
-  <div class="copy-wrap" aria-live="polite">
+  <div #copyWrap class="copy-wrap" aria-live="polite">
     @if (v) {
       <div class="copy hero-copy pendable" [class.is-pending]="pending()">
-        <p id="current-temperature" class="temp current-temperature t-hero t-num">
-          <span class="visually-hidden">{{ 'today.temperature' | t }}</span
-          >{{ v.temperature }}°
-        </p>
-        <div class="copy-text">
-          <h1 id="weather-verdict" class="verdict weather-verdict t-display">
+        <div class="reading">
+          <p id="current-temperature" class="temp current-temperature t-hero t-num">
+            <span class="visually-hidden">{{ 'today.temperature' | t }}</span
+            >{{ v.temperature }}°
+          </p>
+          <div class="state">
+            <p id="weather-condition" class="condition weather-condition">
+              {{ v.condition | t }}
+            </p>
+            <p id="temperature-range" class="range temperature-range t-num">
+              {{ 'today.todayRange' | t: { max: v.range.max, min: v.range.min } }}
+            </p>
+          </div>
+        </div>
+        <lm-wind-gauge id="current-wind" class="wind current-wind" [wind]="v.wind" />
+        <div class="words">
+          <h1 id="weather-verdict" class="verdict weather-verdict">
             {{ v.verdict.headline | t }}
           </h1>
-          <p id="weather-description" class="sentence weather-description t-lead">
-            {{ v.verdict.sentence | t }}
-          </p>
-          <p id="temperature-range" class="range temperature-range t-num">
-            {{ 'today.todayRange' | t: { max: v.range.max, min: v.range.min } }}
+          <!-- Always laid out (empty when it would only repeat the lines above), so
+               choosing another hour never moves the hours below. -->
+          <p id="weather-description" class="sentence weather-description">
+            @if (sentence(); as sentence) {
+              {{ sentence | t }}
+            }
           </p>
         </div>
       </div>
@@ -136,40 +180,9 @@
     } @else {
       <div class="loading hero-loading" [attr.aria-label]="'today.loading' | t">
         <span class="skeleton bone temp-bone"></span>
+        <span class="skeleton bone wind-bone"></span>
         <span class="skeleton bone verdict-bone"></span>
-        <span class="skeleton bone sentence-bone"></span>
       </div>
     }
-  </div>
-  <!--
-    Settings and sharing: on phones at the foot of the scene, within reach of
-    the thumb and clear of the place name; on desktop, at the end of the top row.
-  -->
-  <div class="tools hero-tools">
-    @if (isDemo) {
-      <button
-        id="hero-settings-button"
-        type="button"
-        class="sky-button demo settings-button"
-        [lmTooltip]="'today.demoSettings' | t"
-        (click)="ui.openSettings()"
-      >
-        <lm-icon name="sliders" />
-        <span class="demo-label">{{ 'today.demo' | t }}</span>
-        <span class="visually-hidden">{{ 'today.demoSettings' | t }}</span>
-      </button>
-    } @else {
-      <button
-        id="hero-settings-button"
-        type="button"
-        class="sky-button settings-button"
-        [attr.aria-label]="'today.settings' | t"
-        [lmTooltip]="'today.settings' | t"
-        (click)="ui.openSettings()"
-      >
-        <lm-icon name="sliders" />
-      </button>
-    }
-    <lm-share-weather [card]="share()" />
   </div>
 </div>
