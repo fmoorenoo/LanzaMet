@@ -30,13 +30,14 @@
   overflow: hidden;
 }
 
-// The words own the upper sky; on shorter phones the horizon steps down so
-// the sky behind them stays deep (contrast checked at 4.5:1).
+// The words own the upper sky; the sea is a band at the foot, not half the
+// picture. On shorter screens the horizon steps further down so the sky
+// behind the words stays deep (contrast checked at 4.5:1).
 lm-scene {
-  --horizon: 64%;
+  --horizon: 72%;
 
   @media (max-height: 50rem) {
-    --horizon: 70%;
+    --horizon: 75%;
   }
 }
 
@@ -374,8 +375,8 @@ lm-scene {
     // The hours section below, as rendered: heading and one row of hours,
     // less the sheet's rounded lip, which overlaps the scene.
     --hours-peek: 11.5rem;
-    // The water at the foot of the scene.
-    --sea-band: clamp(5rem, 12svh, 8.5rem);
+    // The water at the foot of the scene: a band, never the half of it.
+    --sea-band: clamp(4.5rem, 10svh, 7rem);
     // Clear sky between the words and the horizon, for what rises above it
     // (palms, the lighthouse, the Gran Hotel, the crater's rim).
     --sky-gap: 2.5rem;

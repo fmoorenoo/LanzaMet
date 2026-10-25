@@ -1,4 +1,4 @@
-import { RAIN_DROPS, rainDropCount } from './geometry';
+import { cone, horizonPaths, RAIN_DROPS, rainDropCount, relief, ridge } from './geometry';
 
 const value = (style: string, name: string) =>
   parseFloat(new RegExp(`--${name}:(-?[\\d.]+)`).exec(style)?.[1] ?? 'NaN');
@@ -40,5 +40,37 @@ describe('rain', () => {
       expect(delay).toBeLessThanOrEqual(0);
       expect(delay).toBeGreaterThan(-seconds);
     }
+  });
+});
+
+describe('relief', () => {
+  /** Every x a path visits, from its M commands. */
+  const starts = (d: string) => [...d.matchAll(/M(-?[\d.]+) (-?[\d.]+)/g)].map((m) => Number(m[1]));
+
+  it('models land with a lit crest, a shaded foot and surf at the waterline', () => {
+    const hill = relief([cone(600, 60, 200)], 3);
+    expect(hill.light).not.toBe('');
+    expect(hill.shade).not.toBe('');
+    expect(hill.surf).not.toBe('');
+    // The surf stays where the land is.
+    for (const x of starts(hill.surf)) expect(Math.abs(x - 600)).toBeLessThan(200);
+  });
+
+  it('cuts gullies only into high, steep land, never into low ground', () => {
+    expect(relief([ridge(0, 1200, 12, 60)], 5).gullies).toBe('');
+    const cliff = relief([cone(600, 90, 160)], 5);
+    expect(starts(cliff.gullies).length).toBeGreaterThan(2);
+    // Each gully comes with its lit rib.
+    expect(starts(cliff.ribs).length).toBe(starts(cliff.gullies).length);
+  });
+
+  it('draws the same relief on every render', () => {
+    expect(relief([cone(600, 90, 160)], 5)).toEqual(relief([cone(600, 90, 160)], 5));
+    expect(horizonPaths('risco')).toBe(horizonPaths('risco'));
+    expect(horizonPaths('risco').farRidge).not.toBe('');
+  });
+
+  it('has nothing to model where there is no land', () => {
+    expect(relief([], 1)).toEqual({ light: '', shade: '', gullies: '', ribs: '', surf: '' });
   });
 });

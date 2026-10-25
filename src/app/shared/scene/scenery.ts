@@ -5,6 +5,8 @@ import {
   profile,
   heightAt,
   HORIZON_VIEWBOX,
+  Relief,
+  relief,
   ridge,
   seeded,
   silhouette,
@@ -47,8 +49,9 @@ export interface Afloat {
 }
 
 export interface SceneryArt {
-  /** Land the scenery stands on, painted like the near land. */
+  /** Land the scenery stands on, painted like the near land, and its modelling. */
   readonly terrain: string;
+  readonly relief: Relief;
   /** Bands of a cliff face, painted with the scene's rock colours in turn. */
   readonly strata: readonly string[];
   readonly lagoon: string;
@@ -62,7 +65,9 @@ export interface SceneryArt {
   readonly shade: string;
   readonly windows: string;
   readonly glass: string;
-  /** Palms, as strokes. */
+  /** Doors and shutters in the island's Manrique green. */
+  readonly trim: string;
+  /** Palms: trunks as strokes, fronds as filled leaves. */
   readonly trunks: string;
   readonly fronds: string;
   /** Lights that come on at dusk: lanterns and harbour beacons. */
@@ -88,6 +93,7 @@ class Sketch {
   shade = '';
   windows = '';
   glass = '';
+  trim = '';
   trunks = '';
   fronds = '';
   lamps: { x: number; y: number }[] = [];
@@ -99,7 +105,12 @@ class Sketch {
     return BASE - heightAt(this.terrain, x);
   }
 
-  /** A whitewashed block, lit from the left, with small windows when it is big enough. */
+  /**
+   * A whitewashed block, lit from the left: a parapet along the flat roof,
+   * small windows when it is big enough, a green door on the lit face and,
+   * on some, the white chimney the island's houses are known for. Which ones
+   * get a chimney follows from where they stand, so it never changes.
+   */
   house(x: number, w: number, h: number, base = this.ground(x + w / 2) + 1.5): this {
     const top = base - h;
     this.walls += rect(x, top, w, h);
@@ -107,10 +118,24 @@ class Sketch {
     this.shade += rect(x + w - side, top, side, h);
     // A parapet line, the flat roofs of the island.
     this.shade += rect(x, top, w - side, 0.9);
-    for (let y = top + 3; y + 3.4 <= base - 1.5; y += 7) {
-      for (let wx = x + 2.5; wx + 2 <= x + w - side - 1.5; wx += 7) {
-        this.windows += rect(wx, y, 2, 2.4);
+    const lit = w - side;
+    for (let y = top + 3; y + 3.4 <= base - 1.5 - (h > 8 ? 4.6 : 0); y += 7) {
+      for (let wx = x + 2.5; wx + 2 <= x + lit - 1.5; wx += 7) {
+        // Green shutters round the windows of the bigger houses.
+        if (w >= 12) this.trim += rect(wx - 0.5, y - 0.4, 3, 3.4);
+        this.windows += rect(wx, y, 2, 2.6);
       }
+    }
+    const hash = Math.abs(Math.sin(x * 12.9898 + w * 78.233)) % 1;
+    if (w >= 7 && h >= 5) {
+      const door = Math.min(4.4, h * 0.5);
+      this.trim += rect(x + Math.max(1.2, lit * (0.25 + hash * 0.4)), base - 1.5 - door, 2.2, door);
+    }
+    if (w >= 9 && hash > 0.55) {
+      const cx = x + lit * (0.55 + hash * 0.3);
+      this.walls += rect(cx, top - 3.4, 2.2, 3.6);
+      this.walls += rect(cx - 0.5, top - 4.2, 3.2, 0.9);
+      this.shade += rect(cx + 1.4, top - 3.4, 0.8, 3.6);
     }
     return this;
   }
@@ -195,21 +220,29 @@ class Sketch {
     return this;
   }
 
-  /** A palm: a leaning trunk and drooping fronds, as strokes. */
+  /**
+   * A palm: a leaning trunk and a full crown of drooping fronds, each a
+   * filled leaf that narrows to its tip, the lower ones hanging further.
+   */
   palm(x: number, h: number, lean: number, base = this.ground(x) + 1): this {
     const tx = x + lean;
     const ty = base - h;
     this.trunks += `M${f(x)} ${f(base)}Q${f(x + lean * 0.15)} ${f(base - h * 0.55)} ${f(tx)} ${f(ty)}`;
-    const length = h * 0.38;
-    for (const angle of [168, 140, 108, 78, 44, 14]) {
+    const length = h * 0.42;
+    const width = Math.max(1.2, h * 0.05);
+    for (const angle of [186, 164, 142, 120, 98, 76, 54, 32, 10, -8]) {
       const a = (angle * Math.PI) / 180;
       const dx = Math.cos(a);
       const dy = Math.sin(a);
-      const droop = length * 0.55 * (1 - dy);
+      const reach = length * (0.82 + 0.18 * Math.abs(dx));
+      const droop = reach * 0.6 * (1 - dy);
+      const cx = tx + dx * reach * 0.55;
+      const cy = ty - dy * reach * 0.55 - reach * 0.2;
+      const ex = tx + dx * reach;
+      const ey = ty - dy * reach * 0.7 + droop;
       this.fronds +=
-        `M${f(tx)} ${f(ty)}` +
-        `Q${f(tx + dx * length * 0.55)} ${f(ty - dy * length * 0.55 - length * 0.16)} ` +
-        `${f(tx + dx * length)} ${f(ty - dy * length * 0.7 + droop)}`;
+        `M${f(tx)} ${f(ty)}Q${f(cx)} ${f(cy - width)} ${f(ex)} ${f(ey)}` +
+        `Q${f(cx)} ${f(cy + width)} ${f(tx)} ${f(ty + width * 0.8)}Z`;
     }
     return this;
   }
@@ -250,8 +283,13 @@ class Sketch {
   }
 
   art(): SceneryArt {
+    const seed = this.terrain.reduce(
+      (sum, t) => sum + (t.kind === 'cone' ? t.x : t.kind === 'ridge' ? t.from : t.points[0][0]),
+      7,
+    );
     return {
       terrain: silhouette(this.terrain),
+      relief: relief(this.terrain, seed),
       strata: this.strata,
       lagoon: this.lagoon,
       beach: this.beach,
@@ -261,6 +299,7 @@ class Sketch {
       shade: this.shade,
       windows: this.windows,
       glass: this.glass,
+      trim: this.trim,
       trunks: this.trunks,
       fronds: this.fronds,
       lamps: this.lamps,

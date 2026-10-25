@@ -106,6 +106,94 @@ export function silhouette(features: readonly Feature[]): string {
   return `${d}L${width} ${height}Z`;
 }
 
+/**
+ * The modelling of near land, drawn over its flat fill: a lit band along the
+ * crest and a shaded band at the foot (each following the outline at a share
+ * of the height, slightly waved, the way lava and ash settle), gullies cut
+ * down the steeper slopes, and the line of surf where the land meets the sea.
+ */
+export interface Relief {
+  readonly light: string;
+  readonly shade: string;
+  readonly gullies: string;
+  /** The lit edge beside each gully. */
+  readonly ribs: string;
+  readonly surf: string;
+}
+
+const NO_RELIEF: Relief = { light: '', shade: '', gullies: '', ribs: '', surf: '' };
+
+/** The band of land between two shares of its height (0 the crest … 1 the waterline). */
+function band(features: readonly Feature[], from: number, to: number, step = 4): string {
+  const { width, height } = HORIZON_VIEWBOX;
+  const xs: number[] = [];
+  for (let x = 0; x <= width; x += step) if (heightAt(features, x) > 1.5) xs.push(x);
+  if (xs.length < 2) return '';
+  const at = (depth: number, x: number) => {
+    const h = heightAt(features, x);
+    const wave =
+      depth > 0 && depth < 1 ? Math.sin(x * 0.045 + depth * 7) * Math.min(2.2, h * 0.06) : 0;
+    return (height - h * (1 - depth) + wave).toFixed(1);
+  };
+  // Runs of land, so separate hills make separate shapes.
+  const runs: number[][] = [];
+  xs.forEach((x, i) => {
+    if (i === 0 || x - xs[i - 1] > step) runs.push([x]);
+    else runs[runs.length - 1].push(x);
+  });
+  return runs
+    .filter((run) => run.length > 1)
+    .map((run) => {
+      const top = run.map((x) => `${x} ${at(from, x)}`);
+      const bottom = run.map((x) => `${x} ${at(to, x)}`).reverse();
+      return `M${top.join('L')}L${bottom.join('L')}Z`;
+    })
+    .join('');
+}
+
+export function relief(features: readonly Feature[], seed: number): Relief {
+  if (features.length === 0) return NO_RELIEF;
+  const { width, height } = HORIZON_VIEWBOX;
+  const random = seeded(seed);
+  let gullies = '';
+  let ribs = '';
+  let surf = '';
+  let x = 6;
+  while (x < width) {
+    const h = heightAt(features, x);
+    // Downhill is where the land falls away; the gully leans that way.
+    const slope = (heightAt(features, x + 4) - heightAt(features, x - 4)) / 8;
+    const steep = Math.min(1, Math.abs(slope) * 2.4);
+    // Steep faces are cut often, gentle tops hardly at all; spacing varies.
+    x += 8 + random() * 14 + (1 - steep) * 10;
+    if (h < 22 || random() > 0.2 + steep * 0.75) continue;
+    const lean = -Math.sign(slope || 1) * (1.5 + random() * 4 + steep * 4);
+    const top = height - h + 2 + random() * (h * 0.18);
+    const bottom = height - h * (0.12 + random() * 0.4);
+    if (bottom - top < 8) continue;
+    const gully = (dx: number) =>
+      `M${(x + dx).toFixed(1)} ${top.toFixed(1)}` +
+      `Q${(x + dx + lean * 0.35).toFixed(1)} ${((top + bottom) / 2).toFixed(1)} ` +
+      `${(x + dx + lean).toFixed(1)} ${bottom.toFixed(1)}`;
+    gullies += gully(0);
+    // The lit rib beside each gully, on the side the light comes from.
+    ribs += gully(-1.4);
+  }
+  // Surf: short broken strokes where land stands at the waterline.
+  for (let x = 0; x < width; x += 7) {
+    if (heightAt(features, x) > 2 && heightAt(features, x + 7) > 2 && random() > 0.25) {
+      surf += `M${x.toFixed(1)} ${height + 0.6}h${(3 + random() * 4).toFixed(1)}`;
+    }
+  }
+  return {
+    light: band(features, 0, 0.24),
+    shade: band(features, 0.55, 1),
+    gullies,
+    ribs,
+    surf,
+  };
+}
+
 const PROFILES: Readonly<
   Record<HorizonProfile, { far: readonly Feature[]; near: readonly Feature[] }>
 > = {
@@ -241,17 +329,52 @@ const PROFILES: Readonly<
   },
 };
 
-const horizonCache = new Map<HorizonProfile, { far: string; near: string }>();
+export interface HorizonPaths {
+  readonly far: string;
+  /** A paler, nearer ridge inside the far range: two depths of distance. */
+  readonly farRidge: string;
+  readonly near: string;
+  readonly nearRelief: Relief;
+}
 
-export function horizonPaths(profile: HorizonProfile): { far: string; near: string } {
+const horizonCache = new Map<HorizonProfile, HorizonPaths>();
+
+export function horizonPaths(profile: HorizonProfile): HorizonPaths {
   let paths = horizonCache.get(profile);
   if (!paths) {
     const p = PROFILES[profile];
-    paths = { far: silhouette(p.far), near: silhouette(p.near) };
+    paths = {
+      far: silhouette(p.far),
+      // The lower part of the far range, a step nearer: it reads as another
+      // line of hills in front of the first.
+      farRidge: band(p.far, 0.38, 1, 8),
+      near: silhouette(p.near),
+      nearRelief: relief(p.near, profile.length * 97),
+    };
     horizonCache.set(profile, paths);
   }
   return paths;
 }
+
+/**
+ * Small ripples on open water, in a 1000×100 box over the sea: closer
+ * together and shorter towards the horizon, sparse near the shore, the same
+ * on every render.
+ */
+function ripples(): string {
+  const random = seeded(28_9625);
+  let d = '';
+  for (let i = 0; i < 56; i++) {
+    const depth = Math.pow(random(), 1.7);
+    const y = 2 + depth * 58;
+    const x = random() * 1000;
+    const length = 6 + depth * 26 + random() * 10;
+    d += `M${x.toFixed(1)} ${y.toFixed(1)}h${length.toFixed(1)}`;
+  }
+  return d;
+}
+
+export const SEA_RIPPLES = ripples();
 
 /*
  * Shores are drawn in a 100×100 box stretched over the lower sea, so the

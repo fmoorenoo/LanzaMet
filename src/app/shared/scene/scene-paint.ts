@@ -7,6 +7,8 @@ import {
   horizonPaths,
   RAIN_DROPS,
   rainDropCount,
+  Relief,
+  SEA_RIPPLES,
   shorePath,
   STARS,
   WAVE_VIEWBOX,
@@ -226,6 +228,7 @@ function paintFarLand(ctx: Ctx, s: SceneState) {
   fade.addColorStop(1, paint(s.land.farMist));
   ctx.fillStyle = fade;
   ctx.fill(new Path2D(far));
+  fillPath(ctx, horizonPaths(s.horizon).farRidge, paint(s.land.farRidge, 0.7));
 }
 
 /** The mist at the far range's foot (`.mist`). */
@@ -255,6 +258,26 @@ function fillPath(ctx: Ctx, d: string, color: string) {
   ctx.fill(new Path2D(d));
 }
 
+/** The modelling of near land (`.relief-light`, `.relief-shade`, `.gullies`). */
+function paintRelief(ctx: Ctx, s: SceneState, relief: Relief, gullies = true) {
+  fillPath(ctx, relief.light, paint(s.land.nearLight, 0.55));
+  fillPath(ctx, relief.shade, paint(s.land.nearShade, 0.5));
+  if (gullies) paintGullies(ctx, s, relief);
+}
+
+function paintGullies(ctx: Ctx, s: SceneState, relief: Relief) {
+  if (!relief.gullies) return;
+  ctx.save();
+  ctx.lineCap = 'round';
+  ctx.strokeStyle = paint(s.land.nearLight, 0.35);
+  ctx.lineWidth = 0.9;
+  ctx.stroke(new Path2D(relief.ribs));
+  ctx.strokeStyle = paint(s.land.gully, 0.4);
+  ctx.lineWidth = 1.3;
+  ctx.stroke(new Path2D(relief.gullies));
+  ctx.restore();
+}
+
 function paintLand(ctx: Ctx, s: SceneState) {
   const horizon = horizonPaths(s.horizon);
   const art = sceneryArt(s.scenery);
@@ -263,13 +286,19 @@ function paintLand(ctx: Ctx, s: SceneState) {
   const near = ctx.createLinearGradient(0, HORIZON_VIEWBOX.height * 0.3, 0, HORIZON_VIEWBOX.height);
   near.addColorStop(0, paint(s.land.nearTop));
   near.addColorStop(0.7, paint(s.land.near));
-  for (const d of [horizon.near, art.terrain]) {
-    if (!d) continue;
+  if (horizon.near) {
     ctx.fillStyle = near;
-    ctx.fill(new Path2D(d));
+    ctx.fill(new Path2D(horizon.near));
+    paintRelief(ctx, s, horizon.nearRelief);
+  }
+  if (art.terrain) {
+    ctx.fillStyle = near;
+    ctx.fill(new Path2D(art.terrain));
+    paintRelief(ctx, s, art.relief, false);
   }
   fillPath(ctx, art.beach, paint(s.shore));
   art.strata.forEach((band, i) => fillPath(ctx, band, paint(s.built.rock[i % 3])));
+  paintGullies(ctx, s, art.relief);
   fillPath(ctx, art.lagoon, paint(s.built.lagoon));
   fillPath(ctx, art.accent, paint(s.built.accent));
   fillPath(ctx, art.accentShade, paint(s.built.accentShade));
@@ -279,6 +308,7 @@ function paintLand(ctx: Ctx, s: SceneState) {
     fillPath(ctx, art.walls, paint(s.built.wall));
     fillPath(ctx, art.shade, paint(s.built.shade));
     fillPath(ctx, art.windows, paint(s.built.window));
+    fillPath(ctx, art.trim, paint(s.built.trim));
   }
   if (art.trunks) {
     ctx.save();
@@ -287,9 +317,8 @@ function paintLand(ctx: Ctx, s: SceneState) {
     ctx.strokeStyle = paint(s.built.palm);
     ctx.lineWidth = 2.4;
     ctx.stroke(new Path2D(art.trunks));
-    ctx.lineWidth = 1.5;
-    ctx.stroke(new Path2D(art.fronds));
     ctx.restore();
+    fillPath(ctx, art.fronds, paint(s.built.palm));
   }
   if (s.built.lights > 0.01) {
     for (const lamp of art.lamps) {
@@ -400,6 +429,16 @@ function paintSea(ctx: Ctx, s: SceneState, box: SceneBox, horizonY: number) {
     ]),
   );
   sheen(waves[1].crest, swell(0.2, 0.42, 0), s.sea.sheenOpacity * 0.8);
+  // Small ripples on open water (`.ripples`), a 1000×100 box over the sea.
+  const ripples = new Path2D();
+  ripples.addPath(
+    new Path2D(SEA_RIPPLES),
+    new DOMMatrix().translate(0, horizonY).scale(w / 1000, seaH / 100),
+  );
+  ctx.strokeStyle = paint(s.sea.sheen, Math.min(1, 0.15 + s.sea.sheenOpacity));
+  ctx.lineWidth = unit;
+  ctx.stroke(ripples);
+
   fillIn(
     shorePath(s.shoreKind),
     new DOMMatrix().translate(0, horizonY + 0.3 * seaH).scale(w / 100, (0.7 * seaH) / 100),
@@ -469,6 +508,22 @@ function paintGlint(
 
 function paintAfloat(ctx: Ctx, s: SceneState) {
   const art = sceneryArt(s.scenery);
+  // The land mirrored in the water (`.reflection`), squashed and faint.
+  ctx.save();
+  ctx.globalAlpha = 0.2;
+  ctx.transform(1, 0, 0, -0.42, 0, 213);
+  paintLand(ctx, s);
+  ctx.restore();
+  // Surf where the land meets the sea.
+  const surf = horizonPaths(s.horizon).nearRelief.surf + art.relief.surf;
+  if (surf) {
+    ctx.save();
+    ctx.lineCap = 'round';
+    ctx.strokeStyle = toRgb(WHITE, s.sea.foam);
+    ctx.lineWidth = 1;
+    ctx.stroke(new Path2D(surf));
+    ctx.restore();
+  }
   fillPath(ctx, art.breakwater, paint(s.land.near));
   for (const item of afloatFor(art, s)) {
     const shape = AFLOAT_PATHS[item.kind];

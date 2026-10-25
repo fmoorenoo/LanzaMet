@@ -172,7 +172,7 @@
   left: 0;
   bottom: calc(100% - var(--horizon));
   width: 100%;
-  height: clamp(3.5rem, 18vw, 9.5rem);
+  height: clamp(3.5rem, 18vw, 13rem);
   // The tallest landmarks may rise past the box on very wide screens.
   overflow: visible;
 
@@ -201,18 +201,56 @@
   transition: color var(--d-atmos) ease;
 }
 
-.trunks,
-.fronds {
+.trunks {
   fill: none;
   stroke-linecap: round;
-}
-
-.trunks {
   stroke-width: 2.4;
 }
 
-.fronds {
-  stroke-width: 1.5;
+// ── Modelling of the land ─────────────────────────────────────
+// Over the flat fill: the lit crest and the shaded foot, as soft-edged bands
+// (they follow the outline, so they read as the shape of the hill), and the
+// gullies cut down the steep slopes.
+.relief-light {
+  opacity: 0.55;
+}
+
+.relief-shade {
+  opacity: 0.5;
+}
+
+.gullies,
+.ribs {
+  fill: none;
+  stroke-linecap: round;
+  transition: stroke var(--d-atmos) ease;
+}
+
+.gullies {
+  stroke-width: 1.3;
+  opacity: 0.4;
+}
+
+.ribs {
+  stroke-width: 0.9;
+  opacity: 0.35;
+}
+
+.far-ridge {
+  opacity: 0.7;
+}
+
+// The land mirrored in the water; the surf at its foot.
+.reflection {
+  opacity: 0.2;
+}
+
+.surf {
+  fill: none;
+  stroke: oklch(1 0 0);
+  stroke-width: 1;
+  stroke-linecap: round;
+  transition: opacity var(--d-atmos) ease;
 }
 
 // Boats rock and sails lean with the swell: a few small SVG groups, cheap
@@ -390,6 +428,23 @@
     stroke var(--d-atmos) ease,
     opacity var(--d-atmos) ease,
     d var(--d-atmos) var(--ease-in-out);
+}
+
+.ripples {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+
+  path {
+    fill: none;
+    stroke-width: 1;
+    stroke-linecap: round;
+    vector-effect: non-scaling-stroke;
+    transition:
+      stroke var(--d-atmos) ease,
+      opacity var(--d-atmos) ease;
+  }
 }
 
 .shore {

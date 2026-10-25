@@ -19,6 +19,7 @@ import {
   RAIN_DROPS,
   RainDrop,
   rainDropCount,
+  SEA_RIPPLES,
   SEA_SPEED,
   shorePath,
   STARS,
@@ -70,6 +71,7 @@ export class Scene {
   protected readonly cloudPaths = CLOUD_PATHS;
   protected readonly cloudShadeFrom = CLOUD_SHADE_FROM;
   protected readonly stars = STARS;
+  protected readonly ripples = SEA_RIPPLES;
 
   /** Gradient ids, unique on the page (Zonas draws many scenes at once). */
   protected readonly ids = (() => {
@@ -83,6 +85,7 @@ export class Scene {
       swellFar: id('swell-far'),
       swellMid: id('swell-mid'),
       shallow: id('shallow'),
+      land: id('land'),
       cloudUrl: url('cloud'),
       farUrl: url('far'),
       nearUrl: url('near'),

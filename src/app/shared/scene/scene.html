@@ -79,57 +79,74 @@
 <!-- The far range alone, so the mist can lie between it and what is near. -->
 <svg class="land land--far" viewBox="0 0 1200 150" preserveAspectRatio="xMaxYMax slice">
   <path [attr.d]="horizon().far" [attr.fill]="ids.farUrl" />
+  <!-- A nearer line of hills inside the range: two depths of distance. -->
+  <path [attr.d]="horizon().farRidge" [style.fill]="s.land.farRidge" class="far-ridge" />
 </svg>
 
 <div class="mist" [style.color]="s.sky.low"></div>
 
 <svg class="land" viewBox="0 0 1200 150" preserveAspectRatio="xMaxYMax slice">
-  <path class="land-near" [attr.d]="horizon().near" [attr.fill]="ids.nearUrl" />
-  <g class="scenery">
-    @if (art.terrain) {
-      <path [attr.d]="art.terrain" [attr.fill]="ids.nearUrl" />
-    }
-    @if (art.beach) {
-      <path [attr.d]="art.beach" [style.fill]="s.shore" />
-    }
-    @for (band of art.strata; track $index) {
-      <path [attr.d]="band" [style.fill]="s.built.rock[$index % 3]" />
-    }
-    @if (art.lagoon) {
-      <path [attr.d]="art.lagoon" [style.fill]="s.built.lagoon" />
-    }
-    @if (art.accent) {
-      <path [attr.d]="art.accent" [style.fill]="s.built.accent" />
-      <path [attr.d]="art.accentShade" [style.fill]="s.built.accentShade" />
-    }
-    @if (art.walls) {
-      <!-- Glass first: a tower's floor lines and edges are walls drawn over it. -->
-      <path [attr.d]="art.glass" [style.fill]="s.built.glass" />
-      <path [attr.d]="art.walls" [style.fill]="s.built.wall" />
-      <path [attr.d]="art.shade" [style.fill]="s.built.shade" />
-      <path [attr.d]="art.windows" [style.fill]="s.built.window" />
-    }
-    @if (art.trunks) {
-      <path class="trunks" [attr.d]="art.trunks" [style.stroke]="s.built.palm" />
-      <path class="fronds" [attr.d]="art.fronds" [style.stroke]="s.built.palm" />
-    }
-    @for (lamp of art.lamps; track $index) {
-      <circle
-        class="lamp-halo"
-        [attr.cx]="lamp.x"
-        [attr.cy]="lamp.y"
-        r="7"
-        [style.fill]="s.built.lamp"
-        [style.opacity]="s.built.lights * 0.3"
-      />
-      <circle
-        [attr.cx]="lamp.x"
-        [attr.cy]="lamp.y"
-        r="1.7"
-        [style.fill]="s.built.lamp"
-        [style.opacity]="s.built.lights"
-      />
-    }
+  <g [attr.id]="ids.land">
+    @let near = horizon().nearRelief;
+    <path class="land-near" [attr.d]="horizon().near" [attr.fill]="ids.nearUrl" />
+    <!-- Modelling: a lit crest, a shaded foot, gullies down the slopes. -->
+    <path class="relief-light" [attr.d]="near.light" [style.fill]="s.land.nearLight" />
+    <path class="relief-shade" [attr.d]="near.shade" [style.fill]="s.land.nearShade" />
+    <path class="ribs" [attr.d]="near.ribs" [style.stroke]="s.land.nearLight" />
+    <path class="gullies" [attr.d]="near.gullies" [style.stroke]="s.land.gully" />
+    <g class="scenery">
+      @if (art.terrain) {
+        <path [attr.d]="art.terrain" [attr.fill]="ids.nearUrl" />
+        <path class="relief-light" [attr.d]="art.relief.light" [style.fill]="s.land.nearLight" />
+        <path class="relief-shade" [attr.d]="art.relief.shade" [style.fill]="s.land.nearShade" />
+      }
+      @if (art.beach) {
+        <path [attr.d]="art.beach" [style.fill]="s.shore" />
+      }
+      @for (band of art.strata; track $index) {
+        <path [attr.d]="band" [style.fill]="s.built.rock[$index % 3]" />
+      }
+      @if (art.relief.gullies) {
+        <path class="ribs" [attr.d]="art.relief.ribs" [style.stroke]="s.land.nearLight" />
+        <path class="gullies" [attr.d]="art.relief.gullies" [style.stroke]="s.land.gully" />
+      }
+      @if (art.lagoon) {
+        <path [attr.d]="art.lagoon" [style.fill]="s.built.lagoon" />
+      }
+      @if (art.accent) {
+        <path [attr.d]="art.accent" [style.fill]="s.built.accent" />
+        <path [attr.d]="art.accentShade" [style.fill]="s.built.accentShade" />
+      }
+      @if (art.walls) {
+        <!-- Glass first: a tower's floor lines and edges are walls drawn over it. -->
+        <path [attr.d]="art.glass" [style.fill]="s.built.glass" />
+        <path [attr.d]="art.walls" [style.fill]="s.built.wall" />
+        <path [attr.d]="art.shade" [style.fill]="s.built.shade" />
+        <path [attr.d]="art.windows" [style.fill]="s.built.window" />
+        <path [attr.d]="art.trim" [style.fill]="s.built.trim" />
+      }
+      @if (art.trunks) {
+        <path class="trunks" [attr.d]="art.trunks" [style.stroke]="s.built.palm" />
+        <path class="fronds" [attr.d]="art.fronds" [style.fill]="s.built.palm" />
+      }
+      @for (lamp of art.lamps; track $index) {
+        <circle
+          class="lamp-halo"
+          [attr.cx]="lamp.x"
+          [attr.cy]="lamp.y"
+          r="7"
+          [style.fill]="s.built.lamp"
+          [style.opacity]="s.built.lights * 0.3"
+        />
+        <circle
+          [attr.cx]="lamp.x"
+          [attr.cy]="lamp.y"
+          r="1.7"
+          [style.fill]="s.built.lamp"
+          [style.opacity]="s.built.lights"
+        />
+      }
+    </g>
   </g>
 </svg>
 
@@ -194,6 +211,15 @@
     </div>
   </div>
 
+  <!-- Small ripples on open water, lit like the crests. -->
+  <svg class="ripples" viewBox="0 0 1000 100" preserveAspectRatio="none">
+    <path
+      [attr.d]="ripples"
+      [style.stroke]="s.sea.sheen"
+      [style.opacity]="0.15 + s.sea.sheenOpacity"
+    />
+  </svg>
+
   <svg class="shore" viewBox="0 0 100 100" preserveAspectRatio="none">
     <path [attr.d]="shore()" [style.fill]="s.shore" />
   </svg>
@@ -218,36 +244,42 @@
 </div>
 
 <!-- Same box and units as the land, drawn over the sea: y > 150 is on the water. -->
-@if (art.breakwater || afloat().length > 0) {
-  <svg class="land afloat" viewBox="0 0 1200 150" preserveAspectRatio="xMaxYMax slice">
-    @if (art.breakwater) {
-      <path [attr.d]="art.breakwater" [style.fill]="s.land.near" />
-    }
-    @for (item of afloat(); track $index) {
-      @let shape = shapes[item.kind];
-      <g [attr.transform]="'translate(' + item.x + ' ' + item.y + ') scale(' + item.scale + ')'">
-        <g
-          class="bob"
-          [class.is-sail]="item.kind === 'sail'"
-          [class.is-breaker]="item.kind === 'breaker'"
-          [style.--i]="$index"
-        >
-          @if (item.kind === 'breaker') {
-            <path [attr.d]="shape.hull" [style.fill]="s.sea.swellMid" />
-            <path [attr.d]="shape.top" [style.fill]="s.built.wall" />
-          } @else if (item.kind === 'sail') {
-            <path [attr.d]="shape.hull" [style.fill]="s.built.wall" />
-            <path [attr.d]="shape.top" [style.fill]="s.built.sails[item.tone]" />
-          } @else {
-            <path [attr.d]="shape.hull" [style.fill]="s.built.wall" />
-            <path [attr.d]="shape.top" [style.fill]="s.built.wall" />
-            <path [attr.d]="shape.stripe" [style.fill]="s.built.trim" />
-          }
-        </g>
+<svg class="land afloat" viewBox="0 0 1200 150" preserveAspectRatio="xMaxYMax slice">
+  <!-- The land mirrored in the water, squashed and faint. -->
+  <use class="reflection" [attr.href]="'#' + ids.land" transform="matrix(1 0 0 -0.42 0 213)" />
+  <!-- Surf where the land meets the sea. -->
+  <path
+    class="surf"
+    [attr.d]="horizon().nearRelief.surf + art.relief.surf"
+    [style.opacity]="s.sea.foam"
+  />
+  @if (art.breakwater) {
+    <path [attr.d]="art.breakwater" [style.fill]="s.land.near" />
+  }
+  @for (item of afloat(); track $index) {
+    @let shape = shapes[item.kind];
+    <g [attr.transform]="'translate(' + item.x + ' ' + item.y + ') scale(' + item.scale + ')'">
+      <g
+        class="bob"
+        [class.is-sail]="item.kind === 'sail'"
+        [class.is-breaker]="item.kind === 'breaker'"
+        [style.--i]="$index"
+      >
+        @if (item.kind === 'breaker') {
+          <path [attr.d]="shape.hull" [style.fill]="s.sea.swellMid" />
+          <path [attr.d]="shape.top" [style.fill]="s.built.wall" />
+        } @else if (item.kind === 'sail') {
+          <path [attr.d]="shape.hull" [style.fill]="s.built.wall" />
+          <path [attr.d]="shape.top" [style.fill]="s.built.sails[item.tone]" />
+        } @else {
+          <path [attr.d]="shape.hull" [style.fill]="s.built.wall" />
+          <path [attr.d]="shape.top" [style.fill]="s.built.wall" />
+          <path [attr.d]="shape.stripe" [style.fill]="s.built.trim" />
+        }
       </g>
-    }
-  </svg>
-}
+    </g>
+  }
+</svg>
 
 <div class="rain" [class.is-on]="s.rain">
   @for (drop of rainDrops(); track $index) {

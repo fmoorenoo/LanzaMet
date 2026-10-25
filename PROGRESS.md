@@ -701,3 +701,12 @@ Skills usadas: Impeccable (auditoría, dirección, suelo de calidad, detector) y
 
 1. **Dónde ir**: tarjetas en fila (paisaje estrecho a la izquierda, texto a la derecha) en una rejilla uniforme de dos columnas en escritorio, sin tarjetas que se ensanchan; las de cada fila miden lo mismo. Mucho menos paisaje (la principal, 13 rem de alto). La isla en miniatura pasa de 2,75 a 3,75 rem (4,75 en la principal) y el lugar, a un punto rojo con halo del doble de tamaño.
 2. **Mar**: el hueco bajo la gráfica en escritorio desaparece. La curva y las pleamares y bajamares van lado a lado a la misma altura, y el mar de la zona, a todo el ancho debajo.
+
+### Paisajes más elaborados y menos mar (25-10-2026)
+
+1. **Relieve** en toda la tierra cercana (horizontes y terreno propio de cada zona): cresta iluminada, pie en sombra, barrancos con arista de luz en las laderas empinadas, espuma en la orilla; segunda línea de colinas en la sierra lejana.
+2. **Casas** con puerta y contraventanas en verde Manrique y chimeneas blancas; **palmeras** con copa de hojas rellenas.
+3. **Agua**: reflejo del paisaje y pequeñas ondas de luz en mar abierto.
+4. **Menos mar**: horizonte al 72 % de la escena en escritorio (antes 64 %) y franja de mar de `clamp(4,5rem, 10svh, 7rem)` en móvil (antes hasta 8,5 rem); la tierra crece hasta 13 rem de alto en pantallas anchas.
+5. La tarjeta para compartir pinta las mismas capas.
+6. **Validación**: 201 tests (nuevos: relieve determinista, barrancos solo en tierra alta y empinada, espuma solo donde hay tierra, segunda línea de sierra); axe sin violaciones; 0 px de salto; capturas de las nueve zonas en escritorio y de tres en móvil.
