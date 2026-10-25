@@ -34,6 +34,7 @@ export const en: Messages = {
   'common.refresh': 'Refresh',
   'common.close': 'Close',
   'common.backToNow': 'Back to now',
+  'common.backToNow.short': 'Now',
   'common.seeAll': 'See all',
   'common.now': 'Now',
   'common.rightNow': 'Right now',
@@ -332,6 +333,8 @@ export const en: Messages = {
   'today.demo': 'Demo',
   'today.demoSettings': 'Fictitious data: open the demo settings',
   'today.unknown': "We can't tell what today is like",
+  'today.sun.rises': 'Sunrise at {time}, in {duration}.',
+  'today.sun.sets': 'Sunset at {time}, in {duration}.',
   'today.loading': 'Loading the weather',
   'today.stale': "We couldn't update. Here is the latest data we have.",
   'today.nowTitle': '{moment}: wind, sea and tide',
@@ -393,6 +396,7 @@ export const en: Messages = {
   'fact.observed.wind': 'wind {from} at {speed} km/h',
   'fact.observed.source': '{station} (AEMET), at {time}',
 
+  'conditions.wind.hours': 'See the wind hour by hour',
   'conditions.sea.none': 'No sea forecast',
   'conditions.sea.none.text': "This place doesn't have marine data yet.",
   'conditions.sea.error': 'No sea data right now',
@@ -406,8 +410,8 @@ export const en: Messages = {
 
   'hours.label': 'Next 24 hours. Use the arrow keys to move through them.',
   'hours.cellDetail': '{sky}, {wind}',
-  'hours.hint': 'Choose an hour to see it in the scene',
-  'hours.wind': 'Wind in km/h',
+  'hours.hint': 'Pick an hour to see it above',
+  'hours.wind': 'Wind',
   'hours.previous': 'Earlier hours',
   'hours.next': 'Later hours',
 
@@ -432,6 +436,8 @@ export const en: Messages = {
   'settings.theme.light': 'Light',
   'settings.theme.dark': 'Dark',
   'settings.legal.hint': 'Where the data comes from, privacy and terms of use.',
+  'settings.feedback.hint': 'Report a problem or suggest an improvement.',
+  'settings.more': 'More',
 
   // ── Legal and privacy (/legal) ──────────────────────────────
   'legal.lead':

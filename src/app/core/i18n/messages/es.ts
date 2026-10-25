@@ -37,6 +37,7 @@ export const es = {
   'common.refresh': 'Actualizar',
   'common.close': 'Cerrar',
   'common.backToNow': 'Volver a ahora',
+  'common.backToNow.short': 'Ahora',
   'common.seeAll': 'Ver todo',
   'common.now': 'Ahora',
   'common.rightNow': 'Ahora mismo',
@@ -333,6 +334,8 @@ export const es = {
   'today.demo': 'Demo',
   'today.demoSettings': 'Datos ficticios: abrir ajustes de la demo',
   'today.unknown': 'No sabemos qué tal está hoy',
+  'today.sun.rises': 'Amanece a las {time}, en {duration}.',
+  'today.sun.sets': 'Atardece a las {time}, en {duration}.',
   'today.loading': 'Cargando el tiempo',
   'today.stale': 'No hemos podido actualizar. Te mostramos los últimos datos.',
   'today.nowTitle': '{moment}: viento, mar y marea',
@@ -396,6 +399,7 @@ export const es = {
   'fact.observed.wind': 'viento {from} a {speed} km/h',
   'fact.observed.source': '{station} (AEMET), a las {time}',
 
+  'conditions.wind.hours': 'Ver el viento hora a hora',
   'conditions.sea.none': 'Sin previsión del mar',
   'conditions.sea.none.text': 'Esta zona aún no tiene datos marítimos.',
   'conditions.sea.error': 'El mar, sin datos ahora',
@@ -409,8 +413,8 @@ export const es = {
 
   'hours.label': 'Próximas 24 horas. Usa las flechas para recorrerlas.',
   'hours.cellDetail': '{sky}, {wind}',
-  'hours.hint': 'Elige una hora para verla en la escena',
-  'hours.wind': 'Viento en km/h',
+  'hours.hint': 'Elige una hora para verla arriba',
+  'hours.wind': 'Viento',
   'hours.previous': 'Horas anteriores',
   'hours.next': 'Horas siguientes',
 
@@ -435,6 +439,8 @@ export const es = {
   'settings.theme.light': 'Claro',
   'settings.theme.dark': 'Oscuro',
   'settings.legal.hint': 'De dónde salen los datos, privacidad y condiciones de uso.',
+  'settings.feedback.hint': 'Avísanos de un error o propón una mejora.',
+  'settings.more': 'Más',
 
   // ── Legal and privacy (/legal) ──────────────────────────────
   'legal.lead': 'Qué datos usa LanzaMet, de dónde salen y en qué condiciones puedes usarla.',

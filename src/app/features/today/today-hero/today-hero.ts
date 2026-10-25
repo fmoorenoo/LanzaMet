@@ -38,6 +38,11 @@ export interface HeroView {
   readonly momentLabel: Msg;
   /** The moment drawn: now, or the hour chosen in the forecast, with its day ("Hoy"). */
   readonly moment: { readonly at: Date; readonly day: Msg };
+  /**
+   * The sun's next move from that moment ("Atardece a las 18:15, en 3 h 30 min"):
+   * stands in for the verdict's sentence when it would only repeat the sky and the wind.
+   */
+  readonly sunLine: Msg | null;
 }
 
 /** A swipe: far enough, or quick enough, and more across than down. */
@@ -64,6 +69,8 @@ const SWIPE_SLOPE = 1.4;
     role: 'region',
     'aria-labelledby': 'weather-verdict',
     '[class.is-ink-dark]': "view()?.scene?.ink === 'dark'",
+    // Nothing to draw and a reason why: the scene gives up its height to the page.
+    '[class.is-failed]': '!view() && !!error()',
     '(pointerdown)': 'onPointerDown($event)',
     '(pointerup)': 'onPointerUp($event)',
     '(pointercancel)': 'swipe = null',
@@ -113,11 +120,13 @@ export class TodayHero {
 
   /**
    * The verdict's sentence, unless it only repeats what the hero already
-   * shows above it (the sky and the wind in the place).
+   * shows above it (the sky and the wind in the place); then the sun's next
+   * move takes its line, so the space under the verdict always says something.
    */
   protected readonly sentence = computed(() => {
-    const sentence = this.view()?.verdict.sentence;
-    return sentence && sentence.key !== 'verdict.plain' ? sentence : null;
+    const view = this.view();
+    const sentence = view?.verdict.sentence;
+    return sentence && sentence.key !== 'verdict.plain' ? sentence : (view?.sunLine ?? null);
   });
 
   constructor() {

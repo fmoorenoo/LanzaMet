@@ -1,4 +1,5 @@
-import { Component, computed, input } from '@angular/core';
+import { DOCUMENT } from '@angular/common';
+import { Component, computed, inject, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { msg } from '../../../core/i18n/i18n.model';
 import { TranslatePipe } from '../../../core/i18n/t.pipe';
@@ -38,7 +39,18 @@ const WAVE_AMPLITUDE = [0.8, 2, 3.4, 5, 6.6];
 export class Conditions {
   readonly view = input.required<ConditionsView>();
 
+  private readonly document = inject(DOCUMENT);
+
   protected readonly windBars = [0, 1, 2, 3];
+
+  /** To the hours, where the wind is given for each one; focus goes with the eye. */
+  protected showHours(): void {
+    const hours = this.document.getElementById('hourly-forecast');
+    if (!hours) return;
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    hours.scrollIntoView({ block: 'start', behavior: reduce ? 'auto' : 'smooth' });
+    hours.querySelector<HTMLElement>('.hour-cell[tabindex="0"]')?.focus({ preventScroll: true });
+  }
 
   protected readonly windTrendText = computed(() => {
     const trend = this.view().windTrend;

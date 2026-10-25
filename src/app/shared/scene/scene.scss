@@ -172,7 +172,9 @@
   left: 0;
   bottom: calc(100% - var(--horizon));
   width: 100%;
-  height: clamp(3.5rem, 18vw, 13rem);
+  // A host may set `--land-h` to fit the land to its own box (the hero does on
+  // narrow desktops); otherwise the land grows with the screen, up to 13 rem.
+  height: var(--land-h, clamp(3.5rem, 18vw, 13rem));
   // The tallest landmarks may rise past the box on very wide screens.
   overflow: visible;
 
@@ -505,7 +507,11 @@
 }
 
 // ── Small, still version for cards ────────────────────────────
+// The sun and moon are sized to the card, not to the screen: in a card a few
+// rem wide they are a mark in the sky, so the landscape names the place.
 :host(.is-mini) {
+  container-type: inline-size;
+
   .glint,
   .bob,
   .drop {
@@ -518,6 +524,19 @@
 
   .bloom {
     width: 120%;
+  }
+
+  .sun {
+    width: clamp(1.5rem, 24cqw, 3.5rem);
+
+    &.is-low {
+      width: clamp(1.75rem, 30cqw, 4.25rem);
+    }
+  }
+
+  .moon {
+    width: clamp(0.75rem, 11cqw, 1.5rem);
+    font-size: clamp(0.4rem, 5.5cqw, 0.75rem);
   }
 }
 

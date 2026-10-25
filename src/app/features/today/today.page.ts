@@ -8,6 +8,7 @@ import { drawingSunTimes, readDaylight } from '../../core/insights/sun.insight';
 import { readTide } from '../../core/insights/tide.insight';
 import { dayVerdict } from '../../core/insights/verdict.insight';
 import { fromDirection, readWind, windTrend } from '../../core/insights/wind.insight';
+import { DailyForecast } from '../../core/models';
 import { ClockStore } from '../../core/state/clock.store';
 import { DataRefreshStore } from '../../core/state/data-refresh.store';
 import { ForecastStore } from '../../core/state/forecast.store';
@@ -28,6 +29,31 @@ import { DayList } from './day-list/day-list';
 import { HourTimeline } from './hour-timeline/hour-timeline';
 import { WeatherCard } from './share/weather-card';
 import { HeroView, TodayHero } from './today-hero/today-hero';
+
+/**
+ * What the sun does next, seen from `at`: the time it rises or sets and how
+ * long until then; after sunset, tomorrow's sunrise. Null when the provider
+ * gave no sun times (the nominal day only lights the drawing, it is never said).
+ */
+function sunLineAt(daily: readonly DailyForecast[], day: DailyForecast, at: Date): Msg | null {
+  if (!day.sunrise || !day.sunset) return null;
+  const sunrise = toDate(day.sunrise);
+  const sunset = toDate(day.sunset);
+  if (at < sunrise) {
+    return msg('today.sun.rises', {
+      time: { time: sunrise },
+      duration: { duration: sunrise.getTime() - at.getTime() },
+    });
+  }
+  if (at < sunset) {
+    return msg('today.sun.sets', {
+      time: { time: sunset },
+      duration: { duration: sunset.getTime() - at.getTime() },
+    });
+  }
+  const next = daily[daily.indexOf(day) + 1];
+  return next?.sunrise ? msg('sun.tomorrow', { time: { time: next.sunrise } }) : null;
+}
 
 /**
  * "How is today?" — the answer first (sky, words, temperature), then wind,
@@ -124,6 +150,7 @@ export class TodayPage {
     return {
       weather,
       moment: { at, day: dayName, isNow: index === null },
+      sunLine: sunLineAt(forecast.daily, day, at),
       temperature: Math.round(weather.temperatureC),
       range: { max: day.maxC, min: day.minC },
       verdict: dayVerdict({
@@ -161,6 +188,7 @@ export class TodayPage {
           verdict: v.verdict,
           momentLabel: v.momentLabel,
           moment: v.moment,
+          sunLine: v.sunLine,
         }
       : null;
   });

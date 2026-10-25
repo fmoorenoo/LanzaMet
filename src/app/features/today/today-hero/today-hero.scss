@@ -208,11 +208,16 @@ lm-scene {
   line-height: 1;
 }
 
-// Always in the layout; it only fades in while an hour is previewed.
+// Always in the layout; it only fades in while an hour is previewed. Its
+// padding is pulled back on the left only: on the right it keeps the tools at
+// a distance, so the underlined words never touch the share button.
 .moment-reset {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
   min-height: 2.75rem;
   padding-inline: var(--s-2);
-  margin-inline: calc(var(--s-2) * -1);
+  margin-inline: calc(var(--s-2) * -1) 0;
   border-radius: var(--r-pill);
   color: var(--hero-warm);
   font-size: var(--fs-small);
@@ -221,6 +226,32 @@ lm-scene {
   text-decoration-thickness: 1px;
   text-underline-offset: 0.22em;
   white-space: nowrap;
+
+  .reset-icon {
+    flex: none;
+    width: var(--icon-sm);
+    height: var(--icon-sm);
+  }
+
+  .reset-short {
+    display: none;
+  }
+
+  // Phones: "Ahora" after the arrow; the long words go to screen readers only.
+  @media (width < 64rem) {
+    .reset-short {
+      display: inline;
+    }
+
+    .reset-long {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+    }
+  }
   opacity: 0;
   visibility: hidden;
   transition:
@@ -341,6 +372,19 @@ lm-scene {
   color: var(--c-ink);
 }
 
+// Nothing to draw: the message, then the page, with no empty sky held open
+// underneath (the sheet's rounded lip still overlaps the foot by --r-xl).
+:host(.is-failed) {
+  height: auto;
+  min-height: 0;
+
+  .inner {
+    flex: none;
+    height: auto;
+    padding-bottom: calc(var(--s-10) + var(--r-xl));
+  }
+}
+
 .loading {
   display: grid;
   gap: var(--s-4);
@@ -395,6 +439,10 @@ lm-scene {
   // The horizon sits at the top of the band, so the words always stand on sky.
   lm-scene {
     --horizon: calc(100% - var(--sea-band));
+  }
+
+  :host(.is-failed) {
+    min-height: 0;
   }
 
   .copy-wrap {
@@ -575,5 +623,15 @@ lm-scene {
   .sentence {
     font-size: var(--fs-lead);
     max-width: 32ch;
+  }
+}
+
+// Narrow desktops (a laptop, a half screen): the panorama is short, so the
+// land keeps to the height that shows its whole width unsliced. What names
+// a place then stays to the right of the words instead of rising behind the
+// wind, as it did at 1024 px.
+@media (min-width: 64rem) and (max-width: 80rem) {
+  lm-scene {
+    --land-h: calc((100vw - var(--rail-w) - 2 * var(--s-4)) / 8);
   }
 }

@@ -15,8 +15,15 @@
         <span class="min"
           ><span class="visually-hidden">{{ 'week.min' | t }} </span>{{ row.min }}°</span
         >
+        <!-- The week's scale runs the whole track; each day shows its slice of it. -->
         <span class="range" aria-hidden="true">
-          <span class="range-fill" [style.left.%]="row.start" [style.width.%]="row.size"></span>
+          <span
+            class="range-fill"
+            [style.left.%]="row.start"
+            [style.width.%]="row.size"
+            [style.--start]="row.start"
+            [style.--size]="row.size"
+          ></span>
         </span>
         <span class="max"
           ><span class="visually-hidden">{{ 'week.max' | t }} </span>{{ row.max }}°</span

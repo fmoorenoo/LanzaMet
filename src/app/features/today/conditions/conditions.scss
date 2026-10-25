@@ -11,9 +11,12 @@
   display: flex;
   align-items: center;
   gap: var(--s-4);
+  width: 100%;
   min-height: 4.25rem;
   padding: var(--s-3) 0;
   color: inherit;
+  font: inherit;
+  text-align: left;
   text-decoration: none;
 }
 

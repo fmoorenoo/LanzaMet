@@ -25,20 +25,23 @@
         <lm-icon class="chevron" name="chevron-down" />
         <span class="visually-hidden">{{ 'common.changePlace' | t }}</span>
       </button>
-      <button
-        id="favorite-toggle"
-        type="button"
-        class="star favorite-toggle"
-        [attr.aria-pressed]="isFavorite()"
-        [attr.aria-label]="'common.favorite' | t: { name: placeName() }"
-        [lmTooltip]="
-          (isFavorite() ? 'common.favorite.remove' : 'common.favorite.add')
-            | t: { name: placeName() }
-        "
-        (click)="toggleFavorite()"
-      >
-        <lm-icon [name]="isFavorite() ? 'star-filled' : 'star'" />
-      </button>
+      <!-- Only a real place can be a favourite: with none loaded there is no star. -->
+      @if (current()) {
+        <button
+          id="favorite-toggle"
+          type="button"
+          class="star favorite-toggle"
+          [attr.aria-pressed]="isFavorite()"
+          [attr.aria-label]="'common.favorite' | t: { name: placeName() }"
+          [lmTooltip]="
+            (isFavorite() ? 'common.favorite.remove' : 'common.favorite.add')
+              | t: { name: placeName() }
+          "
+          (click)="toggleFavorite()"
+        >
+          <lm-icon [name]="isFavorite() ? 'star-filled' : 'star'" />
+        </button>
+      }
     </div>
 
     <div class="meta">
@@ -61,6 +64,7 @@
         }
       </p>
       <!-- Always laid out; it only shows while an hour is previewed, so nothing moves. -->
+      <!-- On phones the line is short: an arrow and "Ahora"; the full words stay for screen readers. -->
       <button
         id="preview-reset"
         type="button"
@@ -69,7 +73,9 @@
         [inert]="!isPreview()"
         (click)="resetToNow()"
       >
-        {{ 'common.backToNow' | t }}
+        <lm-icon class="reset-icon" name="undo" />
+        <span class="reset-long">{{ 'common.backToNow' | t }}</span>
+        <span class="reset-short" aria-hidden="true">{{ 'common.backToNow.short' | t }}</span>
       </button>
     </div>
 

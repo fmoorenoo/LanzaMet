@@ -1,25 +1,35 @@
 @let v = view();
 
 <ul class="list conditions-list">
-  <li class="row condition-row" data-condition="wind">
-    <span class="gauge wind wind-gauge" aria-hidden="true">
-      @for (bar of windBars; track bar) {
-        <span class="bar" [class.is-on]="bar < v.wind.level" [style.--h]="0.35 + bar * 0.2"></span>
-      }
-    </span>
-    <span class="text">
-      <!-- Without wind there is no direction worth naming. -->
-      <span class="title">{{ (v.wind.level > 0 ? v.wind.labelFrom : v.wind.label) | t }}</span>
-      <span class="sub">
-        {{ v.wind.detail | t }}
-        @if (windTrendText(); as trend) {
-          · <span class="trend">{{ trend | t }}</span>
-        }
-        @if (v.wind.isTradeWind) {
-          · {{ 'wind.tradeWind' | t }}
+  <li class="row-wrap" data-condition="wind">
+    <!-- The wind hour by hour is in the timeline: this row leads there, like the
+         sea and the tide lead to their page, so the three rows line up. -->
+    <button type="button" class="row is-link condition-row" (click)="showHours()">
+      <span class="gauge wind wind-gauge" aria-hidden="true">
+        @for (bar of windBars; track bar) {
+          <span
+            class="bar"
+            [class.is-on]="bar < v.wind.level"
+            [style.--h]="0.35 + bar * 0.2"
+          ></span>
         }
       </span>
-    </span>
+      <span class="text">
+        <!-- Without wind there is no direction worth naming. -->
+        <span class="title">{{ (v.wind.level > 0 ? v.wind.labelFrom : v.wind.label) | t }}</span>
+        <span class="sub">
+          {{ v.wind.detail | t }}
+          @if (windTrendText(); as trend) {
+            · <span class="trend">{{ trend | t }}</span>
+          }
+          @if (v.wind.isTradeWind) {
+            · {{ 'wind.tradeWind' | t }}
+          }
+        </span>
+        <span class="visually-hidden">. {{ 'conditions.wind.hours' | t }}</span>
+      </span>
+      <lm-icon class="chevron" name="chevron-right" />
+    </button>
   </li>
 
   <li class="row-wrap" data-condition="sea">
