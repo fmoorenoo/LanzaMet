@@ -132,14 +132,14 @@ export class SeaPage {
 
   /**
    * Places ordered from calmest to roughest water, each with a bar of its
-   * wave height against the roughest (never less than 2 m at the top, so a
-   * calm day's ripples don't fill the bars).
+   * wave height against the roughest (never less than 1 m at the top, so a
+   * calm day's ripples don't fill the bars, yet 20 cm and 40 cm still differ).
    */
   protected readonly calmest = computed(() => {
     const zones = (this.island.zones().data ?? []).flatMap((z) =>
       z.sea ? [{ location: z.location, sea: z.sea.current }] : [],
     );
-    const top = Math.max(2, ...zones.map((z) => z.sea.waveHeightM));
+    const top = Math.max(1, ...zones.map((z) => z.sea.waveHeightM));
     return zones
       .map((z) => {
         const height = z.sea.waveHeightM;

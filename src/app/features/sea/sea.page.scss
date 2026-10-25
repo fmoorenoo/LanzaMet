@@ -336,10 +336,11 @@ lm-warning-banner,
   }
 }
 
+// The figure is what is compared; the bar beside it is its shadow.
 .calm-waves {
-  font-size: var(--fs-micro);
-  font-weight: 600;
-  color: var(--c-ink-2);
+  font-size: var(--fs-small);
+  font-weight: 640;
+  color: var(--c-ink);
 }
 
 .chevron {
