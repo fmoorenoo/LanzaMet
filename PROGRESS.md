@@ -723,3 +723,5 @@ Skills usadas: Impeccable (auditoría, dirección, suelo de calidad, detector) y
 
 - Después: el Risco, más corto por la derecha y algo más bajo (termina cayendo a la orilla antes del borde), y la arena del pie, una franja fina casi horizontal que sigue hasta el borde, para que se lea como costa y no como isla.
 
+- Corregido: el Risco ya no se corta. Entra alto por el borde derecho (Peñas del Chache sigue fuera de cuadro) y baja hasta su punta norte; después, un tramo de mar, y luego La Graciosa con Montaña Clara, colocadas para que se vean también en el móvil. La arena del pie, una franja fina bajo el Risco.
+

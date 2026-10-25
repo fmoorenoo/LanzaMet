@@ -396,11 +396,10 @@ const SCENERIES: Readonly<Record<SceneryId, () => SceneryArt>> = {
   },
 
   // Famara: the Risco is the horizon's. At its foot, a thin, nearly level
-  // strip of pale sand that runs on past the end of the wall: the beach
-  // continues, so the Risco reads as coast, not as an island.
+  // strip of pale sand along the beach, from the edge to near its tip.
   famara: () => {
     const sketch = new Sketch();
-    sketch.beach = 'M500 150.5C560 150.2 620 147.6 700 147.2L1260 146.6V150.5Z';
+    sketch.beach = 'M720 150.5C750 150.2 790 147.8 840 147.4L1260 146.8V150.5Z';
     return sketch.art();
   },
 

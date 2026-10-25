@@ -174,38 +174,36 @@ const PROFILES: Readonly<
     far: [ridge(-40, 150, 16, 90, 0.2), ridge(1060, 1240, 12, 80)],
     near: [],
   },
-  // From Famara beach, looking north-east along the Risco: one unbroken wall.
-  // It starts low at its northern tip by the sea (left), rises to a small
-  // shoulder, dips at a saddle, then climbs steeply to a nearly level top
-  // and ends in a steep fall to the shore before the right-hand edge, so the
-  // wall leaves open sky and sea around it. La Graciosa and its islets lie
-  // low and far beyond the tip.
+  // From Famara beach, looking north-east along the Risco: one unbroken wall
+  // that comes in already high from the right-hand edge (Peñas del Chache
+  // runs on out of frame), keeps a nearly level top, drops steeply, then
+  // runs down past a shoulder and a saddle to its northern tip by the sea.
+  // Beyond the tip, a stretch of open water, and then La Graciosa, low and
+  // far, with Montaña Clara at its end. Everything sits right of x ≈ 380, so
+  // a phone, which sees the right two thirds, shows all three.
   risco: {
-    far: [ridge(40, 330, 7, 55), cone(150, 28, 105, 14), cone(268, 19, 62), cone(352, 11, 34)],
+    far: [ridge(430, 612, 6, 30), cone(482, 22, 62, 10), cone(560, 17, 50), cone(396, 8, 26)],
     near: [
       profile(
         [
-          [420, 0],
-          [450, 8],
-          [495, 22],
-          [535, 30],
-          [568, 35],
-          [594, 33],
-          [620, 32],
-          [646, 37],
-          [678, 50],
-          [714, 64],
-          [760, 76],
-          [812, 86],
-          [870, 94],
-          [930, 100],
-          [975, 103],
-          [1008, 102],
-          [1036, 96],
-          [1062, 80],
-          [1084, 52],
-          [1100, 24],
-          [1114, 0],
+          [690, 0],
+          [708, 9],
+          [732, 22],
+          [756, 30],
+          [778, 34],
+          [796, 32],
+          [816, 31],
+          [836, 36],
+          [862, 49],
+          [892, 62],
+          [926, 74],
+          [968, 84],
+          [1016, 92],
+          [1070, 98],
+          [1124, 102],
+          [1170, 105],
+          [1210, 106],
+          [1270, 106],
         ],
         1.4,
       ),
