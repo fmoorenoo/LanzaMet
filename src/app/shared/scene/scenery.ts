@@ -395,9 +395,15 @@ const SCENERIES: Readonly<Record<SceneryId, () => SceneryArt>> = {
       .art();
   },
 
-  // Famara: the Risco is the horizon's; at its foot, the low bungalows, and
-  // La Caleta's houses at the other end of the beach.
-  famara: () => new Sketch().art(),
+  // Famara: the Risco is the horizon's. At its foot, the long pale apron of
+  // scree and sand that runs down to the beach, widest under the highest
+  // part of the wall.
+  famara: () => {
+    const sketch = new Sketch();
+    sketch.beach =
+      'M560 150.5C640 150 700 148.5 760 145.5C860 140.5 960 133 1060 127C1140 122.5 1200 120 1260 119L1260 150.5Z';
+    return sketch.art();
+  },
 
   // La Santa: a fishing village of flat white roofs on a low shelf of black
   // lava, its sea wall, a boat, the low islet across the water (with the

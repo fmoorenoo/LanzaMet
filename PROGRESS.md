@@ -714,3 +714,10 @@ Skills usadas: Impeccable (auditoría, dirección, suelo de calidad, detector) y
 ### Sin trazos en las laderas (25-10-2026)
 
 - Fuera los barrancos y sus aristas de luz (los trazos que simulaban textura en Famara, Playa Blanca, El Golfo y el resto). El relieve queda en la banda de luz de la cresta y la de sombra al pie. También en la tarjeta para compartir.
+
+### El Risco de Famara, rehecho (25-10-2026)
+
+- Un solo murallón continuo, sin el tramo lejano que parecía otro Risco detrás: nace bajo en su punta norte junto al mar, sube a un resalte, baja en una ensilladura y trepa hasta Peñas del Chache, lo más alto, a la derecha, con la cumbre casi plana (referencia: fotografía desde la playa de Famara).
+- Al pie, el faldón claro de derrubios y arena que baja a la playa.
+- La Graciosa y sus islotes, bajos y lejanos más allá de la punta.
+

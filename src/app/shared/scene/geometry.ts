@@ -174,47 +174,37 @@ const PROFILES: Readonly<
     far: [ridge(-40, 150, 16, 90, 0.2), ridge(1060, 1240, 12, 80)],
     near: [],
   },
-  // From Famara beach: Peñas del Chache, the cliff's highest point, stands
-  // nearest, to the right; the wall runs north, lower with distance and
-  // notched by its valleys, and drops straight into the sea. La Graciosa
-  // lies beyond its end.
+  // From Famara beach, looking north-east along the Risco: one unbroken wall.
+  // It starts low at its northern tip by the sea (left), rises to a small
+  // shoulder, dips at a saddle, then climbs steeply and keeps climbing, its
+  // top almost level, to Peñas del Chache, the highest point, nearest (right).
+  // La Graciosa and its islets lie low and far beyond the tip.
   risco: {
-    far: [
-      ridge(150, 470, 7, 60),
-      cone(260, 27, 120, 18),
-      cone(372, 17, 72),
-      profile(
-        [
-          [536, 0],
-          [552, 22],
-          [600, 30],
-          [652, 37],
-          [676, 33],
-          [716, 44],
-          [780, 54],
-          [820, 50],
-          [880, 62],
-        ],
-        1.2,
-      ),
-    ],
+    far: [ridge(40, 330, 7, 55), cone(150, 28, 105, 14), cone(268, 19, 62), cone(352, 11, 34)],
     near: [
       profile(
         [
-          [704, 0],
-          [716, 16],
-          [742, 50],
-          [780, 68],
-          [836, 80],
-          [872, 76],
-          [916, 90],
-          [996, 101],
-          [1072, 110],
-          [1132, 113],
-          [1196, 109],
-          [1260, 112],
+          [420, 0],
+          [452, 9],
+          [500, 24],
+          [546, 33],
+          [584, 39],
+          [612, 37],
+          [640, 35],
+          [668, 41],
+          [704, 56],
+          [744, 72],
+          [796, 85],
+          [860, 95],
+          [940, 104],
+          [1020, 111],
+          [1090, 117],
+          [1150, 123],
+          [1190, 127],
+          [1225, 125],
+          [1270, 126],
         ],
-        1.6,
+        1.4,
       ),
     ],
   },
