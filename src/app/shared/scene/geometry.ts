@@ -176,33 +176,36 @@ const PROFILES: Readonly<
   },
   // From Famara beach, looking north-east along the Risco: one unbroken wall.
   // It starts low at its northern tip by the sea (left), rises to a small
-  // shoulder, dips at a saddle, then climbs steeply and keeps climbing, its
-  // top almost level, to Peñas del Chache, the highest point, nearest (right).
-  // La Graciosa and its islets lie low and far beyond the tip.
+  // shoulder, dips at a saddle, then climbs steeply to a nearly level top
+  // and ends in a steep fall to the shore before the right-hand edge, so the
+  // wall leaves open sky and sea around it. La Graciosa and its islets lie
+  // low and far beyond the tip.
   risco: {
     far: [ridge(40, 330, 7, 55), cone(150, 28, 105, 14), cone(268, 19, 62), cone(352, 11, 34)],
     near: [
       profile(
         [
           [420, 0],
-          [452, 9],
-          [500, 24],
-          [546, 33],
-          [584, 39],
-          [612, 37],
-          [640, 35],
-          [668, 41],
-          [704, 56],
-          [744, 72],
-          [796, 85],
-          [860, 95],
-          [940, 104],
-          [1020, 111],
-          [1090, 117],
-          [1150, 123],
-          [1190, 127],
-          [1225, 125],
-          [1270, 126],
+          [450, 8],
+          [495, 22],
+          [535, 30],
+          [568, 35],
+          [594, 33],
+          [620, 32],
+          [646, 37],
+          [678, 50],
+          [714, 64],
+          [760, 76],
+          [812, 86],
+          [870, 94],
+          [930, 100],
+          [975, 103],
+          [1008, 102],
+          [1036, 96],
+          [1062, 80],
+          [1084, 52],
+          [1100, 24],
+          [1114, 0],
         ],
         1.4,
       ),

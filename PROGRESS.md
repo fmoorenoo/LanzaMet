@@ -721,3 +721,5 @@ Skills usadas: Impeccable (auditoría, dirección, suelo de calidad, detector) y
 - Al pie, el faldón claro de derrubios y arena que baja a la playa.
 - La Graciosa y sus islotes, bajos y lejanos más allá de la punta.
 
+- Después: el Risco, más corto por la derecha y algo más bajo (termina cayendo a la orilla antes del borde), y la arena del pie, una franja fina casi horizontal que sigue hasta el borde, para que se lea como costa y no como isla.
+
