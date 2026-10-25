@@ -401,26 +401,48 @@ lm-warning-banner,
     max-width: 72rem;
   }
 
-  .panel {
-    grid-row: span 2;
+  // The curve and its highs and lows side by side, the same height; below,
+  // the sea here across the full width, so no column runs on alone.
+  .content {
+    align-items: stretch;
   }
 
-  // Beside the curve the column is narrow: the three parts stack again.
-  .sea-state-section .facets {
-    grid-template-columns: 1fr;
-    border-top: 1px solid var(--c-line-strong);
+  .tide-extremes {
+    align-content: center;
   }
 
-  .sea-state-section .facet {
-    grid-template-columns: 8.5rem minmax(0, 1fr);
-    align-items: baseline;
-    padding: var(--s-4) 0;
-    border-top: 0;
+  .sea-state-section {
+    grid-column: 1 / -1;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 2.4fr);
+    grid-template-areas:
+      'title facets'
+      'headline facets'
+      'note facets';
+    align-content: start;
+    column-gap: var(--s-12);
 
-    & + & {
-      padding-left: 0;
-      border-left: 0;
-      border-top: 1px solid var(--c-line);
+    > h2 {
+      grid-area: title;
+    }
+
+    .sea-headline {
+      grid-area: headline;
+    }
+
+    .facets {
+      grid-area: facets;
+      align-self: start;
+    }
+
+    > .source {
+      grid-area: note;
+      align-self: start;
+    }
+
+    // A section still waiting or without data keeps to the first column.
+    > lm-status-message,
+    > .lead-skeleton {
+      grid-column: 1 / -1;
     }
   }
 

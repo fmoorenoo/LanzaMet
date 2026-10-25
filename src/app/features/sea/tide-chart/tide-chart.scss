@@ -5,6 +5,11 @@
 .chart {
   position: relative;
   height: clamp(13rem, 42vw, 18rem);
+
+  // Beside the highs and lows on wide screens: as tall as their list.
+  @media (min-width: 72rem) {
+    height: 15rem;
+  }
 }
 
 .art {

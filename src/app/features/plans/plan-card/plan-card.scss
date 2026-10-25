@@ -3,10 +3,11 @@
   min-width: 0;
 }
 
-// A postcard: the place on top, the reasons below, on one surface.
+// A card in a row: the place as a narrow picture on the left, the reasons
+// beside it. The landscape sets the scene; the words do the work.
 .card {
   display: grid;
-  grid-template-rows: auto 1fr;
+  grid-template-columns: var(--art-w, 9.5rem) minmax(0, 1fr);
   width: 100%;
   height: 100%;
   overflow: hidden;
@@ -30,8 +31,7 @@
 .art {
   position: relative;
   display: block;
-  // A card the grid widens (see the plans page) sets a wider frame.
-  aspect-ratio: var(--art-ratio, 16 / 8);
+  min-height: 100%;
   overflow: hidden;
   isolation: isolate;
 }
@@ -43,15 +43,16 @@
   transition: transform 600ms var(--ease-out);
 }
 
-// The island in miniature, in the corner of the sky, the place marked on it.
+// The island in miniature, in the corner of the sky, the place marked on it
+// in red, large enough to find at a glance.
 .where {
   position: absolute;
   top: var(--s-3);
   left: var(--s-3);
-  width: 2.75rem;
+  width: var(--where-w, 3.75rem);
   height: auto;
   overflow: visible;
-  filter: drop-shadow(0 1px 2px oklch(0.18 0.05 262 / 0.3));
+  filter: drop-shadow(0 1px 3px oklch(0.18 0.05 262 / 0.35));
 }
 
 .where-land {
@@ -63,24 +64,24 @@
 }
 
 .where-halo {
-  fill: oklch(0.85 0.15 82 / 0.45);
+  fill: oklch(0.62 0.2 28 / 0.28);
 }
 
 .where-dot {
-  fill: var(--timanfaya-500);
+  fill: oklch(0.58 0.21 28);
   stroke: oklch(1 0 0);
-  stroke-width: 10;
+  stroke-width: 16;
 }
 
 // The kind of plan sits on the seam between picture and words.
 .mark {
   position: absolute;
-  right: var(--s-4);
-  bottom: var(--s-3);
+  right: var(--s-2);
+  bottom: var(--s-2);
   display: grid;
   place-items: center;
-  width: 2.5rem;
-  height: 2.5rem;
+  width: 2.25rem;
+  height: 2.25rem;
   border-radius: 50%;
   background-color: var(--c-surface);
   color: var(--c-accent);
@@ -94,13 +95,13 @@
 
 .body {
   display: grid;
-  align-content: start;
+  align-content: center;
   gap: var(--s-1);
-  padding: var(--s-4) var(--s-5) var(--s-5);
+  padding: var(--s-4) var(--s-5);
 }
 
 .title {
-  font-size: 1.1875rem;
+  font-size: 1.125rem;
   font-weight: 660;
   letter-spacing: -0.018em;
   line-height: 1.2;
@@ -125,8 +126,8 @@
   flex-wrap: wrap;
   align-items: center;
   gap: var(--s-2) var(--s-4);
-  margin-top: var(--s-3);
-  padding-top: var(--s-3);
+  margin-top: var(--s-2);
+  padding-top: var(--s-2);
   border-top: 1px solid var(--c-line);
 }
 
@@ -150,7 +151,7 @@
     box-shadow: var(--shadow-2);
 
     .view {
-      transform: scale(1.03);
+      transform: scale(1.04);
     }
 
     .title {
@@ -161,14 +162,21 @@
   }
 }
 
-// ── The lead: wide, the place large, the reasons beside it ────
+// ── The lead: the day's first idea, wider picture and larger words ──
 :host(.is-lead) {
-  .art {
-    aspect-ratio: 16 / 9;
+  --art-w: minmax(0, 0.85fr);
+  --where-w: 4.75rem;
+
+  .card {
+    grid-template-columns: var(--art-w) minmax(0, 1fr);
+    min-height: 13rem;
   }
 
-  .where {
-    width: 3.5rem;
+  .mark {
+    right: var(--s-3);
+    bottom: var(--s-3);
+    width: 2.5rem;
+    height: 2.5rem;
   }
 
   .title {
@@ -184,58 +192,53 @@
 
   .body {
     gap: var(--s-2);
-    padding: var(--s-5) var(--s-6) var(--s-6);
+    padding: var(--s-6) var(--s-8);
   }
 }
 
-@media (min-width: 48rem) {
-  :host(.is-lead) {
-    .card {
-      grid-template-rows: none;
-      grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
-    }
-
-    .art {
-      aspect-ratio: auto;
-      min-height: 19rem;
-    }
-
-    .body {
-      align-content: center;
-      padding: var(--s-8);
-    }
-  }
-}
-
-// On phones the other ideas are rows: the place on the left, reasons beside it.
+// Phones: a narrower picture; the lead stacks, with a short band of landscape.
 @media (width < 40rem) {
-  :host(:not(.is-lead)) {
+  :host {
+    --art-w: 6.5rem;
+    --where-w: 3rem;
+  }
+
+  .where {
+    top: var(--s-2);
+    left: var(--s-2);
+  }
+
+  .mark {
+    display: none;
+  }
+
+  .body {
+    padding: var(--s-3) var(--s-4);
+  }
+
+  .title {
+    font-size: var(--fs-body);
+  }
+
+  :host(.is-lead) {
+    --where-w: 4rem;
+
     .card {
-      grid-template-rows: none;
-      grid-template-columns: 7rem minmax(0, 1fr);
-    }
-
-    .art {
-      aspect-ratio: auto;
-      min-height: 100%;
-    }
-
-    .where {
-      top: var(--s-2);
-      left: var(--s-2);
-      width: 2rem;
+      grid-template-columns: none;
+      grid-template-rows: 8.5rem auto;
+      min-height: 0;
     }
 
     .mark {
-      display: none;
+      display: grid;
     }
 
     .body {
-      padding: var(--s-3) var(--s-4) var(--s-4);
+      padding: var(--s-4) var(--s-5) var(--s-5);
     }
 
     .title {
-      font-size: var(--fs-body);
+      font-size: var(--fs-title);
     }
   }
 }

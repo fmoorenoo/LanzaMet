@@ -97,21 +97,13 @@ import { PlanCard } from './plan-card/plan-card';
       display: grid;
       gap: var(--s-4);
     }
-    .lead-skeleton {
-      height: 22rem;
-      border-radius: var(--r-lg);
+    // Each card fills its cell, so the two in a row end at the same line.
+    .grid > li {
+      display: grid;
     }
-    // The grid never ends on a lone card: with a count that does not fill the
-    // last row, the first ideas widen to take the spare columns.
-    @media (min-width: 40rem) and (width < 72rem) {
-      .grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: var(--s-5);
-      }
-      .grid > li:first-child:nth-last-child(odd) {
-        grid-column: span 2;
-        --art-ratio: 21 / 8;
-      }
+    .lead-skeleton {
+      height: 13rem;
+      border-radius: var(--r-lg);
     }
     @media (min-width: 48rem) {
       .page-head,
@@ -128,18 +120,10 @@ import { PlanCard } from './plan-card/plan-card';
       .content {
         max-width: 72rem;
       }
+      // Two even columns of row cards: every idea the same size, read in pairs.
       .grid {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
+        grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: var(--s-5);
-      }
-      .grid > li:first-child:nth-last-child(3n + 2),
-      .grid > li:first-child:nth-last-child(3n + 4),
-      .grid > li:nth-child(3):nth-last-child(3n + 2) {
-        grid-column: span 2;
-        --art-ratio: 21 / 8;
-      }
-      .grid > li:only-child {
-        grid-column: 1 / -1;
       }
     }
   `,

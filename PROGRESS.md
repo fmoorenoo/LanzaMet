@@ -696,3 +696,8 @@ Skills usadas: Impeccable (auditoría, dirección, suelo de calidad, detector) y
 4. **Viento del héroe** más grande (cifra a 2,5 rem, flecha a 2,75 rem) y con la intensidad en una píldora de su color y barras en ese color.
 5. **Horas**: la hora más grande; fuera la barra de viento. El viento es una fila de color al pie de cada hora con la flecha y «km/h», verde con poco viento y rojo con mucho, pasando por naranjas (`windHue`, anclado a la escala de Beaufort agrupada; test incluido).
 6. **Validación**: 197 tests de la web; axe sin violaciones en Hoy y Dónde ir (390 y 1440 px, claro y oscuro, español e inglés), contraste de las filas de color incluido; 0 px de salto al elegir horas en cuatro zonas a 390, 375 y 1440 px.
+
+### Dónde ir y Mar en escritorio (25-10-2026)
+
+1. **Dónde ir**: tarjetas en fila (paisaje estrecho a la izquierda, texto a la derecha) en una rejilla uniforme de dos columnas en escritorio, sin tarjetas que se ensanchan; las de cada fila miden lo mismo. Mucho menos paisaje (la principal, 13 rem de alto). La isla en miniatura pasa de 2,75 a 3,75 rem (4,75 en la principal) y el lugar, a un punto rojo con halo del doble de tamaño.
+2. **Mar**: el hueco bajo la gráfica en escritorio desaparece. La curva y las pleamares y bajamares van lado a lado a la misma altura, y el mar de la zona, a todo el ancho debajo.
