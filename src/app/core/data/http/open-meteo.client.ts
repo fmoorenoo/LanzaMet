@@ -77,6 +77,7 @@ const FORECAST_VARIABLES = {
     'uv_index_max',
     'precipitation_probability_max',
     'wind_speed_10m_max',
+    'wind_speed_10m_mean',
     'wind_direction_10m_dominant',
   ],
 };

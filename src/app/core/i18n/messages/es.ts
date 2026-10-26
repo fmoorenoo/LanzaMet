@@ -304,6 +304,9 @@ export const es = {
   'week.change.cooler': 'Refresca',
   'week.min': 'mínima',
   'week.max': 'máxima',
+  'week.meanWind': 'viento medio',
+  'week.head.wind': 'Viento medio',
+  'week.head.temps': 'Máx. / mín.',
 
   // ── Plans ────────────────────────────────────────────────────
   'plan.beach.title': 'Playa en {place}',

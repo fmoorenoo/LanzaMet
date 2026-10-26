@@ -302,6 +302,9 @@ export const en: Messages = {
   'week.change.cooler': 'Cooler',
   'week.min': 'low',
   'week.max': 'high',
+  'week.meanWind': 'average wind',
+  'week.head.wind': 'Avg. wind',
+  'week.head.temps': 'High / low',
 
   // ── Plans ────────────────────────────────────────────────────
   'plan.beach.title': 'Beach in {place}',

@@ -51,6 +51,8 @@ export interface ForecastDto extends PlaceDto {
     readonly uv_index_max: Series;
     readonly precipitation_probability_max: Series;
     readonly wind_speed_10m_max: Series;
+    /** Absent from copies cached before it was asked for. */
+    readonly wind_speed_10m_mean?: Series;
     readonly wind_direction_10m_dominant: Series;
   };
 }

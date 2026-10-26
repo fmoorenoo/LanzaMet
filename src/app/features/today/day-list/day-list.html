@@ -1,3 +1,8 @@
+<!-- What the columns are, said once above them; each row says it again for screen readers. -->
+<div class="head" aria-hidden="true">
+  <span class="head-wind">{{ 'week.head.wind' | t }}</span>
+  <span class="head-temps">{{ 'week.head.temps' | t }}</span>
+</div>
 <ul class="days day-list">
   @for (row of rows(); track row.date; let i = $index) {
     <li class="day day-row enter-rise" [attr.data-date]="row.date" [style.--i]="i">
@@ -11,22 +16,26 @@
         </span>
       </span>
       <lm-sky-glyph class="glyph" [sky]="row.sky" />
+      <!-- The day's average wind, in the same colours as the hours above. -->
+      <span
+        class="wind t-num"
+        [style.--wind-hue]="row.windHue"
+        [style.--wind-tint]="row.windTint"
+      >
+        <svg class="wind-arrow" viewBox="0 0 24 24" aria-hidden="true" [style.rotate]="row.windTo">
+          <path d="M12 20.5V4M6.5 9.5 12 4l5.5 5.5" />
+        </svg>
+        <span class="visually-hidden">{{ 'week.meanWind' | t }} </span>{{ row.wind }}
+        <span class="wind-unit">km/h</span>
+      </span>
+      <!-- High and low as one pair: "29° / 23°". -->
       <span class="temps t-num">
-        <span class="min"
-          ><span class="visually-hidden">{{ 'week.min' | t }} </span>{{ row.min }}°</span
-        >
-        <!-- The week's scale runs the whole track; each day shows its slice of it. -->
-        <span class="range" aria-hidden="true">
-          <span
-            class="range-fill"
-            [style.left.%]="row.start"
-            [style.width.%]="row.size"
-            [style.--start]="row.start"
-            [style.--size]="row.size"
-          ></span>
-        </span>
         <span class="max"
           ><span class="visually-hidden">{{ 'week.max' | t }} </span>{{ row.max }}°</span
+        >
+        <span class="sep" aria-hidden="true">/</span>
+        <span class="min"
+          ><span class="visually-hidden">{{ 'week.min' | t }} </span>{{ row.min }}°</span
         >
       </span>
     </li>

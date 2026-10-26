@@ -9,6 +9,7 @@ const day = (date: string, sunrise: string | null, sunset: string | null): Daily
   sky: 'despejado',
   precipitationChance: 0,
   maxWindKmh: 15,
+  meanWindKmh: 11,
   windFromDegrees: 30,
   uvMax: 6,
   sunrise,

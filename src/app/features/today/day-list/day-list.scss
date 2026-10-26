@@ -1,12 +1,48 @@
-.days {
+// The week shares one set of columns (the header, the list and each day are
+// subgrids of it), so the sky, the wind and the temperatures line up from one
+// day to the next and under their labels. One row per day at every width:
+// the day and its words take what the figures leave.
+:host {
   display: grid;
+  grid-template-columns: minmax(0, 1fr) 1.75rem auto auto;
+  column-gap: var(--s-3);
+
+  @media (min-width: 48rem) {
+    column-gap: var(--s-5);
+  }
+}
+
+.head,
+.days {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: subgrid;
+}
+
+// Quiet labels over the figures, said once for the whole week.
+.head {
+  padding-bottom: var(--s-1);
+  font-size: var(--fs-micro);
+  font-weight: 600;
+  color: var(--c-ink-3);
+  white-space: nowrap;
+}
+
+.head-wind {
+  grid-column: 3;
+  justify-self: center;
+}
+
+.head-temps {
+  grid-column: 4;
+  justify-self: center;
 }
 
 .day {
+  grid-column: 1 / -1;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 1.75rem auto;
+  grid-template-columns: subgrid;
   align-items: center;
-  gap: var(--s-3);
   min-height: 3.75rem;
   padding: var(--s-2) 0;
 
@@ -15,87 +51,95 @@
   }
 }
 
-.name {
-  font-weight: 620;
-  letter-spacing: -0.01em;
-}
-
-.glyph {
-  color: var(--c-ink-2);
-}
-
 .summary {
   min-width: 0;
   display: grid;
   gap: 0.0625rem;
 }
 
+.name {
+  font-weight: 620;
+  letter-spacing: -0.01em;
+}
+
 .phrase {
   font-size: var(--fs-small);
   color: var(--c-ink-2);
+  text-wrap: pretty;
 }
 
+// Kept whole: when it doesn't fit beside the sky, it takes the next line.
 .change {
+  white-space: nowrap;
   font-size: var(--fs-micro);
   font-weight: 640;
   color: var(--c-accent);
 }
 
-.temps {
-  display: flex;
-  align-items: center;
-  gap: var(--s-2);
-  font-size: 0.9375rem;
+.glyph {
+  color: var(--c-ink-2);
 }
 
-.min {
-  color: var(--c-ink-3);
-  min-width: 1.75rem;
-  text-align: right;
+// ── The day's average wind: a tint of its strength, as in the hours ──
+// Every day's pill takes the column's width, so they line up down the week.
+.wind {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.1875rem;
+  height: 1.625rem;
+  padding: 0 var(--s-2);
+  border-radius: var(--r-pill);
+  background-color: oklch(
+    var(--wind-bg-l) calc(var(--wind-bg-c) * var(--wind-tint, 1)) var(--wind-hue)
+  );
+  color: oklch(var(--wind-ink-l) calc(var(--wind-ink-c) * var(--wind-tint, 1)) var(--wind-hue));
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+}
+
+.wind-arrow {
+  flex: none;
+  width: 0.8125rem;
+  height: 0.8125rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.wind-unit {
+  font-size: 0.6875rem;
+  font-weight: 640;
+}
+
+// ── High and low as one pair: "29° / 23°" ──
+// The high leads, the low follows, quieter; the slash stays in one place down
+// the week (the high right-aligned before it, the low left-aligned after).
+.temps {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 0.25rem;
+  font-size: 1rem;
 }
 
 .max {
-  font-weight: 620;
-  min-width: 1.75rem;
+  min-width: 1.875rem;
+  text-align: right;
+  font-weight: 660;
 }
 
-.range {
-  position: relative;
-  width: 5rem;
-  height: 0.3125rem;
-  border-radius: var(--r-pill);
-  background-color: var(--c-line);
+.sep {
+  color: var(--c-ink-3);
+  font-weight: 400;
 }
 
-// The gradient is the week's whole scale, cool at its coldest and hot at its
-// warmest, drawn at the track's size and slid under the fill, so a day's bar
-// shows the colours of its own temperatures: a 31° day ends in red, a 25°
-// day never gets past amber. (`--start` and `--size` are the fill's place on
-// the track, in percent, the same values as its left and width.)
-.range-fill {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  border-radius: inherit;
-  background-image: linear-gradient(
-    90deg,
-    var(--atlantico-400),
-    var(--sol-400) 60%,
-    var(--timanfaya-500)
-  );
-  background-repeat: no-repeat;
-  background-size: calc(100% * 100 / var(--size, 100)) 100%;
-  background-position-x: calc(var(--start, 0) / (100 - var(--size, 0)) * 100%);
-}
-
-@media (max-width: 22rem) {
-  .range {
-    display: none;
-  }
-}
-
-@media (min-width: 64rem) {
-  .range {
-    width: 6.5rem;
-  }
+.min {
+  min-width: 1.875rem;
+  color: var(--c-ink-3);
+  font-weight: 520;
 }

@@ -241,8 +241,15 @@ function dailyForecasts(dto: ForecastDto, hourly: readonly WeatherSnapshot[]): D
     const sunset = d.sunset[i];
     // `t` is local midnight; noon is safely inside the same island day.
     const date = islandDateKey(addHours(new Date(t * 1000), 12));
-    const sky = daySky(hourly.filter((h) => islandDateKey(new Date(h.time)) === date));
+    const dayHours = hourly.filter((h) => islandDateKey(new Date(h.time)) === date);
+    const sky = daySky(dayHours);
     if (!sky) return;
+    // The provider's daily mean; failing that, the average of the day's hours we hold.
+    const mean = d.wind_speed_10m_mean?.[i];
+    const meanWind =
+      typeof mean === 'number'
+        ? mean
+        : dayHours.reduce((sum, h) => sum + h.wind.speedKmh, 0) / Math.max(1, dayHours.length);
     days.push({
       date,
       minC: Math.round(min),
@@ -250,6 +257,7 @@ function dailyForecasts(dto: ForecastDto, hourly: readonly WeatherSnapshot[]): D
       sky,
       precipitationChance: round2(rainChance / 100),
       maxWindKmh: Math.round(wind),
+      meanWindKmh: Math.round(Math.min(meanWind, wind)),
       windFromDegrees: windFrom,
       uvMax: Math.round(uv),
       sunrise: typeof sunrise === 'number' ? toIsoMinute(sunrise) : null,

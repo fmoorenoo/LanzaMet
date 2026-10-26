@@ -214,6 +214,7 @@ function dailyFor(ctx: Context, dayStart: Date): DailyForecast {
     sky,
     precipitationChance: Math.max(...hours.map((h) => h.precipitationChance)),
     maxWindKmh: Math.max(...hours.map((h) => h.wind.speedKmh)),
+    meanWindKmh: Math.round(hours.reduce((sum, h) => sum + h.wind.speedKmh, 0) / hours.length),
     windFromDegrees: afternoon.wind.fromDegrees,
     uvMax: Math.max(...hours.map((h) => h.uvIndex)),
     sunrise: sunrise.toISOString(),

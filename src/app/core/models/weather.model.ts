@@ -43,6 +43,8 @@ export interface DailyForecast {
   readonly sky: SkyCondition;
   readonly precipitationChance: number;
   readonly maxWindKmh: number;
+  /** The day's average wind, whole km/h: what the day feels like, not its peak. */
+  readonly meanWindKmh: number;
   readonly windFromDegrees: number;
   readonly uvMax: number;
   /** Null when the provider has no value; the day is still valid without it. */
