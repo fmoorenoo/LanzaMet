@@ -4,19 +4,17 @@
   min-width: 0;
 }
 
-// The live camera on the landscape. In a row card the picture is narrow and
-// the plan's mark holds its foot, so the chip takes the top-right corner of
-// the picture (the island sits top-left); the lead's wide picture has room
-// at its foot, and so does the band on phones.
+// The live camera on the landscape, at its foot on the left. In a row card
+// the picture is narrow, so the plan's mark moves up to the top-right corner
+// (beside the island, top-left) and leaves the foot to the chip; the lead's
+// wide picture keeps the mark at the foot, and so does the band on phones.
 .live {
   position: absolute;
-  top: var(--s-3);
-  right: calc(100% - var(--art-w) + var(--s-3));
+  left: var(--s-2);
+  bottom: var(--s-2);
 }
 
 :host(.is-lead) .live {
-  top: auto;
-  right: auto;
   left: var(--s-3);
   bottom: var(--s-3);
 }
@@ -94,8 +92,8 @@
 // The kind of plan sits on the seam between picture and words.
 .mark {
   position: absolute;
+  top: var(--s-2);
   right: var(--s-2);
-  bottom: var(--s-2);
   display: grid;
   place-items: center;
   width: 2.25rem;
@@ -221,6 +219,7 @@
   }
 
   .mark {
+    top: auto;
     right: var(--s-3);
     bottom: var(--s-3);
     width: 2.5rem;
@@ -270,7 +269,6 @@
   .live,
   :host(.is-lead) .live {
     top: calc(6.5rem - 1.625rem - var(--s-2));
-    right: auto;
     bottom: auto;
     left: var(--s-2);
   }
@@ -278,6 +276,12 @@
   :host(.is-lead) .live {
     top: calc(8.5rem - 1.625rem - var(--s-3));
     left: var(--s-3);
+  }
+
+  // The band is wide: the mark goes back to its foot, clear of the chip.
+  .mark {
+    top: auto;
+    bottom: var(--s-2);
   }
 
   .where {
