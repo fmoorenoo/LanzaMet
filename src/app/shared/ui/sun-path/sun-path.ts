@@ -56,8 +56,10 @@ const fixed = (n: number) => n.toFixed(1);
       </div>
 
       <p class="sun-status">
-        {{ v.status | t
-        }}<span class="sun-length"> · {{ 'sun.dayLength' | t: { duration: v.dayLength } }}</span>
+        {{ v.status | t }}
+        @if (v.withLength) {
+          <span class="sun-length"> · {{ 'sun.dayLength' | t: { duration: v.dayLength } }}</span>
+        }
       </p>
     } @else {
       <p class="sun-missing">
@@ -225,14 +227,18 @@ export class SunPath {
       travelledCss: travelled ? `path("${travelled}")` : null,
       // The sun only sits on its path while it is up.
       sun: r.phase === 'day' ? `translate(${fixed(point.x)}px, ${fixed(point.y)}px)` : null,
+      // A later day has no "now" on its path: only how long its light lasts.
       status:
-        r.phase === 'before-sunrise'
-          ? msg('sun.untilSunrise', { duration: { duration: r.untilMs } })
-          : r.phase === 'day'
-            ? msg('sun.untilSunset', { duration: { duration: r.untilMs } })
-            : r.nextSunrise
-              ? msg('sun.tomorrow', { time: { time: r.nextSunrise } })
-              : msg('sun.down'),
+        r.phase === 'upcoming'
+          ? msg('sun.dayLength.full', { duration: { duration: r.dayLengthMs } })
+          : r.phase === 'before-sunrise'
+            ? msg('sun.untilSunrise', { duration: { duration: r.untilMs } })
+            : r.phase === 'day'
+              ? msg('sun.untilSunset', { duration: { duration: r.untilMs } })
+              : r.nextSunrise
+                ? msg('sun.tomorrow', { time: { time: r.nextSunrise } })
+                : msg('sun.down'),
+      withLength: r.phase !== 'upcoming',
       dayLength: { duration: r.dayLengthMs },
     };
   });

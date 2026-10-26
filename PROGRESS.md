@@ -8,16 +8,16 @@ Interfaz completa (Hoy, Zonas, Mar, Dónde ir), escena atmosférica, sistema de 
 
 ### Estado de las fuentes
 
-| Fuente | Estado | Notas |
-|---|---|---|
-| Open-Meteo Forecast (DWD ICON) | ✅ Integrada y verificada | 9 zonas en una sola petición; 48 h y 7 días |
-| Open-Meteo Marine (Météo-France) | ✅ Integrada y verificada | Oleaje, mar de fondo y agua en 7 puntos de mar abierto elegidos a mano |
-| Marea | ⚠️ Solo estimación | Nivel del mar del modelo SMOC; en la interfaz siempre como estimación no oficial |
-| Open-Meteo Air Quality (CAMS) | ✅ Integrada | Polvo → calima (umbral orientativo de 100 µg/m³) |
-| AEMET avisos (RSS + CAP) | ✅ Integrada y verificada en vivo | A través del API propio; no necesita clave |
-| AEMET OpenData observaciones | ✅ Integrada y verificada en vivo | 7 estaciones de Lanzarote, pedidas una a una; clave solo en el servidor (`server/.dev.vars` en local) |
-| Puertos del Estado | ⛔ No integrable | Sin API pública de predicción; condiciones de descarga que prohíben ceder datos; mareógrafo de Arrecife invertido y sin cero documentado |
-| IHM (mareas) | ⛔ No disponible | El API responde 500 y no está documentado |
+| Fuente                           | Estado                            | Notas                                                                                                                                    |
+| -------------------------------- | --------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| Open-Meteo Forecast (DWD ICON)   | ✅ Integrada y verificada         | 9 zonas en una sola petición; 48 h y 7 días                                                                                              |
+| Open-Meteo Marine (Météo-France) | ✅ Integrada y verificada         | Oleaje, mar de fondo y agua en 7 puntos de mar abierto elegidos a mano                                                                   |
+| Marea                            | ⚠️ Solo estimación                | Nivel del mar del modelo SMOC; en la interfaz siempre como estimación no oficial                                                         |
+| Open-Meteo Air Quality (CAMS)    | ✅ Integrada                      | Polvo → calima (umbral orientativo de 100 µg/m³)                                                                                         |
+| AEMET avisos (RSS + CAP)         | ✅ Integrada y verificada en vivo | A través del API propio; no necesita clave                                                                                               |
+| AEMET OpenData observaciones     | ✅ Integrada y verificada en vivo | 7 estaciones de Lanzarote, pedidas una a una; clave solo en el servidor (`server/.dev.vars` en local)                                    |
+| Puertos del Estado               | ⛔ No integrable                  | Sin API pública de predicción; condiciones de descarga que prohíben ceder datos; mareógrafo de Arrecife invertido y sin cero documentado |
+| IHM (mareas)                     | ⛔ No disponible                  | El API responde 500 y no está documentado                                                                                                |
 
 ### Hecho
 
@@ -113,7 +113,7 @@ Skills usadas: Emil Kowalski (arrastre, inercia, transiciones) e Impeccable (aud
    - amanecer y atardecer con su hora;
    - calor, sol de mediodía, gris según la temperatura y ratos de sol;
    - playa por la tarde.
-   El veredicto usa la hora elegida en la previsión, y en Zonas, el momento actual.
+     El veredicto usa la hora elegida en la previsión, y en Zonas, el momento actual.
 3. **Selector de horas**:
    - Cada hora mide 72 px en escritorio y 60 px en móvil (antes 56), con iconos de 38 y 32 px (antes 26) y temperaturas algo mayores en escritorio.
    - El resaltado va hundido, para separar las horas vecinas.
@@ -512,7 +512,7 @@ Todo preparado y probado en local; **no se ha publicado nada**. Pasos manuales y
 ### Hecho
 
 1. **Un Worker de Cloudflare** (`wrangler.jsonc`) para la web y el API bajo el mismo dominio.
-   - La build de Angular va como *static assets*, con vuelta a `index.html` en las rutas de la SPA.
+   - La build de Angular va como _static assets_, con vuelta a `index.html` en las rutas de la SPA.
    - Solo `/api/*` ejecuta `server/api.ts`.
    - La clave de AEMET es un secreto del Worker. Wrangler pasa a dependencia de desarrollo, y `.nvmrc` fija Node 24.
 2. **Build de producción con sus comprobaciones** (`npm run build:prod`, `scripts/build-production.ts`).
@@ -572,13 +572,13 @@ La web pasa a llamarse **LanzaMet**, con el dominio `lanzamet.com`.
   - `que-tal-hoy` pasa a `lanzamet`: proyecto de Angular (build en `dist/lanzamet`), paquete, Worker, marca del API (`lanzamet-api`), nombre del archivo al compartir;
   - el user agent del API pasa a `lanzamet/1.0 (+https://lanzamet.com)`.
 - **Migración**: lo guardado con `qth.` (zona, favoritas, tema, idioma, instalación, envíos) se lee y se pasa a `lm.` la primera vez, sin perder nada (`core/utils/storage.ts`, con test).
-- **Despliegue**: `lanzamet.com` queda declarado como *custom domain* en `wrangler.jsonc` y `PUBLIC_URL=https://lanzamet.com` en `.env`. El Worker de pruebas `que-tal-hoy` se borrará cuando el dominio funcione.
-- **Validación**: 185 tests de la web y 24 del API; lint, tipos, formato, build de producción y *dry run* sin errores. En la vista previa local: título «Hoy en Lanzarote · LanzaMet», raíl «LanzaMet», ningún `qth-` en la página, tarjeta y mensaje para compartir con `lanzamet.com`.
+- **Despliegue**: `lanzamet.com` queda declarado como _custom domain_ en `wrangler.jsonc` y `PUBLIC_URL=https://lanzamet.com` en `.env`. El Worker de pruebas `que-tal-hoy` se borrará cuando el dominio funcione.
+- **Validación**: 185 tests de la web y 24 del API; lint, tipos, formato, build de producción y _dry run_ sin errores. En la vista previa local: título «Hoy en Lanzarote · LanzaMet», raíl «LanzaMet», ningún `qth-` en la página, tarjeta y mensaje para compartir con `lanzamet.com`.
 - Sin cambiar: la carpeta del proyecto en tu disco (`QueTalHoy`), el `id` del manifest (`/`) y el logotipo.
 
 ## Publicada en lanzamet.com (24-10-2026)
 
-- **Worker `lanzamet`**, con `lanzamet.com` como *custom domain* (DNS y certificado creados por el despliegue) y el secreto `AEMET_API_KEY`.
+- **Worker `lanzamet`**, con `lanzamet.com` como _custom domain_ (DNS y certificado creados por el despliegue) y el secreto `AEMET_API_KEY`.
 - **En el panel de Cloudflare**: Always Use HTTPS (`http://` → 301 → `https://`); `www.lanzamet.com` → 301 → `lanzamet.com`, conservando ruta y consulta; Worker de pruebas `que-tal-hoy` borrado; subdominio de la cuenta `lanzamet.workers.dev`.
 - **Comprobado en la web publicada**:
   - `/api/salud` con clave y las 7 estaciones;
@@ -635,7 +635,6 @@ Solo por debajo de 64 rem (móvil y tableta); el escritorio queda igual, comprob
 
 - Probar en móviles reales, sobre todo los toques en los bordes de los botones, la barra con teclado abierto y un iPhone con muesca.
 - En 375 × 667 y más pequeños, las temperaturas por hora piden un desplazamiento mínimo; para que entren habría que quitar algo de la escena.
-
 
 ## Fase 8 — Rediseño visual y Arrieta (25-10-2026)
 
@@ -725,7 +724,6 @@ Skills usadas: Impeccable (auditoría, dirección, suelo de calidad, detector) y
 
 - Corregido: el Risco ya no se corta. Entra alto por el borde derecho (Peñas del Chache sigue fuera de cuadro) y baja hasta su punta norte; después, un tramo de mar, y luego La Graciosa con Montaña Clara, colocadas para que se vean también en el móvil. La arena del pie, una franja fina bajo el Risco.
 
-
 ## Revisión visual: leer más cómodo (25-10-2026)
 
 Auditoría de todas las pantallas con capturas reales (Chrome por CDP, 320–1440 px, claro y oscuro, español e inglés) y mejoras para que la información necesaria se vea con menos esfuerzo. Sin cambios de identidad.
@@ -777,3 +775,27 @@ Auditoría de todas las pantallas con capturas reales (Chrome por CDP, 320–144
 
 - Repasar cada trimestre que las cámaras siguen emitiendo (las direcciones de terceros cambian).
 - Buscar cámaras de costa para La Santa (El Quemao) y El Golfo si algún día aparecen.
+
+## Elegir día (26-10-2026)
+
+### Hecho
+
+1. **Datos**: el tiempo ya traía 7 días por horas; el mapeador deja de recortarlo a 48 h (`HOURLY_STEPS = 7 × 24`). El mar pasa de 3 a 7 días en la misma petición (8 variables, menos de 2 semanas: misma cuenta en Open-Meteo). El polvo sigue en 5 días porque CAMS no llega más lejos: los dos últimos días no detectan calima. Cambiar de día no pide nada. La demo simula la semana entera.
+2. **Estado** `core/state/day.store.ts`: el día elegido, en memoria (al cerrar la app vuelve a hoy), el mismo en Hoy, Zonas y Mar. Un día pasado (app abierta de noche) o fuera de la previsión cede a hoy. Hoy se ve como está ahora; otro día, a las 12:00, con sus horas desde las 00:00.
+3. **Reglas** `core/insights/moment.insight.ts`: el momento de cada día, sus horas, y `zoneAt`, que pone cada zona en ese momento para que el mapa, el mar más tranquilo y los planes usen las reglas de siempre. El veredicto conoce `later` («Día de playa»); el sol de un día por venir dice cuántas horas de luz tiene.
+4. **Selector**: hoja `layout/day-picker` (como la de zonas: siete días con fecha, cielo y máx./mín., el elegido marcado) y botón `shared/ui/day-button` (píldora sobre el cielo en el héroe, chip en Zonas y Mar; relleno o con acento cuando no es hoy).
+5. **Héroe**: la hora y a su derecha el día. «Ahora» aparece también en otro día y devuelve a hoy. La hora solo nombra su día si no es el del botón (una hora de madrugada en las 24 de hoy). En el móvil, compartir y ajustes bajan a la esquina inferior derecha de la escena. En pantallas de 320 px la píldora deja el icono para que quepa el nombre.
+6. **Hoy**: todo sigue al día (condiciones, «{Día}, hora a hora» descansando en las 12:00, planes de ese día, «{Día}, en detalle»). La marea de otro día no dice «en 2 h»; la cámara y la estación medida, solo hoy. En «Próximos días» cada día es un botón; el que se ve, marcado; al pulsarlo sube arriba y el foco va al botón del día.
+7. **Zonas**: chip del día; mapa, tarjetas y resumen de la isla a esa hora; sin cámaras en otro día.
+8. **Mar**: chip junto al de la zona. Otro día: «Mareas del jueves» con sus pleamares y bajamares en una línea, la curva sin «ahora», ese día y el siguiente en la tabla, y el mar a mediodía.
+9. **Compartir**: «el jueves a las 12:00».
+
+### Validación
+
+- Capturas a 320, 452 y 1280 px de Hoy, la hoja, Zonas y Mar, hoy y otros días, cambiando de día desde cada sitio y navegando entre pestañas.
+- 216 tests (nuevos: momento, `DayStore`, luz de un día por venir), lint y build sin errores.
+
+### Pendiente
+
+- Pasar axe a la hoja de días y a la lista de días con botones.
+- Probar en móviles reales el botón del día y los de compartir y ajustes en la esquina.

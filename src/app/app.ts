@@ -5,6 +5,7 @@ import { I18n } from './core/i18n/i18n.store';
 import { TranslatePipe } from './core/i18n/t.pipe';
 import { InstallStore } from './core/pwa/install.store';
 import { ThemeStore } from './core/state/theme.store';
+import { DayPicker } from './layout/day-picker/day-picker';
 import { LocationPicker } from './layout/location-picker/location-picker';
 import { NavBar } from './layout/nav-bar/nav-bar';
 import { SettingsPanel } from './layout/settings-panel/settings-panel';
@@ -13,7 +14,15 @@ import { lazyComponent } from './shared/lazy-component';
 
 @Component({
   selector: 'lm-root',
-  imports: [RouterOutlet, NgComponentOutlet, NavBar, LocationPicker, SettingsPanel, TranslatePipe],
+  imports: [
+    RouterOutlet,
+    NgComponentOutlet,
+    NavBar,
+    LocationPicker,
+    DayPicker,
+    SettingsPanel,
+    TranslatePipe,
+  ],
   templateUrl: './app.html',
   styleUrl: './app.scss',
 })

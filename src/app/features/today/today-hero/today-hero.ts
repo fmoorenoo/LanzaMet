@@ -9,16 +9,18 @@ import {
   viewChild,
 } from '@angular/core';
 import { DATA_MODE } from '../../../core/data/http/data-config';
-import { Msg } from '../../../core/i18n/i18n.model';
+import { msg, Msg } from '../../../core/i18n/i18n.model';
 import { TranslatePipe } from '../../../core/i18n/t.pipe';
 import { Verdict } from '../../../core/insights/verdict.insight';
 import { LocationId, Wind } from '../../../core/models';
 import { ClockStore } from '../../../core/state/clock.store';
+import { DayStore } from '../../../core/state/day.store';
 import { LocationsStore } from '../../../core/state/locations.store';
 import { formatTime, islandOffsetMinutes } from '../../../core/utils/time';
 import { UiStore } from '../../../layout/ui.store';
 import { Scene } from '../../../shared/scene/scene';
 import { SceneState } from '../../../shared/scene/scene-state';
+import { DayButton } from '../../../shared/ui/day-button/day-button';
 import { Icon } from '../../../shared/ui/icon/icon';
 import { StatusMessage } from '../../../shared/ui/status-message/status-message';
 import { Tooltip } from '../../../shared/ui/tooltip/tooltip';
@@ -36,8 +38,12 @@ export interface HeroView {
   readonly range: { readonly max: number; readonly min: number };
   readonly verdict: Verdict;
   readonly momentLabel: Msg;
-  /** The moment drawn: now, or the hour chosen in the forecast, with its day ("Hoy"). */
-  readonly moment: { readonly at: Date; readonly day: Msg };
+  /**
+   * The moment drawn: now, an hour chosen in the forecast, or a later day's
+   * midday. `day` names its day only when it is not the day chosen above
+   * (an hour after midnight in today's next 24), so the clock never misleads.
+   */
+  readonly moment: { readonly at: Date; readonly day: Msg | null };
   /**
    * The sun's next move from that moment ("Atardece a las 18:15, en 3 h 30 min"):
    * stands in for the verdict's sentence when it would only repeat the sky and the wind.
@@ -60,7 +66,7 @@ const SWIPE_SLOPE = 1.4;
  */
 @Component({
   selector: 'lm-today-hero',
-  imports: [Scene, Icon, StatusMessage, Tooltip, ShareWeather, WindGauge, TranslatePipe],
+  imports: [Scene, Icon, StatusMessage, Tooltip, ShareWeather, WindGauge, DayButton, TranslatePipe],
   templateUrl: './today-hero.html',
   styleUrl: './today-hero.scss',
   host: {
@@ -82,6 +88,7 @@ export class TodayHero {
   readonly pending = input(false);
   /** Set when there is nothing to show because loading failed. */
   readonly error = input<Msg | null>(null);
+  /** The scene is not now: another hour, or another day. "Ahora" then brings it back. */
   readonly isPreview = input(false);
   /** What the share button sends: the card for the place and moment on screen. */
   readonly share = input<WeatherCard | null>(null);
@@ -96,25 +103,34 @@ export class TodayHero {
   private readonly placeButton = viewChild.required<ElementRef<HTMLButtonElement>>('placeButton');
   private readonly clockTime = viewChild.required<ElementRef<HTMLElement>>('clockTime');
   private readonly copyWrap = viewChild.required<ElementRef<HTMLElement>>('copyWrap');
+  private readonly dayButton = viewChild.required<DayButton>('dayButton');
+  private readonly days = inject(DayStore);
 
   protected readonly current = this.locations.selected;
   protected readonly placeName = computed(() => this.current()?.name ?? '');
 
   /**
    * The time of what the scene is drawing, in the island's time, which every
-   * time in the app is given in: now, or the hour being previewed, labelled
-   * with its day. A visitor whose own clock reads differently is told whose
-   * time it is.
+   * time in the app is given in. Now is labelled "Ahora" (or "En Lanzarote",
+   * for a visitor whose own clock reads differently); any other moment is
+   * told by the day button beside it, and only names its day when that is
+   * not the day the button shows.
    */
   protected readonly time = computed(() => {
     const now = this.clock.now();
-    const preview = this.isPreview() ? this.view()?.moment : undefined;
-    const at = preview?.at ?? now;
+    const live = !this.isPreview();
+    const moment = live ? undefined : this.view()?.moment;
+    const at = moment?.at ?? now;
+    const elsewhere = -now.getTimezoneOffset() !== islandOffsetMinutes(now);
+    const label: Msg | null = live
+      ? msg(elsewhere ? 'today.clock.island' : 'common.now')
+      : (moment?.day ?? null);
     return {
       iso: at.toISOString(),
       text: formatTime(at),
-      day: preview?.day ?? null,
-      elsewhere: -now.getTimezoneOffset() !== islandOffsetMinutes(now),
+      live,
+      label,
+      sayZone: !(live && elsewhere),
     };
   });
 
@@ -146,6 +162,19 @@ export class TodayHero {
       }
       shown = text;
     });
+
+    // Another day: its words come in from the side it lies on, as for another place.
+    let shownDay: string | null = null;
+    afterRenderEffect(() => {
+      const day = this.days.day();
+      if (shownDay !== null && day !== shownDay) this.arrive(day > shownDay ? 1 : -1);
+      shownDay = day;
+    });
+  }
+
+  /** Focus on the day button: where a day chosen further down the page is shown. */
+  focusDay(): void {
+    this.dayButton().focus();
   }
 
   /**

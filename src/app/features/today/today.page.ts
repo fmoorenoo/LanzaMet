@@ -1,4 +1,12 @@
-import { Component, computed, DestroyRef, effect, inject, linkedSignal } from '@angular/core';
+import {
+  Component,
+  computed,
+  DestroyRef,
+  effect,
+  inject,
+  linkedSignal,
+  viewChild,
+} from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { msg, Msg } from '../../core/i18n/i18n.model';
 import { TranslatePipe } from '../../core/i18n/t.pipe';
@@ -8,7 +16,18 @@ import { drawingSunTimes, readDaylight } from '../../core/insights/sun.insight';
 import { readTide } from '../../core/insights/tide.insight';
 import { dayVerdict } from '../../core/insights/verdict.insight';
 import { fromDirection, readWind, windTrend } from '../../core/insights/wind.insight';
-import { DailyForecast } from '../../core/models';
+import { buildRecommendations } from '../../core/insights/recommendations.insight';
+import {
+  dateFromKey,
+  DAY_HOUR,
+  dayKind,
+  hoursOfDay,
+  stepAt,
+  stepsFrom,
+  zoneAt,
+} from '../../core/insights/moment.insight';
+import { DailyForecast, IsoDate } from '../../core/models';
+import { DayStore } from '../../core/state/day.store';
 import { ClockStore } from '../../core/state/clock.store';
 import { DataRefreshStore } from '../../core/state/data-refresh.store';
 import { ForecastStore } from '../../core/state/forecast.store';
@@ -16,7 +35,7 @@ import { IslandStore } from '../../core/state/island.store';
 import { LocationsStore } from '../../core/state/locations.store';
 import { OfficialStore } from '../../core/state/official.store';
 import { ThemeStore } from '../../core/state/theme.store';
-import { addHours, islandDateKey, toDate } from '../../core/utils/time';
+import { addHours, islandDateKey, islandHour, toDate } from '../../core/utils/time';
 import { PlanItem } from '../../shared/plans/plan-item';
 import { DataCredit } from '../../shared/ui/data-credit/data-credit';
 import { WarningBanner } from '../../shared/ui/warning-banner/warning-banner';
@@ -57,6 +76,13 @@ function sunLineAt(daily: readonly DailyForecast[], day: DailyForecast, at: Date
   return next?.sunrise ? msg('sun.tomorrow', { time: { time: next.sunrise } }) : null;
 }
 
+/** A later day's light, said whole: "Amanece a las 07:05 y atardece a las 18:12." */
+function sunLineOf(day: DailyForecast): Msg | null {
+  return day.sunrise && day.sunset
+    ? msg('today.sun.day', { sunrise: { time: day.sunrise }, sunset: { time: day.sunset } })
+    : null;
+}
+
 /**
  * "How is today?" — the answer first (sky, words, temperature), then wind,
  * sea and tide, then time. Choosing an hour re-renders the whole scene for
@@ -88,26 +114,46 @@ export class TodayPage {
   protected readonly forecast = inject(ForecastStore);
   protected readonly island = inject(IslandStore);
   protected readonly official = inject(OfficialStore);
+  protected readonly days = inject(DayStore);
   private readonly clock = inject(ClockStore);
   private readonly refreshStore = inject(DataRefreshStore);
   private readonly theme = inject(ThemeStore);
 
   protected readonly location = this.locations.selected;
 
-  /** Hour previewed from the timeline (null = now). Resets when the place changes. */
-  protected readonly previewIndex = linkedSignal<string | undefined, number | null>({
-    source: () => this.location()?.id,
+  private readonly hero = viewChild.required(TodayHero);
+
+  /**
+   * Hour chosen in the timeline, as an index into `hours()`; null means the
+   * day's own moment (now, or a later day's midday). Resets with the place
+   * and with the day.
+   */
+  protected readonly previewIndex = linkedSignal<string, number | null>({
+    source: () => `${this.location()?.id ?? ''}|${this.days.day()}`,
     computation: () => null,
   });
 
-  protected readonly hours = computed(
-    () => this.forecast.weather().data?.hourly.slice(0, 24) ?? [],
-  );
+  /** The hours offered: today's next 24, or the 24 hours of a later day. */
+  protected readonly hours = computed(() => {
+    const hourly = this.forecast.weather().data?.hourly ?? [];
+    return this.days.isToday() ? hourly.slice(0, 24) : hoursOfDay(hourly, this.days.day());
+  });
+
+  /** Where the timeline rests with no hour chosen: now, or the later day's midday. */
+  protected readonly restIndex = computed(() => {
+    if (this.days.isToday()) return 0;
+    const hours = this.hours();
+    const noon = hours.findIndex((h) => islandHour(toDate(h.time)) === DAY_HOUR);
+    return noon === -1 ? Math.floor(hours.length / 2) : noon;
+  });
+
+  /** The scene is not now: an hour chosen, or a later day. */
+  protected readonly isAway = computed(() => this.previewIndex() !== null || !this.days.isToday());
 
   private readonly moment = computed(() => {
     const index = this.previewIndex();
     const hour = index === null ? undefined : this.hours()[index];
-    return hour ? toDate(hour.time) : this.clock.now();
+    return hour ? toDate(hour.time) : this.days.moment();
   });
 
   protected readonly view = computed(() => {
@@ -115,21 +161,21 @@ export class TodayPage {
     const forecast = this.forecast.weather().data;
     if (!location || !forecast) return null;
 
-    const index = this.previewIndex();
-    const weather = index === null ? forecast.current : forecast.hourly[index];
+    const live = !this.isAway();
+    const at = this.moment();
+    const weather = live ? forecast.current : (stepAt(forecast.hourly, at) ?? forecast.current);
     const seaForecast = this.forecast.sea().data;
     const sea = seaForecast
-      ? index === null
+      ? live
         ? seaForecast.current
-        : (seaForecast.hourly[index] ?? seaForecast.current)
+        : (stepAt(seaForecast.hourly, at) ?? null)
       : null;
     const tides = this.forecast.tides().data;
-    const at = this.moment();
     const tide = tides ? readTide(tides, at) : null;
+    const today = this.days.today();
     const dayKey = islandDateKey(at);
     const day = forecast.daily.find((d) => d.date === dayKey) ?? forecast.daily[0];
-    const upcoming = forecast.hourly.slice(index ?? 0);
-    const isToday = dayKey === islandDateKey(this.clock.now());
+    const upcoming = stepsFrom(forecast.hourly, at);
     const wind = readWind(weather.wind);
     const sun = drawingSunTimes(day, at);
 
@@ -137,7 +183,7 @@ export class TodayPage {
       wind,
       windTrend: windTrend(weather, upcoming),
       sea: {
-        status: this.forecast.sea().status,
+        status: seaForecast && !sea ? 'empty' : this.forecast.sea().status,
         reading: sea ? readSea(sea) : null,
         pending: this.forecast.sea().pending,
       },
@@ -146,14 +192,16 @@ export class TodayPage {
         reading: tide,
         pending: this.forecast.tides().pending,
         estimated: tides ? !tides.source.official : false,
+        countdown: this.days.isToday(),
       },
     };
 
-    const dayName = msg(isToday ? 'day.today' : 'day.tomorrow');
+    const dayName = msg('common.value', { value: { day: dayKey, today } });
     return {
       weather,
-      moment: { at, day: dayName, isNow: index === null },
-      sunLine: sunLineAt(forecast.daily, day, at),
+      // The clock names the moment's day only when the day button doesn't.
+      moment: { at, day: dayKey === this.days.day() ? null : dayName, isNow: live },
+      sunLine: this.days.isToday() ? sunLineAt(forecast.daily, day, at) : sunLineOf(day),
       temperature: Math.round(weather.temperatureC),
       range: { max: day.maxC, min: day.minC },
       verdict: dayVerdict({
@@ -161,13 +209,12 @@ export class TodayPage {
         weather,
         upcoming,
         sea,
-        day: isToday ? 'today' : 'tomorrow',
+        day: dayKind(dayKey, today),
         at,
         sun,
       }),
       conditions,
-      momentLabel:
-        index === null ? msg('common.now') : msg('time.at', { day: dayName, time: { time: at } }),
+      momentLabel: live ? msg('common.now') : msg('time.at', { day: dayName, time: { time: at } }),
       scene: buildScene({
         location,
         weather,
@@ -206,7 +253,7 @@ export class TodayPage {
       place: location.name,
       at: v.moment.at,
       isNow: v.moment.isNow,
-      today: islandDateKey(this.clock.now()),
+      today: this.days.today(),
       scene: v.scene,
       temperature: v.temperature,
       feelsLike: Math.round(v.weather.feelsLikeC),
@@ -229,27 +276,56 @@ export class TodayPage {
     return this.locations.error();
   });
 
-  /** Today's sunrise and sunset, following the place and the clock. */
+  /** The chosen day's sunrise and sunset; today's follow the clock. */
   protected readonly daylight = computed(() =>
-    readDaylight(this.forecast.weather().data?.daily ?? [], this.clock.now()),
+    readDaylight(this.forecast.weather().data?.daily ?? [], this.clock.now(), this.days.day()),
   );
 
-  /** Secondary facts, in sentences rather than metrics. */
+  /** Section titles that name the day once it is not today. */
+  protected readonly titles = computed(() => {
+    const kind = this.days.kind();
+    const day = this.days.label();
+    if (kind === 'today') {
+      return {
+        hours: msg('today.hours'),
+        plans: msg('today.plans'),
+        noPlan: msg('today.noPlan'),
+        details: msg('today.details'),
+      };
+    }
+    return {
+      hours: msg('today.hours.day', { day }),
+      plans:
+        kind === 'tomorrow'
+          ? msg('today.plans.tomorrow')
+          : msg('today.plans.later', {
+              day: { weekday: dateFromKey(this.days.day()), style: 'long' },
+            }),
+      noPlan: msg('today.noPlan.day'),
+      details: msg('today.details.day', { day }),
+    };
+  });
+
+  /** Secondary facts for the day on screen, in sentences rather than metrics. */
   protected readonly details = computed(() => {
     const forecast = this.forecast.weather().data;
     if (!forecast) return null;
-    const today = forecast.daily[0];
-    const current = forecast.current;
-    const uv = readUv(today.uvMax);
+    const isToday = this.days.isToday();
+    const day = forecast.daily.find((d) => d.date === this.days.day()) ?? forecast.daily[0];
+    // Today, as it is now; a later day, at its midday.
+    const at = this.days.moment();
+    const current = isToday ? forecast.current : (stepAt(forecast.hourly, at) ?? forecast.current);
+    const uv = readUv(day.uvMax);
     const strongSun = forecast.hourly.filter(
-      (h) => h.uvIndex >= 6 && islandDateKey(toDate(h.time)) === today.date,
+      (h) => h.uvIndex >= 6 && islandDateKey(toDate(h.time)) === day.date,
     );
     const feels = Math.round(current.feelsLikeC);
     const actual = Math.round(current.temperatureC);
     const sea = this.forecast.sea().data;
+    const seaNow = sea ? (isToday ? sea.current : stepAt(sea.hourly, at)) : undefined;
     // Warmer than it reads: in daylight that is the sun, at night only the air.
     const warmer = current.isDaylight ? 'fact.feels.sun' : 'fact.feels.mild';
-    const sunHasSet = this.daylight()?.phase === 'after-sunset';
+    const sunHasSet = isToday && this.daylight()?.phase === 'after-sunset';
     let sun: Msg;
     if (strongSun.length > 0) {
       sun = msg('fact.uv.window', {
@@ -258,7 +334,9 @@ export class TodayPage {
         to: { time: addHours(toDate(strongSun[strongSun.length - 1].time), 1) },
       });
     } else {
-      sun = sunHasSet ? msg('fact.uv.night') : msg('fact.uv.rest', { uv: uv.label });
+      sun = sunHasSet
+        ? msg('fact.uv.night')
+        : msg(isToday ? 'fact.uv.rest' : 'fact.uv.day', { uv: uv.label });
     }
     return {
       feels: msg(
@@ -269,24 +347,36 @@ export class TodayPage {
       ),
       sun,
       water:
-        sea?.current.waterTemperatureC != null
-          ? msg('common.celsius', { value: Math.round(sea.current.waterTemperatureC) })
+        seaNow?.waterTemperatureC != null
+          ? msg('common.celsius', { value: Math.round(seaNow.waterTemperatureC) })
           : null,
     };
   });
 
   /** The place's id when a public live camera shows it; the facts then link to it. */
   protected readonly webcam = computed(() => {
+    if (!this.days.isToday()) return null;
     const id = this.location()?.id;
     return id && webcamFor(id) ? id : null;
   });
 
-  protected readonly todayKey = computed(() => islandDateKey(this.clock.now()));
-  protected readonly topPlans = computed(() => this.island.recommendations().slice(0, 2));
+  /**
+   * Two plans for the day on screen: today's from the island's own list (the
+   * one Dónde ir shows); a later day's read from the same rules, with every
+   * place as the forecast sees it at that day's midday.
+   */
+  protected readonly topPlans = computed(() => {
+    if (this.days.isToday()) return this.island.recommendations().slice(0, 2);
+    const from = this.days.from();
+    const at = this.days.moment();
+    const zones = (this.island.zones().data ?? []).map((z) => zoneAt(z, at, from));
+    return buildRecommendations(zones, from).slice(0, 2);
+  });
   protected readonly updatedAt = computed(() => this.forecast.weather().data?.issuedAt ?? null);
 
   /** What a nearby station actually measured — an observation, not the forecast. */
   protected readonly observed = computed(() => {
+    if (!this.days.isToday()) return null;
     const location = this.location();
     const reading = location ? this.official.nearestObservation(location.position) : null;
     if (!reading) return null;
@@ -320,8 +410,21 @@ export class TodayPage {
     inject(DestroyRef).onDestroy(() => this.theme.paintTop(null));
   }
 
+  /** "Ahora": back to today, as it is now. */
   protected backToNow(): void {
+    this.days.reset();
     this.previewIndex.set(null);
+  }
+
+  /**
+   * A day chosen in the week's list: it fills the screen from the top, and
+   * focus goes to the day button there, which says which day it is.
+   */
+  protected chooseDay(day: IsoDate): void {
+    this.days.select(day);
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    window.scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' });
+    this.hero().focusDay();
   }
 
   protected refresh(): void {

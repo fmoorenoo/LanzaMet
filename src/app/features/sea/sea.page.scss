@@ -9,8 +9,17 @@
   padding: calc(var(--safe-top) + var(--s-6)) var(--gutter) var(--s-8);
 }
 
-.place-chip {
+// Where and when, side by side with room between them; the day wraps under
+// the place if a long name leaves no room.
+.head-chips {
   justify-self: start;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-2) var(--s-3);
+}
+
+.place-chip {
   padding-inline: var(--s-3) var(--s-4);
 }
 

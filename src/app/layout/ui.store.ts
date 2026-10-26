@@ -4,11 +4,16 @@ import { Service, signal } from '@angular/core';
 @Service()
 export class UiStore {
   readonly locationPickerOpen = signal(false);
+  readonly dayPickerOpen = signal(false);
   readonly settingsOpen = signal(false);
   readonly installGuideOpen = signal(false);
 
   openLocationPicker(): void {
     this.locationPickerOpen.set(true);
+  }
+
+  openDayPicker(): void {
+    this.dayPickerOpen.set(true);
   }
 
   openSettings(): void {

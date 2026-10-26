@@ -1,18 +1,21 @@
 import { Component, computed, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { describeWaves, readSea, seaFacets, seaLevelFor } from '../../core/insights/sea.insight';
-import { msg, Msg } from '../../core/i18n/i18n.model';
+import { msg, Msg, Param } from '../../core/i18n/i18n.model';
 import { TranslatePipe } from '../../core/i18n/t.pipe';
 import { extremesBetween, readTide, tideHeight } from '../../core/insights/tide.insight';
 import { DATA_MODE } from '../../core/data/http/data-config';
-import { LocationId } from '../../core/models';
+import { IsoDate, IsoInstant, LocationId, TideKind } from '../../core/models';
 import { ClockStore } from '../../core/state/clock.store';
+import { DayStore } from '../../core/state/day.store';
 import { ForecastStore } from '../../core/state/forecast.store';
 import { IslandStore } from '../../core/state/island.store';
 import { LocationsStore } from '../../core/state/locations.store';
 import { OfficialStore } from '../../core/state/official.store';
 import { distanceKm } from '../../core/utils/geo';
-import { islandDayStart, toDate } from '../../core/utils/time';
+import { addHours, islandDateKey, toDate } from '../../core/utils/time';
+import { dateFromKey, dayStart, stepAt, zoneAt } from '../../core/insights/moment.insight';
+import { DayButton } from '../../shared/ui/day-button/day-button';
 import { UiStore } from '../../layout/ui.store';
 import { DataCredit } from '../../shared/ui/data-credit/data-credit';
 import { Icon } from '../../shared/ui/icon/icon';
@@ -20,13 +23,29 @@ import { StatusMessage } from '../../shared/ui/status-message/status-message';
 import { WarningBanner } from '../../shared/ui/warning-banner/warning-banner';
 import { TideChart } from './tide-chart/tide-chart';
 
+/** The island date of an instant (as written on the page's days). */
+function isoDay(at: Date): IsoDate {
+  return islandDateKey(at);
+}
+
+/** "10:20", "10:20 y 22:45": the times of a day's highs or lows, in one phrase. */
+function joinTimes(times: readonly IsoInstant[]): Param | null {
+  const [first, ...rest] = times.map((time): Param => ({ time }));
+  if (!first) return null;
+  return rest.reduce<Param>((a, b) => msg('common.and', { a, b }), first);
+}
+
 /** Height of the waves drawn in the "Oleaje" glyph, by sea level. */
 const WAVE_AMPLITUDE = [0.8, 2, 3.4, 5, 6.6];
 
-/** The ocean: is the tide coming in or going out, and where is the water calm? */
+/**
+ * The ocean: is the tide coming in or going out, and where is the water calm?
+ * Today as it is now; a later day (chosen here, in Hoy or in Zonas) with its
+ * whole tide and its sea at midday.
+ */
 @Component({
   selector: 'lm-sea-page',
-  imports: [Icon, StatusMessage, TideChart, DataCredit, WarningBanner, TranslatePipe],
+  imports: [Icon, StatusMessage, TideChart, DataCredit, WarningBanner, DayButton, TranslatePipe],
   templateUrl: './sea.page.html',
   styleUrl: './sea.page.scss',
   host: { id: 'sea-page', class: 'page sea-page' },
@@ -41,64 +60,118 @@ export class SeaPage {
   private readonly clock = inject(ClockStore);
   private readonly router = inject(Router);
 
+  protected readonly days = inject(DayStore);
   protected readonly location = this.locations.selected;
-  protected readonly now = this.clock.now;
-  protected readonly dayStart = computed(() => islandDayStart(this.clock.now()));
+  /** The moment the page reads: now, or a later day's midday. */
+  protected readonly now = this.days.moment;
+  protected readonly dayStart = computed(() => dayStart(this.days.day()));
 
+  /** Today: is the tide rising or falling now. */
   protected readonly reading = computed(() => {
     const tides = this.forecast.tides().data;
-    return tides ? readTide(tides, this.clock.now()) : null;
+    return tides && this.days.isToday() ? readTide(tides, this.clock.now()) : null;
   });
 
+  /** A later day: its highs and lows, said in one line under its title. */
+  protected readonly dayTides = computed(() => {
+    const tides = this.forecast.tides().data;
+    if (!tides || this.days.isToday()) return null;
+    const start = this.dayStart();
+    const extremes = extremesBetween(tides, start, addHours(start, 24));
+    if (extremes.length === 0) return null;
+    const times = (kind: TideKind) =>
+      joinTimes(extremes.filter((e) => e.kind === kind).map((e) => e.time));
+    const high = times('pleamar');
+    const low = times('bajamar');
+    return {
+      title:
+        this.days.kind() === 'tomorrow'
+          ? msg('seaPage.dayTitle.tomorrow')
+          : msg('seaPage.dayTitle', {
+              day: { weekday: dateFromKey(this.days.day()), style: 'long' },
+            }),
+      lead:
+        high && low
+          ? msg('seaPage.dayLead', { high, low })
+          : high
+            ? msg('seaPage.dayLead.high', { high })
+            : msg('seaPage.dayLead.low', { low: low ?? '' }),
+    };
+  });
+
+  protected readonly curveTitle = computed(() =>
+    msg(this.days.isToday() ? 'seaPage.curve' : 'seaPage.curve.day'),
+  );
+
   protected readonly sun = computed(() => {
-    const today = this.forecast.weather().data?.daily[0];
-    return today?.sunrise && today.sunset
-      ? { sunrise: toDate(today.sunrise), sunset: toDate(today.sunset) }
+    const daily = this.forecast.weather().data?.daily ?? [];
+    const day = daily.find((d) => d.date === this.days.day());
+    return day?.sunrise && day.sunset
+      ? { sunrise: toDate(day.sunrise), sunset: toDate(day.sunset) }
       : null;
   });
 
-  protected readonly days = computed(() => {
+  /** Highs and lows of the day on screen and of the day after it, when the forecast reaches it. */
+  protected readonly tideDays = computed(() => {
     const tides = this.forecast.tides().data;
     if (!tides) return [];
     const now = this.clock.now();
-    return [
-      {
-        id: 'today',
-        label: msg('day.today'),
-        start: islandDayStart(now, 0),
-        end: islandDayStart(now, 1),
-      },
-      {
-        id: 'tomorrow',
-        label: msg('day.tomorrow'),
-        start: islandDayStart(now, 1),
-        end: islandDayStart(now, 2),
-      },
-    ].map((day) => ({
-      id: day.id,
-      label: day.label,
-      extremes: extremesBetween(tides, day.start, day.end).map((e) => ({
-        kind: e.kind,
-        name: msg(`tide.kind.${e.kind}`),
-        time: e.time,
-        height: tideHeight(e.heightM, tides.datum),
-        isPast: toDate(e.time) < now,
-      })),
-    }));
+    const today = this.days.today();
+    const first = this.dayStart();
+    return [0, 1]
+      .map((offset) => {
+        const start = dayStart(isoDay(addHours(first, offset * 24 + 12)));
+        const date = isoDay(addHours(start, 12));
+        return {
+          id: date,
+          label: msg('common.value', { value: { day: date, today } }),
+          extremes: extremesBetween(tides, start, addHours(start, 24)).map((e) => ({
+            kind: e.kind,
+            name: msg(`tide.kind.${e.kind}`),
+            time: e.time,
+            height: tideHeight(e.heightM, tides.datum),
+            isPast: toDate(e.time) < now,
+          })),
+        };
+      })
+      .filter((day) => day.extremes.length > 0);
+  });
+
+  /** The sea at the page's moment: now, or the later day's midday. */
+  private readonly seaNow = computed(() => {
+    const data = this.forecast.sea().data;
+    if (!data) return null;
+    return this.days.isToday() ? data.current : (stepAt(data.hourly, this.now()) ?? null);
+  });
+
+  protected readonly seaTitle = computed(() => {
+    const place = this.location()?.name ?? '';
+    const kind = this.days.kind();
+    if (kind === 'today') return msg('seaPage.seaTitle', { place });
+    return msg('seaPage.seaTitle.day', {
+      place,
+      when:
+        kind === 'tomorrow'
+          ? msg('seaPage.when.tomorrow')
+          : msg('seaPage.when.later', {
+              day: { weekday: dateFromKey(this.days.day()), style: 'long' },
+            }),
+    });
   });
 
   protected readonly sea = computed(() => {
     const data = this.forecast.sea().data;
+    const current = this.seaNow();
     const here = this.location();
-    if (!data) return null;
+    if (!data || !current) return null;
     return {
-      ...readSea(data.current),
-      facets: seaFacets(data.current),
-      wavePath: `M2 12q4.5 ${-WAVE_AMPLITUDE[seaLevelFor(data.current.waveHeightM)]} 9 0t9 0t9 0t9 0t9 0`,
+      ...readSea(current),
+      facets: seaFacets(current),
+      wavePath: `M2 12q4.5 ${-WAVE_AMPLITUDE[seaLevelFor(current.waveHeightM)]} 9 0t9 0t9 0t9 0t9 0`,
       /** The swell's arrow points where it travels: away from where it comes from. */
       swellTo:
-        data.current.swell && data.current.swell.heightM >= 0.2
-          ? `${(data.current.swell.fromDegrees + 180) % 360}deg`
+        current.swell && current.swell.heightM >= 0.2
+          ? `${(current.swell.fromDegrees + 180) % 360}deg`
           : null,
       /** Marine models describe open water, not the shoreline; say how far out. */
       offshoreKm: here ? Math.round(distanceKm(here.position, data.point)) : null,
@@ -136,9 +209,11 @@ export class SeaPage {
    * calm day's ripples don't fill the bars, yet 20 cm and 40 cm still differ).
    */
   protected readonly calmest = computed(() => {
-    const zones = (this.island.zones().data ?? []).flatMap((z) =>
-      z.sea ? [{ location: z.location, sea: z.sea.current }] : [],
-    );
+    const at = this.now();
+    const isToday = this.days.isToday();
+    const zones = (this.island.zones().data ?? [])
+      .map((z) => (isToday ? z : zoneAt(z, at)))
+      .flatMap((z) => (z.sea ? [{ location: z.location, sea: z.sea.current }] : []));
     const top = Math.max(1, ...zones.map((z) => z.sea.waveHeightM));
     return zones
       .map((z) => {

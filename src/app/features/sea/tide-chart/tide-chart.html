@@ -14,9 +14,11 @@
       <path class="water" [attr.d]="area()" fill="url(#lm-tide-water)" />
       <path class="surface" [attr.d]="line()" />
     </g>
-    <rect class="past" x="0" y="0" [attr.width]="nowX()" height="300" />
-    <line class="now-line" [attr.x1]="nowX()" [attr.x2]="nowX()" y1="0" y2="300" />
-    <line class="now-stem" [attr.x1]="nowX()" [attr.x2]="nowX()" [attr.y1]="nowY()" y2="300" />
+    @if (showNow()) {
+      <rect class="past" x="0" y="0" [attr.width]="nowX()" height="300" />
+      <line class="now-line" [attr.x1]="nowX()" [attr.x2]="nowX()" y1="0" y2="300" />
+      <line class="now-stem" [attr.x1]="nowX()" [attr.x2]="nowX()" [attr.y1]="nowY()" y2="300" />
+    }
   </svg>
 
   @for (label of placedLabels(); track label.time) {
@@ -37,14 +39,16 @@
     </span>
   }
 
-  <span
-    class="now tide-now-marker"
-    [style.left.%]="nowLeft()"
-    [style.top.%]="nowTop()"
-    aria-hidden="true"
-  >
-    <span class="now-dot"></span>
-  </span>
+  @if (showNow()) {
+    <span
+      class="now tide-now-marker"
+      [style.left.%]="nowLeft()"
+      [style.top.%]="nowTop()"
+      aria-hidden="true"
+    >
+      <span class="now-dot"></span>
+    </span>
+  }
 </div>
 
 <div class="axis tide-chart-axis t-num">
@@ -63,6 +67,7 @@
     #nowLabel
     id="tide-now-time"
     class="now-label tide-now-time"
+    [class.is-hidden]="!showNow()"
     [style.left.%]="nowLabelLeft()"
   >
     {{ 'seaPage.curveNow' | t: { time: { time: now() } } }}

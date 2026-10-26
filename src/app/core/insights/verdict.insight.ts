@@ -2,6 +2,7 @@ import { MessageKey, msg, Msg } from '../i18n/i18n.model';
 import { Location, SeaSnapshot, SkyCondition, WeatherSnapshot } from '../models';
 import { clamp } from '../utils/math';
 import { DayPeriod, dayPeriod, isSunUp } from './day-period';
+import { DayKind } from './moment.insight';
 import { readSea } from './sea.insight';
 import { skyPhrase } from './sky.insight';
 import { SunTimes } from './sun.insight';
@@ -76,8 +77,8 @@ export interface VerdictInput {
   /** Hourly steps from the moment being described onwards. */
   readonly upcoming: readonly WeatherSnapshot[];
   readonly sea: SeaSnapshot | null;
-  /** The day being described. */
-  readonly day: 'today' | 'tomorrow';
+  /** The day being described: today, tomorrow, or a later day of the week. */
+  readonly day: DayKind;
   /** The moment being described: now, or the hour chosen in the forecast. */
   readonly at: Date;
   /** Sunrise and sunset of that moment's day, at that place. */

@@ -177,6 +177,7 @@ lm-scene {
   }
 }
 
+// The time, then the day it belongs to, then the way back to now.
 .meta {
   grid-area: meta;
   display: flex;
@@ -184,6 +185,10 @@ lm-scene {
   gap: var(--s-3);
   min-width: 0;
   min-height: 2.75rem;
+}
+
+.day {
+  flex: 0 1 auto;
 }
 
 // The time of the moment drawn, large enough to read at arm's length; its
@@ -434,6 +439,21 @@ lm-scene {
     flex: 1;
     height: auto;
     padding-bottom: calc(var(--sea-band) + var(--r-xl));
+  }
+
+  // The top line is the place, then the time and its day; sharing and
+  // settings step down to the scene's bottom corner, over the water.
+  .bar {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      'place'
+      'meta';
+  }
+
+  .tools {
+    position: absolute;
+    right: var(--gutter);
+    bottom: calc(var(--r-xl) + var(--s-3));
   }
 
   // The horizon sits at the top of the band, so the words always stand on sky.

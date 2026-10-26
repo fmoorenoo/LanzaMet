@@ -1,0 +1,34 @@
+<lm-sheet [heading]="'dayPicker.title' | t" [(open)]="ui.dayPickerOpen">
+  <p id="day-picker-hint" class="hint day-picker-hint">{{ 'dayPicker.hint' | t }}</p>
+  <ul class="options day-options" aria-describedby="day-picker-hint">
+    @for (row of rows(); track row.date) {
+      <li class="option-item">
+        <button
+          type="button"
+          class="option day-option"
+          [class.is-current]="row.isCurrent"
+          [attr.data-date]="row.date"
+          [attr.aria-current]="row.isCurrent ? 'date' : null"
+          (click)="choose(row.date)"
+        >
+          <span class="option-text">
+            <span class="option-name">{{ row.name | t }}</span>
+            <span class="option-sub">{{ row.dayMonth | t }} · {{ row.phrase | t }}</span>
+          </span>
+          <lm-sky-glyph class="option-glyph" [sky]="row.sky" />
+          <span class="option-temps t-num">
+            <span class="max"
+              ><span class="visually-hidden">{{ 'week.max' | t }} </span>{{ row.max }}°</span
+            >
+            <span class="sep" aria-hidden="true">/</span>
+            <span class="min"
+              ><span class="visually-hidden">{{ 'week.min' | t }} </span>{{ row.min }}°</span
+            >
+          </span>
+          <!-- Always laid out, seen on the day on screen: the rows never shift. -->
+          <lm-icon class="option-check" name="check" />
+        </button>
+      </li>
+    }
+  </ul>
+</lm-sheet>

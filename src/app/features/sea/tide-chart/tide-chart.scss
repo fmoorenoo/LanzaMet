@@ -199,3 +199,8 @@
     animation: none;
   }
 }
+
+// A later day has no now: its label is kept for measuring, never shown.
+.now-label.is-hidden {
+  display: none;
+}

@@ -92,7 +92,11 @@
             @if (v.tide.reading; as tide) {
               <span class="title">{{ tide.headline | t }}</span>
               <span class="sub">
-                {{ 'conditions.tide.next' | t: { next: tide.nextLabel, until: tide.untilNext } }}
+                @if (v.tide.countdown === false) {
+                  {{ tide.nextLabel | t }}
+                } @else {
+                  {{ 'conditions.tide.next' | t: { next: tide.nextLabel, until: tide.untilNext } }}
+                }
                 @if (v.tide.estimated) {
                   · {{ 'conditions.tide.estimate' | t }}
                 }

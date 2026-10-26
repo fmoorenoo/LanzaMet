@@ -31,8 +31,11 @@ import { AirQualityDto, ForecastDto, MarineDto } from './open-meteo.dto';
  */
 export const CALIMA_DUST_UGM3 = 100;
 
-/** Hours of forecast handed to the interface, from the current hour on. */
-const HOURLY_STEPS = 48;
+/**
+ * Hours of forecast handed to the interface, from the current hour on: the
+ * whole week asked for, so any of its seven days can be shown hour by hour.
+ */
+const HOURLY_STEPS = 7 * 24;
 const DAYS = 7;
 
 const toIso = (unixSeconds: number) => new Date(unixSeconds * 1000).toISOString();

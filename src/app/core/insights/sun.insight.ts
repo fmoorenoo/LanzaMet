@@ -1,4 +1,4 @@
-import { DailyForecast, IsoInstant } from '../models';
+import { DailyForecast, IsoDate, IsoInstant } from '../models';
 import { addHours, atIslandHour, islandDateKey, toDate } from '../utils/time';
 
 /*
@@ -27,7 +27,8 @@ export function drawingSunTimes(day: DailyForecast | undefined, at: Date): SunTi
   };
 }
 
-export type DaylightPhase = 'before-sunrise' | 'day' | 'after-sunset';
+/** Where the sun is now; `upcoming` for a later day, whose light is all still to come. */
+export type DaylightPhase = 'before-sunrise' | 'day' | 'after-sunset' | 'upcoming';
 
 export interface DaylightReading {
   readonly sunrise: IsoInstant;
@@ -42,12 +43,30 @@ export interface DaylightReading {
   readonly nextSunrise: IsoInstant | null;
 }
 
-/** Today's light in the island, or null when the provider has no sun times for today. */
-export function readDaylight(daily: readonly DailyForecast[], now: Date): DaylightReading | null {
-  const today = daily.find((d) => d.date === islandDateKey(now));
+/**
+ * A day's light in the island: today's, seen from now; a later day's, all
+ * still to come. Null when the provider has no sun times for that day.
+ */
+export function readDaylight(
+  daily: readonly DailyForecast[],
+  now: Date,
+  day: IsoDate = islandDateKey(now),
+): DaylightReading | null {
+  const today = daily.find((d) => d.date === day);
   if (!today?.sunrise || !today.sunset) return null;
   const sunrise = toDate(today.sunrise).getTime();
   const sunset = toDate(today.sunset).getTime();
+  if (day > islandDateKey(now)) {
+    return {
+      sunrise: today.sunrise,
+      sunset: today.sunset,
+      phase: 'upcoming',
+      progress: 0,
+      dayLengthMs: sunset - sunrise,
+      untilMs: 0,
+      nextSunrise: null,
+    };
+  }
   const t = now.getTime();
   const phase: DaylightPhase = t < sunrise ? 'before-sunrise' : t < sunset ? 'day' : 'after-sunset';
   const tomorrow = daily.find((d) => d.date === islandDateKey(addHours(now, 24)));

@@ -23,6 +23,8 @@ export interface ConditionsView {
     readonly pending: boolean;
     /** True when the tide comes from a model, not an official prediction. */
     readonly estimated: boolean;
+    /** Say how long until the next high or low (not for a later day, which has no now). */
+    readonly countdown?: boolean;
   };
 }
 

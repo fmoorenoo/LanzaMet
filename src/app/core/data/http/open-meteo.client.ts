@@ -21,6 +21,10 @@ import { Cached, ResponseCache } from './response-cache';
  *  · sea (Météo-France MFWAM/SMOC): updated every 12–24 h → 60 min
  *  · dust (CAMS global): updated every 12 h → 3 h
  *
+ * Weather and sea cover the seven days the app lets you choose from; dust
+ * only as far as CAMS forecasts it (about four and a half days), so calima
+ * can't be told on the last days of the week.
+ *
  * Each request goes first to the app's API (`/api/open-meteo/…`), which keeps
  * one copy of Open-Meteo's answer for every visitor (server/open-meteo.ts).
  * If that copy can't be had — no API on this host, an error, a slow answer —
@@ -166,9 +170,10 @@ export class OpenMeteoClient {
     ...coordinates(this.seaPoints),
     hourly: MARINE_VARIABLES.join(','),
     ...COMMON,
-    // Yesterday is needed to know the tide that came before this morning's.
+    // Yesterday is needed to know the tide that came before this morning's;
+    // the week ahead, so every day the app lets you choose has its sea and tide.
     past_days: '1',
-    forecast_days: '3',
+    forecast_days: '7',
   });
 
   weather(): Observable<Cached<IslandWeather>> {

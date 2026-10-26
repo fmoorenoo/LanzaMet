@@ -30,6 +30,14 @@ describe('daylight', () => {
     expect(reading?.untilMs).toBe(90 * 60_000);
   });
 
+  it("reads a later day's light as still to come, whatever the hour today", () => {
+    const reading = readDaylight(DAYS, new Date('2026-10-22T20:00:00Z'), '2026-10-23');
+    expect(reading?.phase).toBe('upcoming');
+    expect(reading?.progress).toBe(0);
+    expect(formatTime(reading?.sunrise ?? '')).toBe('08:01');
+    expect(reading?.dayLengthMs).toBe((11 * 60 + 15) * 60_000);
+  });
+
   it('places the sun along its path during the day', () => {
     const noon = new Date('2026-10-22T12:38:30Z');
     const reading = readDaylight(DAYS, noon);

@@ -32,7 +32,9 @@ export type Formatted =
   /** "Jue" / "Thu", "Viernes" / "Friday". */
   | { readonly weekday: IsoInstant | Date; readonly style: 'short' | 'long' }
   /** "Hoy", "Mañana" or the weekday, from the island date. */
-  | { readonly day: IsoDate; readonly today: IsoDate };
+  | { readonly day: IsoDate; readonly today: IsoDate }
+  /** "28 de octubre" / "28 October": the day of the month and the month. */
+  | { readonly date: IsoDate };
 
 /**
  * What a placeholder can hold: literal text (names of places and stations,

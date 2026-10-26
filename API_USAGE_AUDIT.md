@@ -6,15 +6,15 @@ Fecha: 23-10-2026 · Estado del código: fase 4 (rama `main`) · Diagnóstico he
 
 Aplicado al preparar el despliegue en Cloudflare:
 
-| Recomendación | Decisión | Dónde |
-|---|---|---|
-| Caché compartida de Open-Meteo en el API propio | **Hecha, sin Cron ni KV.** `/api/open-meteo/{forecast,marine,air-quality}` reenvía la consulta de la web y guarda la respuesta 10, 30 o 60 min en memoria y en la Cache API de Cloudflare. La primera visita de cada centro de datos la rellena; las demás no llegan a Open-Meteo | `server/open-meteo.ts`, `server/edge-cache.ts`, `OpenMeteoClient` |
-| Open-Meteo directo como reserva | **Hecha.** Si el API no responde, falla, devuelve algo inesperado o tarda más de 8 s, el navegador pregunta a Open-Meteo como antes | `OpenMeteoClient.fetchList` |
-| Caché de AEMET global, no por instancia | **Hecha** con la misma caché en dos niveles; se conserva la copia de hasta 2 h si AEMET falla | `server/api.ts` |
-| Pausar la renovación con la pestaña oculta | **Hecha.** El pulso de 15 min se detiene con la pestaña oculta y se reanuda al volver | `ClockStore.refreshBeat` |
-| Cron Trigger + KV con actualización programada | **No por ahora.** Añade un servicio (KV) que crear y mantener a mano, y la Cache API ya deja el consumo en unas pocas peticiones por hora y centro de datos. Merece la pena si el tráfico llega a miles de visitas al día o si se quiere el mismo dato en todos los centros de datos | — |
-| Un único `GET /api/isla` | **No.** Cambiaría el formato de las respuestas y los mapeadores; con tres respuestas cacheadas en el borde la ganancia es pequeña | — |
-| Petición de polvo opcional | **No**, como ya preveía la auditoría: ahorro pequeño para su complejidad | — |
+| Recomendación                                   | Decisión                                                                                                                                                                                                                                                                             | Dónde                                                             |
+| ----------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------- |
+| Caché compartida de Open-Meteo en el API propio | **Hecha, sin Cron ni KV.** `/api/open-meteo/{forecast,marine,air-quality}` reenvía la consulta de la web y guarda la respuesta 10, 30 o 60 min en memoria y en la Cache API de Cloudflare. La primera visita de cada centro de datos la rellena; las demás no llegan a Open-Meteo    | `server/open-meteo.ts`, `server/edge-cache.ts`, `OpenMeteoClient` |
+| Open-Meteo directo como reserva                 | **Hecha.** Si el API no responde, falla, devuelve algo inesperado o tarda más de 8 s, el navegador pregunta a Open-Meteo como antes                                                                                                                                                  | `OpenMeteoClient.fetchList`                                       |
+| Caché de AEMET global, no por instancia         | **Hecha** con la misma caché en dos niveles; se conserva la copia de hasta 2 h si AEMET falla                                                                                                                                                                                        | `server/api.ts`                                                   |
+| Pausar la renovación con la pestaña oculta      | **Hecha.** El pulso de 15 min se detiene con la pestaña oculta y se reanuda al volver                                                                                                                                                                                                | `ClockStore.refreshBeat`                                          |
+| Cron Trigger + KV con actualización programada  | **No por ahora.** Añade un servicio (KV) que crear y mantener a mano, y la Cache API ya deja el consumo en unas pocas peticiones por hora y centro de datos. Merece la pena si el tráfico llega a miles de visitas al día o si se quiere el mismo dato en todos los centros de datos | —                                                                 |
+| Un único `GET /api/isla`                        | **No.** Cambiaría el formato de las respuestas y los mapeadores; con tres respuestas cacheadas en el borde la ganancia es pequeña                                                                                                                                                    | —                                                                 |
+| Petición de polvo opcional                      | **No**, como ya preveía la auditoría: ahorro pequeño para su complejidad                                                                                                                                                                                                             | —                                                                 |
 
 Resultado: una visita nueva hace como mucho 5 peticiones al Worker y ninguna a Open-Meteo mientras la copia del centro de datos esté fresca. Open-Meteo recibe del orden de 6 + 2 + 1 peticiones por hora y centro de datos activo, vengan los visitantes que vengan. La Cache API solo funciona con dominio propio: en `*.workers.dev` cada instancia guarda su copia en memoria.
 
@@ -22,29 +22,33 @@ Respuesta corta: **sí, cada visitante nuevo genera sus propias llamadas a Open-
 
 ---
 
+## Elegir día (26-10-2026)
+
+La web deja ver hoy y los seis días siguientes. **No añade peticiones**: el tiempo ya traía 7 días por horas (solo se dejaba de recortar a 48 h), y el mar pasa de 3 a 7 días en la misma petición. Sigue con 8 variables y menos de 2 semanas, así que Open-Meteo la cuenta igual (una llamada por punto); solo pesa más (~36 → ~70 KB, cacheada en el borde y en el navegador). El polvo se queda en 5 días: CAMS no pronostica más allá del mediodía del quinto, así que los dos últimos días no detectan calima. Cambiar de día cuesta 0 peticiones.
+
 ## 1. Qué se pide al abrir la web
 
 Medido en Chrome con un perfil vacío (sin `localStorage` ni caché HTTP), abriendo `/`:
 
-| # | Destino | Contenido | Puntos | Variables | Tamaño (JSON) |
-|---|---|---|---|---|---|
-| 1 | `api.open-meteo.com/v1/forecast` | Tiempo actual, 7 días diarios, horario | 7 zonas | 9 actuales + 10 horarias + 8 diarias = 27 | 68,8 KB |
-| 2 | `marine-api.open-meteo.com/v1/marine` | Oleaje, mar de fondo, agua, nivel del mar | 7 puntos de mar | 8 horarias, 1 día pasado + 3 | 36,3 KB |
-| 3 | `air-quality-api.open-meteo.com/v1/air-quality` | Polvo (calima) | 7 zonas | 1 horaria, 5 días | 14,6 KB |
-| 4 | `/api/avisos` (API propio) | Avisos de AEMET | — | — | 0,3 KB |
-| 5 | `/api/observaciones` (API propio) | Estaciones de AEMET | — | — | 1,9 KB |
+| #   | Destino                                         | Contenido                                 | Puntos          | Variables                                                                      | Tamaño (JSON)               |
+| --- | ----------------------------------------------- | ----------------------------------------- | --------------- | ------------------------------------------------------------------------------ | --------------------------- |
+| 1   | `api.open-meteo.com/v1/forecast`                | Tiempo actual, 7 días diarios, horario    | 7 zonas         | 9 actuales + 10 horarias + 8 diarias = 27                                      | 68,8 KB                     |
+| 2   | `marine-api.open-meteo.com/v1/marine`           | Oleaje, mar de fondo, agua, nivel del mar | 7 puntos de mar | 8 horarias, 1 día pasado + 7 (desde el 26-10-2026, para elegir día; antes + 3) | ~70 KB (36,3 KB con 3 días) |
+| 3   | `air-quality-api.open-meteo.com/v1/air-quality` | Polvo (calima)                            | 7 zonas         | 1 horaria, 5 días                                                              | 14,6 KB                     |
+| 4   | `/api/avisos` (API propio)                      | Avisos de AEMET                           | —               | —                                                                              | 0,3 KB                      |
+| 5   | `/api/observaciones` (API propio)               | Estaciones de AEMET                       | —               | —                                                                              | 1,9 KB                      |
 
 Las tres peticiones a Open-Meteo traen **toda la isla de una vez**: el cliente (`OpenMeteoClient`) pide las 7 zonas en una sola URL por servicio, y todas las pantallas leen de esas tres respuestas. Las peticiones simultáneas se comparten (`ResponseCache`): aunque Hoy, el selector de zonas y las recomendaciones pidan a la vez, sale una sola petición por servicio.
 
 ## 2. Peticiones por visitante
 
-| Escenario | Open-Meteo | API propio (AEMET) |
-|---|---|---|
-| Primera visita del día | **3** | 2 |
-| Recargar (F5) o abrir otra pestaña dentro del plazo de caché | 0 | 0–2 (caché HTTP de 5–10 min) |
-| Dos visitas separadas más de 1 h | 6 | 4 |
-| Pestaña abierta 8 h | ~20–27 | ~48 (avisos cada 15 min, observaciones cada 30 min) |
-| Pestaña abierta 24 h (olvidada en segundo plano) | ~58–80 | ~144 |
+| Escenario                                                    | Open-Meteo | API propio (AEMET)                                  |
+| ------------------------------------------------------------ | ---------- | --------------------------------------------------- |
+| Primera visita del día                                       | **3**      | 2                                                   |
+| Recargar (F5) o abrir otra pestaña dentro del plazo de caché | 0          | 0–2 (caché HTTP de 5–10 min)                        |
+| Dos visitas separadas más de 1 h                             | 6          | 4                                                   |
+| Pestaña abierta 8 h                                          | ~20–27     | ~48 (avisos cada 15 min, observaciones cada 30 min) |
+| Pestaña abierta 24 h (olvidada en segundo plano)             | ~58–80     | ~144                                                |
 
 Cálculo de la pestaña abierta: los stores vuelven a leer cada 15 min (`ClockStore.quarterKey`) y la caché decide si eso sale a la red. Con caducidad de 30 min, el tiempo se renueva cada 30–45 min (16–32 veces en 8–24 h, más la carga inicial). El mar, cada 60–75 min, y el polvo, cada 3 h–3 h 15 min. Chrome sigue ejecutando el temporizador en pestañas ocultas (como mucho una vez por minuto), así que una pestaña olvidada sigue pidiendo.
 
@@ -52,37 +56,37 @@ Cálculo de la pestaña abierta: los stores vuelven a leer cada 15 min (`ClockSt
 
 Medido en el mismo navegador, después de la primera carga:
 
-| Acción | Peticiones nuevas |
-|---|---|
-| Cambiar de zona (favorita o selector) | 0: las 7 zonas ya están en las respuestas |
-| Elegir una hora en «Próximas horas» | 0: se lee de la previsión horaria cargada |
-| Ir a Zonas, Mar o Dónde ir | 0 |
-| Esperar sin hacer nada (menos de 30 min) | 0 |
-| Pulsar «Actualizar» antes de 1 min | 0 (`MIN_REVALIDATE_MS`) |
-| Pulsar «Actualizar» pasado 1 min | 3 a Open-Meteo + 2 al API propio |
-| Cambiar de idioma o de tema | 0 |
+| Acción                                   | Peticiones nuevas                         |
+| ---------------------------------------- | ----------------------------------------- |
+| Cambiar de zona (favorita o selector)    | 0: las 7 zonas ya están en las respuestas |
+| Elegir una hora en «Próximas horas»      | 0: se lee de la previsión horaria cargada |
+| Ir a Zonas, Mar o Dónde ir               | 0                                         |
+| Esperar sin hacer nada (menos de 30 min) | 0                                         |
+| Pulsar «Actualizar» antes de 1 min       | 0 (`MIN_REVALIDATE_MS`)                   |
+| Pulsar «Actualizar» pasado 1 min         | 3 a Open-Meteo + 2 al API propio          |
+| Cambiar de idioma o de tema              | 0                                         |
 
 ## 4. Caché: dónde vive y quién la comparte
 
-| Capa | Dónde | Duración | ¿Compartida entre visitantes? |
-|---|---|---|---|
-| `ResponseCache` en memoria | Pestaña | 30 min tiempo · 60 min mar · 3 h polvo · 10 min avisos · 20 min observaciones | No |
-| `ResponseCache` en `localStorage` (`lm.cache.om-*`, ~114 KB) | Navegador (todas sus pestañas) | Las mismas, solo Open-Meteo | No |
-| Caché HTTP del navegador para `/api/*` | Navegador | `max-age` 300 s avisos, 600 s observaciones | No |
-| Memoria del API propio (`server/api.ts`) | Instancia del servidor | 10 min avisos, 20 min observaciones (y copia de hasta 2 h si AEMET falla) | **Sí**, entre los visitantes que atiende esa instancia |
-| Open-Meteo | — | No envía `Cache-Control`: el navegador no la guarda por su cuenta | — |
+| Capa                                                         | Dónde                          | Duración                                                                      | ¿Compartida entre visitantes?                          |
+| ------------------------------------------------------------ | ------------------------------ | ----------------------------------------------------------------------------- | ------------------------------------------------------ |
+| `ResponseCache` en memoria                                   | Pestaña                        | 30 min tiempo · 60 min mar · 3 h polvo · 10 min avisos · 20 min observaciones | No                                                     |
+| `ResponseCache` en `localStorage` (`lm.cache.om-*`, ~114 KB) | Navegador (todas sus pestañas) | Las mismas, solo Open-Meteo                                                   | No                                                     |
+| Caché HTTP del navegador para `/api/*`                       | Navegador                      | `max-age` 300 s avisos, 600 s observaciones                                   | No                                                     |
+| Memoria del API propio (`server/api.ts`)                     | Instancia del servidor         | 10 min avisos, 20 min observaciones (y copia de hasta 2 h si AEMET falla)     | **Sí**, entre los visitantes que atiende esa instancia |
+| Open-Meteo                                                   | —                              | No envía `Cache-Control`: el navegador no la guarda por su cuenta             | —                                                      |
 
-Conclusión: **la caché de Open-Meteo es individual por navegador**. La de AEMET sí es compartida, porque pasa por el API propio. Un matiz: en Cloudflare Workers la memoria es de cada *isolate*, y puede haber varios por centro de datos. Así que «compartida» quiere decir «compartida dentro de cada instancia», no global.
+Conclusión: **la caché de Open-Meteo es individual por navegador**. La de AEMET sí es compartida, porque pasa por el API propio. Un matiz: en Cloudflare Workers la memoria es de cada _isolate_, y puede haber varios por centro de datos. Así que «compartida» quiere decir «compartida dentro de cada instancia», no global.
 
 ## 5. Frecuencia real de actualización
 
-| Dato | Modelo y actualización en origen | Caché en la app | Antigüedad máxima que puede ver el visitante |
-|---|---|---|---|
-| Tiempo | DWD ICON, nueva pasada cada 3 h; `current` en pasos de 15 min | 30 min | ~45 min (30 de caducidad + 15 hasta el siguiente ciclo) |
-| Mar | MFWAM cada 12 h; SMOC (nivel del mar) y temperatura del agua cada 24 h | 60 min | ~75 min, de sobra para modelos que cambian cada 12–24 h |
-| Polvo | CAMS global cada 12 h | 3 h | ~3 h 15 min |
-| Avisos | AEMET publica al cambiar la situación | 10 min servidor + 5 min navegador | ~15–25 min |
-| Observaciones | AEMET, horarias | 20 min servidor + 10 min navegador | ~30 min, más el retraso propio de AEMET |
+| Dato          | Modelo y actualización en origen                                       | Caché en la app                    | Antigüedad máxima que puede ver el visitante            |
+| ------------- | ---------------------------------------------------------------------- | ---------------------------------- | ------------------------------------------------------- |
+| Tiempo        | DWD ICON, nueva pasada cada 3 h; `current` en pasos de 15 min          | 30 min                             | ~45 min (30 de caducidad + 15 hasta el siguiente ciclo) |
+| Mar           | MFWAM cada 12 h; SMOC (nivel del mar) y temperatura del agua cada 24 h | 60 min                             | ~75 min, de sobra para modelos que cambian cada 12–24 h |
+| Polvo         | CAMS global cada 12 h                                                  | 3 h                                | ~3 h 15 min                                             |
+| Avisos        | AEMET publica al cambiar la situación                                  | 10 min servidor + 5 min navegador  | ~15–25 min                                              |
+| Observaciones | AEMET, horarias                                                        | 20 min servidor + 10 min navegador | ~30 min, más el retraso propio de AEMET                 |
 
 Las caducidades están bien elegidas. Bajar la del tiempo apenas daría información nueva: el modelo solo cambia cada 3 h y `current` cada 15 min.
 
@@ -119,11 +123,11 @@ Consultado el 23-10-2026 en las páginas oficiales.
 
 ### Resultado
 
-| Ámbito del límite | Lectura | Llamadas por visitante y día | Visitantes/día con 10 000 llamadas | Picos (600 llamadas/min) |
-|---|---|---|---|---|
-| Por aplicación | Optimista | 3 × 1,3 ≈ 3,9 | **≈ 2 500** | 200 cargas en frío por minuto |
-| Por aplicación | Conservadora | 33 × 1,3 ≈ 43 | **≈ 230** | 18 cargas en frío por minuto |
-| Por IP | Cualquiera | — | Sin límite práctico: cada visitante tiene su cuota | — |
+| Ámbito del límite | Lectura      | Llamadas por visitante y día | Visitantes/día con 10 000 llamadas                 | Picos (600 llamadas/min)      |
+| ----------------- | ------------ | ---------------------------- | -------------------------------------------------- | ----------------------------- |
+| Por aplicación    | Optimista    | 3 × 1,3 ≈ 3,9                | **≈ 2 500**                                        | 200 cargas en frío por minuto |
+| Por aplicación    | Conservadora | 33 × 1,3 ≈ 43                | **≈ 230**                                          | 18 cargas en frío por minuto  |
+| Por IP            | Cualquiera   | —                            | Sin límite práctico: cada visitante tiene su cuota | —                             |
 
 En el caso «por IP», el problema son las **IP compartidas**. Un hotel con una sola salida a internet, una oficina o la CGNAT de un operador móvil (muy común en 4G/5G) suman a todos sus usuarios. Con la lectura conservadora bastan **~300 cargas en frío desde la misma IP** para agotar el día. En una isla turística, el wifi de un hotel grande es un caso realista.
 
@@ -131,14 +135,14 @@ El límite mensual (300 000) equivale a 10 000 al día, así que no cambia las c
 
 ## 8. Riesgos
 
-| Riesgo | Probabilidad hoy | Impacto |
-|---|---|---|
-| Superar 10 000 llamadas al día si Open-Meteo agrega por aplicación | Baja con el tráfico actual; **media** a partir de ~200–2 500 visitantes al día, según cómo pondere | La previsión deja de cargar para todos (error 429) hasta el día siguiente |
-| Pico de tráfico (enlace en redes o en prensa local) que supere 600 llamadas/min | Baja, pero repentina | Errores durante minutos; la web muestra el aviso de error y los últimos datos guardados de cada navegador |
-| Wifi de hotel o CGNAT con muchos usuarios | Media en temporada alta | Bloqueo solo para los usuarios detrás de esa IP |
-| Pestañas olvidadas abiertas que siguen pidiendo cada 30–60 min | Alta, pero de impacto pequeño | Hasta ~80 peticiones al día por pestaña |
-| Bloqueo sin aviso por abuso | Muy baja (el uso es legítimo y está cacheado) | Total |
-| Pasar a uso comercial (anuncios) sin plan de pago | Depende de decisiones futuras | Incumplimiento de las condiciones |
+| Riesgo                                                                          | Probabilidad hoy                                                                                   | Impacto                                                                                                   |
+| ------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| Superar 10 000 llamadas al día si Open-Meteo agrega por aplicación              | Baja con el tráfico actual; **media** a partir de ~200–2 500 visitantes al día, según cómo pondere | La previsión deja de cargar para todos (error 429) hasta el día siguiente                                 |
+| Pico de tráfico (enlace en redes o en prensa local) que supere 600 llamadas/min | Baja, pero repentina                                                                               | Errores durante minutos; la web muestra el aviso de error y los últimos datos guardados de cada navegador |
+| Wifi de hotel o CGNAT con muchos usuarios                                       | Media en temporada alta                                                                            | Bloqueo solo para los usuarios detrás de esa IP                                                           |
+| Pestañas olvidadas abiertas que siguen pidiendo cada 30–60 min                  | Alta, pero de impacto pequeño                                                                      | Hasta ~80 peticiones al día por pestaña                                                                   |
+| Bloqueo sin aviso por abuso                                                     | Muy baja (el uso es legítimo y está cacheado)                                                      | Total                                                                                                     |
+| Pasar a uso comercial (anuncios) sin plan de pago                               | Depende de decisiones futuras                                                                      | Incumplimiento de las condiciones                                                                         |
 
 **No hay riesgo con AEMET**: el API propio ya hace de caché compartida.
 
@@ -155,12 +159,12 @@ El límite mensual (300 000) equivale a 10 000 al día, así que no cambia las c
 
 **Alternativas descartadas o secundarias**:
 
-| Alternativa | Por qué no como solución principal |
-|---|---|
-| Caché en el Worker sin cron (se rellena con la primera visita) | Funciona y es más simple, pero la Cache API es por centro de datos: varias ubicaciones de Cloudflare harían cada una sus propias peticiones. Sigue siendo una mejora enorme y puede ser un primer paso. |
-| JSON estático generado por GitHub Actions y publicado con la web | El cron de Actions se retrasa a menudo decenas de minutos y desplegar cada 30 min es pesado. |
-| Backend propio (VPS) con base de datos | Más mantenimiento y coste sin ventaja para un único conjunto de datos de la isla. |
-| Plan de pago de Open-Meteo | Solo si la web pasa a ser comercial. Con la caché compartida no hace falta por volumen. |
+| Alternativa                                                      | Por qué no como solución principal                                                                                                                                                                      |
+| ---------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Caché en el Worker sin cron (se rellena con la primera visita)   | Funciona y es más simple, pero la Cache API es por centro de datos: varias ubicaciones de Cloudflare harían cada una sus propias peticiones. Sigue siendo una mejora enorme y puede ser un primer paso. |
+| JSON estático generado por GitHub Actions y publicado con la web | El cron de Actions se retrasa a menudo decenas de minutos y desplegar cada 30 min es pesado.                                                                                                            |
+| Backend propio (VPS) con base de datos                           | Más mantenimiento y coste sin ventaja para un único conjunto de datos de la isla.                                                                                                                       |
+| Plan de pago de Open-Meteo                                       | Solo si la web pasa a ser comercial. Con la caché compartida no hace falta por volumen.                                                                                                                 |
 
 **Mejoras pequeñas en el frontend**, compatibles con lo anterior, si se quiere ganar margen antes:
 

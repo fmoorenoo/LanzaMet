@@ -12,7 +12,7 @@ import {
 } from '../../core/models';
 import { mix, Oklch, oklch, toCss, toHex } from '../../core/utils/color';
 import { clamp, progress } from '../../core/utils/math';
-import { TIME } from '../../core/utils/time';
+import { islandDateKey, TIME } from '../../core/utils/time';
 
 /**
  * Presentation model for the atmospheric scene. Everything the illustration
@@ -303,14 +303,17 @@ function arc(progressAcross: number, height: number): { x: number; y: number } {
   return { x: 62 + 30 * p, y: 97 - Math.sin(Math.PI * clamp(p)) * height };
 }
 
-/** A place's scene right now, for cards and previews. */
+/** A place's scene at `at` (its "current" weather), lit by that day's sun, for cards and previews. */
 export function zoneScene(zone: ZoneConditions, at: Date): SceneState {
   return buildScene({
     location: zone.location,
     weather: zone.weather.current,
     sea: zone.sea?.current ?? null,
     tideLevel: null,
-    ...drawingSunTimes(zone.weather.daily[0], at),
+    ...drawingSunTimes(
+      zone.weather.daily.find((d) => d.date === islandDateKey(at)) ?? zone.weather.daily[0],
+      at,
+    ),
     at,
   });
 }

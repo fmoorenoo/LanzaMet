@@ -1,3 +1,4 @@
+import { islandDateKey } from '../../core/utils/time';
 import { translate } from '../../core/i18n/translate';
 import { buildRecommendations } from '../../core/insights/recommendations.insight';
 import { ZoneConditions } from '../../core/models';
@@ -27,9 +28,10 @@ describe('simulator', () => {
     expect(northSea?.current.waveHeightM).toBeGreaterThan(southSea?.current.waveHeightM ?? 0);
   });
 
-  it('produces 30 hourly steps and 7 days', () => {
+  it('produces hours to the end of the week and 7 days', () => {
     const forecast = simulateWeather({ location: byId('arrecife'), scenario: 'alisio', now });
-    expect(forecast.hourly.length).toBe(30);
+    const last = forecast.hourly[forecast.hourly.length - 1];
+    expect(islandDateKey(new Date(last.time))).toBe(forecast.daily[6].date);
     expect(forecast.daily.length).toBe(7);
     expect(forecast.daily[0].date).toBe('2026-10-22');
   });

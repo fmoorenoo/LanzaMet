@@ -30,10 +30,14 @@ const retrievedAt = new Date('2026-10-22T14:46:00Z');
 describe('Open-Meteo weather mapping', () => {
   const result = toWeatherForecast('arrecife', forecast, dust, now, retrievedAt);
 
-  it('starts the hourly forecast at the current hour, one step per hour', () => {
+  it('runs the hourly forecast from the current hour to the end of the week, one step per hour', () => {
     const hourStart = Math.floor(now.getTime() / TIME.HOUR) * TIME.HOUR;
     expect(Date.parse(result.hourly[0].time)).toBe(hourStart);
-    expect(result.hourly.length).toBe(48);
+    // Every day of the week can be shown hour by hour: nothing is cut before the data ends.
+    const last = result.hourly[result.hourly.length - 1];
+    const times = forecast.hourly.time;
+    expect(islandDateKey(new Date(last.time))).toBe(result.daily[6].date);
+    expect(Date.parse(last.time)).toBe(times[times.length - 1] * 1000);
     result.hourly.slice(1).forEach((h, i) => {
       expect(Date.parse(h.time) - Date.parse(result.hourly[i].time)).toBe(TIME.HOUR);
     });

@@ -1,4 +1,5 @@
 import { ISLAND_TIME_ZONE, islandDateKey, addHours, formatTime, toDate } from '../utils/time';
+import { IsoDate } from '../models';
 import { Formatted, isMsg, Lang, MessageKey, Msg, Param } from './i18n.model';
 import { en } from './messages/en';
 import { es, Messages } from './messages/es';
@@ -72,6 +73,22 @@ export function formatLongDate(value: string | Date, lang: Lang): string {
   return capitalise(format.format(toDate(value)), lang);
 }
 
+const dayMonthFormats = new Map<Lang, Intl.DateTimeFormat>();
+
+/** "28 de octubre" / "28 October", for an island date. */
+export function formatDayMonth(day: IsoDate, lang: Lang): string {
+  let format = dayMonthFormats.get(lang);
+  if (!format) {
+    format = new Intl.DateTimeFormat(LOCALES[lang], {
+      timeZone: ISLAND_TIME_ZONE,
+      day: 'numeric',
+      month: 'long',
+    });
+    dayMonthFormats.set(lang, format);
+  }
+  return format.format(new Date(`${day}T12:00:00Z`));
+}
+
 /** "2 h 10 min", "45 min", "un momento". */
 export function formatDuration(ms: number, lang: Lang): string {
   const minutes = Math.max(0, Math.round(ms / 60_000));
@@ -88,6 +105,7 @@ function formatValue(value: Formatted, lang: Lang): string {
   if ('time' in value) return formatTime(value.time);
   if ('duration' in value) return formatDuration(value.duration, lang);
   if ('weekday' in value) return formatWeekday(value.weekday, value.style, lang);
+  if ('date' in value) return formatDayMonth(value.date, lang);
   if ('day' in value) {
     if (value.day === value.today) return translate({ key: 'day.today' }, lang);
     const tomorrow = islandDateKey(addHours(new Date(`${value.today}T12:00:00Z`), 24));

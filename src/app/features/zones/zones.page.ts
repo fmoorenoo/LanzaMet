@@ -3,19 +3,20 @@ import { Router } from '@angular/router';
 import { msg } from '../../core/i18n/i18n.model';
 import { I18n } from '../../core/i18n/i18n.store';
 import { TranslatePipe } from '../../core/i18n/t.pipe';
-import { zoneHeadline } from '../../core/insights/island.insight';
+import { islandSummary, zoneHeadline } from '../../core/insights/island.insight';
+import { stepsFrom, zoneAt } from '../../core/insights/moment.insight';
 import { readSea } from '../../core/insights/sea.insight';
 import { drawingSunTimes } from '../../core/insights/sun.insight';
 import { dayVerdict } from '../../core/insights/verdict.insight';
 import { readWind } from '../../core/insights/wind.insight';
 import { LocationId, ZoneConditions } from '../../core/models';
-import { ClockStore } from '../../core/state/clock.store';
+import { DayStore } from '../../core/state/day.store';
 import { IslandStore } from '../../core/state/island.store';
 import { LocationsStore } from '../../core/state/locations.store';
-import { islandDateKey } from '../../core/utils/time';
 import { zoneScene } from '../../shared/scene/scene-state';
 import { Scene } from '../../shared/scene/scene';
 import { DataCredit } from '../../shared/ui/data-credit/data-credit';
+import { DayButton } from '../../shared/ui/day-button/day-button';
 import { Icon } from '../../shared/ui/icon/icon';
 import { StatusMessage } from '../../shared/ui/status-message/status-message';
 import { Tooltip } from '../../shared/ui/tooltip/tooltip';
@@ -23,7 +24,10 @@ import { WebcamLink } from '../../shared/ui/webcam-link/webcam-link';
 import { WindGauge } from '../../shared/ui/wind-gauge/wind-gauge';
 import { IslandMap, MapMarker } from './island-map/island-map';
 
-/** The whole island at a glance: where it blows, where it shines, where to go. */
+/**
+ * The whole island at a glance: where it blows, where it shines, where to go.
+ * Today as it is now; a later day chosen above (or anywhere else) at its midday.
+ */
 @Component({
   selector: 'lm-zones-page',
   imports: [
@@ -35,6 +39,7 @@ import { IslandMap, MapMarker } from './island-map/island-map';
     Tooltip,
     WindGauge,
     WebcamLink,
+    DayButton,
     TranslatePipe,
   ],
   templateUrl: './zones.page.html',
@@ -44,7 +49,7 @@ import { IslandMap, MapMarker } from './island-map/island-map';
 export class ZonesPage {
   protected readonly island = inject(IslandStore);
   protected readonly locations = inject(LocationsStore);
-  private readonly clock = inject(ClockStore);
+  protected readonly days = inject(DayStore);
   private readonly router = inject(Router);
   private readonly i18n = inject(I18n);
 
@@ -53,19 +58,28 @@ export class ZonesPage {
     () => this.locations.selected()?.id ?? null,
   );
 
-  private readonly zones = computed(() => this.island.zones().data ?? []);
+  /** Every place at the day's moment: as it is now, or as the forecast sees that day's midday. */
+  private readonly zones = computed(() => {
+    const zones = this.island.zones().data ?? [];
+    if (this.days.isToday()) return zones;
+    const at = this.days.moment();
+    const from = this.days.from();
+    return zones.map((z) => zoneAt(z, at, from));
+  });
+
+  protected readonly summary = computed(() => islandSummary(this.zones()));
 
   private verdictFor(zone: ZoneConditions) {
-    const now = this.clock.now();
-    const today = zone.weather.daily.find((d) => d.date === islandDateKey(now));
+    const at = this.days.moment();
+    const day = zone.weather.daily.find((d) => d.date === this.days.day());
     return dayVerdict({
       location: zone.location,
       weather: zone.weather.current,
-      upcoming: zone.weather.hourly,
+      upcoming: stepsFrom(zone.weather.hourly, at),
       sea: zone.sea?.current ?? null,
-      day: 'today',
-      at: now,
-      sun: drawingSunTimes(today, now),
+      day: this.days.kind(),
+      at,
+      sun: drawingSunTimes(day, at),
     });
   }
 
@@ -106,7 +120,7 @@ export class ZonesPage {
   });
 
   protected readonly cards = computed(() => {
-    const now = this.clock.now();
+    const at = this.days.moment();
     return this.zones().map((zone) => {
       const verdict = this.verdictFor(zone);
       return {
@@ -118,7 +132,7 @@ export class ZonesPage {
         sentence: verdict.sentence,
         wind: zone.weather.current.wind,
         sea: zone.sea ? readSea(zone.sea.current).label : null,
-        scene: zoneScene(zone, now),
+        scene: zoneScene(zone, at),
         isFavorite: this.locations.isFavorite(zone.location.id),
       };
     });

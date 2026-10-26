@@ -46,24 +46,22 @@
 
     <div class="meta">
       <!-- Outside the live region below: a clock announced every minute is noise. -->
-      <!-- The time of the moment drawn; while previewing an hour, that hour and its day. -->
+      <!-- The time of the moment drawn: now, an hour chosen below, or a later day's midday. -->
       @let clock = time();
-      <p id="current-time" class="clock current-time" [class.is-preview]="clock.day">
-        <span class="clock-label">
-          @if (clock.day; as day) {
-            {{ day | t }}
-          } @else {
-            {{ (clock.elsewhere ? 'today.clock.island' : 'common.now') | t }}
-          }
-        </span>
+      <p id="current-time" class="clock current-time" [class.is-preview]="!clock.live">
+        @if (clock.label; as label) {
+          <span class="clock-label">{{ label | t }}</span>
+        }
         <time #clockTime class="clock-time t-num" [attr.datetime]="clock.iso">{{
           clock.text
         }}</time>
-        @if (clock.day || !clock.elsewhere) {
+        @if (clock.sayZone) {
           <span class="visually-hidden">{{ 'today.clock.zone' | t }}</span>
         }
       </p>
-      <!-- Always laid out; it only shows while an hour is previewed, so nothing moves. -->
+      <!-- The day on screen; it opens the week to choose another. -->
+      <lm-day-button #dayButton class="day" variant="sky" buttonId="hero-day-button" />
+      <!-- Always laid out; it only shows away from now (another hour or day), so nothing moves. -->
       <!-- On phones the line is short: an arrow and "Ahora"; the full words stay for screen readers. -->
       <button
         id="preview-reset"

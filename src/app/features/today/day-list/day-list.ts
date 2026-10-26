@@ -1,4 +1,4 @@
-import { Component, computed, input } from '@angular/core';
+import { Component, computed, input, output } from '@angular/core';
 import { dayChange, dayPhrase } from '../../../core/insights/week.insight';
 import { windHue, windTint } from '../../../core/insights/wind.insight';
 import { DailyForecast, IsoDate } from '../../../core/models';
@@ -9,6 +9,7 @@ import { SkyGlyph } from '../../../shared/ui/sky-glyph/sky-glyph';
 /**
  * Seven days, each in a few words — and what changes from the day before —
  * with the day's average wind in the colours of the hours, then its high and low.
+ * Each day opens itself at the top of the page; the one on screen is marked.
  */
 @Component({
   selector: 'lm-day-list',
@@ -20,6 +21,9 @@ import { SkyGlyph } from '../../../shared/ui/sky-glyph/sky-glyph';
 export class DayList {
   readonly days = input.required<readonly DailyForecast[]>();
   readonly today = input.required<IsoDate>();
+  /** The day on screen. */
+  readonly selected = input<IsoDate | null>(null);
+  readonly choose = output<IsoDate>();
 
   protected readonly rows = computed(() => {
     const days = this.days();
@@ -36,6 +40,7 @@ export class DayList {
       windTo: `${(day.windFromDegrees + 180) % 360}deg`,
       min: day.minC,
       max: day.maxC,
+      isSelected: day.date === this.selected(),
     }));
   });
 }

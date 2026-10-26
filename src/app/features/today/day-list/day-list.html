@@ -5,39 +5,54 @@
 </div>
 <ul class="days day-list">
   @for (row of rows(); track row.date; let i = $index) {
-    <li class="day day-row enter-rise" [attr.data-date]="row.date" [style.--i]="i">
-      <span class="summary">
-        <span class="name">{{ row.name | t }}</span>
-        <span class="phrase">
-          {{ row.phrase | t }}
-          @if (row.change) {
-            · <span class="change">{{ row.change | t }}</span>
-          }
-        </span>
-      </span>
-      <lm-sky-glyph class="glyph" [sky]="row.sky" />
-      <!-- The day's average wind, in the same colours as the hours above. -->
-      <span
-        class="wind t-num"
-        [style.--wind-hue]="row.windHue"
-        [style.--wind-tint]="row.windTint"
+    <li class="day-item">
+      <button
+        type="button"
+        class="day day-row enter-rise"
+        [style.--i]="i"
+        [class.is-selected]="row.isSelected"
+        [attr.data-date]="row.date"
+        [attr.aria-current]="row.isSelected ? 'date' : null"
+        (click)="choose.emit(row.date)"
       >
-        <svg class="wind-arrow" viewBox="0 0 24 24" aria-hidden="true" [style.rotate]="row.windTo">
-          <path d="M12 20.5V4M6.5 9.5 12 4l5.5 5.5" />
-        </svg>
-        <span class="visually-hidden">{{ 'week.meanWind' | t }} </span>{{ row.wind }}
-        <span class="wind-unit">km/h</span>
-      </span>
-      <!-- High and low as one pair: "29° / 23°". -->
-      <span class="temps t-num">
-        <span class="max"
-          ><span class="visually-hidden">{{ 'week.max' | t }} </span>{{ row.max }}°</span
+        <span class="summary">
+          <span class="name">{{ row.name | t }}</span>
+          <span class="phrase">
+            {{ row.phrase | t }}
+            @if (row.change) {
+              · <span class="change">{{ row.change | t }}</span>
+            }
+          </span>
+        </span>
+        <lm-sky-glyph class="glyph" [sky]="row.sky" />
+        <!-- The day's average wind, in the same colours as the hours above. -->
+        <span
+          class="wind t-num"
+          [style.--wind-hue]="row.windHue"
+          [style.--wind-tint]="row.windTint"
         >
-        <span class="sep" aria-hidden="true">/</span>
-        <span class="min"
-          ><span class="visually-hidden">{{ 'week.min' | t }} </span>{{ row.min }}°</span
-        >
-      </span>
+          <svg
+            class="wind-arrow"
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+            [style.rotate]="row.windTo"
+          >
+            <path d="M12 20.5V4M6.5 9.5 12 4l5.5 5.5" />
+          </svg>
+          <span class="visually-hidden">{{ 'week.meanWind' | t }} </span>{{ row.wind }}
+          <span class="wind-unit">km/h</span>
+        </span>
+        <!-- High and low as one pair: "29° / 23°". -->
+        <span class="temps t-num">
+          <span class="max"
+            ><span class="visually-hidden">{{ 'week.max' | t }} </span>{{ row.max }}°</span
+          >
+          <span class="sep" aria-hidden="true">/</span>
+          <span class="min"
+            ><span class="visually-hidden">{{ 'week.min' | t }} </span>{{ row.min }}°</span
+          >
+        </span>
+      </button>
     </li>
   }
 </ul>

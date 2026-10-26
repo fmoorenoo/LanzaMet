@@ -38,14 +38,14 @@ En la build de demo, `/?escenario=calima` (`alisio`, `calma`, `ventoso`, `calima
 
 ## Fuentes de datos
 
-| Fuente | Qué aporta | Acceso | Actualización en la app | Licencia y atribución | Estado |
-|---|---|---|---|---|---|
-| [Open-Meteo Forecast](https://open-meteo.com/en/docs) | Temperatura, sensación térmica, cielo (código WMO + nubosidad), probabilidad de lluvia, UV, viento, rachas y dirección; previsión horaria (48 h) y diaria (7 días); amanecer y atardecer | Navegador, sin clave, CORS abierto | Caché de 30 min | CC BY 4.0, «Weather data by Open-Meteo.com» con enlace junto a los datos. Uso no comercial gratuito (< 10 000 llamadas/día, 5 000/h, 600/min por IP) | ✅ Funciona |
-| [Open-Meteo Marine](https://open-meteo.com/en/docs/marine-weather-api) | Altura, dirección y periodo del oleaje; mar de fondo; temperatura del agua; nivel del mar (marea estimada) | Navegador, sin clave | Caché de 60 min | CC BY 4.0; modelos de Météo-France (MFWAM, SMOC) | ✅ Funciona |
-| [Open-Meteo Air Quality](https://open-meteo.com/en/docs/air-quality-api) | Polvo sahariano en superficie → calima | Navegador, sin clave | Caché de 3 h | CC BY 4.0; «Contiene información modificada del Copernicus Atmosphere Monitoring Service» | ✅ Funciona |
-| [AEMET, avisos (RSS + CAP)](https://www.aemet.es/es/rss_info/avisos/esp) | Avisos oficiales del Plan Meteoalerta para Lanzarote (zona 659101) y su costa (659101C) | API propio (sin CORS en origen), sin clave | Caché de 10 min | Reutilización con cita de AEMET como fuente ([nota legal](https://www.aemet.es/es/nota_legal)) | ✅ Funciona |
-| [AEMET OpenData](https://opendata.aemet.es/) | Observaciones horarias de las 7 estaciones de Lanzarote | API propio, **requiere clave** (solo en el servidor) | Caché de 20 min | Cita de AEMET como fuente | ✅ Funciona |
-| [Puertos del Estado](https://www.puertos.es/) | Mareas oficiales, boyas, mareógrafos | — | — | — | ⛔ No integrado (ver abajo) |
+| Fuente                                                                   | Qué aporta                                                                                                                                                                                                               | Acceso                                               | Actualización en la app | Licencia y atribución                                                                                                                                | Estado                      |
+| ------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------- | ----------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------- |
+| [Open-Meteo Forecast](https://open-meteo.com/en/docs)                    | Temperatura, sensación térmica, cielo (código WMO + nubosidad), probabilidad de lluvia, UV, viento, rachas y dirección; previsión horaria y diaria de 7 días (se puede elegir cualquiera de ellos); amanecer y atardecer | Navegador, sin clave, CORS abierto                   | Caché de 30 min         | CC BY 4.0, «Weather data by Open-Meteo.com» con enlace junto a los datos. Uso no comercial gratuito (< 10 000 llamadas/día, 5 000/h, 600/min por IP) | ✅ Funciona                 |
+| [Open-Meteo Marine](https://open-meteo.com/en/docs/marine-weather-api)   | Altura, dirección y periodo del oleaje; mar de fondo; temperatura del agua; nivel del mar (marea estimada); 7 días                                                                                                       | Navegador, sin clave                                 | Caché de 60 min         | CC BY 4.0; modelos de Météo-France (MFWAM, SMOC)                                                                                                     | ✅ Funciona                 |
+| [Open-Meteo Air Quality](https://open-meteo.com/en/docs/air-quality-api) | Polvo sahariano en superficie → calima                                                                                                                                                                                   | Navegador, sin clave                                 | Caché de 3 h            | CC BY 4.0; «Contiene información modificada del Copernicus Atmosphere Monitoring Service»                                                            | ✅ Funciona                 |
+| [AEMET, avisos (RSS + CAP)](https://www.aemet.es/es/rss_info/avisos/esp) | Avisos oficiales del Plan Meteoalerta para Lanzarote (zona 659101) y su costa (659101C)                                                                                                                                  | API propio (sin CORS en origen), sin clave           | Caché de 10 min         | Reutilización con cita de AEMET como fuente ([nota legal](https://www.aemet.es/es/nota_legal))                                                       | ✅ Funciona                 |
+| [AEMET OpenData](https://opendata.aemet.es/)                             | Observaciones horarias de las 7 estaciones de Lanzarote                                                                                                                                                                  | API propio, **requiere clave** (solo en el servidor) | Caché de 20 min         | Cita de AEMET como fuente                                                                                                                            | ✅ Funciona                 |
+| [Puertos del Estado](https://www.puertos.es/)                            | Mareas oficiales, boyas, mareógrafos                                                                                                                                                                                     | —                                                    | —                       | —                                                                                                                                                    | ⛔ No integrado (ver abajo) |
 
 Las atribuciones aparecen en el pie de cada página (Hoy, Zonas, Mar, Dónde ir) y, completas, en **Ajustes → De dónde salen los datos**.
 
@@ -59,17 +59,17 @@ Las atribuciones aparecen en el pie de cada página (Hoy, Zonas, Mar, Dónde ir)
 
 El tiempo se pide en las coordenadas de cada zona. Para el mar no sirve: el modelo marino enmascara todas las celdas que tocan la costa de Lanzarote, y una coordenada costera salta sola a la celda de mar más cercana. Así, Famara caía al norte de La Graciosa y El Golfo en una celda casi toda de tierra. Cada zona lee el mar en una celda elegida a mano: la celda de mar abierto más próxima en el lado al que mira su costa, verificada como celda de mar propia.
 
-| Zona | Coordenadas | Celda del modelo del tiempo | Punto de mar abierto | Distancia |
-|---|---|---|---|---|
-| Puerto del Carmen | 28,921 / −13,668 | 28,946 / −13,681 | 28,875 / −13,625 | 7 km |
-| Arrecife | 28,963 / −13,548 | 28,983 / −13,538 ¹ | 28,875 / −13,542 | 10 km |
-| Playa Blanca | 28,863 / −13,830 | 28,876 / −13,769 | 28,875 / −13,792 | 4 km |
-| Costa Teguise | 29,001 / −13,491 | 28,983 / −13,538 ¹ | 28,958 / −13,375 | 12 km |
-| Famara | 29,116 / −13,557 | 29,120 / −13,604 ² | 29,208 / −13,708 | 18 km |
-| La Santa | 29,112 / −13,655 | 29,120 / −13,604 ² | 29,125 / −13,792 | 13 km |
-| Órzola | 29,223 / −13,450 | 29,218 / −13,469 | 29,292 / −13,458 | 8 km |
-| Arrieta | 29,132 / −13,462 | 29,158 / −13,460 | 29,125 / −13,292 ³ | 17 km |
-| El Golfo | 28,982 / −13,831 | 28,952 / −13,828 | 28,958 / −13,875 | 5 km |
+| Zona              | Coordenadas      | Celda del modelo del tiempo | Punto de mar abierto | Distancia |
+| ----------------- | ---------------- | --------------------------- | -------------------- | --------- |
+| Puerto del Carmen | 28,921 / −13,668 | 28,946 / −13,681            | 28,875 / −13,625     | 7 km      |
+| Arrecife          | 28,963 / −13,548 | 28,983 / −13,538 ¹          | 28,875 / −13,542     | 10 km     |
+| Playa Blanca      | 28,863 / −13,830 | 28,876 / −13,769            | 28,875 / −13,792     | 4 km      |
+| Costa Teguise     | 29,001 / −13,491 | 28,983 / −13,538 ¹          | 28,958 / −13,375     | 12 km     |
+| Famara            | 29,116 / −13,557 | 29,120 / −13,604 ²          | 29,208 / −13,708     | 18 km     |
+| La Santa          | 29,112 / −13,655 | 29,120 / −13,604 ²          | 29,125 / −13,792     | 13 km     |
+| Órzola            | 29,223 / −13,450 | 29,218 / −13,469            | 29,292 / −13,458     | 8 km      |
+| Arrieta           | 29,132 / −13,462 | 29,158 / −13,460            | 29,125 / −13,292 ³   | 17 km     |
+| El Golfo          | 28,982 / −13,831 | 28,952 / −13,828            | 28,958 / −13,875     | 5 km      |
 
 ¹ ² Zonas que comparten celda: el modelo no las distingue y muestran los mismos valores (salvo el ajuste de temperatura por altitud). No se inventan diferencias. En la fase 3 se retiró **Papagayo**, que repetía las celdas de Playa Blanca: quien la tuviera guardada pasa a Playa Blanca (`RETIRED_LOCATIONS`). **La Santa** se retiró entonces por lo mismo y ha vuelto: su tiempo es el de Famara, pero su mar se lee en una celda propia, al oeste de su bahía. ³ Las dos celdas frente a Arrieta están enmascaradas como costa (al pedirlas, el modelo salta a otra celda); la primera de mar abierto hacia el este, la que mira su costa, está a unos 17 km. Comprobado el 25-10-2026: olas, mar de fondo, agua y nivel del mar propios. La pantalla Mar indica a cuántos kilómetros está el punto de mar abierto y que en la orilla las olas pueden ser distintas.
 
@@ -82,7 +82,7 @@ Se buscó una fuente oficial de pleamares y bajamares y no hay ninguna utilizabl
 
 Por eso la marea es una **estimación** a partir del nivel del mar del modelo SMOC de Météo-France, y la interfaz lo dice siempre:
 
-- dice «Bajamar *hacia* las 17:30» y no «a las»;
+- dice «Bajamar _hacia_ las 17:30» y no «a las»;
 - titula «Pleamares y bajamares (estimadas)»;
 - el pie de la página dice «Oleaje y marea estimada de modelos de Météo-France», y Legal, que no es una tabla oficial ni sirve para navegar (la frase ya no va dentro de la gráfica);
 - da las alturas con signo, sobre el nivel medio del mar (−0,9 m / +0,5 m).
@@ -141,13 +141,14 @@ La sección **Ayúdanos** envía los mensajes por correo electrónico a través 
 
 **Qué pide**: tipo (error, sugerencia, mejora u otro), mensaje (de 10 a 2000 caracteres) y un correo opcional, solo para poder responder. No hay registro ni otros datos personales.
 
-**Qué se envía**: el tipo, el mensaje, el idioma de la web y, solo si se escribe, el correo (que pasa a ser la dirección de respuesta). Nunca la zona elegida, la URL, cookies ni el *referrer* (`credentials: 'omit'`, `referrerPolicy: 'no-referrer'`). Bajo el botón, una línea plegable («Cómo tratamos tus datos») explica qué se envía, que Web3Forms recibe datos de conexión como la IP, qué se guarda en el dispositivo y cómo pedir el borrado, con enlace a la política de Web3Forms.
+**Qué se envía**: el tipo, el mensaje, el idioma de la web y, solo si se escribe, el correo (que pasa a ser la dirección de respuesta). Nunca la zona elegida, la URL, cookies ni el _referrer_ (`credentials: 'omit'`, `referrerPolicy: 'no-referrer'`). Bajo el botón, una línea plegable («Cómo tratamos tus datos») explica qué se envía, que Web3Forms recibe datos de conexión como la IP, qué se guarda en el dispositivo y cómo pedir el borrado, con enlace a la política de Web3Forms.
 
 **Solo hay «enviado» si Web3Forms lo confirma** (HTTP 200 con `success: true`). Cualquier otra respuesta se muestra como error y el mensaje se conserva: sin conexión, tiempo agotado (15 s), demasiadas peticiones (429), rechazo (4xx, p. ej. el filtro de spam) o fallo del servicio (5xx o respuesta sin confirmar).
 
 **Antispam y envíos repetidos**:
+
 - Web3Forms filtra el spam en su servidor en todos los envíos.
-- Campo trampa (*honeypot*) oculto: si llega relleno, no se envía nada. Además se manda `botcheck: false`, el campo trampa de Web3Forms.
+- Campo trampa (_honeypot_) oculto: si llega relleno, no se envía nada. Además se manda `botcheck: false`, el campo trampa de Web3Forms.
 - En el dispositivo: un envío no sale antes de 3 s desde que se abre el formulario; tras cada envío hay 30 s de pausa; como mucho 5 por hora; y el mismo mensaje no se envía dos veces en 24 h. Solo se guardan las horas de envío y una huella FNV-1a del último mensaje, nunca su texto (`localStorage`, clave `lm.feedback`).
 - Un segundo clic mientras se envía no duplica el envío.
 - No se usa hCaptcha: obligaría a cargar un script de terceros que también recoge datos. Si un día llega spam, se puede activar en el panel de Web3Forms (es gratis) y añadir su widget al formulario.
@@ -156,12 +157,13 @@ La sección **Ayúdanos** envía los mensajes por correo electrónico a través 
 
 ### Configurar la clave de Web3Forms
 
-1. Entra en [web3forms.com](https://web3forms.com), escribe el correo donde quieres recibir los mensajes y pulsa *Create Access Key*. La clave (un UUID) llega a ese correo. No hace falta cuenta ni tarjeta.
+1. Entra en [web3forms.com](https://web3forms.com), escribe el correo donde quieres recibir los mensajes y pulsa _Create Access Key_. La clave (un UUID) llega a ese correo. No hace falta cuenta ni tarjeta.
 2. Ponla en un archivo `.env` en la raíz del proyecto (Git lo ignora), una línea `WEB3FORMS_ACCESS_KEY=tu-clave`. **No se escribe en el código.** `npm run build:prod` (y `npm run deploy`) la leen de ahí o del entorno y la pasan a Angular con `--define`, sin depender del shell. En Cloudflare, con despliegue desde Git, va en las variables de build ([`DEPLOYMENT.md`](DEPLOYMENT.md)). Para probarla con el servidor de desarrollo:
 
    ```bash
    npx ng serve --define "LM_WEB3FORMS_KEY='tu-clave-de-acceso'"
    ```
+
 3. Sin clave, o con una que no tenga forma de UUID, la página avisa de que el envío aún no está activado y no envía nada. La build de demo usa el mismo servicio real: no hay envíos simulados.
 
 La clave de Web3Forms **no es secreta**: según su documentación puede ser pública, porque solo sirve para enviar correos a la dirección que la creó, y acaba en el JavaScript que descarga el navegador. Se deja fuera del repositorio para no atar el código a un buzón concreto. Con el plan Pro se puede restringir a tu dominio.
@@ -193,18 +195,18 @@ LanzaMet se puede tener entre las apps del móvil o en el escritorio del ordenad
 
 La guía (`layout/install/install-guide`) se abre en el dispositivo detectado (`core/pwa/device.ts`, a partir del user agent; el iPad se reconoce porque se presenta como Mac con pantalla táctil). Unos botones permiten ver los pasos de otro dispositivo si la detección falla. Cada paso muestra el icono que hay que buscar en pantalla, dibujado como lo dibuja el navegador. No se promete nada que el navegador no haga.
 
-| Dónde | Qué ofrece |
-|---|---|
-| Android con Chrome, Edge, Samsung Internet u Opera | Botón **Instalar** (diálogo del navegador). Si aún no hay oferta, los pasos del menú |
-| Android, Samsung Internet sin oferta | Menú (tres rayas) → «Añadir página a» → «Pantalla de inicio» |
-| Android, Firefox y otros | Menú (tres puntos) → «Instalar aplicación» o «Añadir a pantalla de inicio» |
-| iPhone y iPad, Safari | «Safari no instala webs con un botón»: Compartir (si no se ve, primero el botón de los tres puntos) → «Añadir a pantalla de inicio» → «Añadir» |
-| iPhone y iPad, Chrome, Edge o Firefox | Los mismos pasos, con Compartir en la barra de direcciones o en el menú |
-| Navegador dentro de otra app | Que abra la página en Safari (o en su navegador) y la añada desde allí |
-| Ordenador, Chrome, Edge u Opera | Botón **Instalar**; sin oferta, el icono de instalar de la barra de direcciones o su menú |
-| Mac, Safari (Sonoma o posterior) | «Archivo» → «Añadir al Dock» |
-| Ordenador, Firefox | Que Firefox no instala webs como app, y las alternativas |
-| Todos los ordenadores | **En marcadores**: `Ctrl + D` (`Cmd + D` en Mac; las dos combinaciones si se mira desde un móvil) y cómo crear un acceso directo arrastrando el icono de la barra de direcciones. Nunca se añade un marcador automáticamente: no hay API estándar para ello |
+| Dónde                                              | Qué ofrece                                                                                                                                                                                                                                                  |
+| -------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Android con Chrome, Edge, Samsung Internet u Opera | Botón **Instalar** (diálogo del navegador). Si aún no hay oferta, los pasos del menú                                                                                                                                                                        |
+| Android, Samsung Internet sin oferta               | Menú (tres rayas) → «Añadir página a» → «Pantalla de inicio»                                                                                                                                                                                                |
+| Android, Firefox y otros                           | Menú (tres puntos) → «Instalar aplicación» o «Añadir a pantalla de inicio»                                                                                                                                                                                  |
+| iPhone y iPad, Safari                              | «Safari no instala webs con un botón»: Compartir (si no se ve, primero el botón de los tres puntos) → «Añadir a pantalla de inicio» → «Añadir»                                                                                                              |
+| iPhone y iPad, Chrome, Edge o Firefox              | Los mismos pasos, con Compartir en la barra de direcciones o en el menú                                                                                                                                                                                     |
+| Navegador dentro de otra app                       | Que abra la página en Safari (o en su navegador) y la añada desde allí                                                                                                                                                                                      |
+| Ordenador, Chrome, Edge u Opera                    | Botón **Instalar**; sin oferta, el icono de instalar de la barra de direcciones o su menú                                                                                                                                                                   |
+| Mac, Safari (Sonoma o posterior)                   | «Archivo» → «Añadir al Dock»                                                                                                                                                                                                                                |
+| Ordenador, Firefox                                 | Que Firefox no instala webs como app, y las alternativas                                                                                                                                                                                                    |
+| Todos los ordenadores                              | **En marcadores**: `Ctrl + D` (`Cmd + D` en Mac; las dos combinaciones si se mira desde un móvil) y cómo crear un acceso directo arrastrando el icono de la barra de direcciones. Nunca se añade un marcador automáticamente: no hay API estándar para ello |
 
 En el ordenador la guía separa **Como app** («se abre en su propia ventana, con su icono, sin pestañas ni barra de direcciones») de **En marcadores** («se queda en tu navegador, junto a tus otras webs, a un clic»). Todo está en español y en inglés.
 
@@ -243,8 +245,7 @@ El service worker es el de Angular (`@angular/service-worker`), configurado en `
 4. **Rutas de la SPA**: cualquier ruta sin extensión (`/mar`, `/zonas`…) debe servir `index.html`. En el Worker lo hace `not_found_handling: "single-page-application"` (`wrangler.jsonc`); en Netlify hace falta una regla `/* /index.html 200`.
 5. **Build de producción** (`npm run build:prod`): solo la build de producción incluye `ngsw-worker.js` y `ngsw.json`. `npm start` y la demo no registran service worker.
 
-Todo esto queda resuelto con el despliegue en Cloudflare de [`DEPLOYMENT.md`](DEPLOYMENT.md). Probado en local con el runtime de Cloudflare: tras publicar una versión nueva, la primera recarga ya la carga, también en la copia controlada por el service worker. Si una página abierta antes del despliegue pide una pantalla diferida cuyo archivo ya no existe, se recarga una vez sola (`core/pwa/stale-version.ts`, con un freno para no entrar en bucle).
-6. Chrome pide además unos segundos de uso real antes de ofrecer la instalación. Hasta entonces, la guía explica cómo hacerlo desde el menú.
+Todo esto queda resuelto con el despliegue en Cloudflare de [`DEPLOYMENT.md`](DEPLOYMENT.md). Probado en local con el runtime de Cloudflare: tras publicar una versión nueva, la primera recarga ya la carga, también en la copia controlada por el service worker. Si una página abierta antes del despliegue pide una pantalla diferida cuyo archivo ya no existe, se recarga una vez sola (`core/pwa/stale-version.ts`, con un freno para no entrar en bucle). 6. Chrome pide además unos segundos de uso real antes de ofrecer la instalación. Hasta entonces, la guía explica cómo hacerlo desde el menú.
 
 Comprobarlo tras desplegar: Chrome DevTools → Application → Manifest (sin errores ni avisos de instalabilidad) y Service workers (activo, controlando la página). En Lighthouse, la categoría PWA ya no existe; los avisos de instalabilidad salen en el panel Application.
 
@@ -255,15 +256,16 @@ Comprobarlo tras desplegar: Chrome DevTools → Application → Manifest (sin er
 La frase grande de Hoy («Hoy apetece playa», «Amanece despejado», «Noche estrellada») sale de `core/insights/verdict.insight.ts`, y su momento del día, de `day-period.ts`.
 
 - **El momento lo marca el sol de la zona**, no una hora fija: se usan el amanecer y el atardecer de Open-Meteo para ese día y ese lugar, en hora canaria. Hay siete momentos:
-  - *madrugada*: de 01:00 a una hora antes de amanecer;
-  - *primera hora*: de una hora antes a 75 min después de amanecer;
-  - *mañana*;
-  - *mediodía*: alrededor del punto más alto del sol, de 1 h antes a 90 min después;
-  - *tarde*;
-  - *atardecer*: la última hora de sol y el crepúsculo, hasta 45 min después;
-  - *noche*: hasta la 01:00.
+  - _madrugada_: de 01:00 a una hora antes de amanecer;
+  - _primera hora_: de una hora antes a 75 min después de amanecer;
+  - _mañana_;
+  - _mediodía_: alrededor del punto más alto del sol, de 1 h antes a 90 min después;
+  - _tarde_;
+  - _atardecer_: la última hora de sol y el crepúsculo, hasta 45 min después;
+  - _noche_: hasta la 01:00.
 
   Así, a las 07:30 de octubre, con el sol aún bajo el horizonte, ya no se dice «Noche templada» sino «Amanece despejado», con la frase «Amanece a las 08:01».
+
 - **Primero los riesgos**, dichos para el momento: lluvia («Amanece lloviendo», «Noche de lluvia»), viento fuerte, calima, viento que va a más y olas en costas de surf. Los consejos de playa solo se dan en las horas en que tiene sentido planearla.
 - **Después, lo que ofrece el momento**:
   - de noche, la temperatura y el cielo («Noche cálida», «Noche estrellada», «Noche nublada»);

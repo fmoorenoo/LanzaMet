@@ -1,6 +1,8 @@
 <header id="zones-header" class="page-head page-header">
+  <!-- The day the island is read for: the same one chosen in Hoy and Mar. -->
+  <lm-day-button class="day-chip" variant="chip" buttonId="zones-day-button" />
   <h1 class="t-display">{{ 'zones.title' | t }}</h1>
-  @if (island.summary(); as summary) {
+  @if (summary(); as summary) {
     <p id="island-summary" class="t-lead t-muted lead island-summary">{{ summary | t }}</p>
   }
 </header>
@@ -57,7 +59,10 @@
               <p class="t-small t-muted">{{ zone.sentence | t }}</p>
             </div>
             <div class="focus-actions">
-              <lm-webcam-link [locationId]="zone.id" />
+              <!-- A live camera shows now: it stands beside today only. -->
+              @if (days.isToday()) {
+                <lm-webcam-link [locationId]="zone.id" />
+              }
               <button
                 id="open-zone-day"
                 type="button"
@@ -109,7 +114,9 @@
                 </span>
               </button>
               <!-- Over the landscape, outside the card's button: a link in a button is not allowed. -->
-              <lm-webcam-link class="card-live" [locationId]="card.id" variant="overlay" />
+              @if (days.isToday()) {
+                <lm-webcam-link class="card-live" [locationId]="card.id" variant="overlay" />
+              }
               <button
                 type="button"
                 class="icon-btn star favorite-toggle"

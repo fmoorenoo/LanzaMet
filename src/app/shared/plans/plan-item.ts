@@ -1,11 +1,12 @@
 import { Component, computed, inject, input } from '@angular/core';
 import { Router } from '@angular/router';
-import { PlanKind, Recommendation } from '../../core/models';
+import { IsoDate, PlanKind, Recommendation } from '../../core/models';
 import { ClockStore } from '../../core/state/clock.store';
 import { IslandStore } from '../../core/state/island.store';
 import { LocationsStore } from '../../core/state/locations.store';
 import { msg } from '../../core/i18n/i18n.model';
 import { timeWindow } from '../../core/i18n/phrases';
+import { islandDateKey } from '../../core/utils/time';
 import { TranslatePipe } from '../../core/i18n/t.pipe';
 import { Scene } from '../scene/scene';
 import { zoneScene } from '../scene/scene-state';
@@ -37,6 +38,8 @@ export const PLAN_KIND: Readonly<Record<PlanKind, { icon: IconName }>> = {
 export class PlanItem {
   readonly plan = input.required<Recommendation>();
   readonly variant = input<'lead' | 'row'>('row');
+  /** The day the plan is for, when it is not today: a plan without hours then names it. */
+  readonly day = input<IsoDate | null>(null);
 
   private readonly locations = inject(LocationsStore);
   private readonly island = inject(IslandStore);
@@ -47,7 +50,13 @@ export class PlanItem {
 
   protected readonly when = computed(() => {
     const window = this.plan().window;
-    return window ? timeWindow(window.from, window.to, this.clock.now()) : msg('common.rightNow');
+    const now = this.clock.now();
+    if (window) return timeWindow(window.from, window.to, now);
+    const day = this.day();
+    const today = islandDateKey(now);
+    return day && day !== today
+      ? msg('common.value', { value: { day, today } })
+      : msg('common.rightNow');
   });
 
   protected readonly scene = computed(() => {

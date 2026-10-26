@@ -58,6 +58,11 @@ export class TideChart {
   readonly tide = input.required<TideForecast>();
   readonly dayStart = input.required<Date>();
   readonly now = input.required<Date>();
+  /**
+   * Marks now on the curve (the line, the dot, the time below, the past
+   * dimmed). Off for a later day, which has no now: only its tide is drawn.
+   */
+  readonly showNow = input(true);
   /** Null when unknown: the night is then left unshaded. */
   readonly sunrise = input<Date | null>(null);
   readonly sunset = input<Date | null>(null);
@@ -199,7 +204,7 @@ export class TideChart {
     const reach = this.labelHalf() + (TICK_CLEARANCE_PX / width) * 100;
     return this.ticks.map((tick) => ({
       ...tick,
-      covered: Math.abs(tick.left - this.nowLabelLeft()) < reach,
+      covered: this.showNow() && Math.abs(tick.left - this.nowLabelLeft()) < reach,
     }));
   });
 
@@ -216,7 +221,10 @@ export class TideChart {
       const beside = Math.abs(label.left - this.nowLabelLeft()) < reach;
       const bottom = (label.top / 100) * height + EXTREME_DROP_PX;
       const overlap = bottom + PILL_CLEARANCE_PX - (height + AXIS_GAP_PX);
-      const raise = label.kind !== 'pleamar' && beside && height > 0 && overlap > 0 ? overlap : 0;
+      const raise =
+        this.showNow() && label.kind !== 'pleamar' && beside && height > 0 && overlap > 0
+          ? overlap
+          : 0;
       return { ...label, raise };
     });
   });

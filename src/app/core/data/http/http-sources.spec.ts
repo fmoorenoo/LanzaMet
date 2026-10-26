@@ -110,7 +110,7 @@ describe('Open-Meteo sources', () => {
     http
       .expectOne((r) => r.url.startsWith('https://air-quality-api.open-meteo.com/'))
       .flush({ error: true, reason: 'down' }, { status: 400, statusText: 'Bad Request' });
-    expect((await result).hourly.length).toBe(48);
+    expect((await result).hourly.length).toBeGreaterThan(24 * 6);
   });
 
   it('turns a provider failure into a message a visitor can read', async () => {
@@ -186,7 +186,7 @@ describe("Open-Meteo through the app's shared copy", () => {
     http.expectOne(shared('forecast')).flush('<!doctype html>', { status: 404, statusText: 'NF' });
     http.expectOne(shared('air-quality')).flush(forEveryPlace(dustFixture));
     http.expectOne(direct('api.open-meteo.com')).flush(forEveryPlace(forecastFixture));
-    expect((await result).hourly.length).toBe(48);
+    expect((await result).hourly.length).toBeGreaterThan(24 * 6);
   });
 
   it('goes straight to Open-Meteo when the shared copy has the wrong number of places', async () => {
@@ -194,7 +194,7 @@ describe("Open-Meteo through the app's shared copy", () => {
     http.expectOne(shared('forecast')).flush([forecastFixture]);
     http.expectOne(shared('air-quality')).flush(forEveryPlace(dustFixture));
     http.expectOne(direct('api.open-meteo.com')).flush(forEveryPlace(forecastFixture));
-    expect((await result).hourly.length).toBe(48);
+    expect((await result).hourly.length).toBeGreaterThan(24 * 6);
   });
 });
 

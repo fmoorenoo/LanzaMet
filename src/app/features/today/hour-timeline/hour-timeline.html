@@ -10,7 +10,7 @@
       [inert]="!isPreview()"
       (click)="backToNow()"
     >
-      {{ 'common.backToNow' | t }}
+      {{ backLabel() | t }}
     </button>
     <lm-scroll-controls
       [scroller]="scroll"
@@ -20,11 +20,11 @@
   </div>
 </div>
 
-<div class="scroller hour-scroller" lmHorizontalScroll #scroll="horizontalScroll">
+<div class="scroller hour-scroller" lmHorizontalScroll #scroll="horizontalScroll" #scrollEl>
   <div
     class="track hour-track"
     role="group"
-    [attr.aria-label]="'hours.label' | t"
+    [attr.aria-label]="groupLabel() | t"
     (keydown)="onKeydown($event)"
   >
     @for (cell of cells(); track cell.index) {

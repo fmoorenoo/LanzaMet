@@ -1,3 +1,4 @@
+import { dayKind } from '../../../core/insights/moment.insight';
 import { msg, Msg } from '../../../core/i18n/i18n.model';
 import { SeaReading } from '../../../core/insights/sea.insight';
 import { TideReading } from '../../../core/insights/tide.insight';
@@ -46,10 +47,14 @@ export function cardEmoji(card: Pick<WeatherCard, 'sky' | 'isDaylight' | 'wind'>
   return sky + (card.wind.level >= 3 ? '💨' : '🌊');
 }
 
-/** "hoy a las 18:00" / "mañana a las 09:00", for a moment that is not now. */
+/** "hoy a las 18:00", "mañana a las 09:00", "el jueves a las 12:00", for a moment that is not now. */
 function laterWhen(card: Pick<WeatherCard, 'at' | 'today'>): Msg {
-  const key = islandDateKey(card.at) === card.today ? 'share.when.today' : 'share.when.tomorrow';
-  return msg(key, { time: { time: card.at } });
+  const time = { time: card.at };
+  const kind = dayKind(islandDateKey(card.at), card.today);
+  if (kind === 'later') {
+    return msg('share.when.later', { day: { weekday: card.at, style: 'long' }, time });
+  }
+  return msg(kind === 'today' ? 'share.when.today' : 'share.when.tomorrow', { time });
 }
 
 /**

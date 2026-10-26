@@ -31,7 +31,6 @@ import { tideExtremes, tideSeries } from './tides';
  * given moment gets the same answer, and a refresh doesn't reshuffle the sky.
  */
 
-const HOURLY_STEPS = 30;
 const DAYS = 7;
 const UV_PEAK_BY_MONTH = [5, 6, 8, 9, 10, 11, 11, 11, 9, 7, 5, 4];
 const WATER_C_BY_MONTH = [19, 18.5, 18.5, 19, 19.5, 20.5, 21.5, 22.5, 23, 22.5, 21.5, 20];
@@ -222,6 +221,14 @@ function dailyFor(ctx: Context, dayStart: Date): DailyForecast {
   };
 }
 
+/** Every hour from the current one to the end of the week's last day. */
+function weekHours(now: Date, currentHour: Date): Date[] {
+  const end = islandDayStart(now, DAYS).getTime();
+  const hours: Date[] = [];
+  for (let at = currentHour; at.getTime() < end; at = addHours(at, 1)) hours.push(at);
+  return hours;
+}
+
 export function simulateWeather(input: SimulationInput): WeatherForecast {
   const ctx = contextFor(input);
   const currentHour = new Date(Math.floor(input.now.getTime() / TIME.HOUR) * TIME.HOUR);
@@ -229,9 +236,7 @@ export function simulateWeather(input: SimulationInput): WeatherForecast {
     locationId: input.location.id,
     issuedAt: currentHour.toISOString(),
     current: weatherAt(ctx, input.now),
-    hourly: Array.from({ length: HOURLY_STEPS }, (_, i) =>
-      weatherAt(ctx, addHours(currentHour, i)),
-    ),
+    hourly: weekHours(input.now, currentHour).map((at) => weatherAt(ctx, at)),
     daily: Array.from({ length: DAYS }, (_, d) => dailyFor(ctx, islandDayStart(input.now, d))),
   };
 }
@@ -276,7 +281,7 @@ export function simulateSea(input: SimulationInput): SeaForecast | null {
     issuedAt: currentHour.toISOString(),
     point,
     current: seaAt(ctx, input.now),
-    hourly: Array.from({ length: HOURLY_STEPS }, (_, i) => seaAt(ctx, addHours(currentHour, i))),
+    hourly: weekHours(input.now, currentHour).map((at) => seaAt(ctx, at)),
   };
 }
 
@@ -294,7 +299,7 @@ export function simulateTides(input: SimulationInput): TideForecast | null {
     locationId: input.location.id,
     source,
     datum: 'chart',
-    extremes: tideExtremes(from - 7 * TIME.HOUR, from + 72 * TIME.HOUR, delay),
-    series: tideSeries(from, from + 30 * TIME.HOUR, 15, delay),
+    extremes: tideExtremes(from - 7 * TIME.HOUR, from + (DAYS + 1) * 24 * TIME.HOUR, delay),
+    series: tideSeries(from, from + DAYS * 24 * TIME.HOUR, 15, delay),
   };
 }
