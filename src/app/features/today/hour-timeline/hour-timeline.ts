@@ -1,6 +1,6 @@
 import { Component, computed, ElementRef, input, model, viewChildren } from '@angular/core';
 import { skyPhrase } from '../../../core/insights/sky.insight';
-import { readWind, windHue } from '../../../core/insights/wind.insight';
+import { readWind, windHue, windTint } from '../../../core/insights/wind.insight';
 import { WeatherSnapshot } from '../../../core/models';
 import { msg } from '../../../core/i18n/i18n.model';
 import { hourLabel } from '../../../core/i18n/phrases';
@@ -47,6 +47,7 @@ export class HourTimeline {
         windLevel: wind.level,
         windSpeed: Math.round(hour.wind.speedKmh),
         windHue: windHue(hour.wind.speedKmh),
+        windTint: windTint(hour.wind.speedKmh),
         // The arrow points where the wind goes.
         windTo: `${(hour.wind.fromDegrees + 180) % 360}deg`,
         detail: msg('hours.cellDetail', {

@@ -61,8 +61,8 @@
   --c-material: oklch(0.99 0.004 230 / 0.9);
   --c-material-edge: oklch(1 0 0 / 0.6);
 
-  // Wind by strength: each speed brings its own hue (`windHue`: green → orange
-  // → red); these set the tint behind the figure and the ink on it, so every
+  // Wind by strength: each speed brings its own hue (`windHue`: near white → green → yellow → orange
+  // → red → violet); these set the tint behind the figure and the ink on it, so every
   // hue keeps the same contrast (≥ 7:1 in both themes).
   --wind-bg-l: 0.93;
   --wind-bg-c: 0.085;

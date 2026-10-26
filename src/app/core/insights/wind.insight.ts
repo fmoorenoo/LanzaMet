@@ -69,29 +69,51 @@ export function windShare(speedKmh: number): number {
   return clamp(speedKmh / WIND_SCALE_TOP_KMH);
 }
 
+/** Linear between (km/h, value) anchors, held flat past either end. */
+function along(stops: readonly (readonly [number, number])[], speedKmh: number): number {
+  const s = Math.max(0, speedKmh);
+  const last = stops[stops.length - 1];
+  if (s >= last[0]) return last[1];
+  const i = stops.findIndex(([kmh]) => kmh > s) - 1;
+  const [k0, v0] = stops[i];
+  const [k1, v1] = stops[i + 1];
+  return v0 + ((v1 - v0) * (s - k0)) / (k1 - k0);
+}
+
 /**
  * The colour of a speed, as an OKLCH hue: green while the wind is light,
- * through yellow and orange as it turns moderate, to red when it is strong.
- * Anchored to the scale above (km/h → hue), eased in between, so 18 and
- * 22 km/h look close while 12 and 35 look far apart.
+ * yellow and orange as it turns moderate, red when it is strong, and on
+ * through magenta to violet at the top of the scale. Anchored to the levels
+ * above (km/h → hue), eased in between, so 18 and 22 km/h look close while
+ * 12 and 35 look far apart. Past red the hue goes below 0 (−55 is violet,
+ * the same angle as 305), so the scale only ever falls.
  */
 const WIND_HUES: readonly (readonly [number, number])[] = [
   [0, 150],
-  [12, 138],
-  [20, 95],
-  [29, 60],
-  [40, 38],
-  [50, 25],
+  [10, 142],
+  [20, 100],
+  [29, 66],
+  [38, 40],
+  [46, 26],
+  [60, -55],
 ];
 
 export function windHue(speedKmh: number): number {
-  const s = Math.max(0, speedKmh);
-  const last = WIND_HUES[WIND_HUES.length - 1];
-  if (s >= last[0]) return last[1];
-  const i = WIND_HUES.findIndex(([kmh]) => kmh > s) - 1;
-  const [k0, h0] = WIND_HUES[i];
-  const [k1, h1] = WIND_HUES[i + 1];
-  return Math.round(h0 + ((h1 - h0) * (s - k0)) / (k1 - k0));
+  return Math.round(along(WIND_HUES, speedKmh));
+}
+
+/**
+ * How much of that colour shows, 0–1: a calm is almost white (a trace of
+ * green), and the colour comes in fully by a light breeze. Multiplies the
+ * chroma of the tint and the ink (`--wind-tint`).
+ */
+const WIND_TINTS: readonly (readonly [number, number])[] = [
+  [0, 0.1],
+  [9, 1],
+];
+
+export function windTint(speedKmh: number): number {
+  return Math.round(along(WIND_TINTS, speedKmh) * 100) / 100;
 }
 
 /**

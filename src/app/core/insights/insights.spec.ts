@@ -3,7 +3,7 @@ import { translate } from '../i18n/translate';
 import { TideForecast } from '../models';
 import { describeSwell, describeWaves, readSea, seaFacets, waterFeel } from './sea.insight';
 import { readTide, tideHeight } from './tide.insight';
-import { readWind, toCardinal, windHue, windShare, windSteps } from './wind.insight';
+import { readWind, toCardinal, windHue, windShare, windSteps, windTint } from './wind.insight';
 
 /** The rules return descriptors; read them in a language to check the words. */
 const es = (text: Msg | MessageKey | null | undefined) => (text ? translate(text, 'es') : null);
@@ -59,16 +59,24 @@ describe('wind', () => {
     expect(windShare(90)).toBe(1);
   });
 
-  it('colours the wind green when light, orange when moderate, red when strong', () => {
+  it('colours the wind green, yellow, orange, red, then violet at the top', () => {
     expect(windHue(0)).toBe(150);
     expect(windHue(10)).toBeGreaterThan(130); // green
     expect(windHue(24)).toBeGreaterThan(60); // yellow-orange
     expect(windHue(24)).toBeLessThan(95);
     expect(windHue(45)).toBeLessThan(40); // red
-    expect(windHue(120)).toBe(25);
+    expect(windHue(120)).toBe(-55); // violet (305°)
     // Never lighter for more wind.
     const hues = [0, 5, 10, 15, 20, 25, 30, 35, 40, 50, 60].map(windHue);
     expect(hues).toEqual([...hues].sort((a, b) => b - a));
+  });
+
+  it('keeps a calm almost white and colours it fully by a light breeze', () => {
+    expect(windTint(0)).toBe(0.1);
+    expect(windTint(4)).toBeGreaterThan(0.1);
+    expect(windTint(4)).toBeLessThan(1);
+    expect(windTint(9)).toBe(1);
+    expect(windTint(40)).toBe(1);
   });
 });
 

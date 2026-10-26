@@ -53,8 +53,12 @@
         </span>
         <!-- The accessible name is the visible text, with the rest in words. -->
         <span class="visually-hidden">, {{ cell.detail | t }}:</span>
-        <!-- The wind's speed in its own colour: green when light, red when strong. -->
-        <span class="wind t-num" [style.--wind-hue]="cell.windHue">
+        <!-- The wind's speed in its own colour: near white in a calm, violet at its strongest. -->
+        <span
+          class="wind t-num"
+          [style.--wind-hue]="cell.windHue"
+          [style.--wind-tint]="cell.windTint"
+        >
           <svg
             class="wind-arrow"
             viewBox="0 0 24 24"

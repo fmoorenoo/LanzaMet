@@ -457,17 +457,30 @@ lm-scene {
   // Room for two lines whatever the verdict says ("Ratos de sol", "Sopla con
   // ganas"), and two for its sentence, present or not, so choosing another
   // hour or place never moves the hours below.
+  // Its first line right under the wind; the second line's room waits below.
   .verdict {
     display: flex;
-    align-items: flex-end;
+    align-items: flex-start;
     min-height: 2lh;
   }
 
-  // A notch smaller on phones, so even the longest sentence fits its two lines.
+  // Phones read in three steps — the number, the wind, the verdict — so the
+  // sentence under the verdict is left to desktop (the hours and the cards
+  // below say the same), and the clock sits as a quiet label, not a figure.
   .sentence {
-    min-height: 2lh;
-    max-width: 46ch;
-    font-size: var(--fs-small);
+    display: none;
+  }
+
+  .clock-time {
+    font-size: 1.3125rem;
+  }
+
+  .wind {
+    margin-top: var(--s-4);
+  }
+
+  .words {
+    margin-top: var(--s-8);
   }
 
   // The sky in one line or two: the same room either way, the words sitting

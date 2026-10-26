@@ -1,14 +1,14 @@
 import { Component, computed, input } from '@angular/core';
 import { msg } from '../../../core/i18n/i18n.model';
 import { TranslatePipe } from '../../../core/i18n/t.pipe';
-import { readWind, windHue, windSteps } from '../../../core/insights/wind.insight';
+import { readWind, windHue, windSteps, windTint } from '../../../core/insights/wind.insight';
 import { Wind } from '../../../core/models';
 
 /**
  * The wind at a glance: an arrow pointing where it blows, the speed in km/h,
  * and its strength on the five-step scale (see WIND_LEVEL_MAX) as a word on
- * a tint of its colour (green when light, through orange, to red when
- * strong, `windHue`, the same as the hours) and a ramp of bars in that
+ * a tint of its colour (near white in a calm, then green, yellow, orange, red, and violet when
+ * at its strongest, `windHue` and `windTint`, the same as the hours) and a ramp of bars in that
  * colour, each bar one step, filled by how far into it the speed is. The
  * words carry everything; the arrow, the colour and the bars are for the eye.
  *
@@ -25,6 +25,7 @@ import { Wind } from '../../../core/models';
     '[class.is-inline]': "variant() === 'inline'",
     '[attr.data-level]': 'reading().level',
     '[style.--wind-hue]': 'hue()',
+    '[style.--wind-tint]': 'tint()',
   },
   template: `
     @let r = reading();
@@ -135,7 +136,7 @@ import { Wind } from '../../../core/models';
     .bar-fill {
       position: absolute;
       inset: 0;
-      background-color: oklch(var(--gauge-bar-l, 0.86) 0.15 var(--wind-hue));
+      background-color: oklch(var(--gauge-bar-l, 0.86) calc(0.15 * var(--wind-tint, 1)) var(--wind-hue));
       transform-origin: bottom;
       transition:
         transform var(--d-base) var(--ease-out),
@@ -150,8 +151,8 @@ import { Wind } from '../../../core/models';
       height: 1.75rem;
       padding: 0 0.625rem;
       border-radius: var(--r-pill);
-      background-color: oklch(0.93 0.085 var(--wind-hue));
-      color: oklch(0.4 0.13 var(--wind-hue));
+      background-color: oklch(0.93 calc(0.085 * var(--wind-tint, 1)) var(--wind-hue));
+      color: oklch(0.4 calc(0.13 * var(--wind-tint, 1)) var(--wind-hue));
       font-size: var(--fs-small);
       font-weight: 700;
       text-shadow: none;
@@ -166,6 +167,48 @@ import { Wind } from '../../../core/models';
       font-size: var(--fs-small);
       font-weight: 560;
       color: var(--gauge-ink-2, currentColor);
+    }
+
+    // A quieter hero on phones and tablets (class set by the page): one line,
+    // smaller, no bars; direction and gusts stay for screen readers, and the
+    // arrow still shows where it blows.
+    @media (width < 64rem) {
+      :host(.is-quiet) {
+        grid-template-areas: 'arrow speed strength';
+        column-gap: 0.625rem;
+
+        .arrow {
+          width: 2.25rem;
+          height: 2.25rem;
+
+          svg {
+            width: 1.125rem;
+            height: 1.125rem;
+          }
+        }
+
+        .value {
+          font-size: 2.125rem;
+        }
+
+        .unit {
+          font-size: 1.125rem;
+        }
+
+        .bars {
+          display: none;
+        }
+
+        .more {
+          position: absolute;
+          width: 1px;
+          height: 1px;
+          min-height: 0;
+          overflow: hidden;
+          clip-path: inset(50%);
+          white-space: nowrap;
+        }
+      }
     }
 
     // One line, for cards and lists on a surface: tint and ink follow the theme.
@@ -206,8 +249,8 @@ import { Wind } from '../../../core/models';
       .word {
         height: 1.375rem;
         padding: 0 0.5rem;
-        background-color: oklch(var(--wind-bg-l) var(--wind-bg-c) var(--wind-hue));
-        color: oklch(var(--wind-ink-l) var(--wind-ink-c) var(--wind-hue));
+        background-color: oklch(var(--wind-bg-l) calc(var(--wind-bg-c) * var(--wind-tint, 1)) var(--wind-hue));
+        color: oklch(var(--wind-ink-l) calc(var(--wind-ink-c) * var(--wind-tint, 1)) var(--wind-hue));
         font-size: var(--fs-micro);
       }
     }
@@ -219,7 +262,7 @@ import { Wind } from '../../../core/models';
 
       .arrow,
       .value {
-        color: oklch(var(--wind-ink-l) var(--wind-ink-c) var(--wind-hue));
+        color: oklch(var(--wind-ink-l) calc(var(--wind-ink-c) * var(--wind-tint, 1)) var(--wind-hue));
         transition: color var(--d-base) ease;
       }
 
@@ -246,6 +289,7 @@ export class WindGauge {
 
   protected readonly reading = computed(() => readWind(this.wind()));
   protected readonly hue = computed(() => windHue(this.wind().speedKmh));
+  protected readonly tint = computed(() => windTint(this.wind().speedKmh));
 
   /** The arrow points where the wind goes (it blows from `fromDegrees`). */
   protected readonly rotation = computed(() => `${(this.wind().fromDegrees + 180) % 360}deg`);
