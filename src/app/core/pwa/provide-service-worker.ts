@@ -7,6 +7,7 @@ import {
   provideAppInitializer,
 } from '@angular/core';
 import { provideServiceWorker, SwUpdate } from '@angular/service-worker';
+import { isCrawler } from '../seo/crawler';
 
 /**
  * Angular's service worker, in production builds only. It keeps the app
@@ -18,7 +19,9 @@ import { provideServiceWorker, SwUpdate } from '@angular/service-worker';
 export function provideAppServiceWorker(): EnvironmentProviders {
   return makeEnvironmentProviders([
     provideServiceWorker('ngsw-worker.js', {
-      enabled: !isDevMode(),
+      // Not for crawlers: their browsers refuse service workers, and the
+      // failed registration was the one error Search Console reported.
+      enabled: !isDevMode() && !isCrawler(globalThis.navigator?.userAgent),
       // After the first screen has settled, so the worker never competes with it.
       registrationStrategy: 'registerWhenStable:30000',
     }),
