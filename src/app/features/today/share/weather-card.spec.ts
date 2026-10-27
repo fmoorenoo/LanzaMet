@@ -2,7 +2,10 @@ import { translate } from '../../../core/i18n/translate';
 import { readWind } from '../../../core/insights/wind.insight';
 import { SHARE_CONFIG, shareLink } from '../../../core/share/share-config';
 import { TestBed } from '@angular/core/testing';
-import { cardEmoji, cardFileName, shareMessage } from './weather-card';
+import { cardEmoji, cardFileName, shareMessage, WeatherCard } from './weather-card';
+import { cardCells } from './weather-card.paint';
+import { msg } from '../../../core/i18n/i18n.model';
+import { TideReading } from '../../../core/insights/tide.insight';
 
 const calm = readWind({ speedKmh: 12, gustKmh: 16, fromDegrees: 30 });
 const windy = readWind({ speedKmh: 38, gustKmh: 52, fromDegrees: 30 });
@@ -92,5 +95,35 @@ describe('share link', () => {
 
   it('has no address set by default', () => {
     expect(TestBed.inject(SHARE_CONFIG).publicUrl).toBeNull();
+  });
+});
+
+describe('share card sheet', () => {
+  const t = (m: Parameters<typeof translate>[0]) => translate(m, 'es');
+  const tide = {
+    trend: 'subiendo',
+    headline: msg('common.value', { value: 'La marea está subiendo' }),
+    nextLabel: msg('common.value', { value: 'Pleamar hacia las 15:50' }),
+    untilNext: { duration: 230 * 60_000 },
+  } as unknown as TideReading;
+  const tideLine = (isNow: boolean) =>
+    cardCells(
+      {
+        ...base,
+        isNow,
+        feelsLike: 30,
+        range: { max: 27, min: 21 },
+        sea: null,
+        tide: { reading: tide, estimated: true },
+      } as unknown as WeatherCard,
+      t,
+    )
+      .find((cell) => cell.icon === 'tide-up')
+      ?.sub.join(' ');
+
+  it('counts down to the next tide only on a card of right now', () => {
+    expect(tideLine(true)).toBe('Pleamar hacia las 15:50 · en 3 h 50 min · estimada');
+    // Another hour or day: "in 3 h 50 min" would read as from now.
+    expect(tideLine(false)).toBe('Pleamar hacia las 15:50 · estimada');
   });
 });

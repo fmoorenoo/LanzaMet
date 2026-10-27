@@ -384,7 +384,8 @@ const ROW_GAP = 40;
 const SHEET_TOP_PAD = 68;
 const FOOTER_H = 76;
 
-function cardCells(card: WeatherCard, t: (m: Msg | MessageKey) => string): Cell[] {
+/** The sheet's cells: sky, wind, sea and tide (exported for tests). */
+export function cardCells(card: WeatherCard, t: (m: Msg | MessageKey) => string): Cell[] {
   const cells: Cell[] = [
     {
       icon: 'sky',
@@ -411,7 +412,11 @@ function cardCells(card: WeatherCard, t: (m: Msg | MessageKey) => string): Cell[
   }
   if (card.tide) {
     const { reading, estimated } = card.tide;
-    const next = msg('conditions.tide.next', { next: reading.nextLabel, until: reading.untilNext });
+    // "in 3 h 50 min" reads as from now: only a card of right now counts down.
+    // Another hour or day says only when ("Pleamar hacia las 15:50"), as the page does.
+    const next = card.isNow
+      ? msg('conditions.tide.next', { next: reading.nextLabel, until: reading.untilNext })
+      : reading.nextLabel;
     cells.push({
       icon: reading.trend === 'subiendo' ? 'tide-up' : 'tide-down',
       title: t(reading.headline),
