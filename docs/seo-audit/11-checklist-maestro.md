@@ -15,10 +15,10 @@ Primer lote (B-01a, B-02, B-03 provisional, B-04, B-05 con JS, B-14) publicado y
 | Recursos de renderizado accesibles para Google | ✅ | `/api/` abierto (corregido el 27-10-2026). Comprobar con la Inspección de URL que la captura muestra datos |
 | Search Console | ✅ | Propiedad verificada; inspección de `/`, `/mar` y `/zonas` hecha · B-06 |
 | sitemap.xml | ✅ | `public/sitemap.xml` con 5 URL · B-02 |
-| 404 reales | 🟦 | Estado 404 real desde el Worker + vista «Página no encontrada» con `noindex` · B-03 |
-| Canonical | 🟦 | En el HTML prerenderizado de cada página y mantenido por JS · B-05 |
+| 404 reales | ✅ | Estado 404 real desde el Worker + vista «Página no encontrada» con `noindex` · B-03 |
+| Canonical | ✅ | En el HTML prerenderizado de cada página y mantenido por JS · B-05 |
 | Meta robots | ✅ | Ninguna página con `noindex` por error |
-| `noindex` en `/mejorar` | 🟦 | B-26 |
+| `noindex` en `/mejorar` | ✅ | B-26 |
 | Enlaces `<a href>` en la navegación | ✅ | Menú con `routerLink` |
 | Zonas enlazables | ❌ | Botones + `localStorage` · B-11 |
 | Páginas huérfanas | ✅ | Ninguna |
@@ -40,9 +40,9 @@ Primer lote (B-01a, B-02, B-03 provisional, B-04, B-05 con JS, B-14) publicado y
 
 | Elemento | Estado | Evidencia / tarea |
 |---|---|---|
-| Contenido en el HTML servido | 🟦 | 7 páginas prerenderizadas con H1 y texto fijo; sin datos del momento · B-10 |
+| Contenido en el HTML servido | ✅ | 7 páginas prerenderizadas con H1 y texto fijo; sin datos del momento · B-10 |
 | Contenido tras renderizar | ✅ | 480-955 palabras por ruta |
-| Metadatos por ruta en el HTML | 🟦 | Title, description y canonical en el HTML · B-10 |
+| Metadatos por ruta en el HTML | ✅ | Title, description y canonical en el HTML · B-10 |
 | Errores de JS que impidan renderizar | ✅ | Ninguno en el renderizado headless |
 | Lazy loading de rutas | ✅ | `loadComponent` |
 
@@ -50,9 +50,9 @@ Primer lote (B-01a, B-02, B-03 provisional, B-04, B-05 con JS, B-14) publicado y
 
 | Elemento | Estado | Evidencia / tarea |
 |---|---|---|
-| Titles con keyword | 🟦 | «El tiempo en Lanzarote hoy…», «Mareas en Lanzarote hoy…» · B-07 |
-| Descriptions únicas | 🟦 | Una por página y por idioma · B-07 |
-| Un H1 estable por página | 🟦 | H1 fijo en todas, sin cambio visual · B-07 |
+| Titles con keyword | ✅ | «El tiempo en Lanzarote hoy…», «Mareas en Lanzarote hoy…» · B-07 |
+| Descriptions únicas | ✅ | Una por página y por idioma · B-07 |
+| Un H1 estable por página | ✅ | H1 fijo en todas, sin cambio visual · B-07 |
 | Orden de encabezados | ⚠️ | El H1 ya va primero en Hoy; quedan los 7 encabezados de los paneles en todas · B-23 |
 | Texto estable explicativo | ⚠️ | Mínimo · B-11, `08` |
 | Open Graph / Twitter | ❌ | No hay · B-08 |
@@ -88,8 +88,8 @@ Primer lote (B-01a, B-02, B-03 provisional, B-04, B-05 con JS, B-14) publicado y
 |---|---|---|
 | Fuentes citadas en cada página | ✅ | `DataCredit` |
 | Marea marcada como estimada | ✅ | |
-| Página «Sobre» / metodología | 🟦 | `/sobre` · B-13 |
-| Identidad del titular | 🟦 | Fernando Montelongo, con LinkedIn, en `/sobre` · B-13 (la LSSI pide además datos de contacto del titular: revisar con asesoría) |
+| Página «Sobre» / metodología | ✅ | `/sobre` · B-13 |
+| Identidad del titular | ✅ | Fernando Montelongo, con LinkedIn, en `/sobre` · B-13 (la LSSI pide además datos de contacto del titular: revisar con asesoría) |
 | Fecha de actualización visible | ✅ | «Actualizado a las…» (máquina: ⚠️, falta `<time>`) |
 
 ## Seguridad y móvil
@@ -118,7 +118,7 @@ Primer lote (B-01a, B-02, B-03 provisional, B-04, B-05 con JS, B-14) publicado y
 | `/tiempo/{zona}` ×9 | ⬜ | B-11 |
 | `/mar/{zona}` ×9 | ⬜ | B-11 |
 | `/viento` | ⬜ | B-12 |
-| `/sobre` | 🟦 | B-13 |
+| `/sobre` | ✅ | B-13 |
 | `/calima` | ⬜ | B-16 |
 | `/avisos` | ⬜ | B-17 |
 | `/en/…` | ⬜ | B-18 |
