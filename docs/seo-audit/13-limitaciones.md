@@ -5,7 +5,7 @@
 | Dato | Motivo | Cómo obtenerlo |
 |---|---|---|
 | Estado real de indexación en Google (qué URLs, en qué idioma) | Sin acceso a Search Console | B-06; Inspección de URL de `/`, `/mar`, `/zonas` → «Probar URL publicada» → captura y HTML |
-| **Idioma con el que Google renderiza** (T-01) | Google no documenta `navigator.languages` de su renderizador. La prueba se hizo con Chrome headless `--lang=en-US` y el user agent de Googlebot | Inspección de URL (captura) |
+| ~~**Idioma con el que Google renderiza** (T-01)~~ | **Resuelto el 27-10-2026**: en la Inspección de URL apareció el aviso «Read in English», que solo sale a navegadores en inglés. El renderizador de Google usa inglés, así que T-01 queda verificado | — |
 | Clics, impresiones, CTR, posiciones, consultas, países, dispositivos, evolución | Sin Search Console. La web tiene 3 días | Search Console a partir de 2-4 semanas tras verificarla |
 | Core Web Vitals de campo (CrUX) | Sin tráfico suficiente; PageSpeed Insights devolvió 429 (cuota anónima agotada) | Search Console → Core Web Vitals; PSI con clave de API |
 | Volúmenes de búsqueda, KD, CPC | Sin Keyword Planner ni herramientas de pago (no hay DataForSEO configurado) | Keyword Planner (cuenta de Google Ads) o las consultas de Search Console |

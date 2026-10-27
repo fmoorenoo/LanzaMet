@@ -171,6 +171,6 @@ Breadcrumbs: solo en `BreadcrumbList` (JSON-LD), sin migas visibles, para no toc
 ## 7. Indexación y sitemap
 
 - `sitemap.xml` con todas las URL indexables (ES y EN), `lastmod` = fecha de build para páginas estables. **No** poner `lastmod` de «ahora» en cada build si el contenido estable no cambió: Google ignora `lastmod` poco fiables.
-- `robots.txt`: `Allow: /`, `Disallow: /api/`, línea `Sitemap:`.
+- `robots.txt`: `Allow: /` y línea `Sitemap:`. **Sin bloquear `/api/`**: el renderizado de Google lo necesita para cargar los datos (corregido el 27-10-2026, ver `14-backlog-seo.md`).
 - `noindex, follow`: `/mejorar`, vista 404.
 - Parámetros `?dia=`, `?utm_*`: canonical a la URL limpia.

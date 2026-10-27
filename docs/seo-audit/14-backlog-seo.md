@@ -14,8 +14,6 @@ Formato de cada tarea: **Prioridad · Esfuerzo (S ≤ ½ día, M 1-3 días, L > 
 
 ---
 
-## P0 · Errores críticos comprobados
-
 ## Estado
 
 | Tarea | Estado | Fecha | Nota |
@@ -26,6 +24,8 @@ Formato de cada tarea: **Prioridad · Esfuerzo (S ≤ ½ día, M 1-3 días, L > 
 | B-04 | ✅ Completada · publicada | 27-10-2026 | `workers_dev: false`; `DEPLOYMENT.md` actualizado |
 | B-05 | ✅ Parte provisional (JS) completada · publicada | 27-10-2026 | `core/seo/seo-tags.ts` + tests; pasa al HTML con B-10 |
 | B-14 | ✅ Completada · publicada | 27-10-2026 | `public/_headers`; comprobado con el Worker local |
+| B-06 | 🟨 En curso | 27-10-2026 | Search Console verificado; inspección de `/`, `/mar` y `/zonas` hecha por el responsable. Falta Bing Webmaster Tools |
+| Corrección de B-02 y B-01a | ✅ Completada · publicada | 27-10-2026 | Ver «Corrección tras la Inspección de URL» |
 
 Comprobado en local (27-10-2026), con `wrangler dev` y la build de producción:
 - 222 tests, lint y build con sus comprobaciones en verde; el bundle inicial queda en 698 kB.
@@ -36,7 +36,19 @@ Comprobado en local (27-10-2026), con `wrangler dev` y la build de producción:
 
 Publicado el 27-10-2026 (versión `e317bb84`) y comprobado en `https://lanzamet.com`: `robots.txt` y `sitemap.xml` con 200 y su tipo; `main-*.js` con `immutable` y el HTML y `ngsw-worker.js` con `no-cache`; `workers.dev` devuelve 404; con Chrome en inglés, la portada sale en español con canonical, y una URL inexistente sale como «Página no encontrada» con `noindex`.
 
+### Corrección tras la Inspección de URL (27-10-2026)
+
+La «Prueba de URL publicada» de Search Console en `/`, `/mar` y `/zonas` mostró:
+
+1. **`lang="es"` y el canonical correctos** en las tres. B-01a y B-05 funcionan.
+2. **El aviso «Read in English» en las capturas.** Esto confirma que el renderizador de Google usa un navegador en inglés (T-01 pasa de inferencia a verificado). Corrección: el aviso no se muestra a rastreadores, reconocidos por su user agent (`core/seo/crawler.ts`, con tests). La página es idéntica; solo se omite una sugerencia pensada para personas.
+3. **Datos sin cargar** («No hemos podido cargar la marea / las zonas»). Causa: el `Disallow: /api/` que recomendaba B-02. Google respeta robots.txt también para los recursos que pide al renderizar. El plan B de la web, ir directamente a Open-Meteo, tampoco sirve: los robots.txt de `api.open-meteo.com`, `marine-api.open-meteo.com` y `air-quality-api.open-meteo.com` tienen `Disallow: /`. Corrección: `/api/` queda abierto en `public/robots.txt`. **La recomendación original de B-02 era errónea** y queda corregida abajo.
+
+**Lección para el resto del backlog**: nunca bloquear en robots.txt un recurso del que dependa el renderizado (API, JS, CSS, fuentes).
+
 ---
+
+## P0 · Errores críticos comprobados
 
 ### B-01a · El idioma por defecto de cada URL es el español · P0 · S · — · ✅ Completada (27-10-2026, publicada)
 
@@ -54,10 +66,10 @@ Publicado el 27-10-2026 (versión `e317bb84`) y comprobado en `https://lanzamet.
   ```
   User-agent: *
   Allow: /
-  Disallow: /api/
 
   Sitemap: https://lanzamet.com/sitemap.xml
   ```
+  **Corregido el 27-10-2026**: la primera versión incluía `Disallow: /api/`, y eso impedía a Google cargar los datos al renderizar (ver «Corrección tras la Inspección de URL»). `/api/` debe quedar abierto.
   Sitemap con `/`, `/zonas`, `/mar`, `/donde-ir`, `/legal` (y las nuevas cuando existan). `lastmod` = fecha de cambio del contenido estable, no la del build.
 - **Cabeceras**: `public/_headers` → `Content-Type: text/plain; charset=utf-8` para `/robots.txt` y `application/xml` para `/sitemap.xml` si Cloudflare no los infiere.
 - **Aceptación**: `curl -I https://lanzamet.com/robots.txt` → 200 `text/plain`; `curl -I …/sitemap.xml` → 200 XML válido; Lighthouse SEO sin el fallo `robots-txt`; Search Console acepta el sitemap.

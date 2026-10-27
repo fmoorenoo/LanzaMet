@@ -68,7 +68,7 @@ No existen URLs por localidad, por día, por idioma ni por tema. La zona elegida
 
 ## 2. Rastreo e indexación
 
-### T-01 · El idioma cambia en la misma URL según el navegador · **P0** · Verificado + inferencia
+### T-01 · El idioma cambia en la misma URL según el navegador · **P0** · Verificado (confirmado con Search Console el 27-10-2026; corregido con B-01a)
 
 - **Evidencia**: renderizando con Chrome headless y `--lang=en-US` (con el user agent de Googlebot Smartphone), todas las rutas salen en inglés: `<html lang="en">`, título «Today in Lanzarote · LanzaMet», descripción en inglés, todos los textos en inglés. Con `--lang=es-ES` sale en español. El HTML inicial dice `lang="es"`.
 - **Código**: `src/app/core/i18n/i18n.store.ts:30-32` toma `navigator.languages` si no hay elección guardada; `effect()` reescribe `lang` y la meta description.
@@ -137,7 +137,7 @@ No existen URLs por localidad, por día, por idioma ni por tema. La zona elegida
 ### T-10 · Códigos de estado del API · Verificado
 
 - `/api/salud` → 200 JSON, `no-store`. El API solo atiende rutas fijas (`server/api.ts:194-219`).
-- `/api/*` no debería rastrearse: no aporta nada a buscadores y consume cuota del Worker. Incluir `Disallow: /api/` en robots.txt (B-02).
+- ~~`/api/*` no debería rastrearse: incluir `Disallow: /api/` en robots.txt.~~ **Corregido el 27-10-2026**: `/api/` debe quedar **abierto**. Google lo llama al renderizar las páginas, y el plan B (Open-Meteo directo) prohíbe todos los rastreadores en su robots.txt. Con `/api/` bloqueado, la Inspección de URL mostró las páginas sin datos. Google no indexa JSON como páginas, así que dejarlo abierto no tiene coste SEO.
 
 ---
 

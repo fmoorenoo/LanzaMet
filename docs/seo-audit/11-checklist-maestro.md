@@ -11,7 +11,9 @@ Primer lote (B-01a, B-02, B-03 provisional, B-04, B-05 con JS, B-14) publicado y
 | HTTPS y redirección http → https (301) | ✅ | curl |
 | www → raíz (301, conserva la ruta) | ✅ | curl |
 | Host único | ✅ | `workers_dev: false` · B-04 |
-| robots.txt | ✅ | `public/robots.txt` (bloquea `/api/`, declara el sitemap) · B-02 |
+| robots.txt | ✅ | `public/robots.txt` (todo abierto, `/api/` incluido; declara el sitemap) · B-02 |
+| Recursos de renderizado accesibles para Google | ✅ | `/api/` abierto (corregido el 27-10-2026). Comprobar con la Inspección de URL que la captura muestra datos |
+| Search Console | ✅ | Propiedad verificada; inspección de `/`, `/mar` y `/zonas` hecha · B-06 |
 | sitemap.xml | ✅ | `public/sitemap.xml` con 5 URL · B-02 |
 | 404 reales | ✅ / ⬜ | Provisional: vista «Página no encontrada» con `noindex` · B-03. El estado HTTP 404 llegará con B-10 |
 | Canonical | ✅ | Por JS en cada ruta, sin parámetros · B-05. En el HTML, con B-10 |
@@ -104,7 +106,7 @@ Primer lote (B-01a, B-02, B-03 provisional, B-04, B-05 con JS, B-14) publicado y
 
 | Elemento | Estado | Evidencia / tarea |
 |---|---|---|
-| Google Search Console | ❓ | B-06 |
+| Google Search Console | ✅ | Verificado el 27-10-2026 · B-06 |
 | Bing Webmaster Tools | ❓ | B-06 |
 | Analítica | — | Ninguna, por decisión de privacidad |
 | IndexNow / Crawler Hints | ⬜ | B-25 |
