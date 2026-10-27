@@ -1,7 +1,8 @@
 # LanzaMet · https://lanzamet.com
-# Every page is open to search engines. /api/ only serves data to the site itself.
+# Everything is open. /api/ must stay open too: search engines call it while
+# rendering a page, and without it they see "couldn't load" instead of the
+# weather (Open-Meteo, the browser's fallback, disallows every crawler).
 User-agent: *
 Allow: /
-Disallow: /api/
 
 Sitemap: https://lanzamet.com/sitemap.xml

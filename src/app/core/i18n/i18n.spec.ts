@@ -116,6 +116,17 @@ describe('language choice', () => {
     });
   });
 
+  it('suggests nothing to a crawler, which renders in English but indexes the page as it is', () => {
+    vi.spyOn(navigator, 'languages', 'get').mockReturnValue(['en-US']);
+    vi.spyOn(navigator, 'userAgent', 'get').mockReturnValue(
+      'Mozilla/5.0 (Linux; Android 6.0.1; Nexus 5X) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.0.0 Mobile Safari/537.36 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)',
+    );
+    const i18n = TestBed.inject(I18n);
+    expect(i18n.lang()).toBe('es');
+    expect(i18n.suggestion()).toBeNull();
+    vi.restoreAllMocks();
+  });
+
   it('suggests nothing to a browser that already prefers Spanish', () => {
     vi.spyOn(navigator, 'languages', 'get').mockReturnValue(['es-ES']);
     expect(TestBed.inject(I18n).suggestion()).toBeNull();

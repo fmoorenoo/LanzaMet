@@ -1,5 +1,6 @@
 import { DOCUMENT } from '@angular/common';
 import { computed, effect, inject, Service, signal } from '@angular/core';
+import { isCrawler } from '../seo/crawler';
 import { readStored, writeStored } from '../utils/storage';
 import { DEFAULT_LANG, isLang, Lang, LANGS, MessageKey, Msg } from './i18n.model';
 import { LOCALES, translate } from './translate';
@@ -30,6 +31,8 @@ const isTrue = (value: unknown): value is true => value === true;
 export class I18n {
   private readonly document = inject(DOCUMENT);
   private readonly browserLang = detectLang(globalThis.navigator?.languages ?? []);
+  /** Crawlers render in English but index the page as it is: no suggestion for them. */
+  private readonly crawler = isCrawler(globalThis.navigator?.userAgent);
 
   /** The visitor's own choice; null until they make one. */
   private readonly chosen = signal<Lang | null>(readStored('lang', isLang));
@@ -45,7 +48,10 @@ export class I18n {
    * hasn't chosen yet, nor said no to the suggestion.
    */
   readonly suggestion = computed<Lang | null>(() =>
-    this.chosen() === null && !this.suggestionDismissed() && this.browserLang !== this.lang()
+    !this.crawler &&
+    this.chosen() === null &&
+    !this.suggestionDismissed() &&
+    this.browserLang !== this.lang()
       ? this.browserLang
       : null,
   );
