@@ -4,7 +4,7 @@
 <header id="sea-header" class="page-head page-header">
   <!-- The page's subject, for search engines and screen readers. The headline
        below changes with the tide; this stays, and the screen doesn't change. -->
-  <h1 id="sea-title" class="visually-hidden">{{ 'seo.heading.sea' | t }}</h1>
+  <h1 id="sea-title" class="visually-hidden">{{ heading() | t }}</h1>
   <!-- Where and when: the same place and day as in Hoy and Zonas. -->
   <div class="head-chips">
     <button
@@ -281,6 +281,11 @@
       <span class="skeleton lead-skeleton"></span>
     }
   </section>
+
+  <!-- A place's own page (/mar/:zona) ends with what makes the place itself. -->
+  @if (routeZone(); as zone) {
+    <lm-zone-about class="block zone-block" [location]="zone" view="sea" />
+  }
 
   <footer id="sea-footer" class="page-foot">
     <lm-data-credit kind="sea" [updatedAt]="forecast.sea().data?.issuedAt ?? null" />

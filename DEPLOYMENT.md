@@ -19,7 +19,7 @@ Un solo **Worker de Cloudflare** (`lanzamet`) sirve todo bajo un mismo dominio y
   - `nosniff`, `Referrer-Policy`, `Permissions-Policy` y `Cross-Origin-Opener-Policy`;
   - `no-cache` en el HTML, el manifest y los archivos del service worker, para que cada despliegue llegue también a las copias instaladas;
   - caché de un año (`immutable`) en los archivos con hash (`main-…`, `chunk-…`, `styles-…`, `media/`), que cambian de nombre en cada build.
-- **Para buscadores**: `public/robots.txt` y `public/sitemap.xml`. Al añadir o quitar una página, actualiza el sitemap.
+- **Para buscadores**: `public/robots.txt`; el `sitemap.xml` lo genera la build con las páginas prerenderizadas; `public/_redirects` para las direcciones que cambian (301).
 
 | Archivo | Para qué |
 |---|---|

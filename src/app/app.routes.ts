@@ -1,6 +1,8 @@
 import { Routes } from '@angular/router';
 import { MessageKey } from './core/i18n/i18n.model';
 import { SeoRouteData } from './core/seo/seo-tags';
+import { RETIRED_LOCATIONS } from './core/data/locations';
+import { knownZone, selectZone, ZONE_PARAM } from './core/state/zone-navigation';
 import { TodayPage } from './features/today/today.page';
 
 /**
@@ -13,7 +15,14 @@ const title = (key: MessageKey) => key;
 /** What each page tells search engines about itself (see SeoTags). */
 const seo = (data: SeoRouteData) => data;
 
-/** The addresses prerendered at build time (app.routes.server.ts) and listed in the sitemap. */
+/** A retired place's old address leads to the one that replaced it (Papagayo → Playa Blanca). */
+const retired = (view: 'tiempo' | 'mar'): Routes =>
+  Object.entries(RETIRED_LOCATIONS).map(([old, now]) => ({
+    path: `${view}/${old}`,
+    redirectTo: `/${view}/${now}`,
+  }));
+
+/** The fixed addresses prerendered at build time (app.routes.server.ts), besides each place's two pages. */
 export const PAGE_PATHS = ['', 'zonas', 'mar', 'donde-ir', 'sobre', 'legal', 'mejorar'] as const;
 
 export const routes: Routes = [
@@ -22,7 +31,25 @@ export const routes: Routes = [
   {
     path: '',
     title: title('seo.title.today'),
-    data: seo({ description: 'seo.description.today', image: 'home' }),
+    data: { ...seo({ description: 'seo.description.today', image: 'home' }), page: 'today' },
+    component: TodayPage,
+  },
+  // Each place's weather: Hoy for that place (the same page, kept on screen when
+  // only the place changes: see SamePageReuseStrategy).
+  ...retired('tiempo'),
+  {
+    path: `tiempo/:${ZONE_PARAM}`,
+    canMatch: [knownZone],
+    canActivate: [selectZone],
+    title: title('seo.title.weatherZone'),
+    data: {
+      ...seo({
+        description: 'seo.description.weatherZone',
+        parent: { label: 'nav.zones', path: '/zonas' },
+        image: 'home',
+      }),
+      page: 'today',
+    },
     component: TodayPage,
   },
   {
@@ -34,7 +61,27 @@ export const routes: Routes = [
   {
     path: 'mar',
     title: title('seo.title.sea'),
-    data: seo({ description: 'seo.description.sea', crumb: 'nav.sea', image: 'sea' }),
+    data: {
+      ...seo({ description: 'seo.description.sea', crumb: 'nav.sea', image: 'sea' }),
+      page: 'sea',
+    },
+    loadComponent: () => import('./features/sea/sea.page').then((m) => m.SeaPage),
+  },
+  // Each place's sea: Mar for that place.
+  ...retired('mar'),
+  {
+    path: `mar/:${ZONE_PARAM}`,
+    canMatch: [knownZone],
+    canActivate: [selectZone],
+    title: title('seo.title.seaZone'),
+    data: {
+      ...seo({
+        description: 'seo.description.seaZone',
+        parent: { label: 'nav.sea', path: '/mar' },
+        image: 'sea',
+      }),
+      page: 'sea',
+    },
     loadComponent: () => import('./features/sea/sea.page').then((m) => m.SeaPage),
   },
   {

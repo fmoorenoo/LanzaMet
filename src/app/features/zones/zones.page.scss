@@ -208,6 +208,9 @@ lm-island-map {
 }
 
 .card-main {
+  // A link shaped as the card: no underline but the name's on hover (below).
+  color: inherit;
+  text-decoration: none;
   flex: 1;
   min-width: 0;
   display: flex;

@@ -1,5 +1,6 @@
 import { Component, computed, inject, linkedSignal } from '@angular/core';
-import { Router } from '@angular/router';
+import { zonePath } from '../../core/state/zone-navigation';
+import { RouterLink } from '@angular/router';
 import { msg } from '../../core/i18n/i18n.model';
 import { I18n } from '../../core/i18n/i18n.store';
 import { TranslatePipe } from '../../core/i18n/t.pipe';
@@ -31,6 +32,7 @@ import { IslandMap, MapMarker } from './island-map/island-map';
 @Component({
   selector: 'lm-zones-page',
   imports: [
+    RouterLink,
     IslandMap,
     Scene,
     Icon,
@@ -50,7 +52,6 @@ export class ZonesPage {
   protected readonly island = inject(IslandStore);
   protected readonly locations = inject(LocationsStore);
   protected readonly days = inject(DayStore);
-  private readonly router = inject(Router);
   private readonly i18n = inject(I18n);
 
   /** The place highlighted on the map; starts on the one being followed. */
@@ -142,10 +143,8 @@ export class ZonesPage {
     () => this.cards().find((c) => c.id === this.focusId()) ?? null,
   );
 
-  protected openDay(id: LocationId): void {
-    this.locations.select(id);
-    void this.router.navigateByUrl('/');
-  }
+  /** A place's weather page, for the cards' links. */
+  protected readonly weatherPath = (id: LocationId) => zonePath('weather', id);
 
   protected toggleFavorite(id: LocationId): void {
     this.locations.toggleFavorite(id);

@@ -1,5 +1,5 @@
 import { Component, computed, inject, input } from '@angular/core';
-import { Router } from '@angular/router';
+import { ZoneNavigation } from '../../core/state/zone-navigation';
 import { IsoDate, PlanKind, Recommendation } from '../../core/models';
 import { ClockStore } from '../../core/state/clock.store';
 import { IslandStore } from '../../core/state/island.store';
@@ -44,7 +44,7 @@ export class PlanItem {
   private readonly locations = inject(LocationsStore);
   private readonly island = inject(IslandStore);
   private readonly clock = inject(ClockStore);
-  private readonly router = inject(Router);
+  private readonly zones = inject(ZoneNavigation);
 
   protected readonly kind = computed(() => PLAN_KIND[this.plan().kind]);
 
@@ -66,7 +66,6 @@ export class PlanItem {
   });
 
   protected open(): void {
-    this.locations.select(this.plan().locationId);
-    void this.router.navigateByUrl('/');
+    this.zones.open(this.plan().locationId);
   }
 }

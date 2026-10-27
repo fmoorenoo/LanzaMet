@@ -1,5 +1,7 @@
 import { DOCUMENT } from '@angular/common';
 import { Component, computed, DestroyRef, inject, input, signal } from '@angular/core';
+import { LocationsStore } from '../../../core/state/locations.store';
+import { zonePath } from '../../../core/state/zone-navigation';
 import { DATA_MODE } from '../../../core/data/http/data-config';
 import { Lang } from '../../../core/i18n/i18n.model';
 import { I18n } from '../../../core/i18n/i18n.store';
@@ -53,15 +55,21 @@ export class ShareWeather {
   private readonly document = inject(DOCUMENT);
   private readonly demo = inject(DATA_MODE) === 'demo';
   private readonly navigator = this.document.defaultView?.navigator;
-  private readonly link = shareLink(
+  private readonly origin = shareLink(
     inject(SHARE_CONFIG),
     this.document.defaultView?.location ?? null,
   );
+  private readonly locations = inject(LocationsStore);
+  /** The shared place's own page (/tiempo/famara), so the link opens on that place. */
+  private readonly link = computed(() => {
+    const id = this.locations.selected()?.id;
+    return this.origin && id ? this.origin + zonePath('weather', id) : this.origin;
+  });
 
   protected readonly canCopyImage =
     typeof ClipboardItem !== 'undefined' && !!this.navigator?.clipboard?.write;
   protected readonly canShareText = typeof this.navigator?.share === 'function';
-  protected readonly hasLink = this.link !== null;
+  protected readonly hasLink = this.origin !== null;
 
   protected readonly rendering = signal(false);
   protected readonly sheetOpen = signal(false);
@@ -100,7 +108,7 @@ export class ShareWeather {
     const card = this.card();
     if (!card || this.sharing) return;
     this.sharing = true;
-    const text = this.i18n.t(shareMessage(card, this.link));
+    const text = this.i18n.t(shareMessage(card, this.link()));
     const spinner = setTimeout(() => this.rendering.set(true), SPINNER_DELAY_MS);
     let file: File | null = null;
     try {
@@ -159,7 +167,7 @@ export class ShareWeather {
     if (this.drawn?.card === card && this.drawn.lang === lang) return this.drawn.blob;
     const blob = renderWeatherCard(this.document, card, {
       lang,
-      link: this.link,
+      link: this.link(),
       demo: this.demo,
     }).catch(() => null);
     this.drawn = { card, lang, blob };

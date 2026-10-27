@@ -1,5 +1,6 @@
 import { Component, computed, inject } from '@angular/core';
-import { Router } from '@angular/router';
+import { ZoneNavigation } from '../../core/state/zone-navigation';
+import { ZoneAbout } from '../../shared/zone-about/zone-about';
 import { describeWaves, readSea, seaFacets, seaLevelFor } from '../../core/insights/sea.insight';
 import { msg, Msg, Param } from '../../core/i18n/i18n.model';
 import { TranslatePipe } from '../../core/i18n/t.pipe';
@@ -45,7 +46,16 @@ const WAVE_AMPLITUDE = [0.8, 2, 3.4, 5, 6.6];
  */
 @Component({
   selector: 'lm-sea-page',
-  imports: [Icon, StatusMessage, TideChart, DataCredit, WarningBanner, DayButton, TranslatePipe],
+  imports: [
+    Icon,
+    StatusMessage,
+    TideChart,
+    DataCredit,
+    WarningBanner,
+    DayButton,
+    ZoneAbout,
+    TranslatePipe,
+  ],
   templateUrl: './sea.page.html',
   styleUrl: './sea.page.scss',
   host: { id: 'sea-page', class: 'page sea-page' },
@@ -58,10 +68,17 @@ export class SeaPage {
   protected readonly official = inject(OfficialStore);
   private readonly isDemo = inject(DATA_MODE) === 'demo';
   private readonly clock = inject(ClockStore);
-  private readonly router = inject(Router);
+  private readonly zones = inject(ZoneNavigation);
 
   protected readonly days = inject(DayStore);
   protected readonly location = this.locations.selected;
+  /** The place the address names (/mar/:zona); null at /mar. */
+  protected readonly routeZone = this.zones.routeZone;
+  /** The page's subject, for search engines and screen readers. */
+  protected readonly heading = computed(() => {
+    const zone = this.routeZone();
+    return zone ? msg('seo.heading.seaZone', { place: zone.name }) : msg('seo.heading.sea');
+  });
   /** The moment the page reads: now, or a later day's midday. */
   protected readonly now = this.days.moment;
   protected readonly dayStart = computed(() => dayStart(this.days.day()));
@@ -248,11 +265,10 @@ export class SeaPage {
 
   protected goToNearest(): void {
     const nearest = this.nearestWithTide();
-    if (nearest) this.locations.select(nearest.id);
+    if (nearest) this.zones.switchTo(nearest.id);
   }
 
   protected openDay(id: LocationId): void {
-    this.locations.select(id);
-    void this.router.navigateByUrl('/');
+    this.zones.open(id);
   }
 }

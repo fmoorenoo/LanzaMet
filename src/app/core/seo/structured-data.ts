@@ -19,12 +19,21 @@ export interface PageFacts {
   readonly name: string;
   readonly description: string;
   readonly lang: Lang;
-  /** The page's short name for breadcrumbs; none on the home page. */
-  readonly crumb: string | null;
+  /** The way from the home page to this one, the page last; empty on the home page. */
+  readonly crumbs: readonly { readonly name: string; readonly url: string }[];
+  /** The place a place's page is about (/tiempo/famara); the island otherwise. */
+  readonly place: ZonePlace | null;
   /** The home page's short name ("Inicio"). */
   readonly home: string;
   /** Schema.org type of the page: the About page describes the site itself. */
   readonly type: 'WebPage' | 'AboutPage';
+}
+
+export interface ZonePlace {
+  readonly name: string;
+  readonly municipality: string;
+  readonly latitude: number;
+  readonly longitude: number;
 }
 
 const LANZAROTE = {
@@ -45,15 +54,23 @@ export function structuredData(page: PageFacts): object {
     description: page.description,
     inLanguage,
     isPartOf: { '@id': id('website') },
-    about: page.type === 'AboutPage' ? { '@id': id('organization') } : LANZAROTE,
+    about:
+      page.type === 'AboutPage'
+        ? { '@id': id('organization') }
+        : page.place
+          ? zonePlace(page.place)
+          : LANZAROTE,
   };
-  if (page.crumb) {
+  if (page.crumbs.length > 0) {
+    const way = [{ name: page.home, url: `${page.origin}/` }, ...page.crumbs];
     webPage['breadcrumb'] = {
       '@type': 'BreadcrumbList',
-      itemListElement: [
-        { '@type': 'ListItem', position: 1, name: page.home, item: `${page.origin}/` },
-        { '@type': 'ListItem', position: 2, name: page.crumb, item: page.url },
-      ],
+      itemListElement: way.map((step, i) => ({
+        '@type': 'ListItem',
+        position: i + 1,
+        name: step.name,
+        item: step.url,
+      })),
     };
   }
 
@@ -95,6 +112,20 @@ export function structuredData(page: PageFacts): object {
       },
       webPage,
     ],
+  };
+}
+
+/** A place on the island: where it is, in which municipality, on Lanzarote. */
+function zonePlace(place: ZonePlace): object {
+  return {
+    '@type': 'Place',
+    name: place.name,
+    geo: { '@type': 'GeoCoordinates', latitude: place.latitude, longitude: place.longitude },
+    containedInPlace: {
+      '@type': 'AdministrativeArea',
+      name: place.municipality,
+      containedInPlace: LANZAROTE,
+    },
   };
 }
 

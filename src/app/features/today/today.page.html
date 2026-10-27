@@ -3,7 +3,7 @@
 
 <!-- The page's subject, for search engines and screen readers. The verdict
      below changes with the hour; this stays, and the screen doesn't change. -->
-<h1 id="today-title" class="visually-hidden">{{ 'seo.heading.today' | t }}</h1>
+<h1 id="today-title" class="visually-hidden">{{ heading() | t }}</h1>
 
 <lm-today-hero
   [view]="heroView()"
@@ -151,6 +151,11 @@
         (choose)="chooseDay($event)"
       />
     </section>
+  }
+
+  <!-- A place's own page (/tiempo/:zona) ends with what makes the place itself. -->
+  @if (routeZone(); as zone) {
+    <lm-zone-about class="block today-section" [location]="zone" view="weather" />
   }
 
   <footer id="today-footer" class="foot page-foot">

@@ -56,6 +56,48 @@ export const es = {
     'Quién hace LanzaMet y cómo calcula cada dato: modelos, puntos de mar elegidos zona a zona, mareas estimadas, calima y avisos de AEMET.',
   'seo.heading.today': 'El tiempo en Lanzarote hoy',
   'seo.crumb.home': 'Inicio',
+  // A place's two pages: its weather (/tiempo/:zona) and its sea (/mar/:zona).
+  'seo.title.weatherZone': 'Tiempo en {place} (Lanzarote) hoy: viento y mar',
+  'seo.title.seaZone': 'Mareas y olas en {place} (Lanzarote) hoy',
+  'seo.description.weatherZone':
+    'Previsión para {place} ({area}) hoy y mañana: temperatura, viento y rachas, olas de su costa y marea estimada. Hora a hora y 7 días.',
+  'seo.description.seaZone':
+    'Pleamar y bajamar estimadas en {place} ({area}), altura y periodo de las olas, mar de fondo y temperatura del agua, hoy y mañana.',
+  'seo.heading.weatherZone': 'El tiempo en {place}, Lanzarote',
+  'seo.heading.seaZone': 'Mareas y estado del mar en {place}',
+
+  // ── About each place, at the end of its pages ───────────────
+  'zone.about.title': 'Sobre {place}',
+  'zone.about.puerto-del-carmen':
+    'El gran pueblo turístico de la isla, con la Playa Grande mirando al sur, hacia Fuerteventura.',
+  'zone.about.arrecife':
+    'La capital, frente al mar, entre el Castillo de San Gabriel y la playa de El Reducto.',
+  'zone.about.playa-blanca':
+    'En el extremo sur, frente a Fuerteventura al otro lado de La Bocaina, con las playas de Papagayo muy cerca.',
+  'zone.about.costa-teguise':
+    'En la costa este, abierta al alisio, con la playa de Las Cucharas y su windsurf.',
+  'zone.about.famara':
+    'La gran playa del noroeste, bajo el Risco de Famara: olas y viento la hacen la playa del surf.',
+  'zone.about.la-santa': 'Pueblo de la costa noroeste, frente a la ola de El Quemao.',
+  'zone.about.orzola':
+    'En el extremo norte, el puerto desde el que salen los barcos hacia La Graciosa.',
+  'zone.about.arrieta':
+    'Pueblo marinero de la costa este, con la playa de La Garita y Punta Mujeres al lado.',
+  'zone.about.el-golfo':
+    'En la costa oeste, entre volcanes y arena negra: uno de los mejores sitios para ver el atardecer.',
+  'zone.fact.municipality': 'Municipio',
+  'zone.fact.coast': 'Costa',
+  'zone.fact.coast.value': 'Mira al {dir}',
+  'zone.fact.sea': 'El mar',
+  'zone.fact.sea.value': 'Se lee mar adentro, a {km} km',
+  'zone.fact.station': 'Medidas',
+  'zone.fact.station.value': 'Estación de AEMET {station}',
+  'zone.fact.station.none': 'Sin estación costera cerca',
+  'zone.shared':
+    'El modelo del tiempo no distingue {place} de {other}: verás los mismos valores. El mar de cada una se lee por separado.',
+  'zone.nearby': 'Cerca',
+  'zone.toSea': 'Mareas y olas en {place}',
+  'zone.toWeather': 'El tiempo en {place}',
   'seo.heading.sea': 'Mareas y estado del mar en Lanzarote',
   'seo.heading.plans.place': ' en Lanzarote',
   'plans.heading.lead': '¿Dónde ir hoy',

@@ -14,15 +14,15 @@
       [style.--i]="capsuleIndex()"
     ></span>
     <ul class="tabs nav-tabs">
-      @for (item of items; track item.path) {
+      @for (item of items; track item.path; let i = $index) {
         <li>
+          <!-- Active by section, not by exact address: Hoy covers /tiempo/:zona, Mar covers /mar/:zona. -->
           <a
             class="tab nav-tab"
             [attr.data-route]="item.id"
             [routerLink]="item.path"
-            routerLinkActive="is-active"
-            ariaCurrentWhenActive="page"
-            [routerLinkActiveOptions]="{ exact: item.path === '/' }"
+            [class.is-active]="activeIndex() === i"
+            [attr.aria-current]="activeIndex() === i ? 'page' : null"
           >
             <lm-icon class="tab-icon" [name]="item.icon" />
             <span class="tab-label">{{ item.label | t }}</span>

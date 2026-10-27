@@ -7,6 +7,8 @@ import {
   linkedSignal,
   viewChild,
 } from '@angular/core';
+import { ZoneNavigation } from '../../core/state/zone-navigation';
+import { ZoneAbout } from '../../shared/zone-about/zone-about';
 import { RouterLink } from '@angular/router';
 import { msg, Msg } from '../../core/i18n/i18n.model';
 import { TranslatePipe } from '../../core/i18n/t.pipe';
@@ -103,6 +105,7 @@ function sunLineOf(day: DailyForecast): Msg | null {
     WarningBanner,
     SunPath,
     WebcamLink,
+    ZoneAbout,
     TranslatePipe,
   ],
   templateUrl: './today.page.html',
@@ -120,6 +123,13 @@ export class TodayPage {
   private readonly theme = inject(ThemeStore);
 
   protected readonly location = this.locations.selected;
+  /** The place the address names (/tiempo/:zona); null at /. */
+  protected readonly routeZone = inject(ZoneNavigation).routeZone;
+  /** The page's subject, for search engines and screen readers. */
+  protected readonly heading = computed(() => {
+    const zone = this.routeZone();
+    return zone ? msg('seo.heading.weatherZone', { place: zone.name }) : msg('seo.heading.today');
+  });
 
   private readonly hero = viewChild.required(TodayHero);
 

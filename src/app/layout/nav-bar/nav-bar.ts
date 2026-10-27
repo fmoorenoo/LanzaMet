@@ -1,6 +1,6 @@
 import { Component, computed, effect, inject, signal, untracked } from '@angular/core';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
-import { NavigationEnd, Router, RouterLink, RouterLinkActive } from '@angular/router';
+import { NavigationEnd, Router, RouterLink } from '@angular/router';
 import { delay, filter, map, take } from 'rxjs';
 import { DATA_MODE } from '../../core/data/http/data-config';
 import { MessageKey } from '../../core/i18n/i18n.model';
@@ -25,7 +25,7 @@ interface NavItem {
  */
 @Component({
   selector: 'lm-nav-bar',
-  imports: [RouterLink, RouterLinkActive, Icon, BrandMark, TranslatePipe],
+  imports: [RouterLink, Icon, BrandMark, TranslatePipe],
   templateUrl: './nav-bar.html',
   styleUrl: './nav-bar.scss',
 })
@@ -50,10 +50,11 @@ export class NavBar {
     initialValue: this.router.url,
   });
 
+  /** Hoy is also each place's weather (/tiempo/:zona); Mar, each place's sea (/mar/:zona). */
   protected readonly activeIndex = computed(() => {
     const path = this.url().split(/[?#]/)[0];
     return this.items.findIndex((item) =>
-      item.path === '/' ? path === '/' : path.startsWith(item.path),
+      item.path === '/' ? path === '/' || path.startsWith('/tiempo/') : path.startsWith(item.path),
     );
   });
 

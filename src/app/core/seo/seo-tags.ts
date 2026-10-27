@@ -3,7 +3,9 @@ import { effect, inject, Service, signal } from '@angular/core';
 import { Meta } from '@angular/platform-browser';
 import { NavigationEnd, Router } from '@angular/router';
 import { filter } from 'rxjs';
-import { Lang, MessageKey } from '../i18n/i18n.model';
+import { Lang, MessageKey, msg } from '../i18n/i18n.model';
+import { Location } from '../models';
+import { zoneArea, zoneOfState } from '../state/zone-navigation';
 import { I18n } from '../i18n/i18n.store';
 import { translate } from '../i18n/translate';
 import { SHARE_CONFIG } from '../share/share-config';
@@ -21,8 +23,10 @@ export interface SeoRouteData {
   readonly description?: MessageKey;
   /** Kept out of search results (the "page not found" view). */
   readonly noindex?: boolean;
-  /** The page's short name in breadcrumbs (none for the home page). */
+  /** The page's short name in breadcrumbs (none for the home page); a place's page uses the place's name. */
   readonly crumb?: MessageKey;
+  /** The page a place's page hangs from in breadcrumbs: Zonas for its weather, Mar for its sea. */
+  readonly parent?: { readonly label: MessageKey; readonly path: string };
   /** The picture shown when the page is shared; the home page's by default. */
   readonly image?: OgImage;
   /** The About page describes the site itself (schema.org AboutPage). */
@@ -43,6 +47,8 @@ interface Page {
   readonly data: SeoRouteData;
   /** The route's title, a message key (see app.routes.ts). */
   readonly title: MessageKey | null;
+  /** The place the address names (/tiempo/famara), if any. */
+  readonly zone: Location | null;
 }
 
 /**
@@ -73,18 +79,22 @@ export class SeoTags {
     });
   }
 
-  private route(): Pick<Page, 'data' | 'title'> {
-    let route = this.router.routerState.snapshot.root;
+  private route(): Omit<Page, 'url'> {
+    const state = this.router.routerState.snapshot;
+    let route = state.root;
     while (route.firstChild) route = route.firstChild;
     const title = route.routeConfig?.title;
     return {
       data: route.data as SeoRouteData,
       title: typeof title === 'string' ? (title as MessageKey) : null,
+      zone: zoneOfState(state),
     };
   }
 
-  private apply({ url, data, title }: Page, lang: Lang): void {
-    const description = translate(data.description ?? 'app.description', lang);
+  private apply({ url, data, title, zone }: Page, lang: Lang): void {
+    // A place's page says its name (and municipality) in its title and description.
+    const params = zone ? { place: zone.name, area: zoneArea(zone) } : undefined;
+    const description = translate(msg(data.description ?? 'app.description', params), lang);
     this.meta.updateTag({ name: 'description', content: description });
 
     const noindex = data.noindex === true;
@@ -97,7 +107,14 @@ export class SeoTags {
     const canonical = noindex ? null : canonicalUrl(this.origin, url);
     this.setCanonical(canonical);
 
-    const name = translate(title ?? 'app.brand', lang);
+    const name = translate(msg(title ?? 'app.brand', params), lang);
+    const last = zone?.name ?? (data.crumb ? translate(data.crumb, lang) : null);
+    const crumbs = [
+      ...(data.parent
+        ? [{ name: translate(data.parent.label, lang), url: this.origin + data.parent.path }]
+        : []),
+      ...(last && canonical ? [{ name: last, url: canonical }] : []),
+    ];
     this.setPreview(name, description, canonical, data.image ?? 'home', lang);
     this.setStructuredData(
       canonical === null
@@ -108,7 +125,13 @@ export class SeoTags {
             name,
             description,
             lang,
-            crumb: data.crumb ? translate(data.crumb, lang) : null,
+            crumbs,
+            place: zone && {
+              name: zone.name,
+              municipality: zone.municipality,
+              latitude: zone.position.latitude,
+              longitude: zone.position.longitude,
+            },
             home: translate('seo.crumb.home', lang),
             type: data.about ? 'AboutPage' : 'WebPage',
           }),

@@ -1,5 +1,5 @@
 import { Component, computed, inject, input } from '@angular/core';
-import { Router } from '@angular/router';
+import { ZoneNavigation } from '../../../core/state/zone-navigation';
 import { msg } from '../../../core/i18n/i18n.model';
 import { timeWindow } from '../../../core/i18n/phrases';
 import { TranslatePipe } from '../../../core/i18n/t.pipe';
@@ -43,7 +43,7 @@ export class PlanCard {
   private readonly locations = inject(LocationsStore);
   private readonly island = inject(IslandStore);
   private readonly clock = inject(ClockStore);
-  private readonly router = inject(Router);
+  private readonly zones = inject(ZoneNavigation);
 
   protected readonly icon = computed(() => PLAN_KIND[this.plan().kind].icon);
   protected readonly zone = computed(() => this.island.zone(this.plan().locationId));
@@ -80,7 +80,6 @@ export class PlanCard {
   });
 
   protected open(): void {
-    this.locations.select(this.plan().locationId);
-    void this.router.navigateByUrl('/');
+    this.zones.open(this.plan().locationId);
   }
 }

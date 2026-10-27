@@ -6,6 +6,7 @@ import { TranslatePipe } from './core/i18n/t.pipe';
 import { InstallStore } from './core/pwa/install.store';
 import { ThemeStore } from './core/state/theme.store';
 import { SeoTags } from './core/seo/seo-tags';
+import { ZoneNavigation } from './core/state/zone-navigation';
 import { DayPicker } from './layout/day-picker/day-picker';
 import { LocationPicker } from './layout/location-picker/location-picker';
 import { NavBar } from './layout/nav-bar/nav-bar';
@@ -56,5 +57,7 @@ export class App {
     inject(ThemeStore);
     // Each page names its own address (canonical) for search engines.
     inject(SeoTags);
+    // Which place the address names (/tiempo/:zona, /mar/:zona), from the first navigation.
+    inject(ZoneNavigation);
   }
 }

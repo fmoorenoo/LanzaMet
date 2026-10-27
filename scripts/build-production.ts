@@ -15,7 +15,7 @@
  *                              isn't set up); for local checks only.
  */
 import { spawnSync } from 'node:child_process';
-import { existsSync, readdirSync, readFileSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -75,7 +75,7 @@ for (const file of [
   '_headers',
   'install-prompt.js',
   'robots.txt',
-  'sitemap.xml',
+  '_redirects',
 ]) {
   if (!existsSync(join(dir, file))) fail(`Falta ${file} en la build.`);
 }
@@ -97,12 +97,15 @@ const prerendered = Object.keys(
   ).routes,
 );
 if (prerendered.length < 2) fail('No se ha prerenderizado ninguna página.');
-const sitemap = readFileSync(join(dir, 'sitemap.xml'), 'utf8');
+/** Indexable pages, for the sitemap written below. */
+const indexed: string[] = [];
 
 for (const route of prerendered) {
   const file = route === '/' ? 'index.html' : `${route.slice(1)}/index.html`;
   if (!existsSync(join(dir, file))) fail(`Falta la página prerenderizada ${file}.`);
   const html = readFileSync(join(dir, file), 'utf8');
+  // A retired place's address: a redirect page (public/_redirects answers it with a 301 first).
+  if (/<meta http-equiv="refresh"/.test(html)) continue;
   // Data blocks (application/json, ld+json) don't run; anything else would.
   if (/<script(?![^>]*\bsrc=)(?![^>]*type="application\/(?:ld\+)?json")[^>]*>/i.test(html)) {
     fail(`${file} tiene un script en línea: la Content-Security-Policy lo bloquearía.`);
@@ -121,9 +124,7 @@ for (const route of prerendered) {
     ) {
       fail(`${file} no lleva su dirección canónica.`);
     }
-    if (!sitemap.includes(`<loc>https://lanzamet.com${route}</loc>`)) {
-      fail(`${route} es indexable pero no está en public/sitemap.xml.`);
-    }
+    indexed.push(route);
     // The link preview's picture exists, and the structured data is valid JSON.
     const image = /<meta property="og:image" content="https:\/\/lanzamet\.com\/([^"]+)"/.exec(html);
     if (!image) fail(`${file} no lleva imagen para compartir (og:image).`);
@@ -140,6 +141,29 @@ for (const route of prerendered) {
     }
   }
 }
+// ── Sitemap: every prerendered page that may be indexed, and only those ──
+// No <lastmod>: the weather on them changes every hour, their text rarely,
+// and a date that always says "today" is one search engines learn to ignore.
+const order = ['/', '/zonas', '/mar', '/donde-ir', '/tiempo/', '/mar/', '/sobre', '/legal'];
+const rank = (route: string) => {
+  const i = order.findIndex((p) =>
+    p.endsWith('/') && p !== '/' ? route.startsWith(p) : route === p,
+  );
+  return i === -1 ? order.length : i;
+};
+indexed.sort((a, b) => rank(a) - rank(b) || a.localeCompare(b));
+const urls = indexed.map((route) => `  <url><loc>https://lanzamet.com${route}</loc></url>`);
+writeFileSync(
+  join(dir, 'sitemap.xml'),
+  [
+    '<?xml version="1.0" encoding="UTF-8"?>',
+    '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
+    ...urls,
+    '</urlset>',
+    '',
+  ].join('\n'),
+);
+
 const scripts = readdirSync(dir)
   .filter((name) => name.endsWith('.js'))
   .map((name) => readFileSync(join(dir, name), 'utf8'))
@@ -151,6 +175,6 @@ for (const marker of ['lm-demo-controls', 'Puerto de Arrecife']) {
 if (key && !scripts.includes(key)) fail('La clave de Web3Forms no ha llegado a la build.');
 
 console.log('\n✓ Build de producción lista en dist/lanzamet/browser');
-console.log(`  Páginas prerenderizadas: ${prerendered.join(', ')}`);
+console.log(`  Páginas prerenderizadas: ${prerendered.length}; en el sitemap: ${indexed.length}`);
 console.log(`  Ayúdanos: ${key ? 'clave de Web3Forms incluida' : 'SIN clave (no enviará nada)'}`);
 console.log(`  Enlace al compartir: ${publicUrl || 'la dirección desde la que se abra la web'}`);

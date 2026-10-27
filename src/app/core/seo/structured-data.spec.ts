@@ -6,7 +6,8 @@ const facts = (overrides: Partial<PageFacts> = {}): PageFacts => ({
   name: 'Mareas en Lanzarote hoy',
   description: 'Pleamar y bajamar estimadas.',
   lang: 'es',
-  crumb: 'Mar',
+  crumbs: [{ name: 'Mar', url: 'https://lanzamet.com/mar' }],
+  place: null,
   home: 'Inicio',
   type: 'WebPage',
   ...overrides,
@@ -49,7 +50,7 @@ describe('structuredData', () => {
 
   it('gives the home page no breadcrumb, and the About page the organisation as subject', () => {
     const home = node(
-      structuredData(facts({ url: 'https://lanzamet.com/', crumb: null })),
+      structuredData(facts({ url: 'https://lanzamet.com/', crumbs: [] })),
       'WebPage',
     );
     expect(home?.['breadcrumb']).toBeUndefined();
@@ -64,5 +65,33 @@ describe('structuredData', () => {
     const text = jsonLd({ name: '</script><script>alert(1)</script>' });
     expect(text).not.toContain('<');
     expect(JSON.parse(text)).toEqual({ name: '</script><script>alert(1)</script>' });
+  });
+
+  it('makes a place’s page about that place, in its municipality, on Lanzarote', () => {
+    const data = structuredData(
+      facts({
+        url: 'https://lanzamet.com/tiempo/famara',
+        crumbs: [
+          { name: 'Zonas', url: 'https://lanzamet.com/zonas' },
+          { name: 'Famara', url: 'https://lanzamet.com/tiempo/famara' },
+        ],
+        place: { name: 'Famara', municipality: 'Teguise', latitude: 29.1155, longitude: -13.5565 },
+      }),
+    );
+    expect(node(data, 'WebPage')).toMatchObject({
+      about: {
+        '@type': 'Place',
+        name: 'Famara',
+        geo: { latitude: 29.1155, longitude: -13.5565 },
+        containedInPlace: { name: 'Teguise', containedInPlace: { name: 'Lanzarote' } },
+      },
+      breadcrumb: {
+        itemListElement: [
+          { position: 1, name: 'Inicio' },
+          { position: 2, name: 'Zonas', item: 'https://lanzamet.com/zonas' },
+          { position: 3, name: 'Famara', item: 'https://lanzamet.com/tiempo/famara' },
+        ],
+      },
+    });
   });
 });

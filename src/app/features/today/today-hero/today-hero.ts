@@ -15,6 +15,7 @@ import { Verdict } from '../../../core/insights/verdict.insight';
 import { LocationId, Wind } from '../../../core/models';
 import { ClockStore } from '../../../core/state/clock.store';
 import { LIVE_DATA } from '../../../core/state/live-data';
+import { ZoneNavigation } from '../../../core/state/zone-navigation';
 import { DayStore } from '../../../core/state/day.store';
 import { LocationsStore } from '../../../core/state/locations.store';
 import { formatTime, islandOffsetMinutes } from '../../../core/utils/time';
@@ -102,6 +103,7 @@ export class TodayHero {
   private readonly locations = inject(LocationsStore);
   private readonly clock = inject(ClockStore);
   private readonly live = inject(LIVE_DATA);
+  private readonly zones = inject(ZoneNavigation);
   private readonly placeButton = viewChild.required<ElementRef<HTMLButtonElement>>('placeButton');
   private readonly clockTime = viewChild.required<ElementRef<HTMLElement>>('clockTime');
   private readonly copyWrap = viewChild.required<ElementRef<HTMLElement>>('copyWrap');
@@ -208,7 +210,7 @@ export class TodayHero {
   private selectPlace(id: LocationId, index: number): void {
     const from = this.pages().findIndex((p) => p.current);
     if (id === this.current()?.id) return;
-    this.locations.select(id);
+    this.zones.switchTo(id);
     this.arrive(index > from ? 1 : -1);
   }
 

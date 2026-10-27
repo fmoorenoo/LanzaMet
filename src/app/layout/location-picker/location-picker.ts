@@ -1,4 +1,5 @@
 import { Component, computed, inject, signal } from '@angular/core';
+import { ZoneNavigation } from '../../core/state/zone-navigation';
 import { Msg } from '../../core/i18n/i18n.model';
 import { TranslatePipe } from '../../core/i18n/t.pipe';
 import { zoneHeadline } from '../../core/insights/island.insight';
@@ -49,6 +50,7 @@ const normalise = (text: string) =>
 export class LocationPicker {
   protected readonly ui = inject(UiStore);
   protected readonly locations = inject(LocationsStore);
+  private readonly zones = inject(ZoneNavigation);
   private readonly island = inject(IslandStore);
 
   protected readonly query = signal('');
@@ -89,7 +91,8 @@ export class LocationPicker {
   }
 
   protected choose(id: LocationId): void {
-    this.locations.select(id);
+    // On a place's weather or sea, the address follows the place.
+    this.zones.switchTo(id);
     this.ui.locationPickerOpen.set(false);
     this.query.set('');
   }

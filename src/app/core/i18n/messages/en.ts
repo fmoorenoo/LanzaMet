@@ -52,6 +52,47 @@ export const en: Messages = {
     'Who makes LanzaMet and how each figure is worked out: models, sea points chosen area by area, estimated tides, calima and AEMET warnings.',
   'seo.heading.today': 'Lanzarote weather today',
   'seo.crumb.home': 'Home',
+  // A place's two pages: its weather (/tiempo/:zona) and its sea (/mar/:zona).
+  'seo.title.weatherZone': '{place} weather today, Lanzarote: wind and sea',
+  'seo.title.seaZone': '{place} tide times and waves today, Lanzarote',
+  'seo.description.weatherZone':
+    'Forecast for {place} ({area}) today and tomorrow: temperature, wind and gusts, waves off its coast and estimated tide. Hour by hour and 7 days.',
+  'seo.description.seaZone':
+    'Estimated high and low tides in {place} ({area}), wave height and period, swell and water temperature, today and tomorrow.',
+  'seo.heading.weatherZone': '{place} weather, Lanzarote',
+  'seo.heading.seaZone': 'Tides and sea conditions in {place}',
+
+  // ── About each place, at the end of its pages ───────────────
+  'zone.about.title': 'About {place}',
+  'zone.about.puerto-del-carmen':
+    'The island’s main resort town, with Playa Grande facing south towards Fuerteventura.',
+  'zone.about.arrecife':
+    'The capital, on the seafront, between San Gabriel Castle and El Reducto beach.',
+  'zone.about.playa-blanca':
+    'At the southern tip, facing Fuerteventura across La Bocaina, with the Papagayo beaches close by.',
+  'zone.about.costa-teguise':
+    'On the east coast, open to the trade wind, with Las Cucharas beach and its windsurfing.',
+  'zone.about.famara':
+    'The great north-west beach beneath the Famara cliffs: waves and wind make it the surf beach.',
+  'zone.about.la-santa': 'A village on the north-west coast, facing the El Quemao wave.',
+  'zone.about.orzola': 'At the northern tip, the harbour the boats to La Graciosa leave from.',
+  'zone.about.arrieta':
+    'A fishing village on the east coast, with La Garita beach and Punta Mujeres next door.',
+  'zone.about.el-golfo':
+    'On the west coast, among volcanoes and black sand: one of the best places to watch the sunset.',
+  'zone.fact.municipality': 'Municipality',
+  'zone.fact.coast': 'Coast',
+  'zone.fact.coast.value': 'Faces {dir}',
+  'zone.fact.sea': 'The sea',
+  'zone.fact.sea.value': 'Read offshore, {km} km out',
+  'zone.fact.station': 'Readings',
+  'zone.fact.station.value': 'AEMET station {station}',
+  'zone.fact.station.none': 'No coastal station nearby',
+  'zone.shared':
+    'The weather model can’t tell {place} from {other}: you’ll see the same values. The sea of each is read separately.',
+  'zone.nearby': 'Nearby',
+  'zone.toSea': 'Tides and waves in {place}',
+  'zone.toWeather': '{place} weather',
   'seo.heading.sea': 'Tides and sea conditions in Lanzarote',
   'seo.heading.plans.place': ' in Lanzarote',
   'plans.heading.lead': 'Where to go today',

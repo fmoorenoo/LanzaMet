@@ -325,7 +325,8 @@ Auditoría completa, plan y estado de cada tarea en [`docs/seo-audit/`](docs/seo
 - **Títulos y descripciones** por página en los diccionarios (`seo.*`), aplicados por `I18nTitleStrategy` y `core/seo/seo-tags.ts` (descripción, canonical y `noindex`, que siguen al idioma). Cada página tiene un H1 fijo; en Hoy y Mar es `visually-hidden`, para no cambiar la pantalla, y el veredicto o el titular de marea son párrafos.
 - **Vistas previas y datos estructurados**: cada página lleva Open Graph y Twitter Cards con su imagen (`public/og/*.jpg`, 1200 × 630, sin datos del día) y un JSON-LD (`core/seo/structured-data.ts`: la web, LanzaMet, su fundador y la página), escritos en el HTML prerenderizado. `npm run build:prod` comprueba que la imagen exista y que el JSON-LD sea válido.
 - **Idioma**: siempre español por URL; a rastreadores no se les ofrece inglés ni se les registra el service worker (`core/seo/crawler.ts`).
-- **`public/robots.txt`** abierto, `/api/` incluido (Google lo llama al renderizar), y **`public/sitemap.xml`**: actualízalo al añadir páginas; `npm run build:prod` comprueba que cada página indexable esté en él y lleve su canonical.
+- **Páginas por zona**: `/tiempo/{zona}` (Hoy de esa zona) y `/mar/{zona}` (Mar de esa zona), prerenderizadas para las 9 zonas, con su título, descripción, H1, datos estructurados y, al final, el bloque «Sobre {zona}» (`shared/zone-about`, datos en `core/data/zone-guide.ts` y textos `zone.about.*`). La URL elige la zona; elegirla en Hoy o Mar cambia la URL sin cambiar de página (`core/state/zone-navigation.ts`, `same-page.ts`). Una zona retirada redirige con 301 (`public/_redirects`).
+- **`public/robots.txt`** abierto, `/api/` incluido (Google lo llama al renderizar). El **sitemap** lo escribe `npm run build:prod` con todas las páginas prerenderizadas indexables, y comprueba que cada una lleve su canonical.
 - Search Console y Bing Webmaster Tools dados de alta (27-10-2026).
 
 ## Arquitectura

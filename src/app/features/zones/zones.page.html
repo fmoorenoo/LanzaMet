@@ -63,15 +63,10 @@
               @if (days.isToday()) {
                 <lm-webcam-link [locationId]="zone.id" />
               }
-              <button
-                id="open-zone-day"
-                type="button"
-                class="btn btn--primary"
-                (click)="openDay(zone.id)"
-              >
+              <a id="open-zone-day" class="btn btn--primary" [routerLink]="weatherPath(zone.id)">
                 {{ 'zones.openDay' | t }}
                 <lm-icon name="chevron-right" />
-              </button>
+              </a>
               <button
                 type="button"
                 class="icon-btn star favorite-toggle"
@@ -96,7 +91,8 @@
         <ul class="cards zone-cards">
           @for (card of cards(); track card.id; let i = $index) {
             <li class="card zone-card enter-rise" [attr.data-location-id]="card.id" [style.--i]="i">
-              <button type="button" class="card-main" (click)="openDay(card.id)">
+              <!-- A link to the place's own page (/tiempo/:zona), shaped as before. -->
+              <a class="card-main" [routerLink]="weatherPath(card.id)">
                 <span class="card-art">
                   <lm-scene [state]="card.scene" variant="mini" />
                   <span class="card-temp zone-temperature t-num">{{ card.temperature }}°</span>
@@ -112,8 +108,8 @@
                     }
                   </span>
                 </span>
-              </button>
-              <!-- Over the landscape, outside the card's button: a link in a button is not allowed. -->
+              </a>
+              <!-- Over the landscape, outside the card's link: a link in a link is not allowed. -->
               @if (days.isToday()) {
                 <lm-webcam-link class="card-live" [locationId]="card.id" variant="overlay" />
               }

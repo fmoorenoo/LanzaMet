@@ -1,0 +1,4 @@
+# Retired places (src/app/core/data/locations.ts → RETIRED_LOCATIONS): their old
+# pages move for good to the place that replaced them.
+/tiempo/papagayo /tiempo/playa-blanca 301
+/mar/papagayo /mar/playa-blanca 301
