@@ -1,6 +1,7 @@
 import {
   ArrowDown,
   ArrowUp,
+  ArrowUpRight,
   BookmarkPlus,
   CalendarDays,
   Bug,
@@ -107,6 +108,7 @@ export const ICONS = {
   refresh: lucide(RefreshCw),
   sliders: lucide(SlidersHorizontal),
   info: lucide(Info),
+  external: lucide(ArrowUpRight),
   alert: lucide(TriangleAlert),
   'arrow-up': lucide(ArrowUp),
   'arrow-down': lucide(ArrowDown),

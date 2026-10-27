@@ -29,6 +29,7 @@ describe('dictionaries', () => {
       'demo.scenario.calima',
       'today.demo',
       'install.device.android',
+      'about.credit',
     ];
     const untranslated = (Object.keys(es) as MessageKey[]).filter(
       (key) =>

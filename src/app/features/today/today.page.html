@@ -1,6 +1,10 @@
 @let v = view();
 @let weather = forecast.weather();
 
+<!-- The page's subject, for search engines and screen readers. The verdict
+     below changes with the hour; this stays, and the screen doesn't change. -->
+<h1 id="today-title" class="visually-hidden">{{ 'seo.heading.today' | t }}</h1>
+
 <lm-today-hero
   [view]="heroView()"
   [pending]="weather.pending || forecast.sea().status === 'loading'"

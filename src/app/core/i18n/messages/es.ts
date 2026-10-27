@@ -34,6 +34,70 @@ export const es = {
     'Esta dirección no existe en LanzaMet. Puede que el enlace esté mal escrito o que la página ya no esté.',
   'notFound.next': 'Puedes seguir por aquí:',
 
+  // ── For search engines: each page's title, description and main heading ──
+  // The visible headings stay as they are; these name what each page is about.
+  'seo.title.today': 'El tiempo en Lanzarote hoy: viento, mar y mareas',
+  'seo.title.zones': 'El tiempo por zonas en Lanzarote: mapa de hoy',
+  'seo.title.sea': 'Mareas en Lanzarote hoy: pleamar, bajamar y olas',
+  'seo.title.plans': 'Playas sin viento hoy en Lanzarote: dónde ir',
+  'seo.description.today':
+    'Cómo está hoy el día en Lanzarote: temperatura, viento, mar y mareas por zonas, en palabras claras. Previsión hora a hora y 7 días, sin anuncios.',
+  'seo.description.zones':
+    'Compara el tiempo de las 9 zonas de Lanzarote en un mapa: temperatura, cielo y viento de Famara a Playa Blanca, para hoy y los próximos días.',
+  'seo.description.sea':
+    'Pleamar y bajamar estimadas de hoy y mañana, altura y periodo de las olas, mar de fondo y temperatura del agua en las 9 zonas de Lanzarote.',
+  'seo.description.plans':
+    'Qué playa o rincón de Lanzarote apetece hoy: dónde hay menos viento, el mar más tranquilo o el mejor atardecer, según la previsión de cada zona.',
+  'seo.description.legal':
+    'Privacidad, condiciones de uso y de dónde salen los datos de LanzaMet: Open-Meteo, Météo-France, Copernicus y AEMET.',
+  'seo.description.feedback':
+    'Avisa de un error o propón una mejora para LanzaMet, la web del tiempo y el mar en Lanzarote.',
+  'seo.description.about':
+    'Quién hace LanzaMet y cómo calcula cada dato: modelos, puntos de mar elegidos zona a zona, mareas estimadas, calima y avisos de AEMET.',
+  'seo.heading.today': 'El tiempo en Lanzarote hoy',
+  'seo.heading.sea': 'Mareas y estado del mar en Lanzarote',
+  'seo.heading.plans.place': ' en Lanzarote',
+  'plans.heading.lead': '¿Dónde ir hoy',
+
+  // ── About (/sobre) ──────────────────────────────────────────
+  'route.about': 'Sobre LanzaMet',
+  'settings.about.hint': 'Quién la hace y cómo calcula cada dato.',
+  'about.lead':
+    'Una web gratuita y sin anuncios para entender en un vistazo cómo está el día en Lanzarote: el tiempo, el viento, el mar y las mareas, zona a zona.',
+  'about.who': 'Quién la hace',
+  'about.who.text':
+    'LanzaMet es un proyecto ideado, diseñado y desarrollado por Fernando Montelongo.',
+  'about.studio.member': 'Miembro de',
+  'about.studio': 'Agencia de diseño web en Lanzarote.',
+  'about.who.link': 'Fernando Montelongo en LinkedIn',
+  'about.why': 'Por qué',
+  'about.why.text':
+    'Las previsiones suelen ser tablas de números pensadas para quien ya sabe leerlas. LanzaMet las cuenta con palabras y compara las zonas de la isla, para decidir rápido dónde ir. Sin cuentas, sin cookies y sin seguimiento.',
+  'about.method': 'Cómo se calcula cada dato',
+  'about.method.forecast.label': 'El tiempo',
+  'about.method.forecast':
+    'Modelo DWD ICON a través de Open-Meteo, pedido en las coordenadas de cada zona y actualizado cada 30 minutos.',
+  'about.method.sea.label': 'El mar',
+  'about.method.sea':
+    'Modelos de Météo-France. Como el modelo no llega hasta la orilla, el mar de cada zona se lee en un punto de mar abierto elegido a mano en el lado al que mira su costa, a entre 4 y 18 km.',
+  'about.method.tide.label': 'La marea',
+  'about.method.tide':
+    'Estimada con el nivel del mar del modelo. Comparada con una predicción armónica en Arrecife, se adelanta entre 24 y 37 minutos. No es una tabla oficial ni sirve para navegar.',
+  'about.method.dust.label': 'La calima',
+  'about.method.dust':
+    'Polvo en el aire según el servicio Copernicus (CAMS), con un umbral orientativo.',
+  'about.method.official.label': 'Avisos y medidas',
+  'about.method.official':
+    'Avisos oficiales de AEMET para la isla y su costa, y medidas de sus estaciones. Una zona solo muestra «Medido» si tiene una estación baja a 10 km como máximo.',
+  'about.limits': 'Sus límites',
+  'about.limits.text':
+    'Lo que ves son previsiones de modelos, no garantías. Algunas zonas comparten celda en el modelo y muestran los mismos valores. Antes de bañarte o salir al mar, mira las banderas y sigue a los socorristas.',
+  'about.more': 'Fuentes, licencias y privacidad, en detalle',
+  'about.feedback': '¿Algo que mejorar? Cuéntanoslo',
+  'about.credit': 'Kora Digital Solutions',
+  'common.opensElsewhere': 'Se abre en otra web.',
+  'about.updated': 'Última revisión: 27 de octubre de 2026.',
+
   'nav.label': 'Principal',
   'nav.today': 'Hoy',
   'nav.zones': 'Zonas',

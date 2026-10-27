@@ -2,6 +2,9 @@
 @let place = location();
 
 <header id="sea-header" class="page-head page-header">
+  <!-- The page's subject, for search engines and screen readers. The headline
+       below changes with the tide; this stays, and the screen doesn't change. -->
+  <h1 id="sea-title" class="visually-hidden">{{ 'seo.heading.sea' | t }}</h1>
   <!-- Where and when: the same place and day as in Hoy and Zonas. -->
   <div class="head-chips">
     <button
@@ -28,26 +31,28 @@
     @switch (tides.status) {
       @case ('ready') {
         @if (dayTides(); as day) {
-          <h1 class="t-display">{{ day.title | t }}</h1>
+          <p class="t-display headline">{{ day.title | t }}</p>
           <p class="t-lead t-muted">{{ day.lead | t }}</p>
         } @else if (reading(); as tide) {
-          <h1 class="t-display">
+          <p class="t-display headline">
             <span class="trend" aria-hidden="true">
               <lm-icon [name]="tide.trend === 'subiendo' ? 'tide-up' : 'tide-down'" />
             </span>
             {{ tide.headline | t }}
-          </h1>
+          </p>
           <p class="t-lead t-muted">
             {{ 'seaPage.next' | t: { next: tide.nextLabel, until: tide.untilNext } }}
           </p>
         }
       }
       @case ('empty') {
-        <h1 class="t-display">{{ 'seaPage.noTide.title' | t: { place: place?.name ?? '' } }}</h1>
+        <p class="t-display headline">
+          {{ 'seaPage.noTide.title' | t: { place: place?.name ?? '' } }}
+        </p>
         <p class="t-lead t-muted">{{ 'seaPage.noTide.text' | t }}</p>
       }
       @case ('error') {
-        <h1 class="t-display">{{ 'seaPage.tideError' | t }}</h1>
+        <p class="t-display headline">{{ 'seaPage.tideError' | t }}</p>
       }
       @default {
         <span class="skeleton title-skeleton"></span>

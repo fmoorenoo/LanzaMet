@@ -28,8 +28,10 @@
   gap: var(--s-2);
   min-width: 0;
 
-  h1 {
+  .headline {
     max-width: 16ch;
+    // As it had as a heading (base styles balance headings only).
+    text-wrap: balance;
   }
 }
 

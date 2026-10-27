@@ -1,0 +1,91 @@
+<header id="about-header" class="page-head page-header">
+  <h1 class="t-display">{{ 'route.about' | t }}</h1>
+  <p class="t-lead t-muted lead">{{ 'about.lead' | t }}</p>
+</header>
+
+<div class="content">
+  <section id="about-author" class="section" aria-labelledby="about-author-title">
+    <h2 id="about-author-title" class="t-title">{{ 'about.who' | t }}</h2>
+    <p class="text">{{ 'about.who.text' | t }}</p>
+    <a
+      id="author-link"
+      class="link external-link"
+      href="https://www.linkedin.com/in/fernando-montelongo/"
+      target="_blank"
+      rel="noopener"
+    >
+      {{ 'about.who.link' | t }}
+      <lm-icon name="external" />
+      <span class="visually-hidden">{{ 'common.opensElsewhere' | t }}</span>
+    </a>
+
+    <!-- The studio he belongs to, as a signature: "Miembro de [mark]", and what it is below. -->
+    <div id="about-studio" class="studio">
+      <p class="studio-line">
+        <span class="studio-member">{{ 'about.studio.member' | t }}</span>
+        <a
+          id="studio-credit"
+          class="studio-mark"
+          href="https://koradigitalsolutions.com"
+          target="_blank"
+          rel="noopener"
+        >
+          <!-- One mark for each theme (only one shows): slate letters on light, grey on dark. -->
+          <img
+            class="mark on-light"
+            ngSrc="brand/kora-on-light.png"
+            width="67"
+            height="20"
+            [alt]="'about.credit' | t"
+          />
+          <img
+            class="mark on-dark"
+            ngSrc="brand/kora-on-dark.png"
+            width="67"
+            height="20"
+            [alt]="'about.credit' | t"
+          />
+          <span class="visually-hidden">{{ 'common.opensElsewhere' | t }}</span>
+        </a>
+      </p>
+      <p class="studio-text t-small">{{ 'about.studio' | t }}</p>
+    </div>
+  </section>
+
+  <section id="about-purpose" class="section" aria-labelledby="about-purpose-title">
+    <h2 id="about-purpose-title" class="t-title">{{ 'about.why' | t }}</h2>
+    <p class="text">{{ 'about.why.text' | t }}</p>
+  </section>
+
+  <section id="about-method" class="section" aria-labelledby="about-method-title">
+    <h2 id="about-method-title" class="t-title">{{ 'about.method' | t }}</h2>
+    <ul class="points method-list">
+      @for (method of methods; track method.id) {
+        <li [attr.data-method]="method.id">
+          <span class="label">{{ method.label | t }}</span>
+          <span>{{ method.text | t }}</span>
+        </li>
+      }
+    </ul>
+  </section>
+
+  <section id="about-limits" class="section" aria-labelledby="about-limits-title">
+    <h2 id="about-limits-title" class="t-title">{{ 'about.limits' | t }}</h2>
+    <p class="text">{{ 'about.limits.text' | t }}</p>
+  </section>
+
+  <nav class="next" [attr.aria-label]="'settings.more' | t">
+    <a id="about-legal-link" class="next-link" routerLink="/legal">
+      <lm-icon name="privacy" />
+      <span>{{ 'about.more' | t }}</span>
+      <lm-icon class="chevron" name="chevron-right" />
+    </a>
+    <a id="about-feedback-link" class="next-link" routerLink="/mejorar">
+      <lm-icon name="feedback" />
+      <span>{{ 'about.feedback' | t }}</span>
+      <lm-icon class="chevron" name="chevron-right" />
+    </a>
+  </nav>
+
+  <p class="t-small t-faint updated">{{ 'about.updated' | t }}</p>
+</div>

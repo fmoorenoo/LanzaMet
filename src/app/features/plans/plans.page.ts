@@ -17,7 +17,12 @@ import { PlanCard } from './plan-card/plan-card';
   imports: [PlanCard, StatusMessage, DataCredit, TranslatePipe],
   template: `
     <header id="plans-header" class="page-head page-header">
-      <h1 class="t-display">{{ 'route.plans' | t }}</h1>
+      <!-- Reads "¿Dónde ir hoy en Lanzarote?"; the place is only for screen readers and search engines. -->
+      <h1 class="t-display">
+        {{ 'plans.heading.lead' | t
+        }}<span class="visually-hidden">{{ 'seo.heading.plans.place' | t }}</span
+        >?
+      </h1>
       @if (island.zones().status === 'ready') {
         <p id="island-summary" class="summary t-lead">{{ island.summary() | t }}</p>
       }

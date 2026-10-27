@@ -126,9 +126,9 @@
         </div>
         <lm-wind-gauge id="current-wind" class="wind current-wind is-quiet" [wind]="v.wind" />
         <div class="words">
-          <h1 id="weather-verdict" class="verdict weather-verdict">
+          <p id="weather-verdict" class="verdict weather-verdict">
             {{ v.verdict.headline | t }}
-          </h1>
+          </p>
           <!-- Always laid out (empty when it would only repeat the lines above), so
                choosing another hour never moves the hours below. -->
           <p id="weather-description" class="sentence weather-description">

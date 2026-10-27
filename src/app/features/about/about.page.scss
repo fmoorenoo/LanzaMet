@@ -1,0 +1,220 @@
+// Laid out like Legal: the same head, column and sections.
+:host {
+  display: block;
+  padding-bottom: var(--s-12);
+}
+
+.page-head {
+  display: grid;
+  gap: var(--s-3);
+  padding: calc(var(--safe-top) + var(--s-8)) var(--gutter) var(--s-8);
+}
+
+.lead {
+  max-width: 38ch;
+}
+
+.content {
+  display: grid;
+  gap: var(--s-10);
+  padding: 0 var(--gutter);
+}
+
+.section {
+  display: grid;
+  gap: var(--s-3);
+}
+
+.text {
+  color: var(--c-ink-2);
+  max-width: 60ch;
+}
+
+.points {
+  display: grid;
+
+  li {
+    display: grid;
+    gap: 0.125rem;
+    padding-block: var(--s-3);
+    color: var(--c-ink-2);
+    text-wrap: pretty;
+  }
+
+  li + li {
+    border-top: 1px solid var(--c-line);
+  }
+}
+
+.label {
+  font-weight: 600;
+  color: var(--c-ink);
+}
+
+.link {
+  justify-self: start;
+  color: var(--c-accent);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+.external-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25em;
+
+  lm-icon {
+    width: 1em;
+    height: 1em;
+  }
+}
+
+// The way on, as rows like the ones in Settings.
+.next {
+  display: grid;
+  gap: var(--s-1);
+  margin-top: calc(var(--s-2) - var(--s-10) / 2);
+}
+
+.next-link {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  min-height: 3rem;
+  padding: var(--s-2) var(--s-3);
+  margin-inline: calc(-1 * var(--s-3));
+  border-radius: var(--r-sm);
+  color: inherit;
+  font-weight: 560;
+  text-decoration: none;
+  transition: background-color var(--d-fast) ease;
+
+  span {
+    flex: 1;
+    min-width: 0;
+  }
+
+  lm-icon {
+    flex: none;
+    width: var(--icon-md);
+    height: var(--icon-md);
+  }
+
+  .chevron {
+    color: var(--c-ink-3);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--c-focus);
+    outline-offset: 2px;
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .next-link:hover {
+    background-color: var(--c-surface-sunken);
+  }
+}
+
+.updated {
+  margin-top: calc(var(--s-4) - var(--s-10));
+}
+
+// The studio Fernando belongs to, as a signature under his own line:
+// "Miembro de [mark]", and what the studio is below. The mark behaves as in
+// Kora's own footer credits: quiet, full and lifted a pixel when pointed at.
+.studio {
+  display: grid;
+  gap: var(--s-1);
+  margin-top: var(--s-2);
+  padding-top: var(--s-4);
+  border-top: 1px solid var(--c-line);
+}
+
+.studio-line {
+  display: flex;
+  align-items: center;
+  gap: 0.45em;
+}
+
+.studio-member {
+  color: var(--c-ink-2);
+}
+
+.studio-text {
+  color: var(--c-ink-3);
+}
+
+.studio-mark {
+  display: inline-flex;
+  align-items: center;
+  // A larger target than the mark, without moving it away from "Miembro de".
+  margin-block: calc(-1 * var(--s-2));
+  margin-inline-end: calc(-1 * var(--s-2));
+  padding: var(--s-2) var(--s-2) var(--s-2) 0;
+  border-radius: var(--r-sm);
+
+  &:focus-visible {
+    outline: 2px solid var(--c-focus);
+    outline-offset: 2px;
+  }
+}
+
+.mark {
+  display: block;
+  width: auto;
+  height: 20px;
+  opacity: 0.78;
+  transition:
+    opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+// Slate letters on the light page, grey letters on the dark one.
+.on-dark {
+  display: none;
+}
+
+:host-context([data-theme='dark']) {
+  .on-light {
+    display: none;
+  }
+
+  .on-dark {
+    display: block;
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .studio-mark:hover .mark {
+    opacity: 1;
+    transform: translateY(-1px);
+  }
+}
+
+.studio-mark:focus-visible .mark {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mark {
+    transition: opacity 0.25s ease;
+  }
+
+  .studio-mark:hover .mark {
+    transform: none;
+  }
+}
+
+@media (min-width: 48rem) {
+  .page-head,
+  .content {
+    max-width: 40rem;
+    margin-inline: auto;
+  }
+
+  .page-head {
+    padding-top: var(--s-12);
+  }
+}

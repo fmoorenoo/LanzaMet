@@ -31,6 +31,68 @@ export const en: Messages = {
     "This address doesn't exist on LanzaMet. The link may be mistyped, or the page is gone.",
   'notFound.next': 'You can carry on here:',
 
+  // ── For search engines: each page's title, description and main heading ──
+  'seo.title.today': 'Lanzarote weather today: wind, sea and tides',
+  'seo.title.zones': 'Lanzarote weather by area: today’s map',
+  'seo.title.sea': 'Lanzarote tide times today: high tide, low tide and waves',
+  'seo.title.plans': 'Sheltered beaches in Lanzarote today: where to go',
+  'seo.description.today':
+    'How the day looks in Lanzarote today: temperature, wind, sea and tides, area by area, in plain words. Hour by hour and 7 days ahead, no ads.',
+  'seo.description.zones':
+    'Compare the weather in Lanzarote’s 9 areas on a map: temperature, sky and wind from Famara to Playa Blanca, today and the next few days.',
+  'seo.description.sea':
+    'Estimated high and low tides for today and tomorrow, wave height and period, swell and water temperature in Lanzarote’s 9 areas.',
+  'seo.description.plans':
+    'Where in Lanzarote suits today: the least wind, the calmest sea or the best sunset, from each area’s forecast.',
+  'seo.description.legal':
+    'Privacy, terms of use and where LanzaMet’s data comes from: Open-Meteo, Météo-France, Copernicus and AEMET.',
+  'seo.description.feedback':
+    'Report a problem or suggest an improvement for LanzaMet, the weather and sea site for Lanzarote.',
+  'seo.description.about':
+    'Who makes LanzaMet and how each figure is worked out: models, sea points chosen area by area, estimated tides, calima and AEMET warnings.',
+  'seo.heading.today': 'Lanzarote weather today',
+  'seo.heading.sea': 'Tides and sea conditions in Lanzarote',
+  'seo.heading.plans.place': ' in Lanzarote',
+  'plans.heading.lead': 'Where to go today',
+
+  // ── About (/sobre) ──────────────────────────────────────────
+  'route.about': 'About LanzaMet',
+  'settings.about.hint': 'Who makes it and how each figure is worked out.',
+  'about.lead':
+    'A free, ad-free site to see at a glance how the day looks in Lanzarote: the weather, the wind, the sea and the tides, area by area.',
+  'about.who': 'Who makes it',
+  'about.who.text': 'LanzaMet is a project conceived, designed and built by Fernando Montelongo.',
+  'about.studio.member': 'Member of',
+  'about.studio': 'A web design agency in Lanzarote.',
+  'about.who.link': 'Fernando Montelongo on LinkedIn',
+  'about.why': 'Why',
+  'about.why.text':
+    'Forecasts are usually tables of numbers for people who already know how to read them. LanzaMet puts them into words and compares the island’s areas, so you can quickly decide where to go. No accounts, no cookies and no tracking.',
+  'about.method': 'How each figure is worked out',
+  'about.method.forecast.label': 'The weather',
+  'about.method.forecast':
+    'The DWD ICON model through Open-Meteo, asked for at each area’s coordinates and updated every 30 minutes.',
+  'about.method.sea.label': 'The sea',
+  'about.method.sea':
+    'Météo-France models. As the model doesn’t reach the shore, each area’s sea is read at an open-water point chosen by hand on the side its coast faces, 4 to 18 km out.',
+  'about.method.tide.label': 'The tide',
+  'about.method.tide':
+    'Estimated from the model’s sea level. Compared with a harmonic prediction at Arrecife, it runs 24 to 37 minutes early. It isn’t an official table and isn’t for navigation.',
+  'about.method.dust.label': 'Calima',
+  'about.method.dust':
+    'Dust in the air from the Copernicus service (CAMS), with an indicative threshold.',
+  'about.method.official.label': 'Warnings and readings',
+  'about.method.official':
+    'Official AEMET warnings for the island and its coast, and readings from its stations. An area only shows “Measured” when a low-lying station is no more than 10 km away.',
+  'about.limits': 'Its limits',
+  'about.limits.text':
+    'What you see are model forecasts, not guarantees. Some areas share a model cell and show the same values. Before swimming or going out to sea, check the flags and follow the lifeguards.',
+  'about.more': 'Sources, licences and privacy, in detail',
+  'about.feedback': 'Something to improve? Tell us',
+  'about.credit': 'Kora Digital Solutions',
+  'common.opensElsewhere': 'Opens on another website.',
+  'about.updated': 'Last reviewed: 27 October 2026.',
+
   'nav.label': 'Main',
   'nav.today': 'Today',
   'nav.zones': 'Places',

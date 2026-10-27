@@ -34,8 +34,21 @@
     <lm-install-option />
   }
 
-  <!-- Feedback and the legal page live on their own routes; the sheet closes on the way there. -->
+  <!-- About, feedback and the legal page live on their own routes; the sheet closes on the way there. -->
   <nav class="links" [attr.aria-label]="'settings.more' | t">
+    <a
+      id="about-link"
+      class="sheet-link about-link"
+      routerLink="/sobre"
+      (click)="ui.settingsOpen.set(false)"
+    >
+      <lm-icon name="info" />
+      <span class="choice-text">
+        <span class="choice-label">{{ 'route.about' | t }}</span>
+        <span class="choice-hint">{{ 'settings.about.hint' | t }}</span>
+      </span>
+      <lm-icon class="chevron" name="chevron-right" />
+    </a>
     <a
       id="feedback-link"
       class="sheet-link feedback-link"

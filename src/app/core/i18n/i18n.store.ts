@@ -1,5 +1,5 @@
-import { DOCUMENT } from '@angular/common';
-import { computed, effect, inject, Service, signal } from '@angular/core';
+import { DOCUMENT, isPlatformBrowser } from '@angular/common';
+import { computed, effect, inject, PLATFORM_ID, Service, signal } from '@angular/core';
 import { isCrawler } from '../seo/crawler';
 import { readStored, writeStored } from '../utils/storage';
 import { DEFAULT_LANG, isLang, Lang, LANGS, MessageKey, Msg } from './i18n.model';
@@ -31,8 +31,12 @@ const isTrue = (value: unknown): value is true => value === true;
 export class I18n {
   private readonly document = inject(DOCUMENT);
   private readonly browserLang = detectLang(globalThis.navigator?.languages ?? []);
-  /** Crawlers render in English but index the page as it is: no suggestion for them. */
-  private readonly crawler = isCrawler(globalThis.navigator?.userAgent);
+  /**
+   * Nobody to suggest anything to: a crawler (it renders in English but
+   * indexes the page as it is) or a page being prerendered at build time.
+   */
+  private readonly noVisitor =
+    !isPlatformBrowser(inject(PLATFORM_ID)) || isCrawler(globalThis.navigator?.userAgent);
 
   /** The visitor's own choice; null until they make one. */
   private readonly chosen = signal<Lang | null>(readStored('lang', isLang));
@@ -48,7 +52,7 @@ export class I18n {
    * hasn't chosen yet, nor said no to the suggestion.
    */
   readonly suggestion = computed<Lang | null>(() =>
-    !this.crawler &&
+    !this.noVisitor &&
     this.chosen() === null &&
     !this.suggestionDismissed() &&
     this.browserLang !== this.lang()
@@ -57,12 +61,9 @@ export class I18n {
   );
 
   constructor() {
+    // Each page's description follows the language too (see SeoTags).
     effect(() => {
-      const lang = this.lang();
-      this.document.documentElement.lang = lang;
-      this.document
-        .querySelector('meta[name="description"]')
-        ?.setAttribute('content', translate('app.description', lang));
+      this.document.documentElement.lang = this.lang();
     });
   }
 
