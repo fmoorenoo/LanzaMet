@@ -56,7 +56,10 @@ describe('ZoneAbout', () => {
     expect(fact(el, 'municipality')).toBe('Teguise');
     expect(fact(el, 'coast')).toBe('Mira al noroeste');
     expect(fact(el, 'station')).toBe('Sin estación costera cerca');
-    expect(el.querySelector('[data-fact="webcam"]')).not.toBeNull();
+    // Hoy already shows the camera in its details: not repeated here.
+    expect(el.querySelector('[data-fact="webcam"]')).toBeNull();
+    TestBed.resetTestingModule();
+    expect(render('famara', 'sea').querySelector('[data-fact="webcam"]')).not.toBeNull();
   });
 
   it('says when the model can’t tell two places apart', () => {

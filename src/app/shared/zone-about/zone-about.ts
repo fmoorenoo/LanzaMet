@@ -194,7 +194,10 @@ export class ZoneAbout {
     const station = this.guide()?.station;
     return station ? msg('zone.fact.station.value', { station }) : msg('zone.fact.station.none');
   });
-  protected readonly hasWebcam = computed(() => webcamFor(this.location().id) !== null);
+  /** Hoy already shows the camera in its details; only the sea page needs it here. */
+  protected readonly hasWebcam = computed(
+    () => this.view() === 'sea' && webcamFor(this.location().id) !== null,
+  );
   protected readonly shared = computed(() =>
     zoneById(this.guide()?.sharesWeatherWith ?? undefined),
   );
