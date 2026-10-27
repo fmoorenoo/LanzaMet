@@ -117,7 +117,7 @@ Primer lote (B-01a, B-02, B-03 provisional, B-04, B-05 con JS, B-14) publicado y
 |---|---|---|
 | `/tiempo/{zona}` ×9 | ✅ | B-11 |
 | `/mar/{zona}` ×9 | ✅ | B-11 |
-| `/viento` | 🟦 | B-12 |
+| `/viento` | ✅ | B-12 |
 | `/sobre` | ✅ | B-13 |
 | `/calima` | ⬜ | B-16 |
 | `/avisos` | ⬜ | B-17 |
