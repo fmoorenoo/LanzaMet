@@ -46,7 +46,7 @@ Escala 1-5 (5 = más). Riesgo: 5 = más arriesgado.
 
 ### Fase 0 · Esta semana: errores críticos y medición (≈ 2-3 días)
 
-1. **B-06** Search Console + Bing. **Primero**, para tener una línea base y confirmar T-01 con la Inspección de URL. 🟨 En curso: Search Console verificado e inspección hecha el 27-10-2026 (confirmó T-01 y destapó el bloqueo de `/api/`, ya corregido). Falta Bing.
+1. **B-06** Search Console + Bing. **Primero**, para tener una línea base y confirmar T-01 con la Inspección de URL. ✅ Completada el 27-10-2026: Search Console verificado, sitemap enviado e inspección de las 4 URL (confirmó T-01 y destapó el bloqueo de `/api/`, ya corregido). Bing importado desde Search Console, con sitemap y las 4 URL enviadas.
 2. **B-01a** Español por defecto. ✅ Completada y publicada el 27-10-2026.
 3. **B-02** robots.txt + sitemap (4 URL + legal). ✅ Completada y publicada el 27-10-2026.
 4. **B-04** Cerrar `workers.dev`. ✅ Completada y publicada el 27-10-2026.

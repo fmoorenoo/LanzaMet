@@ -24,7 +24,7 @@ Formato de cada tarea: **Prioridad · Esfuerzo (S ≤ ½ día, M 1-3 días, L > 
 | B-04 | ✅ Completada · publicada | 27-10-2026 | `workers_dev: false`; `DEPLOYMENT.md` actualizado |
 | B-05 | ✅ Parte provisional (JS) completada · publicada | 27-10-2026 | `core/seo/seo-tags.ts` + tests; pasa al HTML con B-10 |
 | B-14 | ✅ Completada · publicada | 27-10-2026 | `public/_headers`; comprobado con el Worker local |
-| B-06 | 🟨 En curso | 27-10-2026 | Search Console verificado; inspección de `/`, `/mar` y `/zonas` hecha por el responsable. Falta Bing Webmaster Tools |
+| B-06 | ✅ Completada | 27-10-2026 | Search Console verificado, sitemap enviado, inspección y solicitud de indexación de `/`, `/mar`, `/zonas` y `/donde-ir`. Bing importado desde Search Console, con sitemap y las 4 URL enviadas. Avisos inocuos: `NG05604` en la consola de Google (el renderizador no registra service workers) y «H1 tag missing» en el analizador de Bing (lee el HTML sin JS; se resuelve con B-10) |
 | Corrección de B-02 y B-01a | ✅ Completada · publicada | 27-10-2026 | Ver «Corrección tras la Inspección de URL» |
 
 Comprobado en local (27-10-2026), con `wrangler dev` y la build de producción:
@@ -94,7 +94,7 @@ La «Prueba de URL publicada» de Search Console en `/`, `/mar` y `/zonas` mostr
 - **Con B-10**: el canonical viene ya en el HTML prerenderizado y el servicio solo lo mantiene en navegaciones internas, **con el mismo valor**.
 - **Aceptación**: el DOM renderizado de cada ruta tiene exactamente un canonical absoluto, sin parámetros.
 
-### B-06 · Search Console y Bing Webmaster Tools · P0 · S · B-02
+### B-06 · Search Console y Bing Webmaster Tools · P0 · S · B-02 · ✅ Completada (27-10-2026)
 
 - Sin código: verificar el **dominio** en Search Console por registro DNS TXT en Cloudflare. Enviar el sitemap. Inspeccionar `/`, `/mar` y `/zonas` y guardar captura del HTML renderizado (para confirmar T-01). Repetir en Bing Webmaster Tools (permite importar desde Search Console).
 - Revisar en Search Console la opción «Search generative AI» (incluido por defecto).

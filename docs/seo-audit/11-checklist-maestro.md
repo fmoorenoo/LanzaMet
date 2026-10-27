@@ -107,7 +107,7 @@ Primer lote (B-01a, B-02, B-03 provisional, B-04, B-05 con JS, B-14) publicado y
 | Elemento | Estado | Evidencia / tarea |
 |---|---|---|
 | Google Search Console | ✅ | Verificado el 27-10-2026 · B-06 |
-| Bing Webmaster Tools | ❓ | B-06 |
+| Bing Webmaster Tools | ✅ | Importado desde Search Console el 27-10-2026; sitemap y 4 URL enviados · B-06. Su analizador marca «H1 tag missing» porque lee el HTML sin JavaScript (T-06): se resuelve con B-10 |
 | Analítica | — | Ninguna, por decisión de privacidad |
 | IndexNow / Crawler Hints | ⬜ | B-25 |
 
