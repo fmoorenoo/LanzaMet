@@ -20,7 +20,7 @@ Primer lote (B-01a, B-02, B-03 provisional, B-04, B-05 con JS, B-14) publicado y
 | Meta robots | ✅ | Ninguna página con `noindex` por error |
 | `noindex` en `/mejorar` | ✅ | B-26 |
 | Enlaces `<a href>` en la navegación | ✅ | Menú con `routerLink` |
-| Zonas enlazables | ❌ | Botones + `localStorage` · B-11 |
+| Zonas enlazables | 🟦 | `/tiempo/{zona}` y `/mar/{zona}`, enlazadas desde Zonas, el bloque de cada zona y el sitemap · B-11 |
 | Páginas huérfanas | ✅ | Ninguna |
 | Profundidad ≤ 2 | ✅ | Todo a 1 clic |
 | Rastreadores de IA no bloqueados | ✅ | 200 con su user agent (sin probar sus IP) |
@@ -56,7 +56,7 @@ Primer lote (B-01a, B-02, B-03 provisional, B-04, B-05 con JS, B-14) publicado y
 | Orden de encabezados | ⚠️ | El H1 ya va primero en Hoy; quedan los 7 encabezados de los paneles en todas · B-23 |
 | Texto estable explicativo | ⚠️ | Mínimo · B-11, `08` |
 | Open Graph / Twitter | ✅ | En cada página, con imagen de 1200 × 630 · B-08 |
-| Compartir la URL de la zona | ⚠️ | Siempre la raíz · B-08 |
+| Compartir la URL de la zona | 🟦 | `/tiempo/{zona}` · B-08 |
 | Alt de imágenes | ✅ | Logo decorativo con `alt=""` |
 | URLs limpias | ✅ | |
 
@@ -65,7 +65,7 @@ Primer lote (B-01a, B-02, B-03 provisional, B-04, B-05 con JS, B-14) publicado y
 | Elemento | Estado | Evidencia / tarea |
 |---|---|---|
 | WebSite + Organization | ✅ | Más Person (fundador, miembro de Kora) · B-09 |
-| WebPage + Place por zona | ✅ / ⬜ | WebPage sobre Lanzarote en cada página; por zona, con B-11 |
+| WebPage + Place por zona | 🟦 | Place con coordenadas y municipio en cada página de zona · B-11 |
 | BreadcrumbList | ✅ | Inicio › página · B-09 |
 | FAQPage | — | No recomendado (retirado en mayo de 2026) |
 
@@ -115,8 +115,8 @@ Primer lote (B-01a, B-02, B-03 provisional, B-04, B-05 con JS, B-14) publicado y
 
 | Página | Estado | Tarea |
 |---|---|---|
-| `/tiempo/{zona}` ×9 | ⬜ | B-11 |
-| `/mar/{zona}` ×9 | ⬜ | B-11 |
+| `/tiempo/{zona}` ×9 | 🟦 | B-11 |
+| `/mar/{zona}` ×9 | 🟦 | B-11 |
 | `/viento` | ⬜ | B-12 |
 | `/sobre` | ✅ | B-13 |
 | `/calima` | ⬜ | B-16 |

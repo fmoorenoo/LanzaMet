@@ -64,9 +64,9 @@ Orden recomendado (cada paso se publica por separado):
 2. **B-13** `/sobre`. ✅ Completada el 27-10-2026 (publicada).
 3. **B-10** Prerender (SSG). Es la pieza grande. Hacerla **antes** de multiplicar URLs, para que las nuevas nazcan prerenderizadas. Incluye el 404 definitivo. ✅ Completada y publicada el 27-10-2026, sin hidratación (ver B-10 en el backlog).
 4. **B-09** JSON-LD y **B-08** Open Graph en el HTML prerenderizado. ✅ Completada el 27-10-2026 (publicada).
-5. **B-11** URLs por zona (18) + sitemap generado.
+5. **B-11** URLs por zona (18) + sitemap generado. ✅ Completada el 27-10-2026 (pendiente de publicar).
 6. **B-12** `/viento`.
-7. **B-15** Enlazado interno.
+7. **B-15** Enlazado interno. 🟨 En parte, con B-11.
 
 **Hecho cuando**: las ~27 URL en español sirven HTML con su contenido estable, metadatos y JSON-LD; Lighthouse SEO 100 y accesibilidad 100; la experiencia de usuario es la misma de hoy.
 

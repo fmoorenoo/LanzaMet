@@ -34,6 +34,8 @@ Formato de cada tarea: **Prioridad · Esfuerzo (S ≤ ½ día, M 1-3 días, L > 
 | B-26 | ✅ Completada · publicada | 27-10-2026 | `/mejorar` con `noindex` (ya estaba fuera del sitemap) |
 | B-09 | ✅ Completada · publicada | 27-10-2026 | JSON-LD en el HTML de cada página indexable (`core/seo/structured-data.ts`): WebSite, Organization (LanzaMet, logo), Person (Fernando Montelongo, LinkedIn, miembro de Kora Digital Solutions), WebPage o AboutPage sobre Lanzarote (Wikipedia) y BreadcrumbList. Validador de Schema.org: 0 errores y 0 avisos en `/`, `/mar` y `/sobre`. Sin datos estructurados en páginas con `noindex`. El build comprueba que existe y es JSON válido |
 | B-08 | ✅ Completada · publicada | 27-10-2026 | Open Graph y Twitter Cards en cada página, en el idioma de la página (`og:locale` es_ES / en_GB). 5 imágenes de 1200 × 630 en `public/og/` (37-49 kB, sin datos del día). El build comprueba que la imagen enlazada existe. Pendiente para B-11: que «Compartir» envíe la URL de la zona (hoy solo Hoy comparte, y su URL es la portada) |
+| B-11 | ✅ Completada · pendiente de publicar | 27-10-2026 | 18 páginas prerenderizadas: `/tiempo/{zona}` (Hoy de esa zona) y `/mar/{zona}` (Mar de esa zona), con título, descripción (con su municipio), H1, canonical, JSON-LD (`Place` con coordenadas y municipio, migas Inicio › Zonas/Mar › zona) y vista previa. La URL elige la zona (y la recuerda); elegir zona en Hoy o Mar lleva a su URL sin recrear la página ni lanzar la transición (`SamePageReuseStrategy`), sin añadir historial. Tarjetas y botón de Zonas, ahora enlaces `<a href>`; planes y lista de Mar abren la zona. Pestañas activas por sección. Nombres que no son zona → 404; Papagayo → 301 a Playa Blanca (`public/_redirects`). Bloque «Sobre esta zona» al final de cada página de zona (`shared/zone-about`): una frase, municipio, costa, distancia del punto de mar (coinciden con el README, con test), estación de AEMET, webcam, aviso de celda compartida y enlaces a su otra página y a 2 zonas cercanas. Sitemap generado en el build (24 URL). En `/` y `/mar` nada cambia (comparación píxel a píxel). Lighthouse: accesibilidad y SEO 100 |
+| B-08 (compartir) | ✅ Completada · pendiente de publicar | 27-10-2026 | «Compartir» envía la URL de la zona (`/tiempo/{zona}`) |
 | Service worker y rastreadores | ✅ Completada · publicada | 27-10-2026 | No se registra para rastreadores (`isCrawler`): desaparece el `NG05604` de Search Console. Comprobado: Googlebot 0 registros, visitante 1 |
 
 Comprobado en local (27-10-2026), con `wrangler dev` y la build de producción:
@@ -156,7 +158,7 @@ La «Prueba de URL publicada» de Search Console en `/`, `/mar` y `/zonas` mostr
   - Tests y lint en verde; `deploy:check` correcto.
 - **Riesgos**: hidratación con estado local (mitigado por idioma y zona en URL), tamaño del build, tiempo de build. Cloudflare sirve `/mar` desde `mar/index.html` o `mar.html` según `html_handling`: **comprobar** que no se introduce una redirección con barra final.
 
-### B-11 · URLs por zona: `/tiempo/{zona}` y `/mar/{zona}` · P1 · L · B-07, B-10 (recomendado)
+### B-11 · URLs por zona: `/tiempo/{zona}` y `/mar/{zona}` · P1 · L · B-07, B-10 (recomendado) · ✅ Completada (27-10-2026, pendiente de publicar)
 
 - **Archivos**: `app.routes.ts` (`tiempo/:zona`, `mar/:zona`, con `withComponentInputBinding()` o lectura del parámetro), `features/today/today.page.ts`, `features/sea/sea.page.ts`, `core/state/locations.store.ts` (la URL manda al entrar; se sigue guardando la elección), `layout/location-picker/location-picker.html` (botones → `<a [routerLink]>` con el mismo aspecto, a la vista actual), `features/zones/zones.page.html` y `island-map.html` (tarjetas y puntos → enlaces), `features/plans/plan-card/*` (enlace a la zona), mensajes (intro y «Sobre esta zona» ×9 en ES y EN; ver `08` §3), `SeoService` (title, description y JSON-LD por zona), sitemap.
 - **Reglas**: slug desconocido → 404 (B-03). `RETIRED_LOCATIONS` (`papagayo`) → redirección a `/tiempo/playa-blanca`. `/` sigue mostrando la zona guardada o la de por defecto, con su title de isla.
@@ -192,7 +194,7 @@ La «Prueba de URL publicada» de Search Console en `/`, `/mar` y `/zonas` mostr
 - **Verificar** que los nombres reales del build coinciden con estos prefijos y que ninguna regla alcanza a `ngsw-worker.js`, `ngsw.json`, `safety-worker.js`, `install-prompt.js`, `manifest.webmanifest` ni `index.html`.
 - **Aceptación**: `curl -I` de un chunk → `immutable`; un despliegue nuevo sigue llegando a las copias instaladas (lista de `DEPLOYMENT.md` §6).
 
-### B-15 · Enlazado interno contextual · P1 · M · B-11, B-12
+### B-15 · Enlazado interno contextual · P1 · M · B-11, B-12 · 🟨 En parte: Zonas → zona, zona ↔ su otra página y zonas cercanas (con B-11); falta el bloque de zonas en Hoy y los pies (pendiente de /viento)
 
 - **Archivos**: según `05-arquitectura-seo.md` §5.
 - **Aceptación**: ninguna página indexable queda a más de 2 clics de `/`; todas las URL del sitemap reciben al menos un enlace interno `<a href>` (comprobar con un rastreo del DOM renderizado).
