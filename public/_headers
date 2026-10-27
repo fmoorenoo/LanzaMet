@@ -14,8 +14,22 @@
   Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=(), browsing-topics=()
   Cross-Origin-Opener-Policy: same-origin
 
+# ── Hashed files: a new build gives them new names, so they never change ──
+# Kept for a year without asking again. Only names the build hashes match
+# here (main-…, chunk-…, styles-…, polyfills-… and the fonts in media/); the
+# service worker files, install-prompt.js, the manifest and the HTML are not.
+/main-*
+  Cache-Control: public, max-age=31536000, immutable
+/chunk-*
+  Cache-Control: public, max-age=31536000, immutable
+/styles-*
+  Cache-Control: public, max-age=31536000, immutable
+/polyfills-*
+  Cache-Control: public, max-age=31536000, immutable
+/media/*
+  Cache-Control: public, max-age=31536000, immutable
+
 # ── Always asked for again, so a new deploy reaches installed copies ──────
-# (The hashed JS and CSS never change; Cloudflare revalidates them by ETag.)
 /
   Cache-Control: no-cache
 /index.html

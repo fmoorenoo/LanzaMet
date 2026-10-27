@@ -74,6 +74,8 @@ for (const file of [
   'manifest.webmanifest',
   '_headers',
   'install-prompt.js',
+  'robots.txt',
+  'sitemap.xml',
 ]) {
   if (!existsSync(join(dir, file))) fail(`Falta ${file} en la build.`);
 }

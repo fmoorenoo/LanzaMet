@@ -1,0 +1,7 @@
+# LanzaMet · https://lanzamet.com
+# Every page is open to search engines. /api/ only serves data to the site itself.
+User-agent: *
+Allow: /
+Disallow: /api/
+
+Sitemap: https://lanzamet.com/sitemap.xml

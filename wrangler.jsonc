@@ -22,7 +22,8 @@
   // The site's domain. Each deploy makes sure its DNS record and HTTPS certificate exist;
   // the domain must be in this Cloudflare account (see DEPLOYMENT.md).
   "routes": [{ "pattern": "lanzamet.com", "custom_domain": true }],
-  // The free *.workers.dev address keeps working too, as a fallback; set to false to close it.
-  "workers_dev": true,
+  // Closed: the *.workers.dev address served an exact copy of the site, which search
+  // engines could index as a duplicate. Only lanzamet.com answers. Set to true to reopen it.
+  "workers_dev": false,
   "preview_urls": false
 }
