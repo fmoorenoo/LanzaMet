@@ -32,6 +32,8 @@ Formato de cada tarea: **Prioridad · Esfuerzo (S ≤ ½ día, M 1-3 días, L > 
 | B-03 (definitiva) | ✅ Completada · publicada | 27-10-2026 | Estado HTTP 404 real: el Worker responde a lo que no es un archivo con la página vacía de la app (`notFoundPage` en `server/api.ts`, con tests). `404.html` no sirve con un Worker (Cloudflare le pasa esas peticiones). Arregla además que `/salud` o `/avisos` sin `/api` devolvieran el JSON del API |
 | B-05 (en HTML) | ✅ Completada · publicada | 27-10-2026 | El canonical va en el HTML prerenderizado; `SeoTags` lo mantiene igual al navegar |
 | B-26 | ✅ Completada · publicada | 27-10-2026 | `/mejorar` con `noindex` (ya estaba fuera del sitemap) |
+| B-09 | ✅ Completada · pendiente de publicar | 27-10-2026 | JSON-LD en el HTML de cada página indexable (`core/seo/structured-data.ts`): WebSite, Organization (LanzaMet, logo), Person (Fernando Montelongo, LinkedIn, miembro de Kora Digital Solutions), WebPage o AboutPage sobre Lanzarote (Wikipedia) y BreadcrumbList. Validador de Schema.org: 0 errores y 0 avisos en `/`, `/mar` y `/sobre`. Sin datos estructurados en páginas con `noindex`. El build comprueba que existe y es JSON válido |
+| B-08 | ✅ Completada · pendiente de publicar | 27-10-2026 | Open Graph y Twitter Cards en cada página, en el idioma de la página (`og:locale` es_ES / en_GB). 5 imágenes de 1200 × 630 en `public/og/` (37-49 kB, sin datos del día). El build comprueba que la imagen enlazada existe. Pendiente para B-11: que «Compartir» envíe la URL de la zona (hoy solo Hoy comparte, y su URL es la portada) |
 | Service worker y rastreadores | ✅ Completada · publicada | 27-10-2026 | No se registra para rastreadores (`isCrawler`): desaparece el `NG05604` de Search Console. Comprobado: Googlebot 0 registros, visitante 1 |
 
 Comprobado en local (27-10-2026), con `wrangler dev` y la build de producción:
@@ -118,14 +120,14 @@ La «Prueba de URL publicada» de Search Console en `/`, `/mar` y `/zonas` mostr
 - **Diseño**: el veredicto conserva clases y estilo; el nuevo H1 ocupa la línea «En Lanzarote» existente. **Validar visualmente** a 390, 820 y 1440 px (las anchuras del README) y comprobar que el desplazamiento de layout sigue en 0.
 - **Aceptación**: cada ruta tiene un title y una description propios y un solo H1, estable y con «Lanzarote»; AXE sin errores; Lighthouse accesibilidad 100.
 
-### B-08 · Open Graph, Twitter Cards e imágenes sociales · P1 · S · B-07
+### B-08 · Open Graph, Twitter Cards e imágenes sociales · P1 · S · B-07 · ✅ Completada (27-10-2026, pendiente de publicar); compartir la URL de la zona, con B-11
 
 - **Archivos**: `SeoService`, `public/og/*.png` (1200×630, sin datos del día), mensajes.
 - **Cambio**: `og:title`, `og:description`, `og:url`, `og:image`, `og:type`, `og:site_name`, `og:locale`, `twitter:card`. **Hasta B-10 solo funciona para clientes que ejecutan JS** (casi ninguna red social): el efecto real llega con el prerender.
 - **Compartir**: `core/share/share-config.ts` → `shareLink()` devuelve la URL de la página o la zona actual (con B-11), no solo la raíz.
 - **Aceptación**: con B-10, el depurador de Facebook y la vista previa de WhatsApp muestran título e imagen por página.
 
-### B-09 · Datos estructurados base · P1 · S · B-10 (en HTML), puede adelantarse con JS
+### B-09 · Datos estructurados base · P1 · S · B-10 (en HTML), puede adelantarse con JS · ✅ Completada (27-10-2026, pendiente de publicar)
 
 - **Archivos**: `SeoService` (inserta y actualiza un único `<script type="application/ld+json" id="ld-json">`), `scripts/build-production.ts` (permitir ese tipo en la comprobación de «sin scripts en línea»).
 - **Contenido**: `06-seo-onpage.md` §5. Generar `Place` desde `LOCATIONS`.
