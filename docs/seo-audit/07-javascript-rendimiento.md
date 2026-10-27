@@ -78,6 +78,8 @@ Google renderiza JS, así que **no es imprescindible para aparecer en Google**. 
 
 ### 4.1 Diseño de la opción A
 
+> **Implementada el 27-10-2026** con dos cambios respecto a este diseño: sin hidratación (la app redibuja la página al arrancar) y 404 servido por el Worker en lugar de `404.html`, porque Cloudflare no sirve `404.html` cuando hay un Worker. El fallback sin conexión es `index.csr.html`, probado. Detalle y resultados en `14-backlog-seo.md` (B-10).
+
 - **Qué se prerenderiza**: shell de navegación, H1 y textos estables de cada ruta, bloque «Sobre esta zona», enlaces internos, metadatos, JSON-LD y esqueletos de los datos.
 - **Qué no**: nada que dependa de la hora o de los datos (veredicto, temperatura, marea, escena). El prerender no debe pintar un tiempo concreto: quedaría congelado en el momento del build.
 - **Rutas**: todas las de `05-arquitectura-seo.md` (ES, más EN cuando exista), con `getPrerenderParams` devolviendo los 9 slugs de `LOCATIONS`.

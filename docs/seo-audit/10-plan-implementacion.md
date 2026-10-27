@@ -60,9 +60,9 @@ Escala 1-5 (5 = más). Riesgo: 5 = más arriesgado.
 
 Orden recomendado (cada paso se publica por separado):
 
-1. **B-07** Titles, descriptions y H1 (con validación de diseño).
-2. **B-13** `/sobre`.
-3. **B-10** Prerender (SSG). Es la pieza grande. Hacerla **antes** de multiplicar URLs, para que las nuevas nazcan prerenderizadas. Incluye el 404 definitivo.
+1. **B-07** Titles, descriptions y H1 (con validación de diseño). ✅ Completada el 27-10-2026 (pendiente de publicar).
+2. **B-13** `/sobre`. ✅ Completada el 27-10-2026 (pendiente de publicar).
+3. **B-10** Prerender (SSG). Es la pieza grande. Hacerla **antes** de multiplicar URLs, para que las nuevas nazcan prerenderizadas. Incluye el 404 definitivo. ✅ Completada el 27-10-2026 (pendiente de publicar), sin hidratación (ver B-10 en el backlog).
 4. **B-09** JSON-LD y **B-08** Open Graph en el HTML prerenderizado.
 5. **B-11** URLs por zona (18) + sitemap generado.
 6. **B-12** `/viento`.

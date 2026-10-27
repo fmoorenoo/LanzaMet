@@ -26,6 +26,13 @@ Formato de cada tarea: **Prioridad · Esfuerzo (S ≤ ½ día, M 1-3 días, L > 
 | B-14 | ✅ Completada · publicada | 27-10-2026 | `public/_headers`; comprobado con el Worker local |
 | B-06 | ✅ Completada | 27-10-2026 | Search Console verificado, sitemap enviado, inspección y solicitud de indexación de `/`, `/mar`, `/zonas` y `/donde-ir`. Bing importado desde Search Console, con sitemap y las 4 URL enviadas. Avisos inocuos: `NG05604` en la consola de Google (el renderizador no registra service workers) y «H1 tag missing» en el analizador de Bing (lee el HTML sin JS; se resuelve con B-10) |
 | Corrección de B-02 y B-01a | ✅ Completada · publicada | 27-10-2026 | Ver «Corrección tras la Inspección de URL» |
+| B-07 | ✅ Completada · pendiente de publicar | 27-10-2026 | Title y description propios en cada página (`seo.*` en los diccionarios; `SeoTags` pone la description según la ruta y el idioma). H1 estable sin cambio visual: en Hoy y Mar, un H1 `visually-hidden` («El tiempo en Lanzarote hoy», «Mareas y estado del mar en Lanzarote»), y el veredicto y el titular de marea pasan a `<p>` con las mismas clases; en Dónde ir, «en Lanzarote» oculto dentro del H1 visible. Comparación píxel a píxel antes/después a 390 y 1440 px: < 0,3 % de diferencia, solo por el paso del tiempo |
+| B-13 | ✅ Completada · pendiente de publicar | 27-10-2026 | `/sobre` (`features/about`): autor (Fernando Montelongo, con enlace a LinkedIn), por qué, método de cada dato y límites; fila «Sobre LanzaMet» en Ajustes, primera de su grupo; firma en «Quién la hace»: «Miembro de [logotipo de Kora]» y debajo «Agencia de diseño web en Lanzarote.», con el comportamiento de cm4costaviva.com (20 px, al 78 %, 100 % y −1 px al pasar el ratón), sin «Diseñado por»; una versión por tema (letras gris pizarra en claro, gris claro en oscuro) y el punto coral un 25 % mayor y algo más separado de la A. En el sitemap |
+| B-10 | ✅ Completada · pendiente de publicar | 27-10-2026 | `@angular/ssr` 22.2.3, `outputMode: "static"` solo en producción: 7 páginas prerenderizadas con title, description, canonical, H1 y texto fijo. Sin datos en el HTML (`LIVE_DATA`: los stores no piden nada al prerenderizar) y sin hidratación (la app redibuja al arrancar, como antes). `html_handling: "drop-trailing-slash"` (`/mar/` → `/mar`). El service worker usa `index.csr.html` sin conexión (probado). Ver notas en B-10 |
+| B-03 (definitiva) | ✅ Completada · pendiente de publicar | 27-10-2026 | Estado HTTP 404 real: el Worker responde a lo que no es un archivo con la página vacía de la app (`notFoundPage` en `server/api.ts`, con tests). `404.html` no sirve con un Worker (Cloudflare le pasa esas peticiones). Arregla además que `/salud` o `/avisos` sin `/api` devolvieran el JSON del API |
+| B-05 (en HTML) | ✅ Completada · pendiente de publicar | 27-10-2026 | El canonical va en el HTML prerenderizado; `SeoTags` lo mantiene igual al navegar |
+| B-26 | ✅ Completada · pendiente de publicar | 27-10-2026 | `/mejorar` con `noindex` (ya estaba fuera del sitemap) |
+| Service worker y rastreadores | ✅ Completada · pendiente de publicar | 27-10-2026 | No se registra para rastreadores (`isCrawler`): desaparece el `NG05604` de Search Console. Comprobado: Googlebot 0 registros, visitante 1 |
 
 Comprobado en local (27-10-2026), con `wrangler dev` y la build de producción:
 - 222 tests, lint y build con sus comprobaciones en verde; el bundle inicial queda en 698 kB.
@@ -75,7 +82,7 @@ La «Prueba de URL publicada» de Search Console en `/`, `/mar` y `/zonas` mostr
 - **Aceptación**: `curl -I https://lanzamet.com/robots.txt` → 200 `text/plain`; `curl -I …/sitemap.xml` → 200 XML válido; Lighthouse SEO sin el fallo `robots-txt`; Search Console acepta el sitemap.
 - **Ojo**: `ngsw-config.json` no debe cachear ni servir el HTML en esas rutas (comprobar `navigationUrls`).
 
-### B-03 · 404 real para URLs inexistentes · P0 · S (provisional) / M (definitivo) · B-10 para el definitivo · ✅ Provisional completada (27-10-2026, publicada); definitiva pendiente de B-10
+### B-03 · 404 real para URLs inexistentes · P0 · S (provisional) / M (definitivo) · B-10 para el definitivo · ✅ Provisional publicada; definitiva completada (27-10-2026, pendiente de publicar)
 
 - **Provisional (sin prerender)**: componente `features/not-found/not-found.page.ts` con mensaje y enlaces a las 4 secciones; ruta `**` → ese componente (en lugar de `redirectTo: ''`); en ella, `Meta.updateTag({ name: 'robots', content: 'noindex' })` y retirarlo al salir. Es la alternativa que Google acepta para SPAs ([JavaScript SEO basics](https://developers.google.com/search/docs/crawling-indexing/javascript/javascript-seo-basics)).
 - **Definitivo (con B-10)**: prerenderizar `404.html` y `wrangler.jsonc` → `"not_found_handling": "404-page"`.
@@ -88,7 +95,7 @@ La «Prueba de URL publicada» de Search Console en `/`, `/mar` y `/zonas` mostr
 - **Opción 2** (conserva la reserva para el API): en `server/api.ts` no se puede, porque el Worker solo corre en `/api/*`. Habría que añadir `run_worker_first` para HTML en ese host, lo que cuesta peticiones. **Se recomienda la opción 1** y actualizar `DEPLOYMENT.md` §5.7.
 - **Aceptación**: `curl -I https://lanzamet.lanzamet.workers.dev/` → no 200 con la web.
 
-### B-05 · Canonical por ruta · P0 · S (con JS) · — · ✅ Parte con JS completada (27-10-2026, publicada); en HTML con B-10
+### B-05 · Canonical por ruta · P0 · S (con JS) · — · ✅ Con JS publicada; en HTML completada (27-10-2026, pendiente de publicar)
 
 - **Ahora**: un servicio `SeoService` (`@Service()`) que, en cada `NavigationEnd`, pone `<link rel="canonical" href="https://lanzamet.com{ruta sin query}">`, usando `DOCUMENT` (sin manipular el DOM fuera de Angular más de lo imprescindible). Base URL desde `PUBLIC_URL` (ya existe en el build, `core/share/share-config.ts`).
 - **Con B-10**: el canonical viene ya en el HTML prerenderizado y el servicio solo lo mantiene en navegaciones internas, **con el mismo valor**.
@@ -104,7 +111,7 @@ La «Prueba de URL publicada» de Search Console en `/`, `/mar` y `/zonas` mostr
 
 ## P1 · Alto impacto
 
-### B-07 · Title, description y H1 por ruta · P1 · M · B-05
+### B-07 · Title, description y H1 por ruta · P1 · M · B-05 · ✅ Completada (27-10-2026, pendiente de publicar)
 
 - **Archivos**: `src/app/app.routes.ts` (añadir `data: { description: 'route.x.description' }`), `core/i18n/i18n-title.strategy.ts` (o el `SeoService` de B-05) para poner también la description, `i18n.store.ts:40-42` (dejar de pisar la description global), mensajes ES/EN, `features/today/today-hero/today-hero.html` (veredicto `<h1>` → `<p>`, nuevo H1), `features/sea/sea.page.html:31-50` (ídem), `features/plans/plans.page.ts` (H1 con «en Lanzarote»).
 - **Textos**: `06-seo-onpage.md` §1-3.
@@ -124,7 +131,13 @@ La «Prueba de URL publicada» de Search Console en `/`, `/mar` y `/zonas` mostr
 - **Contenido**: `06-seo-onpage.md` §5. Generar `Place` desde `LOCATIONS`.
 - **Aceptación**: Rich Results Test y validator.schema.org sin errores; la CSP no muestra avisos en la consola.
 
-### B-10 · Prerender (SSG) con `@angular/ssr` · P1 · L · B-01a
+### B-10 · Prerender (SSG) con `@angular/ssr` · P1 · L · B-01a · ✅ Completada (27-10-2026, pendiente de publicar)
+
+> **Cómo quedó** (difiere del plan en dos puntos):
+> - **Sin hidratación** (`provideClientHydration` no se activa). Con datos que dependen de la hora y de `localStorage`, hidratar habría dado errores de desajuste. La app redibuja la página al arrancar; visualmente es igual (CLS 0). Consecuencia: el LCP móvil de laboratorio sigue en ~4 s (FCP 3,4 → 3,1 s). Mejorarlo con hidratación incremental queda como tarea futura.
+> - **404 desde el Worker**, no con `404.html`: con un Worker, Cloudflare no sirve `404.html` y le pasa la petición.
+>
+> Lighthouse local tras el cambio: accesibilidad 100 y SEO 100 en `/`, `/mar` y `/sobre`.
 
 - **Archivos**: `angular.json` (`outputMode: "static"`, `server`, `ssr`), `src/main.server.ts`, `src/app/app.config.server.ts` (`provideServerRendering(withRoutes(serverRoutes))`), `src/app/app.routes.server.ts` (`RenderMode.Prerender` en todas; `getPrerenderParams` para las zonas), `src/app/app.config.ts` (`provideClientHydration()`), stores que leen `localStorage`/`navigator`/`window`/`new Date()` en la construcción (`i18n.store.ts`, `locations.store.ts`, `theme.store.ts`, `clock.store.ts`, `core/pwa/*`, `core/utils/storage.ts`), escena (`shared/scene`), `ngsw-config.json` (fallback de navegación), `wrangler.jsonc` (`not_found_handling: "404-page"`), `scripts/build-production.ts` (comprobaciones en todos los HTML).
 - **Pasos**:
@@ -153,7 +166,7 @@ La «Prueba de URL publicada» de Search Console en `/`, `/mar` y `/zonas` mostr
 - **Contenido**: `05-arquitectura-seo.md` §4.7.
 - **Aceptación**: `/viento` lista el viento y las rachas de las 9 zonas, ordena «dónde hay menos viento» y explica la escala; sin pestaña nueva en el menú; AXE limpio.
 
-### B-13 · Página `/sobre` e identidad del titular · P1 · S · —
+### B-13 · Página `/sobre` e identidad del titular · P1 · S · — · ✅ Completada (27-10-2026, pendiente de publicar)
 
 - **Archivos**: `features/about/about.page.ts` (nueva), `app.routes.ts`, enlaces desde `layout/settings-panel/settings-panel.html`, `features/legal/legal.page.html` y pies; mensajes.
 - **Contenido**: quién lo hace, por qué, metodología (README §Fuentes, §Puntos de consulta, §Mareas), límites, contacto. El nombre del titular o la entidad lo decide el responsable (E-01; revisar la LSSI con asesoría).
@@ -198,7 +211,7 @@ La «Prueba de URL publicada» de Search Console en `/`, `/mar` y `/zonas` mostr
 | B-23 | Paneles sin contenido en el DOM hasta abrirse (menos encabezados repetidos y nodos) | M | — | `app.html`, `layout/location-picker`, `day-picker`, `settings-panel`, `shared/ui/sheet` | Cada página tiene solo sus encabezados; foco y animaciones intactos |
 | B-24 | Rendimiento: `dom-size` de Zonas, `forced-reflow`, TBT, precarga de fuente | M | — | `07` §5 | TBT móvil < 200 ms en laboratorio; DOM de `/zonas` < 1 500 |
 | B-25 | Cloudflare Crawler Hints (IndexNow) | S | B-02 | Panel de Cloudflare (sin código) | Activado; Bing Webmaster muestra URLs enviadas |
-| B-26 | `noindex, follow` en `/mejorar` | S | B-05 | `SeoService`, rutas | Meta presente |
+| B-26 ✅ (pendiente de publicar) | `noindex` en `/mejorar` | S | B-05 | `SeoService`, rutas | Meta presente |
 | B-27 | Enlaces y menciones (sin código) | — | B-11 | `12` §4 | Lista de contactos y resultado |
 
 ## P3 · Experimentales
