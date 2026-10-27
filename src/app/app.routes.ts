@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { MessageKey } from './core/i18n/i18n.model';
+import { SeoRouteData } from './core/seo/seo-tags';
 import { TodayPage } from './features/today/today.page';
 
 /** Titles are message keys; I18nTitleStrategy writes them in the visitor's language. */
@@ -38,5 +39,12 @@ export const routes: Routes = [
     title: title('route.legal'),
     loadComponent: () => import('./features/legal/legal.page').then((m) => m.LegalPage),
   },
-  { path: '**', redirectTo: '' },
+  // An unknown address says so (and stays out of search results) instead of
+  // showing the home page under a wrong address.
+  {
+    path: '**',
+    title: title('route.notFound'),
+    data: { noindex: true } satisfies SeoRouteData,
+    loadComponent: () => import('./features/not-found/not-found.page').then((m) => m.NotFoundPage),
+  },
 ];

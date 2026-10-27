@@ -21,7 +21,18 @@ export const es = {
   'route.plans': '¿Dónde ir hoy?',
   'route.feedback': 'Ayúdanos',
   'route.legal': 'Legal y privacidad',
+  'route.notFound': 'Página no encontrada',
   'route.title': '{page} · {brand}',
+
+  // The suggestion is always shown in the language it offers.
+  'langSuggest.label': 'Idioma de la web',
+  'langSuggest.title': 'LanzaMet también está en español',
+  'langSuggest.action': 'Ver en español',
+  'langSuggest.dismiss': 'No, gracias',
+
+  'notFound.lead':
+    'Esta dirección no existe en LanzaMet. Puede que el enlace esté mal escrito o que la página ya no esté.',
+  'notFound.next': 'Puedes seguir por aquí:',
 
   'nav.label': 'Principal',
   'nav.today': 'Hoy',

@@ -12,6 +12,9 @@
 @if (installGuide(); as guide) {
   <ng-container *ngComponentOutlet="guide" />
 }
+@if (languageSuggestion(); as suggestion) {
+  <ng-container *ngComponentOutlet="suggestion" />
+}
 @if (installInvite(); as invite) {
   <ng-container *ngComponentOutlet="invite" />
 }

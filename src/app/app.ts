@@ -5,6 +5,7 @@ import { I18n } from './core/i18n/i18n.store';
 import { TranslatePipe } from './core/i18n/t.pipe';
 import { InstallStore } from './core/pwa/install.store';
 import { ThemeStore } from './core/state/theme.store';
+import { SeoTags } from './core/seo/seo-tags';
 import { DayPicker } from './layout/day-picker/day-picker';
 import { LocationPicker } from './layout/location-picker/location-picker';
 import { NavBar } from './layout/nav-bar/nav-bar';
@@ -28,6 +29,8 @@ import { lazyComponent } from './shared/lazy-component';
 })
 export class App {
   private readonly ui = inject(UiStore);
+  // The document speaks the visitor's language from the first frame.
+  private readonly i18n = inject(I18n);
   // Hears the browser's install offer however early it comes.
   private readonly install = inject(InstallStore);
 
@@ -41,10 +44,17 @@ export class App {
     () => import('./layout/install/install-invite').then((m) => m.InstallInvite),
   );
 
+  // Only for a browser that prefers the language the page isn't in.
+  protected readonly languageSuggestion = lazyComponent(
+    () => this.i18n.suggestion() !== null,
+    () =>
+      import('./layout/language-suggestion/language-suggestion').then((m) => m.LanguageSuggestion),
+  );
+
   constructor() {
     // Day/night theming follows the sun from the first frame…
     inject(ThemeStore);
-    // …and the document speaks the visitor's language from the first frame too.
-    inject(I18n);
+    // Each page names its own address (canonical) for search engines.
+    inject(SeoTags);
   }
 }

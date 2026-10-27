@@ -18,7 +18,18 @@ export const en: Messages = {
   'route.plans': 'Where to go today?',
   'route.feedback': 'Help us',
   'route.legal': 'Legal and privacy',
+  'route.notFound': 'Page not found',
   'route.title': '{page} · {brand}',
+
+  // The suggestion is always shown in the language it offers.
+  'langSuggest.label': 'Site language',
+  'langSuggest.title': 'LanzaMet is also in English',
+  'langSuggest.action': 'Read in English',
+  'langSuggest.dismiss': 'No, thanks',
+
+  'notFound.lead':
+    "This address doesn't exist on LanzaMet. The link may be mistyped, or the page is gone.",
+  'notFound.next': 'You can carry on here:',
 
   'nav.label': 'Main',
   'nav.today': 'Today',

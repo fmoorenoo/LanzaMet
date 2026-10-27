@@ -82,11 +82,44 @@ describe('language choice', () => {
     TestBed.resetTestingModule();
   });
 
-  it('follows the browser until the visitor chooses, Spanish when nothing matches', () => {
+  it("reads the browser's first language it speaks, Spanish when nothing matches", () => {
     expect(detectLang(['en-GB', 'es'])).toBe('en');
     expect(detectLang(['de-DE', 'es-ES'])).toBe('es');
     expect(detectLang(['fr', 'de'])).toBe('es');
     expect(detectLang([])).toBe('es');
+  });
+
+  describe('with a browser that prefers English', () => {
+    beforeEach(() => vi.spyOn(navigator, 'languages', 'get').mockReturnValue(['en-GB', 'en']));
+    afterEach(() => vi.restoreAllMocks());
+
+    it('opens in Spanish anyway and only suggests English', () => {
+      const i18n = TestBed.inject(I18n);
+      TestBed.tick();
+      expect(i18n.lang()).toBe('es');
+      expect(document.documentElement.lang).toBe('es');
+      expect(i18n.suggestion()).toBe('en');
+    });
+
+    it('stops suggesting once the visitor chooses or says no', () => {
+      const i18n = TestBed.inject(I18n);
+      i18n.use('en');
+      expect(i18n.lang()).toBe('en');
+      expect(i18n.suggestion()).toBeNull();
+
+      localStorage.clear();
+      TestBed.resetTestingModule();
+      const again = TestBed.inject(I18n);
+      again.dismissSuggestion();
+      expect(again.suggestion()).toBeNull();
+      expect(localStorage.getItem('lm.langSuggestion')).toBe('true');
+    });
+  });
+
+  it('suggests nothing to a browser that already prefers Spanish', () => {
+    vi.spyOn(navigator, 'languages', 'get').mockReturnValue(['es-ES']);
+    expect(TestBed.inject(I18n).suggestion()).toBeNull();
+    vi.restoreAllMocks();
   });
 
   it('switches at once, remembers the choice and labels the document', () => {

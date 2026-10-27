@@ -100,7 +100,9 @@ export class InstallInvite {
   }
 
   private showWhenQuiet(): void {
-    const busy = this.document.hidden || !!this.document.querySelector('dialog[open]');
+    // The language suggestion sits in the same spot: one card at a time.
+    const busy =
+      this.document.hidden || !!this.document.querySelector('dialog[open], #language-suggestion');
     if (busy) this.attempt.update((n) => n + 1);
     else this.store.showInvite();
   }
