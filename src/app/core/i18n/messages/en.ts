@@ -51,6 +51,7 @@ export const en: Messages = {
   'seo.description.about':
     'Who makes LanzaMet and how each figure is worked out: models, sea points chosen area by area, estimated tides, calima and AEMET warnings.',
   'seo.heading.today': 'Lanzarote weather today',
+  'seo.crumb.home': 'Home',
   'seo.heading.sea': 'Tides and sea conditions in Lanzarote',
   'seo.heading.plans.place': ' in Lanzarote',
   'plans.heading.lead': 'Where to go today',

@@ -22,31 +22,36 @@ export const routes: Routes = [
   {
     path: '',
     title: title('seo.title.today'),
-    data: seo({ description: 'seo.description.today' }),
+    data: seo({ description: 'seo.description.today', image: 'home' }),
     component: TodayPage,
   },
   {
     path: 'zonas',
     title: title('seo.title.zones'),
-    data: seo({ description: 'seo.description.zones' }),
+    data: seo({ description: 'seo.description.zones', crumb: 'nav.zones', image: 'zones' }),
     loadComponent: () => import('./features/zones/zones.page').then((m) => m.ZonesPage),
   },
   {
     path: 'mar',
     title: title('seo.title.sea'),
-    data: seo({ description: 'seo.description.sea' }),
+    data: seo({ description: 'seo.description.sea', crumb: 'nav.sea', image: 'sea' }),
     loadComponent: () => import('./features/sea/sea.page').then((m) => m.SeaPage),
   },
   {
     path: 'donde-ir',
     title: title('seo.title.plans'),
-    data: seo({ description: 'seo.description.plans' }),
+    data: seo({ description: 'seo.description.plans', crumb: 'nav.plans', image: 'plans' }),
     loadComponent: () => import('./features/plans/plans.page').then((m) => m.PlansPage),
   },
   {
     path: 'sobre',
     title: title('route.about'),
-    data: seo({ description: 'seo.description.about' }),
+    data: seo({
+      description: 'seo.description.about',
+      crumb: 'route.about',
+      image: 'about',
+      about: true,
+    }),
     loadComponent: () => import('./features/about/about.page').then((m) => m.AboutPage),
   },
   {
@@ -59,7 +64,7 @@ export const routes: Routes = [
   {
     path: 'legal',
     title: title('route.legal'),
-    data: seo({ description: 'seo.description.legal' }),
+    data: seo({ description: 'seo.description.legal', crumb: 'route.legal' }),
     loadComponent: () => import('./features/legal/legal.page').then((m) => m.LegalPage),
   },
   // An unknown address says so (and stays out of search results) instead of

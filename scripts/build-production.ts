@@ -124,6 +124,20 @@ for (const route of prerendered) {
     if (!sitemap.includes(`<loc>https://lanzamet.com${route}</loc>`)) {
       fail(`${route} es indexable pero no está en public/sitemap.xml.`);
     }
+    // The link preview's picture exists, and the structured data is valid JSON.
+    const image = /<meta property="og:image" content="https:\/\/lanzamet\.com\/([^"]+)"/.exec(html);
+    if (!image) fail(`${file} no lleva imagen para compartir (og:image).`);
+    if (!existsSync(join(dir, image[1])))
+      fail(`${file} enlaza ${image[1]}, que no está en la build.`);
+    const ld = /<script id="structured-data" type="application\/ld\+json">([^<]*)<\/script>/.exec(
+      html,
+    );
+    if (!ld) fail(`${file} no lleva datos estructurados (JSON-LD).`);
+    try {
+      JSON.parse(ld[1]);
+    } catch {
+      fail(`Los datos estructurados de ${file} no son JSON válido.`);
+    }
   }
 }
 const scripts = readdirSync(dir)

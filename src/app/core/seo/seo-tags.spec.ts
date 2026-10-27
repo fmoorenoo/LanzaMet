@@ -30,6 +30,10 @@ describe('SeoTags', () => {
     document.head.querySelector('link[rel="canonical"]')?.remove();
     document.head.querySelector('meta[name="robots"]')?.remove();
     document.head.querySelector('meta[name="description"]')?.remove();
+    document.head
+      .querySelectorAll('meta[property^="og:"], meta[name^="twitter:"]')
+      .forEach((m) => m.remove());
+    document.getElementById('structured-data')?.remove();
     localStorage.clear();
   });
 
@@ -38,7 +42,12 @@ describe('SeoTags', () => {
       providers: [
         provideRouter([
           { path: '', component: Blank },
-          { path: 'mar', component: Blank, data: { description: 'seo.description.sea' } },
+          {
+            path: 'mar',
+            title: 'seo.title.sea',
+            component: Blank,
+            data: { description: 'seo.description.sea', crumb: 'nav.sea', image: 'sea' },
+          },
           { path: '**', component: Blank, data: { noindex: true } },
         ]),
       ],
@@ -80,5 +89,27 @@ describe('SeoTags', () => {
 
     await harness.navigateByUrl('/');
     expect(description()).toMatch(/^How the day looks in Lanzarote/);
+  });
+
+  it('gives each page a link preview and structured data, and none to a page out of the index', async () => {
+    const harness = await setUp();
+    await harness.navigateByUrl('/mar');
+    const og = (p: string) =>
+      document.head.querySelector<HTMLMetaElement>(`meta[property="${p}"]`)?.content ?? null;
+    expect(og('og:title')).toBe('Mareas en Lanzarote hoy: pleamar, bajamar y olas');
+    expect(og('og:url')).toBe('https://lanzamet.com/mar');
+    expect(og('og:image')).toBe('https://lanzamet.com/og/sea.jpg');
+    expect(og('og:locale')).toBe('es_ES');
+    expect(document.head.querySelector('meta[name="twitter:card"]')?.getAttribute('content')).toBe(
+      'summary_large_image',
+    );
+    const ld = JSON.parse(document.getElementById('structured-data')?.textContent ?? 'null');
+    const page = ld['@graph'].find((n: { '@type': string }) => n['@type'] === 'WebPage');
+    expect(page.url).toBe('https://lanzamet.com/mar');
+    expect(page.breadcrumb.itemListElement[0].name).toBe('Inicio');
+
+    await harness.navigateByUrl('/no-existe');
+    expect(document.getElementById('structured-data')).toBeNull();
+    expect(og('og:image')).toBe('https://lanzamet.com/og/home.jpg');
   });
 });

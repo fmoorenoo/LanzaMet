@@ -55,6 +55,7 @@ export const es = {
   'seo.description.about':
     'Quién hace LanzaMet y cómo calcula cada dato: modelos, puntos de mar elegidos zona a zona, mareas estimadas, calima y avisos de AEMET.',
   'seo.heading.today': 'El tiempo en Lanzarote hoy',
+  'seo.crumb.home': 'Inicio',
   'seo.heading.sea': 'Mareas y estado del mar en Lanzarote',
   'seo.heading.plans.place': ' en Lanzarote',
   'plans.heading.lead': '¿Dónde ir hoy',
