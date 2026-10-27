@@ -15,7 +15,7 @@ import { jsonLd, structuredData } from './structured-data';
 export const SITE_ORIGIN = 'https://lanzamet.com';
 
 /** Preview images for links (public/og/*.jpg), 1200 × 630, one per section. */
-export type OgImage = 'home' | 'zones' | 'sea' | 'plans' | 'about';
+export type OgImage = 'home' | 'zones' | 'sea' | 'plans' | 'wind' | 'about';
 
 /** What a route tells search engines about itself, in its `data`. */
 export interface SeoRouteData {

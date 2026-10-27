@@ -201,3 +201,15 @@
     min-height: 2.5rem;
   }
 }
+
+// Under the hours, where the wind already reads: a quiet way to the whole
+// island's wind (/viento), its text lined up with the strip's edge.
+.island-wind-link {
+  justify-self: start;
+  margin-inline-start: calc(-1 * var(--s-3));
+
+  lm-icon {
+    width: var(--icon-sm);
+    height: var(--icon-sm);
+  }
+}

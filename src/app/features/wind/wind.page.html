@@ -1,0 +1,151 @@
+<header id="wind-header" class="page-head page-header">
+  <h1 class="t-display">{{ 'windPage.title' | t }}</h1>
+  <p class="t-lead t-muted lead">
+    @if (summary(); as now) {
+      {{ now | t }}
+    } @else {
+      {{ 'windPage.lead' | t }}
+    }
+  </p>
+</header>
+
+<div class="content">
+  <section id="calmest-wind" class="block calmest-wind" aria-labelledby="calm-title">
+    <div class="calm-head">
+      <h2 id="calm-title" class="t-title">{{ 'windPage.calmest' | t }}</h2>
+      <p class="t-micro t-faint">{{ 'windPage.calmestHint' | t }}</p>
+    </div>
+    @if (calmest().length > 0) {
+      <ol class="calm calm-wind-list">
+        @for (zone of calmest(); track zone.id) {
+          <li>
+            <a
+              class="calm-row calm-wind-row"
+              [class.is-here]="zone.isHere"
+              [routerLink]="zone.path"
+              [attr.data-location-id]="zone.id"
+              [attr.data-level]="zone.level"
+              [style.--wind-hue]="zone.hue"
+              [style.--wind-tint]="zone.tint"
+            >
+              <span class="calm-text">
+                <span class="calm-name">{{ zone.name }}</span>
+                <span class="calm-sub">{{ zone.words | t }}</span>
+                <span class="calm-gust">{{ 'windPage.maxGust' | t: { gust: zone.maxGust } }}</span>
+              </span>
+              <span class="calm-measure">
+                <span class="calm-bar" aria-hidden="true">
+                  <span class="calm-fill" [style.transform]="'scaleX(' + zone.share + ')'"></span>
+                </span>
+                <span class="calm-value t-num">{{ zone.speed }} {{ 'wind.unit' | t }}</span>
+              </span>
+              <lm-icon class="chevron" name="chevron-right" />
+            </a>
+          </li>
+        }
+      </ol>
+    } @else if (island.zones().status === 'error') {
+      <lm-status-message
+        tone="error"
+        [title]="'today.compareFailed' | t"
+        [actionLabel]="'common.retry' | t"
+        (action)="island.retry()"
+      />
+    } @else {
+      <div class="skeletons" aria-hidden="true">
+        @for (row of [1, 2, 3]; track row) {
+          <span class="skeleton row-skeleton"></span>
+        }
+      </div>
+    }
+  </section>
+
+  <section id="wind-hours" class="block wind-hours" aria-labelledby="wind-hours-title">
+    @if (hours().length > 0) {
+      <lm-hour-timeline
+        [hours]="hours()"
+        [live]="true"
+        [restIndex]="0"
+        hint="windPage.hoursHint"
+        [(selected)]="hour"
+      >
+        <div timelineTitle class="hours-title">
+          <h2 id="wind-hours-title" class="t-title">
+            {{ 'windPage.hours' | t: { place: place()?.name ?? '' } }}
+          </h2>
+          <ng-container [ngTemplateOutlet]="placeChip" />
+        </div>
+      </lm-hour-timeline>
+      <!-- The hour on show, said as a verdict: now, or the hour chosen above. -->
+      @if (hourVerdict(); as verdict) {
+        <div
+          id="wind-hour-verdict"
+          class="hour-verdict"
+          aria-live="polite"
+          [style.--wind-hue]="verdict.hue"
+          [style.--wind-tint]="verdict.tint"
+        >
+          <span class="verdict-badge" aria-hidden="true"><lm-icon name="wind" /></span>
+          <p class="verdict-text">
+            <span class="verdict-when t-num">{{ verdict.when | t }}</span>
+            <span class="verdict-words">{{ verdict.words | t }}</span>
+            <span class="verdict-detail t-num">{{ verdict.detail | t }}</span>
+          </p>
+        </div>
+      }
+    } @else {
+      <div class="hours-title">
+        <h2 id="wind-hours-title" class="t-title">
+          {{ 'windPage.hours' | t: { place: place()?.name ?? '' } }}
+        </h2>
+        <ng-container [ngTemplateOutlet]="placeChip" />
+      </div>
+      @if (forecast.weather().status === 'error') {
+        <lm-status-message
+          tone="error"
+          [title]="'today.unknown' | t"
+          [actionLabel]="'common.retry' | t"
+          (action)="forecast.retry()"
+        />
+      } @else {
+        <span class="skeleton strip-skeleton" aria-hidden="true"></span>
+      }
+    }
+  </section>
+
+  <!-- The place the hours are for, as in Mar's header: its name opens the picker. -->
+  <ng-template #placeChip>
+    <button
+      type="button"
+      id="wind-location-button"
+      class="chip place-chip location-button"
+      aria-haspopup="dialog"
+      (click)="ui.openLocationPicker()"
+    >
+      <lm-icon name="pin" />
+      {{ place()?.name ?? ('common.lanzarote' | t) }}
+      <lm-icon name="chevron-down" />
+      <span class="visually-hidden">{{ 'common.changePlace' | t }}</span>
+    </button>
+  </ng-template>
+
+  <section id="wind-guide" class="block wind-guide" aria-labelledby="wind-read-title">
+    <h2 id="wind-read-title" class="t-title">{{ 'windPage.read' | t }}</h2>
+    <p class="text">{{ 'windPage.read.text' | t }}</p>
+    <ul class="legend wind-legend">
+      @for (step of legend; track step.level) {
+        <li [style.--wind-hue]="step.hue" [style.--wind-tint]="step.tint">
+          <span class="swatch" aria-hidden="true"></span>
+          <span class="legend-label">{{ step.label | t }}</span>
+          <span class="legend-range t-num">{{ step.range | t }}</span>
+        </li>
+      }
+    </ul>
+    <h3 class="subhead">{{ 'windPage.tradeWind' | t }}</h3>
+    <p class="text">{{ 'windPage.tradeWind.text' | t }}</p>
+  </section>
+
+  <footer id="wind-footer" class="page-foot">
+    <lm-data-credit kind="weather" [updatedAt]="forecast.weather().data?.issuedAt ?? null" />
+  </footer>
+</div>

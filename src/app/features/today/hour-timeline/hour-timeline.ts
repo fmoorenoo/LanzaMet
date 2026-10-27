@@ -11,7 +11,7 @@ import {
 import { skyPhrase } from '../../../core/insights/sky.insight';
 import { readWind, windHue, windTint } from '../../../core/insights/wind.insight';
 import { WeatherSnapshot } from '../../../core/models';
-import { msg } from '../../../core/i18n/i18n.model';
+import { MessageKey, msg } from '../../../core/i18n/i18n.model';
 import { hourLabel } from '../../../core/i18n/phrases';
 import { TranslatePipe } from '../../../core/i18n/t.pipe';
 import { islandDateKey, toDate } from '../../../core/utils/time';
@@ -36,6 +36,8 @@ import { SkyGlyph } from '../../../shared/ui/sky-glyph/sky-glyph';
 })
 export class HourTimeline {
   readonly hours = input.required<readonly WeatherSnapshot[]>();
+  /** What choosing an hour does, under the strip: in Hoy it shows the hour above. */
+  readonly hint = input<MessageKey>('hours.hint');
   /** The first hour is now (today), rather than one hour of a later day. */
   readonly live = input(true);
   /** The hour the strip rests on when none is chosen: now, or a later day's midday. */

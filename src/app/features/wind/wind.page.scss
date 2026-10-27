@@ -1,0 +1,303 @@
+// Laid out like Mar: the same head, column and ranking, in the wind's colours
+// (--wind-hue and --wind-tint, as the hours and the gauges).
+:host {
+  display: block;
+  padding-bottom: var(--s-10);
+}
+
+.page-head {
+  display: grid;
+  gap: var(--s-3);
+  padding: calc(var(--safe-top) + var(--s-6)) var(--gutter) var(--s-8);
+}
+
+.lead {
+  max-width: 40ch;
+  text-wrap: pretty;
+}
+
+.content {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--s-12);
+  padding: 0 var(--gutter);
+}
+
+.block {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--s-3);
+  min-width: 0;
+}
+
+// ── Where it's least windy ────────────────────────────────────
+.calm-head {
+  display: grid;
+  gap: var(--s-1);
+}
+
+.calm {
+  display: grid;
+}
+
+.calm-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(6rem, 34%) auto;
+  align-items: center;
+  gap: var(--s-4);
+  width: 100%;
+  min-height: 3.75rem;
+  padding: var(--s-2) 0;
+  border-top: 1px solid var(--c-line);
+  color: inherit;
+  text-decoration: none;
+  transition: transform var(--d-press) var(--ease-out);
+
+  &:active {
+    transform: scale(0.985);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--c-focus);
+    outline-offset: 2px;
+    border-radius: var(--r-sm);
+  }
+}
+
+.calm-text {
+  min-width: 0;
+  display: grid;
+}
+
+.calm-name {
+  font-weight: 620;
+
+  .is-here & {
+    color: var(--c-accent);
+  }
+}
+
+.calm-sub {
+  font-size: var(--fs-small);
+  color: var(--c-ink-2);
+}
+
+.calm-gust {
+  font-size: var(--fs-micro);
+  color: var(--c-ink-3);
+}
+
+.calm-measure {
+  display: grid;
+  gap: var(--s-1);
+}
+
+.calm-bar {
+  height: 0.375rem;
+  overflow: hidden;
+  border-radius: var(--r-pill);
+  // A trace of the fill's colour, on light and dark pages alike.
+  background-color: color-mix(
+    in oklch,
+    oklch(0.7 calc(0.15 * var(--wind-tint, 1)) var(--wind-hue)) 18%,
+    transparent
+  );
+}
+
+.calm-fill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background-color: oklch(0.7 calc(0.15 * var(--wind-tint, 1)) var(--wind-hue));
+  transform-origin: left;
+}
+
+.calm-value {
+  font-size: var(--fs-small);
+  font-weight: 640;
+  color: var(--c-ink);
+}
+
+.chevron {
+  width: var(--icon-md);
+  height: var(--icon-md);
+  color: var(--c-ink-3);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .calm-row:hover .calm-name {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.2em;
+  }
+}
+
+// ── The hours of one place ───────────────────────────────────
+.hours-title {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-2) var(--s-3);
+}
+
+.place-chip {
+  padding-inline: var(--s-3) var(--s-4);
+
+  lm-icon {
+    width: var(--icon-sm);
+    height: var(--icon-sm);
+  }
+}
+
+// The hour's verdict: a pane in the wind's colour, the words first.
+// Always there (now, until an hour is chosen), so choosing one moves nothing.
+.hour-verdict {
+  display: flex;
+  align-items: center;
+  gap: var(--s-4);
+  margin-top: var(--s-2);
+  padding: var(--s-4) var(--s-5);
+  border-radius: var(--r-lg);
+  // Mixed in sRGB: in OKLCH, white (no hue) would pull the green towards pink.
+  background-color: color-mix(
+    in srgb,
+    oklch(0.7 calc(0.15 * var(--wind-tint, 1)) var(--wind-hue)) 14%,
+    var(--c-surface)
+  );
+  border: 1px solid
+    color-mix(
+      in srgb,
+      oklch(0.7 calc(0.15 * var(--wind-tint, 1)) var(--wind-hue)) 30%,
+      transparent
+    );
+  transition:
+    background-color var(--d-base) ease,
+    border-color var(--d-base) ease;
+}
+
+.verdict-badge {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 50%;
+  background-color: oklch(0.7 calc(0.15 * var(--wind-tint, 1)) var(--wind-hue));
+  color: oklch(0.99 0.004 90);
+
+  lm-icon {
+    width: var(--icon-md);
+    height: var(--icon-md);
+  }
+}
+
+.verdict-text {
+  display: grid;
+  gap: 0.125rem;
+  min-width: 0;
+}
+
+.verdict-when {
+  font-size: var(--fs-small);
+  font-weight: 600;
+  color: var(--c-ink-2);
+}
+
+.verdict-words {
+  font-size: 1.25rem;
+  font-weight: 680;
+  letter-spacing: -0.015em;
+  line-height: 1.2;
+  color: var(--c-ink);
+  text-wrap: balance;
+}
+
+.verdict-detail {
+  font-size: var(--fs-small);
+  color: var(--c-ink-2);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hour-verdict {
+    transition: none;
+  }
+}
+
+.strip-skeleton {
+  display: block;
+  height: 6.5rem;
+  border-radius: var(--r-md);
+}
+
+.skeletons {
+  display: grid;
+  gap: var(--s-3);
+}
+
+.row-skeleton {
+  display: block;
+  height: 3rem;
+  border-radius: var(--r-sm);
+}
+
+// ── How to read it ───────────────────────────────────────────
+.text {
+  max-width: 60ch;
+  color: var(--c-ink-2);
+  text-wrap: pretty;
+}
+
+.legend {
+  display: grid;
+  gap: var(--s-2);
+  margin: var(--s-1) 0 var(--s-2);
+
+  li {
+    display: grid;
+    grid-template-columns: 1.75rem minmax(6rem, auto) 1fr;
+    align-items: center;
+    gap: var(--s-3);
+    font-size: var(--fs-small);
+  }
+}
+
+.swatch {
+  width: 1.75rem;
+  height: 0.75rem;
+  border-radius: var(--r-pill);
+  background-color: oklch(0.7 calc(0.15 * var(--wind-tint, 1)) var(--wind-hue));
+  box-shadow: inset 0 0 0 1px var(--c-line);
+}
+
+.legend-label {
+  font-weight: 600;
+}
+
+.legend-range {
+  color: var(--c-ink-2);
+}
+
+.subhead {
+  margin-top: var(--s-3);
+  font-size: var(--fs-body);
+  font-weight: 640;
+}
+
+.page-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-3);
+}
+
+@media (min-width: 48rem) {
+  .page-head,
+  .content {
+    max-width: 52rem;
+    margin-inline: auto;
+  }
+
+  .page-head {
+    padding-top: var(--s-12);
+  }
+}

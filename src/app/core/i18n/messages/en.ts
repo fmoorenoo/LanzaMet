@@ -93,6 +93,31 @@ export const en: Messages = {
   'zone.nearby': 'Nearby',
   'zone.toSea': 'Tides and waves in {place}',
   'zone.toWeather': '{place} weather',
+
+  // ── Wind (/viento) ──────────────────────────────────────────
+  'seo.title.wind': 'Lanzarote wind today: gusts and where it blows least',
+  'seo.description.wind':
+    'Wind in Lanzarote now, area by area: speed, gusts and direction, hour by hour, and where it blows least today for the beach.',
+  'windPage.title': 'Lanzarote wind today',
+  'windPage.lead':
+    'The island’s 9 areas, from least to most wind right now, with their gusts and the hours ahead.',
+  'windPage.now':
+    'Right now it blows least in {calm} ({calmKmh} km/h) and most in {windy} ({windyKmh} km/h).',
+  'windPage.calmest': 'Where it’s least windy now',
+  'windPage.calmestHint': 'From least to most, with the gusts of the next 24 h',
+  'windPage.maxGust': 'Gusts up to {gust} km/h',
+  'windPage.hoursHint': 'Pick an hour to see its wind',
+  'windPage.hours': 'The wind hour by hour in {place}',
+  'windPage.read': 'How to read the wind',
+  'windPage.read.text':
+    'The colour runs from the near-white of calm to the violet of very strong wind, in five steps of the Beaufort scale. Gusts are the strongest blows, above the average wind.',
+  'windPage.range.below': 'Under {to} km/h',
+  'windPage.range': '{from} to {to} km/h',
+  'windPage.range.above': '{from} km/h or more',
+  'windPage.tradeWind': 'The trade wind',
+  'windPage.tradeWind.text':
+    'Lanzarote’s wind almost always comes from the north-east: the trade wind. It tends to be stronger in summer and in the afternoon, and the south coast is more sheltered.',
+  'today.windIsland': 'See the wind across the island',
   'seo.heading.sea': 'Tides and sea conditions in Lanzarote',
   'seo.heading.plans.place': ' in Lanzarote',
   'plans.heading.lead': 'Where to go today',

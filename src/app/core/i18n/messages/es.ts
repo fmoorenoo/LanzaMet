@@ -98,6 +98,31 @@ export const es = {
   'zone.nearby': 'Cerca',
   'zone.toSea': 'Mareas y olas en {place}',
   'zone.toWeather': 'El tiempo en {place}',
+
+  // ── Wind (/viento) ──────────────────────────────────────────
+  'seo.title.wind': 'Viento en Lanzarote hoy: rachas y dónde sopla menos',
+  'seo.description.wind':
+    'Viento en Lanzarote ahora, zona a zona: velocidad, rachas y dirección, hora a hora, y dónde sopla menos hoy para ir a la playa.',
+  'windPage.title': 'El viento en Lanzarote hoy',
+  'windPage.lead':
+    'Las 9 zonas de la isla, de menos a más viento ahora, con sus rachas y las horas que vienen.',
+  'windPage.now':
+    'Ahora sopla menos en {calm} ({calmKmh} km/h) y más en {windy} ({windyKmh} km/h).',
+  'windPage.calmest': 'Dónde hay menos viento ahora',
+  'windPage.calmestHint': 'De menos a más, con las rachas de las próximas 24 h',
+  'windPage.maxGust': 'Rachas de hasta {gust} km/h',
+  'windPage.hoursHint': 'Elige una hora para ver su viento',
+  'windPage.hours': 'El viento hora a hora en {place}',
+  'windPage.read': 'Cómo leer el viento',
+  'windPage.read.text':
+    'El color va del casi blanco de la calma al violeta del viento muy fuerte, en cinco pasos de la escala de Beaufort. Las rachas son los golpes más fuertes, por encima del viento medio.',
+  'windPage.range.below': 'Menos de {to} km/h',
+  'windPage.range': 'De {from} a {to} km/h',
+  'windPage.range.above': '{from} km/h o más',
+  'windPage.tradeWind': 'El alisio',
+  'windPage.tradeWind.text':
+    'En Lanzarote sopla casi siempre del nordeste: es el alisio. Suele ser más fuerte en verano y por la tarde, y la costa sur queda más resguardada.',
+  'today.windIsland': 'Ver el viento en toda la isla',
   'seo.heading.sea': 'Mareas y estado del mar en Lanzarote',
   'seo.heading.plans.place': ' en Lanzarote',
   'plans.heading.lead': '¿Dónde ir hoy',

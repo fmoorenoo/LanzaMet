@@ -23,7 +23,16 @@ const retired = (view: 'tiempo' | 'mar'): Routes =>
   }));
 
 /** The fixed addresses prerendered at build time (app.routes.server.ts), besides each place's two pages. */
-export const PAGE_PATHS = ['', 'zonas', 'mar', 'donde-ir', 'sobre', 'legal', 'mejorar'] as const;
+export const PAGE_PATHS = [
+  '',
+  'zonas',
+  'mar',
+  'donde-ir',
+  'viento',
+  'sobre',
+  'legal',
+  'mejorar',
+] as const;
 
 export const routes: Routes = [
   // Eager: it is the page nearly every visit opens on, and loading it lazily
@@ -89,6 +98,13 @@ export const routes: Routes = [
     title: title('seo.title.plans'),
     data: seo({ description: 'seo.description.plans', crumb: 'nav.plans', image: 'plans' }),
     loadComponent: () => import('./features/plans/plans.page').then((m) => m.PlansPage),
+  },
+  // Outside the tab bar: Hoy leads here from its hours.
+  {
+    path: 'viento',
+    title: title('seo.title.wind'),
+    data: seo({ description: 'seo.description.wind', crumb: 'wind.title', image: 'wind' }),
+    loadComponent: () => import('./features/wind/wind.page').then((m) => m.WindPage),
   },
   {
     path: 'sobre',

@@ -47,6 +47,11 @@
       >
         <h2 timelineTitle id="hours-title" class="t-title">{{ titles().hours | t }}</h2>
       </lm-hour-timeline>
+      <!-- The same wind across the island, a quiet link under the hours. -->
+      <a id="island-wind-link" class="btn btn--quiet island-wind-link" routerLink="/viento">
+        {{ 'today.windIsland' | t }}
+        <lm-icon name="chevron-right" />
+      </a>
     </section>
   } @else if (weather.status !== 'error' && !locations.error()) {
     <div class="block today-section conditions-skeleton" aria-hidden="true">
