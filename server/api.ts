@@ -33,7 +33,28 @@ export interface Env {
    * default: the site and its API share one origin, which needs no CORS.
    */
   readonly ALLOWED_ORIGIN?: string;
+  /** The site's files (Cloudflare static assets); absent on Node and Deno. */
+  readonly ASSETS?: { fetch(request: Request | URL | string): Promise<Response> };
 }
+
+/** The app's empty shell, prerendered by the build as index.csr.html and served at /index.csr. */
+const APP_SHELL = '/index.csr';
+
+/**
+ * An address the site doesn't have. The Worker only sees requests outside
+ * /api when no file matches them (wrangler.jsonc), so this is the site's
+ * 404: the app's empty shell, which shows "page not found" with noindex, sent
+ * with a real 404 status. Its headers (security, caching) are the shell's own.
+ */
+export async function notFoundPage(request: Request, assets: NonNullable<Env['ASSETS']>) {
+  const shell = await assets.fetch(new URL(APP_SHELL, request.url));
+  if (!shell.ok) return new Response('Not found', { status: 404 });
+  const headers = new Headers(shell.headers);
+  headers.set('cache-control', 'no-cache');
+  return new Response(request.method === 'HEAD' ? null : shell.body, { status: 404, headers });
+}
+
+const isApi = (pathname: string) => /^\/api(\/|$)/.test(pathname);
 
 const SERVICE = 'lanzamet-api';
 const CANARIAS_WARNINGS_RSS =
@@ -222,5 +243,8 @@ export async function handle(request: Request, env: Env): Promise<Response> {
 }
 
 export default {
-  fetch: (request: Request, env: Env) => handle(request, env),
+  fetch: (request: Request, env: Env) =>
+    env.ASSETS && !isApi(new URL(request.url).pathname)
+      ? notFoundPage(request, env.ASSETS)
+      : handle(request, env),
 };

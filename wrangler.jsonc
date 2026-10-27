@@ -1,5 +1,7 @@
 // One Cloudflare Worker serves the whole site on one domain:
-//  · the Angular build as static assets (any unknown path gets index.html),
+//  · the Angular build as static assets: each page prerendered as its own HTML
+//    (/mar → mar/index.html); an unknown path reaches the Worker, which answers it
+//    with the app's empty shell and a 404 (notFoundPage in server/api.ts),
 //  · and /api/* through server/api.ts (AEMET and the shared Open-Meteo cache).
 // See DEPLOYMENT.md. Secrets are never written here: `npx wrangler secret put AEMET_API_KEY`.
 {
@@ -9,7 +11,13 @@
   "compatibility_date": "2026-10-15",
   "assets": {
     "directory": "./dist/lanzamet/browser",
-    "not_found_handling": "single-page-application",
+    // No fallback page: a request that matches no file goes to the Worker, which
+    // answers 404 with the app's shell (the app then shows "page not found", noindex).
+    "not_found_handling": "none",
+    "binding": "ASSETS",
+    // Pages live at /mar, not /mar/: mar/index.html is served there and /mar/
+    // redirects to it, matching each page's canonical address.
+    "html_handling": "drop-trailing-slash",
     // Only the API runs code; every other request is a file (or index.html), served at no CPU cost.
     "run_worker_first": ["/api/*"]
   },

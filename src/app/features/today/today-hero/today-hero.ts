@@ -14,6 +14,7 @@ import { TranslatePipe } from '../../../core/i18n/t.pipe';
 import { Verdict } from '../../../core/insights/verdict.insight';
 import { LocationId, Wind } from '../../../core/models';
 import { ClockStore } from '../../../core/state/clock.store';
+import { LIVE_DATA } from '../../../core/state/live-data';
 import { DayStore } from '../../../core/state/day.store';
 import { LocationsStore } from '../../../core/state/locations.store';
 import { formatTime, islandOffsetMinutes } from '../../../core/utils/time';
@@ -100,6 +101,7 @@ export class TodayHero {
   protected readonly isDemo = inject(DATA_MODE) === 'demo';
   private readonly locations = inject(LocationsStore);
   private readonly clock = inject(ClockStore);
+  private readonly live = inject(LIVE_DATA);
   private readonly placeButton = viewChild.required<ElementRef<HTMLButtonElement>>('placeButton');
   private readonly clockTime = viewChild.required<ElementRef<HTMLElement>>('clockTime');
   private readonly copyWrap = viewChild.required<ElementRef<HTMLElement>>('copyWrap');
@@ -117,6 +119,8 @@ export class TodayHero {
    * not the day the button shows.
    */
   protected readonly time = computed(() => {
+    // A prerendered page says no time: the build's would already be wrong.
+    if (!this.live) return { iso: null, text: '', live: true, label: null, sayZone: false };
     const now = this.clock.now();
     const live = !this.isPreview();
     const moment = live ? undefined : this.view()?.moment;

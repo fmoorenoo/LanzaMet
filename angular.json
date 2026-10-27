@@ -37,10 +37,12 @@
           },
           "configurations": {
             "production": {
+              "server": "src/main.server.ts",
+              "outputMode": "static",
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "700kB",
+                  "maximumWarning": "720kB",
                   "maximumError": "1MB"
                 },
                 {

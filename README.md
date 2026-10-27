@@ -129,6 +129,7 @@ Validación del 22-10-2026 en Arrecife: el modelo adelanta 24–37 min respecto 
 - **Dónde ir**: recomendaciones derivadas de los datos (playa, sin viento, mar tranquilo, atardecer, paseo, olas), como postales: el paisaje de cada lugar con la luz de ahora, dónde queda en la isla y la temperatura, el viento y el mar para comparar.
 - **Ayúdanos** (`/mejorar`, sin pestaña propia: se llega desde Ajustes): formulario para avisar de errores y proponer sugerencias o mejoras; el correo es opcional. Ver [Comentarios de los usuarios](#comentarios-de-los-usuarios).
 - **Ajustes**: idioma, apariencia, **acceso rápido** (instalar la web como app o guardarla en marcadores; ver [Instalar la web](#instalar-la-web-pwa)) y los enlaces a **Ayúdanos** y a **Legal y privacidad**.
+- **Sobre LanzaMet** (`/sobre`, desde Ajustes): quién la hace (Fernando Montelongo, con enlace a LinkedIn, y su firma «Miembro de [logotipo de Kora]», la agencia de diseño web en Lanzarote a la que pertenece: `public/brand/kora-on-light.png` y `kora-on-dark.png`, una para cada tema), por qué, cómo se calcula cada dato y sus límites.
 - **Legal y privacidad** (`/legal`, sin pestaña propia: se llega desde Ajustes): aviso de seguridad, privacidad (qué se guarda en el dispositivo, qué ven los servidores y qué envía el formulario de Ayúdanos), condiciones de uso, de dónde salen los datos con sus licencias y el estado de AEMET, y contacto.
 
 ## Cámaras en directo
@@ -242,7 +243,7 @@ El service worker es el de Angular (`@angular/service-worker`), configurado en `
 1. **HTTPS** en el dominio público. Los navegadores solo permiten service workers e instalación en un origen seguro; `localhost` es la única excepción, para desarrollo.
 2. **La web en la raíz del dominio** (`/`). Para servirla en una subruta hay que cambiar `start_url`, `scope` e `id` del manifest, el `<base href>` y compilar con `--base-href`.
 3. **Cabeceras**: `index.html`, `ngsw.json`, `ngsw-worker.js`, `safety-worker.js`, `install-prompt.js` y `manifest.webmanifest` sin caché larga (`Cache-Control: no-cache`), para que un despliegue nuevo llegue a las copias instaladas. El manifest con `Content-Type: application/manifest+json`. `public/_headers` ya lo hace en Cloudflare (Workers y Pages) y en Netlify; en otro hosting hay que configurarlo a mano.
-4. **Rutas de la SPA**: cualquier ruta sin extensión (`/mar`, `/zonas`…) debe servir `index.html`. En el Worker lo hace `not_found_handling: "single-page-application"` (`wrangler.jsonc`); en Netlify hace falta una regla `/* /index.html 200`.
+4. **Rutas**: cada página es un HTML prerenderizado (`/mar` → `mar/index.html`) y cualquier otra dirección recibe la página vacía de la app (`index.csr.html`) con un 404, que en el Worker sirve `notFoundPage` (`server/api.ts`). En otro hosting hay que replicarlo: servir `{ruta}/index.html` sin barra final y `index.csr.html` con 404 para lo demás. Sin conexión, el service worker abre `index.csr.html` (`ngsw-config.json`).
 5. **Build de producción** (`npm run build:prod`): solo la build de producción incluye `ngsw-worker.js` y `ngsw.json`. `npm start` y la demo no registran service worker.
 
 Todo esto queda resuelto con el despliegue en Cloudflare de [`DEPLOYMENT.md`](DEPLOYMENT.md). Probado en local con el runtime de Cloudflare: tras publicar una versión nueva, la primera recarga ya la carga, también en la copia controlada por el service worker. Si una página abierta antes del despliegue pide una pantalla diferida cuyo archivo ya no existe, se recarga una vez sola (`core/pwa/stale-version.ts`, con un freno para no entrar en bucle). 6. Chrome pide además unos segundos de uso real antes de ofrecer la instalación. Hasta entonces, la guía explica cómo hacerlo desde el menú.
@@ -316,6 +317,16 @@ Español (por defecto) e inglés británico, cambiables al instante en **Ajustes
 - **Identificadores** para las herramientas del navegador: IDs en inglés para lo único (`weather-hero`, `current-temperature`, `hourly-forecast`, `tide-visualization`, `language-selector`…), clases semánticas para lo repetido y `data-*` para cada instancia (`data-location-id`, `data-index`…). Convención completa en [`docs/DESIGN.md`](docs/DESIGN.md#identificadores).
 - **Iconos**: Lucide para la interfaz, importado icono a icono, y los propios donde dan identidad. Criterios en [`docs/DESIGN.md`](docs/DESIGN.md#iconos).
 
+## Buscadores (SEO)
+
+Auditoría completa, plan y estado de cada tarea en [`docs/seo-audit/`](docs/seo-audit/01-resumen-ejecutivo.md). Lo que hay en el código:
+
+- **Prerenderizado** (`@angular/ssr`, `outputMode: "static"`, solo en la build de producción): cada página se escribe a HTML en el build con su título, descripción, dirección canónica, H1 y texto fijo, para que buscadores, asistentes de IA y vistas previas la lean sin JavaScript. Nunca lleva datos del tiempo: al prerenderizar los stores no piden nada (`core/state/live-data.ts`) y las secciones de datos salen como esqueleto. Sin hidratación: la app redibuja la página al arrancar, como antes.
+- **Títulos y descripciones** por página en los diccionarios (`seo.*`), aplicados por `I18nTitleStrategy` y `core/seo/seo-tags.ts` (descripción, canonical y `noindex`, que siguen al idioma). Cada página tiene un H1 fijo; en Hoy y Mar es `visually-hidden`, para no cambiar la pantalla, y el veredicto o el titular de marea son párrafos.
+- **Idioma**: siempre español por URL; a rastreadores no se les ofrece inglés ni se les registra el service worker (`core/seo/crawler.ts`).
+- **`public/robots.txt`** abierto, `/api/` incluido (Google lo llama al renderizar), y **`public/sitemap.xml`**: actualízalo al añadir páginas; `npm run build:prod` comprueba que cada página indexable esté en él y lleve su canonical.
+- Search Console y Bing Webmaster Tools dados de alta (27-10-2026).
+
 ## Arquitectura
 
 ```
@@ -352,7 +363,7 @@ Paso a paso, con lo que hay que configurar a mano y cómo publicar actualizacion
 
 - **Un Worker de Cloudflare** sirve la web (los archivos de `dist/lanzamet/browser`) y el API (`/api/*`) en el mismo dominio, con HTTPS. `npm run deploy` compila, comprueba y publica.
 - **Seguridad** (`public/_headers`): Content-Security-Policy con scripts solo del propio sitio. Por eso `index.html` no tiene scripts en línea: la captura de la oferta de instalación vive en `public/install-prompt.js` (con `defer`, para no retrasar el primer pintado) y el CSS crítico no se incrusta (`inlineCritical: false`). Además, `nosniff`, `Referrer-Policy`, `Permissions-Policy` y `Cross-Origin-Opener-Policy`.
-- **Carga inicial**: la build de producción precarga los chunks iniciales (`index.preloadInitial` en `angular.json`; Angular lo apaga por defecto cuando hay service worker) y Hoy, la portada, va en el bundle inicial en vez de cargarse aparte, para que no haya una cadena de descargas antes del primer pintado. Por eso el aviso del bundle inicial está en 700 kB. En Lighthouse móvil (local, mediana de 3), de 75 a 81 y el LCP de 4,4 s a 3,5 s.
+- **Carga inicial**: la build de producción precarga los chunks iniciales (`index.preloadInitial` en `angular.json`; Angular lo apaga por defecto cuando hay service worker) y Hoy, la portada, va en el bundle inicial en vez de cargarse aparte, para que no haya una cadena de descargas antes del primer pintado. Por eso el aviso del bundle inicial está en 720 kB (700 hasta el 27-10-2026; los diccionarios de los dos idiomas, que van en el bundle inicial, crecieron con los títulos y descripciones para buscadores y la página Sobre). En Lighthouse móvil (local, mediana de 3), de 75 a 81 y el LCP de 4,4 s a 3,5 s.
 - **API**: `server/api.ts` exporta un manejador `fetch` estándar. Sirve como Cloudflare Worker, en Deno o en cualquier host Node con `node server/dev.ts` (puerto en `PORT`). Variables: `AEMET_API_KEY` (secreto) y `ALLOWED_ORIGIN` (vacío por defecto: solo su propia web, sin CORS; un origen o `*` para abrirlo).
 - La web llama a `/api` en su mismo origen. Si el API vive en otro dominio, cambia `provideHttpDataSources({ proxyUrl: 'https://…/api' })` en `src/app/data-providers.ts` y pon ese origen en `ALLOWED_ORIGIN`.
 - Cabe en el plan gratuito de Cloudflare Workers (10 ms de CPU por petición). Avisos: dos ficheros de ~8 KB. Observaciones: 7 estaciones de ~5 KB, unos 0,3 ms cada una. Cada actualización hace como mucho 15 subpeticiones a AEMET, por debajo del límite de 50.

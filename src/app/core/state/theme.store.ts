@@ -1,5 +1,5 @@
-import { DOCUMENT } from '@angular/common';
-import { computed, effect, inject, Service, signal } from '@angular/core';
+import { DOCUMENT, isPlatformBrowser } from '@angular/common';
+import { computed, effect, inject, PLATFORM_ID, Service, signal } from '@angular/core';
 import { readStored, writeStored } from '../utils/storage';
 import { islandHour, toDate } from '../utils/time';
 import { ClockStore } from './clock.store';
@@ -46,6 +46,9 @@ export class ThemeStore {
   });
 
   constructor() {
+    // Prerendered pages keep index.html's light theme: the sun at build time
+    // says nothing about when they are read. The browser sets it at once.
+    if (!isPlatformBrowser(inject(PLATFORM_ID))) return;
     effect(() => {
       this.document.documentElement.dataset['theme'] = this.theme();
     });

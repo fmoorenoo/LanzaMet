@@ -6,6 +6,7 @@ import { GeoPoint, StationObservation, WarningLevel, WeatherWarning } from '../m
 import { toDate } from '../utils/time';
 import { ClockStore } from './clock.store';
 import { DataRefreshStore } from './data-refresh.store';
+import { LIVE_DATA } from './live-data';
 import { sectionState } from './section-state';
 
 const LEVEL_ORDER: Readonly<Record<WarningLevel, number>> = { rojo: 3, naranja: 2, amarillo: 1 };
@@ -22,10 +23,13 @@ export class OfficialStore {
   private readonly warningSource = inject(WarningSource);
   private readonly observationSource = inject(ObservationSource);
 
-  private readonly params = computed(() => ({
-    beat: this.clock.refreshBeat(),
-    version: this.refreshStore.version(),
-  }));
+  private readonly live = inject(LIVE_DATA);
+
+  private readonly params = computed(() =>
+    this.live
+      ? { beat: this.clock.refreshBeat(), version: this.refreshStore.version() }
+      : undefined,
+  );
 
   private readonly warningsResource = rxResource({
     params: this.params,

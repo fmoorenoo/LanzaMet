@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { afterEach, describe, it, mock } from 'node:test';
-import { handle } from './api.ts';
+import worker, { handle } from './api.ts';
 
 const fixture = (name: string) => readFileSync(new URL(`./fixtures/${name}`, import.meta.url));
 const rss = fixture('canarias-rss-20261022.xml');
@@ -101,5 +101,49 @@ describe('API', () => {
     );
     // Seven stations, plus the data file of the one that had data.
     assert.equal(fetchMock.mock.callCount(), 8);
+  });
+});
+
+describe('Worker entry', () => {
+  /** The site's files as Cloudflare serves them to the Worker: only the app shell here. */
+  const assets = {
+    requested: [] as string[],
+    async fetch(input: Request | URL | string) {
+      const url = new URL(String(input instanceof Request ? input.url : input));
+      this.requested.push(url.pathname);
+      return url.pathname === '/index.csr'
+        ? new Response('<lm-root></lm-root>', {
+            headers: {
+              'content-type': 'text/html; charset=utf-8',
+              'content-security-policy': "default-src 'self'",
+            },
+          })
+        : new Response('missing', { status: 404 });
+    },
+  };
+
+  it('answers an address the site does not have with the app shell and a real 404', async () => {
+    const response = await worker.fetch(new Request('https://lanzamet.com/no-existe'), {
+      ASSETS: assets,
+    });
+    assert.equal(response.status, 404);
+    assert.equal(response.headers.get('content-type'), 'text/html; charset=utf-8');
+    // The shell's own headers travel with it: the page keeps its security policy.
+    assert.equal(response.headers.get('content-security-policy'), "default-src 'self'");
+    assert.equal(response.headers.get('cache-control'), 'no-cache');
+    assert.equal(await response.text(), '<lm-root></lm-root>');
+    assert.deepEqual(assets.requested, ['/index.csr']);
+  });
+
+  it('keeps API routes for /api only, so /salud is a missing page and not the API', async () => {
+    const page = await worker.fetch(new Request('https://lanzamet.com/salud'), { ASSETS: assets });
+    assert.equal(page.status, 404);
+    assert.match(page.headers.get('content-type') ?? '', /text\/html/);
+
+    const api = await worker.fetch(new Request('https://lanzamet.com/api/salud'), {
+      ASSETS: assets,
+    });
+    assert.equal(api.status, 200);
+    assert.equal(((await api.json()) as { ok: boolean }).ok, true);
   });
 });

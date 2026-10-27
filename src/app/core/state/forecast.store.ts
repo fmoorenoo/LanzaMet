@@ -3,6 +3,7 @@ import { rxResource } from '@angular/core/rxjs-interop';
 import { MarineSource, WeatherSource } from '../data/data-sources';
 import { ClockStore } from './clock.store';
 import { DataRefreshStore } from './data-refresh.store';
+import { LIVE_DATA } from './live-data';
 import { LocationsStore } from './locations.store';
 import { sectionState } from './section-state';
 
@@ -18,9 +19,11 @@ export class ForecastStore {
   private readonly weatherSource = inject(WeatherSource);
   private readonly marineSource = inject(MarineSource);
 
+  private readonly live = inject(LIVE_DATA);
+
   private readonly params = computed(() => {
     const location = this.locations.selected();
-    if (!location) return undefined;
+    if (!location || !this.live) return undefined;
     return {
       id: location.id,
       beat: this.clock.refreshBeat(),

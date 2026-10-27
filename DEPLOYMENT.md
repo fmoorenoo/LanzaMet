@@ -8,7 +8,8 @@ Guía para publicar LanzaMet (<https://lanzamet.com>) y sus actualizaciones.
 
 Un solo **Worker de Cloudflare** (`lanzamet`) sirve todo bajo un mismo dominio y con HTTPS:
 
-- **La web**: la build de Angular (`dist/lanzamet/browser`) como *static assets*. Cualquier ruta que no sea un archivo (`/mar`, `/zonas`…) devuelve `index.html`. Servir archivos no ejecuta código ni cuenta como petición del Worker: es gratis e ilimitado.
+- **La web**: la build de Angular (`dist/lanzamet/browser`) como *static assets*. Cada página está **prerenderizada** en su propio HTML (`/mar` → `mar/index.html`, con su título, descripción, dirección canónica y texto fijo; los datos los pone el navegador). `/mar/` redirige a `/mar` (`html_handling: "drop-trailing-slash"`). Servir archivos no ejecuta código ni cuenta como petición del Worker: es gratis e ilimitado.
+- **Direcciones que no existen**: no coinciden con ningún archivo, así que llegan al Worker, que responde con la página vacía de la app (`/index.csr`) y estado **404**; la app muestra «Página no encontrada» con `noindex` (`notFoundPage` en `server/api.ts`). Solo esas peticiones cuentan como peticiones del Worker.
 - **El API propio**, en `/api/*`: `server/api.ts`, el mismo código que `npm run api`. Hace tres cosas:
   - avisos de AEMET (sin clave);
   - observaciones de AEMET (con la clave como secreto);

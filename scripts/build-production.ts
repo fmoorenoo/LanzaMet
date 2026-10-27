@@ -82,9 +82,49 @@ for (const file of [
 for (const file of ['.env', '.dev.vars']) {
   if (existsSync(join(dir, file))) fail(`${file} no debe publicarse.`);
 }
-const index = readFileSync(join(dir, 'index.html'), 'utf8');
-if (/<script(?![^>]*\bsrc=)[^>]*>/i.test(index)) {
-  fail('index.html tiene un script en línea: la Content-Security-Policy lo bloquearía.');
+// ── Prerendered pages (see src/app/app.routes.server.ts) ────────────────
+// Unknown addresses get the app's empty shell with a 404 (notFoundPage in
+// server/api.ts), and the service worker opens it offline (ngsw-config.json).
+if (!existsSync(join(dir, 'index.csr.html'))) {
+  fail('Falta index.csr.html (la página vacía de la app) en la build.');
+}
+
+const prerendered = Object.keys(
+  (
+    JSON.parse(readFileSync(join(dir, '..', 'prerendered-routes.json'), 'utf8')) as {
+      routes: Record<string, unknown>;
+    }
+  ).routes,
+);
+if (prerendered.length < 2) fail('No se ha prerenderizado ninguna página.');
+const sitemap = readFileSync(join(dir, 'sitemap.xml'), 'utf8');
+
+for (const route of prerendered) {
+  const file = route === '/' ? 'index.html' : `${route.slice(1)}/index.html`;
+  if (!existsSync(join(dir, file))) fail(`Falta la página prerenderizada ${file}.`);
+  const html = readFileSync(join(dir, file), 'utf8');
+  // Data blocks (application/json, ld+json) don't run; anything else would.
+  if (/<script(?![^>]*\bsrc=)(?![^>]*type="application\/(?:ld\+)?json")[^>]*>/i.test(html)) {
+    fail(`${file} tiene un script en línea: la Content-Security-Policy lo bloquearía.`);
+  }
+  if (!/<html[^>]*\blang="es"/.test(html)) fail(`${file} no está en español (<html lang="es">).`);
+  // Pages are written at build time: no visitor's language suggestion, no weather of that moment.
+  if (html.includes('language-suggestion')) fail(`${file} lleva la sugerencia de idioma.`);
+  if (/id="current-temperature"/.test(html))
+    fail(`${file} lleva datos del tiempo del momento del build.`);
+  const indexable = !/<meta name="robots" content="noindex"/.test(html);
+  if (indexable) {
+    if (
+      !html.includes(
+        `<link rel="canonical" href="https://lanzamet.com${route === '/' ? '/' : route}">`,
+      )
+    ) {
+      fail(`${file} no lleva su dirección canónica.`);
+    }
+    if (!sitemap.includes(`<loc>https://lanzamet.com${route}</loc>`)) {
+      fail(`${route} es indexable pero no está en public/sitemap.xml.`);
+    }
+  }
 }
 const scripts = readdirSync(dir)
   .filter((name) => name.endsWith('.js'))
@@ -97,5 +137,6 @@ for (const marker of ['lm-demo-controls', 'Puerto de Arrecife']) {
 if (key && !scripts.includes(key)) fail('La clave de Web3Forms no ha llegado a la build.');
 
 console.log('\n✓ Build de producción lista en dist/lanzamet/browser');
+console.log(`  Páginas prerenderizadas: ${prerendered.join(', ')}`);
 console.log(`  Ayúdanos: ${key ? 'clave de Web3Forms incluida' : 'SIN clave (no enviará nada)'}`);
 console.log(`  Enlace al compartir: ${publicUrl || 'la dirección desde la que se abra la web'}`);

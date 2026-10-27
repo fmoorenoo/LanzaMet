@@ -7,6 +7,7 @@ import { buildRecommendations } from '../insights/recommendations.insight';
 import { LocationId, ZoneConditions } from '../models';
 import { ClockStore } from './clock.store';
 import { DataRefreshStore } from './data-refresh.store';
+import { LIVE_DATA } from './live-data';
 import { LocationsStore } from './locations.store';
 import { OfficialStore } from './official.store';
 import { sectionState } from './section-state';
@@ -24,10 +25,12 @@ export class IslandStore {
   private readonly marineSource = inject(MarineSource);
   private readonly official = inject(OfficialStore);
 
+  private readonly live = inject(LIVE_DATA);
+
   private readonly resource = rxResource({
     params: () => {
       const all = this.locations.all();
-      if (all.length === 0) return undefined;
+      if (all.length === 0 || !this.live) return undefined;
       return { all, beat: this.clock.refreshBeat(), version: this.refreshStore.version() };
     },
     stream: ({ params }) =>
