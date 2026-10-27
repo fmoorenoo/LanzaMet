@@ -47,12 +47,12 @@ Escala 1-5 (5 = más). Riesgo: 5 = más arriesgado.
 ### Fase 0 · Esta semana: errores críticos y medición (≈ 2-3 días)
 
 1. **B-06** Search Console + Bing. **Primero**, para tener una línea base y confirmar T-01 con la Inspección de URL. ⬜ Pendiente (lo hace el responsable; no requiere código).
-2. **B-01a** Español por defecto. ✅ Completada el 27-10-2026 (pendiente de publicar).
-3. **B-02** robots.txt + sitemap (4 URL + legal). ✅ Completada el 27-10-2026 (pendiente de publicar).
-4. **B-04** Cerrar `workers.dev`. ✅ Completada el 27-10-2026 (pendiente de publicar).
-5. **B-05** Canonical por JS (provisional). ✅ Completada el 27-10-2026 (pendiente de publicar).
-6. **B-03** 404 provisional con `noindex`. ✅ Completada el 27-10-2026 (pendiente de publicar).
-7. **B-14** Caché inmutable. ✅ Completada el 27-10-2026 (pendiente de publicar).
+2. **B-01a** Español por defecto. ✅ Completada y publicada el 27-10-2026.
+3. **B-02** robots.txt + sitemap (4 URL + legal). ✅ Completada y publicada el 27-10-2026.
+4. **B-04** Cerrar `workers.dev`. ✅ Completada y publicada el 27-10-2026.
+5. **B-05** Canonical por JS (provisional). ✅ Completada y publicada el 27-10-2026.
+6. **B-03** 404 provisional con `noindex`. ✅ Completada y publicada el 27-10-2026.
+7. **B-14** Caché inmutable. ✅ Completada y publicada el 27-10-2026.
 
 **Hecho cuando**: Search Console verificado, sitemap aceptado, `/` renderizado en español en la Inspección de URL, URL inventada con `noindex`, sin host duplicado.
 

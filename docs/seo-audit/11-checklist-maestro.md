@@ -2,7 +2,7 @@
 
 Estado a 27-10-2026. Leyenda: ✅ correcto · ❌ problema verificado · ⚠️ mejorable · ⬜ pendiente (no existe aún) · ❓ no verificable sin acceso · 🟦 corregido en el código, pendiente de publicar.
 
-Primer lote implementado el 27-10-2026 (B-01a, B-02, B-03 provisional, B-04, B-05 con JS, B-14): ver «Estado» en `14-backlog-seo.md`. Cuando se publique, cambiar 🟦 por ✅ tras comprobarlo en `https://lanzamet.com`.
+Primer lote (B-01a, B-02, B-03 provisional, B-04, B-05 con JS, B-14) publicado y comprobado en `https://lanzamet.com` el 27-10-2026: ver «Estado» en `14-backlog-seo.md`.
 
 ## Rastreo e indexación
 
@@ -10,11 +10,11 @@ Primer lote implementado el 27-10-2026 (B-01a, B-02, B-03 provisional, B-04, B-0
 |---|---|---|
 | HTTPS y redirección http → https (301) | ✅ | curl |
 | www → raíz (301, conserva la ruta) | ✅ | curl |
-| Host único | 🟦 | `workers_dev: false` · B-04 |
-| robots.txt | 🟦 | `public/robots.txt` (bloquea `/api/`, declara el sitemap) · B-02 |
-| sitemap.xml | 🟦 | `public/sitemap.xml` con 5 URL · B-02 |
-| 404 reales | 🟦 / ⬜ | Provisional: vista «Página no encontrada» con `noindex` · B-03. El estado HTTP 404 llegará con B-10 |
-| Canonical | 🟦 | Por JS en cada ruta, sin parámetros · B-05. En el HTML, con B-10 |
+| Host único | ✅ | `workers_dev: false` · B-04 |
+| robots.txt | ✅ | `public/robots.txt` (bloquea `/api/`, declara el sitemap) · B-02 |
+| sitemap.xml | ✅ | `public/sitemap.xml` con 5 URL · B-02 |
+| 404 reales | ✅ / ⬜ | Provisional: vista «Página no encontrada» con `noindex` · B-03. El estado HTTP 404 llegará con B-10 |
+| Canonical | ✅ | Por JS en cada ruta, sin parámetros · B-05. En el HTML, con B-10 |
 | Meta robots | ✅ | Ninguna página con `noindex` por error |
 | `noindex` en `/mejorar` | ⬜ | B-26 |
 | Enlaces `<a href>` en la navegación | ✅ | Menú con `routerLink` |
@@ -28,8 +28,8 @@ Primer lote implementado el 27-10-2026 (B-01a, B-02, B-03 provisional, B-04, B-0
 
 | Elemento | Estado | Evidencia / tarea |
 |---|---|---|
-| Idioma estable por URL | 🟦 | Siempre español salvo elección guardada; sugerencia «Read in English» · B-01a |
-| `<html lang>` correcto en el HTML servido | 🟦 | `es` también tras renderizar en un navegador en inglés · B-01a |
+| Idioma estable por URL | ✅ | Siempre español salvo elección guardada; sugerencia «Read in English» · B-01a |
+| `<html lang>` correcto en el HTML servido | ✅ | `es` también tras renderizar en un navegador en inglés · B-01a |
 | URLs por idioma + hreflang | ⬜ | B-18 |
 | Traducción EN completa | ✅ | `en.ts` tipado |
 | Alemán | ⬜ | B-28 (P3) |
@@ -75,7 +75,7 @@ Primer lote implementado el 27-10-2026 (B-01a, B-02, B-03 provisional, B-04, B-0
 | LCP móvil (laboratorio) | ⚠️ | 3,9-4,1 s · B-10, B-24 |
 | CLS | ✅ | 0 |
 | TBT móvil (laboratorio) | ⚠️ | 270-510 ms · B-24 |
-| Caché de archivos con hash | 🟦 | `max-age=31536000, immutable` en `main-*`, `chunk-*`, `styles-*`, `polyfills-*` y `media/*` · B-14 |
+| Caché de archivos con hash | ✅ | `max-age=31536000, immutable` en `main-*`, `chunk-*`, `styles-*`, `polyfills-*` y `media/*` · B-14 |
 | Compresión | ✅ | Brotli |
 | Fuentes | ✅ | Autoalojadas, `swap` (precarga: B-24) |
 | Datos de campo (CrUX) | ❓ | Sin tráfico suficiente aún |

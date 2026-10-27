@@ -20,12 +20,12 @@ Formato de cada tarea: **Prioridad · Esfuerzo (S ≤ ½ día, M 1-3 días, L > 
 
 | Tarea | Estado | Fecha | Nota |
 |---|---|---|---|
-| B-01a | ✅ Completada · pendiente de publicar | 27-10-2026 | `i18n.store.ts` (idioma por defecto `es`, `suggestion`, `dismissSuggestion`), tarjeta `layout/language-suggestion` (carga diferida, mismo estilo que la invitación a instalar), tests |
-| B-02 | ✅ Completada · pendiente de publicar | 27-10-2026 | `public/robots.txt`, `public/sitemap.xml` (5 URL), comprobación en `build-production.ts` |
-| B-03 | ✅ Parte provisional completada · pendiente de publicar | 27-10-2026 | `features/not-found` + `noindex`; el 404 real llega con B-10 |
-| B-04 | ✅ Completada · pendiente de publicar | 27-10-2026 | `workers_dev: false`; `DEPLOYMENT.md` actualizado |
-| B-05 | ✅ Parte provisional (JS) completada · pendiente de publicar | 27-10-2026 | `core/seo/seo-tags.ts` + tests; pasa al HTML con B-10 |
-| B-14 | ✅ Completada · pendiente de publicar | 27-10-2026 | `public/_headers`; comprobado con el Worker local |
+| B-01a | ✅ Completada · publicada | 27-10-2026 | `i18n.store.ts` (idioma por defecto `es`, `suggestion`, `dismissSuggestion`), tarjeta `layout/language-suggestion` (carga diferida, mismo estilo que la invitación a instalar), tests |
+| B-02 | ✅ Completada · publicada | 27-10-2026 | `public/robots.txt`, `public/sitemap.xml` (5 URL), comprobación en `build-production.ts` |
+| B-03 | ✅ Parte provisional completada · publicada | 27-10-2026 | `features/not-found` + `noindex`; el 404 real llega con B-10 |
+| B-04 | ✅ Completada · publicada | 27-10-2026 | `workers_dev: false`; `DEPLOYMENT.md` actualizado |
+| B-05 | ✅ Parte provisional (JS) completada · publicada | 27-10-2026 | `core/seo/seo-tags.ts` + tests; pasa al HTML con B-10 |
+| B-14 | ✅ Completada · publicada | 27-10-2026 | `public/_headers`; comprobado con el Worker local |
 
 Comprobado en local (27-10-2026), con `wrangler dev` y la build de producción:
 - 222 tests, lint y build con sus comprobaciones en verde; el bundle inicial queda en 698 kB.
@@ -34,11 +34,11 @@ Comprobado en local (27-10-2026), con `wrangler dev` y la build de producción:
 - Lighthouse en local: portada accesibilidad 100 y SEO 100; 404 accesibilidad 100 (SEO 63 solo por el `noindex`, como se busca).
 - Capturas a 390 px y 1440 px sin desbordes.
 
-Tras publicar, repetir las comprobaciones de cada tarea en `https://lanzamet.com`.
+Publicado el 27-10-2026 (versión `e317bb84`) y comprobado en `https://lanzamet.com`: `robots.txt` y `sitemap.xml` con 200 y su tipo; `main-*.js` con `immutable` y el HTML y `ngsw-worker.js` con `no-cache`; `workers.dev` devuelve 404; con Chrome en inglés, la portada sale en español con canonical, y una URL inexistente sale como «Página no encontrada» con `noindex`.
 
 ---
 
-### B-01a · El idioma por defecto de cada URL es el español · P0 · S · — · ✅ Completada (27-10-2026, pendiente de publicar)
+### B-01a · El idioma por defecto de cada URL es el español · P0 · S · — · ✅ Completada (27-10-2026, publicada)
 
 - **Por qué**: T-01. Hoy Google probablemente indexa la versión inglesa porque el idioma sale de `navigator.languages`.
 - **Archivos**: `src/app/core/i18n/i18n.store.ts`, `src/app/core/i18n/i18n.spec.ts`, mensajes `es.ts`/`en.ts`, un componente pequeño de sugerencia (p. ej. `layout/language-suggestion`).
@@ -47,7 +47,7 @@ Tras publicar, repetir las comprobaciones de cada tarea en `https://lanzamet.com
 - **Criterios de aceptación**: Chrome headless con `--lang=en-US` y sin almacenamiento renderiza `/` con `<html lang="es">` y title en español; con `lm.lang = "en"` guardado, en inglés.
 - **Pruebas**: test unitario del store (sin preferencia → `es`; con preferencia → la guardada); repetir el comando de volcado del DOM de `13-limitaciones.md` §3.
 
-### B-02 · `robots.txt` y `sitemap.xml` reales · P0 · S · — · ✅ Completada (27-10-2026, pendiente de publicar)
+### B-02 · `robots.txt` y `sitemap.xml` reales · P0 · S · — · ✅ Completada (27-10-2026, publicada)
 
 - **Archivos**: `public/robots.txt` (nuevo); sitemap: `public/sitemap.xml` estático ahora, y generado en build (`scripts/build-production.ts` o un script nuevo) cuando existan las URLs por zona.
 - **Cambio**:
@@ -63,20 +63,20 @@ Tras publicar, repetir las comprobaciones de cada tarea en `https://lanzamet.com
 - **Aceptación**: `curl -I https://lanzamet.com/robots.txt` → 200 `text/plain`; `curl -I …/sitemap.xml` → 200 XML válido; Lighthouse SEO sin el fallo `robots-txt`; Search Console acepta el sitemap.
 - **Ojo**: `ngsw-config.json` no debe cachear ni servir el HTML en esas rutas (comprobar `navigationUrls`).
 
-### B-03 · 404 real para URLs inexistentes · P0 · S (provisional) / M (definitivo) · B-10 para el definitivo · ✅ Provisional completada (27-10-2026, pendiente de publicar); definitiva pendiente de B-10
+### B-03 · 404 real para URLs inexistentes · P0 · S (provisional) / M (definitivo) · B-10 para el definitivo · ✅ Provisional completada (27-10-2026, publicada); definitiva pendiente de B-10
 
 - **Provisional (sin prerender)**: componente `features/not-found/not-found.page.ts` con mensaje y enlaces a las 4 secciones; ruta `**` → ese componente (en lugar de `redirectTo: ''`); en ella, `Meta.updateTag({ name: 'robots', content: 'noindex' })` y retirarlo al salir. Es la alternativa que Google acepta para SPAs ([JavaScript SEO basics](https://developers.google.com/search/docs/crawling-indexing/javascript/javascript-seo-basics)).
 - **Definitivo (con B-10)**: prerenderizar `404.html` y `wrangler.jsonc` → `"not_found_handling": "404-page"`.
 - **Archivos**: `src/app/app.routes.ts`, componente nuevo, mensajes, `wrangler.jsonc` (definitivo).
 - **Aceptación**: provisional: la URL inventada renderiza «Página no encontrada» con `noindex` en el DOM renderizado. Definitivo: `curl -o /dev/null -w '%{http_code}' https://lanzamet.com/no-existe` → 404; las rutas válidas siguen en 200.
 
-### B-04 · Cerrar el host duplicado `*.workers.dev` · P0 · S · — · ✅ Completada con la opción 1 (27-10-2026, pendiente de publicar)
+### B-04 · Cerrar el host duplicado `*.workers.dev` · P0 · S · — · ✅ Completada con la opción 1 (27-10-2026, publicada)
 
 - **Opción 1**: `wrangler.jsonc` → `"workers_dev": false` (se pierde la dirección de reserva).
 - **Opción 2** (conserva la reserva para el API): en `server/api.ts` no se puede, porque el Worker solo corre en `/api/*`. Habría que añadir `run_worker_first` para HTML en ese host, lo que cuesta peticiones. **Se recomienda la opción 1** y actualizar `DEPLOYMENT.md` §5.7.
 - **Aceptación**: `curl -I https://lanzamet.lanzamet.workers.dev/` → no 200 con la web.
 
-### B-05 · Canonical por ruta · P0 · S (con JS) · — · ✅ Parte con JS completada (27-10-2026, pendiente de publicar); en HTML con B-10
+### B-05 · Canonical por ruta · P0 · S (con JS) · — · ✅ Parte con JS completada (27-10-2026, publicada); en HTML con B-10
 
 - **Ahora**: un servicio `SeoService` (`@Service()`) que, en cada `NavigationEnd`, pone `<link rel="canonical" href="https://lanzamet.com{ruta sin query}">`, usando `DOCUMENT` (sin manipular el DOM fuera de Angular más de lo imprescindible). Base URL desde `PUBLIC_URL` (ya existe en el build, `core/share/share-config.ts`).
 - **Con B-10**: el canonical viene ya en el HTML prerenderizado y el servicio solo lo mantiene en navegaciones internas, **con el mismo valor**.
@@ -147,7 +147,7 @@ Tras publicar, repetir las comprobaciones de cada tarea en `https://lanzamet.com
 - **Contenido**: quién lo hace, por qué, metodología (README §Fuentes, §Puntos de consulta, §Mareas), límites, contacto. El nombre del titular o la entidad lo decide el responsable (E-01; revisar la LSSI con asesoría).
 - **Aceptación**: página indexable, enlazada desde Legal y Ajustes, con fecha de revisión.
 
-### B-14 · Caché inmutable para archivos con hash · P1 (barato) · S · — · ✅ Completada (27-10-2026, pendiente de publicar)
+### B-14 · Caché inmutable para archivos con hash · P1 (barato) · S · — · ✅ Completada (27-10-2026, publicada)
 
 - **Archivo**: `public/_headers`.
   ```
