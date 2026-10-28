@@ -146,9 +146,14 @@
     </section>
   }
 
-  @if (weather.data; as forecastData) {
+  @let place = location();
+  @if (weather.data && place) {
+    @let forecastData = weather.data;
     <section id="daily-forecast" class="block today-section" aria-labelledby="days-title">
-      <h2 id="days-title" class="t-title">{{ 'today.days' | t }}</h2>
+      <!-- Each device remembers its own place: the title says whose week this is. -->
+      <h2 id="days-title" class="t-title">
+        <span>{{ 'today.days' | t }} <span class="days-place t-small t-muted">{{ place.name }}</span></span>
+      </h2>
       <lm-day-list
         [days]="forecastData.daily"
         [today]="days.today()"

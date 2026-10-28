@@ -202,6 +202,14 @@
   }
 }
 
+// The week's place, quiet beside its title, on the title's baseline.
+.days-place {
+  margin-inline-start: var(--s-1);
+  font-weight: 450;
+  letter-spacing: 0;
+  white-space: nowrap;
+}
+
 // Under the hours, where the wind already reads: a quiet way to the whole
 // island's wind (/viento), its text lined up with the strip's edge.
 .island-wind-link {
