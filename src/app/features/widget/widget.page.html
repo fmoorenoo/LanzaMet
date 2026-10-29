@@ -1,0 +1,118 @@
+<header id="widget-header" class="page-head page-header">
+  <h1 class="t-display">{{ 'route.widget' | t }}</h1>
+  <p class="t-lead t-muted lead">{{ 'widget.page.lead' | t }}</p>
+</header>
+
+<div class="content">
+  <section id="widget-options" class="section" aria-labelledby="widget-options-title">
+    <h2 id="widget-options-title" class="t-title">{{ 'widget.page.options' | t }}</h2>
+    <div class="options">
+      <label class="option">
+        <span class="label">{{ 'widget.page.zone' | t }}</span>
+        <span class="field select-field">
+          <select id="widget-zone" [formField]="f.zone">
+            @for (zone of zones; track zone.id) {
+              <option [value]="zone.id">{{ zone.name }}</option>
+            }
+          </select>
+          <lm-icon name="chevron-down" />
+        </span>
+      </label>
+      <label class="option">
+        <span class="label">{{ 'widget.page.lang' | t }}</span>
+        <span class="field select-field">
+          <select id="widget-lang" [formField]="f.lang">
+            @for (option of langs; track option.lang) {
+              <option [value]="option.lang" [attr.lang]="option.lang">{{ option.name }}</option>
+            }
+          </select>
+          <lm-icon name="chevron-down" />
+        </span>
+      </label>
+      <label class="option">
+        <span class="label">{{ 'widget.page.theme' | t }}</span>
+        <span class="field select-field">
+          <select id="widget-theme" [formField]="f.theme">
+            @for (option of themes; track option.theme) {
+              <option [value]="option.theme">{{ option.label | t }}</option>
+            }
+          </select>
+          <lm-icon name="chevron-down" />
+        </span>
+      </label>
+    </div>
+  </section>
+
+  <section id="widget-preview" class="section" aria-labelledby="widget-preview-title">
+    <h2 id="widget-preview-title" class="t-title">{{ 'widget.page.preview' | t }}</h2>
+    <div class="preview">
+      <iframe
+        id="widget-preview-frame"
+        [src]="preview()"
+        [width]="width"
+        [height]="height"
+        [title]="cardTitle()"
+        loading="lazy"
+      ></iframe>
+    </div>
+  </section>
+
+  <section id="widget-code" class="section" aria-labelledby="widget-code-title">
+    <h2 id="widget-code-title" class="t-title">{{ 'widget.page.code' | t }}</h2>
+    <p class="text">{{ 'widget.page.code.help' | t }}</p>
+    <pre
+      class="code"
+      tabindex="0"
+      [attr.aria-label]="'widget.page.code' | t"
+    ><code>{{ code() }}</code></pre>
+    <button
+      id="widget-copy-code"
+      type="button"
+      class="btn btn--primary copy"
+      (click)="copy('code')"
+    >
+      <lm-icon [name]="copied() === 'code' ? 'check' : 'copy'" />
+      {{ (copied() === 'code' ? 'widget.page.copied' : 'widget.page.copy') | t }}
+    </button>
+  </section>
+
+  <section id="widget-link" class="section" aria-labelledby="widget-link-title">
+    <h2 id="widget-link-title" class="t-title">{{ 'widget.page.link' | t }}</h2>
+    <p class="text">{{ 'widget.page.link.help' | t }}</p>
+    <p class="code link-code">{{ link() }}</p>
+    <button id="widget-copy-link" type="button" class="btn btn--quiet copy" (click)="copy('link')">
+      <lm-icon [name]="copied() === 'link' ? 'check' : 'copy'" />
+      {{ (copied() === 'link' ? 'widget.page.copied' : 'widget.page.copyLink') | t }}
+    </button>
+  </section>
+
+  <p class="visually-hidden" role="status">
+    @switch (copied()) {
+      @case ('code') {
+        {{ 'widget.page.copied' | t }}
+      }
+      @case ('link') {
+        {{ 'widget.page.copied' | t }}
+      }
+      @case ('failed') {
+        {{ 'widget.page.copyFailed' | t }}
+      }
+    }
+  </p>
+  @if (copied() === 'failed') {
+    <p class="notice" aria-hidden="true">
+      <lm-icon name="alert" />
+      <span>{{ 'widget.page.copyFailed' | t }}</span>
+    </p>
+  }
+
+  <section id="widget-notes" class="section" aria-labelledby="widget-notes-title">
+    <h2 id="widget-notes-title" class="t-title">{{ 'widget.page.notes' | t }}</h2>
+    <ul class="points">
+      <li>{{ 'widget.page.note.updates' | t }}</li>
+      <li>{{ 'widget.page.note.privacy' | t }}</li>
+      <li>{{ 'widget.page.note.size' | t }}</li>
+      <li>{{ 'widget.page.note.credit' | t }}</li>
+    </ul>
+  </section>
+</div>

@@ -931,6 +931,48 @@ export const es = {
   'feedback.privacy.erase':
     'Si nos dejaste tu correo y quieres que borremos tu mensaje, pídenoslo en un nuevo comentario con ese mismo correo.',
 
+  // ── Widget for other websites (/widget/{zona}) and its page (/para-tu-web) ──
+  'widget.title': 'El tiempo en {place}',
+  'widget.at': 'A las {time}',
+  'widget.wind': '{wind} · {speed} km/h',
+  'widget.sea': '{waves} · {water}',
+  'widget.more': 'Previsión completa en LanzaMet',
+  'widget.unavailable': 'La previsión no está disponible ahora mismo.',
+  'widget.embed.credit': 'El tiempo en {place}, por',
+  'route.widget': 'El tiempo de tu zona, en tu web',
+  'seo.title.widget': 'Widget gratis del tiempo en Lanzarote para tu web',
+  'seo.description.widget':
+    'Pon en tu web el tiempo y el mar de tu zona de Lanzarote: una tarjeta gratis, sin anuncios ni cookies, que se actualiza sola. Elige la zona y copia el código.',
+  'widget.page.lead':
+    'Una tarjeta con el tiempo y el mar de tu zona, que se actualiza sola, para alojamientos, escuelas, bares o cualquier web. Gratis, sin anuncios, sin cookies y sin registrarse.',
+  'widget.page.options': 'Elige tu tarjeta',
+  'widget.page.zone': 'Zona',
+  'widget.page.lang': 'Idioma',
+  'widget.page.theme': 'Apariencia',
+  'widget.page.theme.auto': 'Como el dispositivo',
+  'widget.page.theme.light': 'Clara',
+  'widget.page.theme.dark': 'Oscura',
+  'widget.page.preview': 'Así se verá',
+  'widget.page.previewLabel': 'Vista previa de la tarjeta',
+  'widget.page.code': 'Código para tu web',
+  'widget.page.code.help':
+    'Pégalo en el editor HTML de tu web (WordPress, Wix, Squarespace…), donde quieras que aparezca.',
+  'widget.page.copy': 'Copiar el código',
+  'widget.page.copyLink': 'Copiar el enlace',
+  'widget.page.copied': 'Copiado',
+  'widget.page.copyFailed': 'No se ha podido copiar: selecciónalo y cópialo a mano.',
+  'widget.page.link': '¿Sin web? El enlace de tu zona',
+  'widget.page.link.help':
+    'Para una guía de huéspedes, un PDF o un mensaje: lleva a la previsión de la zona, siempre al día.',
+  'widget.page.notes': 'Bueno saber',
+  'widget.page.note.updates':
+    'Se actualiza sola cada pocos minutos, con los mismos datos y el mismo veredicto que LanzaMet.',
+  'widget.page.note.privacy': 'No usa cookies ni scripts, y no recoge nada de quien visita tu web.',
+  'widget.page.note.size': 'Mide 320 × 210 px. Puedes darle de 280 a 480 px de ancho.',
+  'widget.page.note.credit':
+    'Debajo lleva una línea con el nombre de LanzaMet. Te agradecemos que la dejes: así otros la conocen.',
+  'about.widget': '¿Tienes una web? Pon el tiempo de tu zona',
+
   // ── Demo build only ──────────────────────────────────────────
   'demo.intro':
     'Esta versión usa datos ficticios. Cambia el escenario o la hora para ver cómo responde la interfaz a otros días en la isla.',

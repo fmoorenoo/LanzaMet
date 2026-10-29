@@ -25,6 +25,6 @@
       }
     }
   ],
-  "navigationUrls": ["/**", "!/**/*.*", "!/**/*__*", "!/**/*__*/**", "!/api/**"],
+  "navigationUrls": ["/**", "!/**/*.*", "!/**/*__*", "!/**/*__*/**", "!/api/**", "!/widget/**"],
   "navigationRequestStrategy": "freshness"
 }

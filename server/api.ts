@@ -10,7 +10,7 @@ import {
   warningsFromArchive,
 } from './aemet.ts';
 import { NoFallback, remember } from './edge-cache.ts';
-import { OPEN_METEO_SERVICES, openMeteoUrl } from './open-meteo.ts';
+import { OPEN_METEO_SERVICES, openMeteoUrl, type OpenMeteoService } from './open-meteo.ts';
 
 /*
  * The app's own small API. It exists for three reasons:
@@ -157,16 +157,25 @@ async function cached(
   return { body: JSON.parse(text) as Record<string, unknown>, stale };
 }
 
+/**
+ * The shared copy of one Open-Meteo answer, by its upstream URL: the same
+ * copy whether the web asks for it (/api/open-meteo/…) or the widget does
+ * (server/worker.ts), as both build the URL the same way.
+ */
+export function sharedOpenMeteo(service: OpenMeteoService, upstream: string) {
+  return remember(
+    upstream,
+    { ttlMs: service.ttlMs, staleMs: STALE_LIMIT - service.ttlMs },
+    async () => (await fetchUpstream(upstream)).text(),
+  );
+}
+
 /** Open-Meteo's answer to one of the web's own queries, shared by every visitor. */
 async function openMeteo(service: string, query: URLSearchParams, env: Env): Promise<Response> {
   const known = OPEN_METEO_SERVICES[service];
   const upstream = known ? openMeteoUrl(known, query) : null;
   if (!known || !upstream) return json({ error: 'not_found' }, 404, env);
-  const { text, storedAt, stale } = await remember(
-    upstream,
-    { ttlMs: known.ttlMs, staleMs: STALE_LIMIT - known.ttlMs },
-    async () => (await fetchUpstream(upstream)).text(),
-  );
+  const { text, storedAt, stale } = await sharedOpenMeteo(known, upstream);
   // Open-Meteo's JSON as it came; whether it is fresh travels in the headers.
   return new Response(text, {
     headers: {

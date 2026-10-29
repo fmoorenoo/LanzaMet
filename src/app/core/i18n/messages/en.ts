@@ -927,6 +927,49 @@ export const en: Messages = {
   'feedback.privacy.erase':
     'If you left your email and want your message deleted, ask us in a new message from that same email.',
 
+  // ── Widget for other websites (/widget/{zona}) and its page (/en/for-your-website) ──
+  'widget.title': '{place} weather',
+  'widget.at': 'At {time}',
+  'widget.wind': '{wind} · {speed} km/h',
+  'widget.sea': '{waves} · {water}',
+  'widget.more': 'Full forecast on LanzaMet',
+  'widget.unavailable': "The forecast isn't available right now.",
+  'widget.embed.credit': '{place} weather by',
+  'route.widget': 'Your place’s weather, on your website',
+  'seo.title.widget': 'Free Lanzarote weather widget for your website',
+  'seo.description.widget':
+    'Add the weather and sea of your part of Lanzarote to your website: a free card with no ads or cookies that updates itself. Choose the place and copy the code.',
+  'widget.page.lead':
+    'A card with your place’s weather and sea that updates itself, for holiday lets, schools, bars or any website. Free, with no ads, no cookies and no sign-up.',
+  'widget.page.options': 'Choose your card',
+  'widget.page.zone': 'Place',
+  'widget.page.lang': 'Language',
+  'widget.page.theme': 'Appearance',
+  'widget.page.theme.auto': 'Match the device',
+  'widget.page.theme.light': 'Light',
+  'widget.page.theme.dark': 'Dark',
+  'widget.page.preview': 'Preview',
+  'widget.page.previewLabel': 'Preview of the card',
+  'widget.page.code': 'Code for your website',
+  'widget.page.code.help':
+    'Paste it into your website’s HTML editor (WordPress, Wix, Squarespace…), wherever you want it to appear.',
+  'widget.page.copy': 'Copy the code',
+  'widget.page.copyLink': 'Copy the link',
+  'widget.page.copied': 'Copied',
+  'widget.page.copyFailed': "Couldn't copy it: select it and copy it by hand.",
+  'widget.page.link': 'No website? Your place’s link',
+  'widget.page.link.help':
+    'For a guest guide, a PDF or a message: it leads to the place’s forecast, always up to date.',
+  'widget.page.notes': 'Good to know',
+  'widget.page.note.updates':
+    'It updates itself every few minutes, with the same data and the same verdict as LanzaMet.',
+  'widget.page.note.privacy':
+    'It uses no cookies or scripts, and collects nothing from the people who visit your website.',
+  'widget.page.note.size': 'It is 320 × 210 px. You can make it 280 to 480 px wide.',
+  'widget.page.note.credit':
+    'Below it there is a line with LanzaMet’s name. We’d be grateful if you kept it: that’s how others find it.',
+  'about.widget': 'Got a website? Add your place’s weather',
+
   // ── Demo build only ──────────────────────────────────────────
   'demo.intro':
     'This version uses fictitious data. Change the scenario or the time to see how the interface responds to other days on the island.',

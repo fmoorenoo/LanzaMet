@@ -121,6 +121,13 @@ function pagesIn(lang: Lang): Routes {
       }),
       loadComponent: () => import('./features/about/about.page').then((m) => m.AboutPage),
     },
+    // The card other websites embed: choose it and copy its code.
+    {
+      path: path('widget'),
+      title: title('seo.title.widget'),
+      data: seo({ description: 'seo.description.widget', crumb: 'route.widget', image: 'home' }),
+      loadComponent: () => import('./features/widget/widget.page').then((m) => m.WidgetPage),
+    },
     {
       path: path('feedback'),
       title: title('route.feedback'),

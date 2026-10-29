@@ -80,6 +80,11 @@
       <span>{{ 'about.more' | t }}</span>
       <lm-icon class="chevron" name="chevron-right" />
     </a>
+    <a id="about-widget-link" class="next-link" [routerLink]="'widget' | path">
+      <lm-icon name="share" />
+      <span>{{ 'about.widget' | t }}</span>
+      <lm-icon class="chevron" name="chevron-right" />
+    </a>
     <a id="about-feedback-link" class="next-link" [routerLink]="'feedback' | path">
       <lm-icon name="feedback" />
       <span>{{ 'about.feedback' | t }}</span>

@@ -2,12 +2,13 @@
 //  · the Angular build as static assets: each page prerendered as its own HTML
 //    (/mar → mar/index.html); an unknown path reaches the Worker, which answers it
 //    with the app's empty shell and a 404 (notFoundPage in server/api.ts),
-//  · and /api/* through server/api.ts (AEMET and the shared Open-Meteo cache).
+//  · /api/* through server/api.ts (AEMET and the shared Open-Meteo cache),
+//  · and /widget/{zona}, the card other websites embed (server/worker.ts).
 // See DEPLOYMENT.md. Secrets are never written here: `npx wrangler secret put AEMET_API_KEY`.
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "lanzamet",
-  "main": "server/api.ts",
+  "main": "server/worker.ts",
   "compatibility_date": "2026-10-15",
   "assets": {
     "directory": "./dist/lanzamet/browser",
@@ -18,8 +19,9 @@
     // Pages live at /mar, not /mar/: mar/index.html is served there and /mar/
     // redirects to it, matching each page's canonical address.
     "html_handling": "drop-trailing-slash",
-    // Only the API runs code; every other request is a file (or index.html), served at no CPU cost.
-    "run_worker_first": ["/api/*"]
+    // Only the API and the widget run code; every other request is a file (or
+    // index.html), served at no CPU cost.
+    "run_worker_first": ["/api/*", "/widget/*"]
   },
   "vars": {
     // Leave empty to answer only this site (same origin). Set an origin, or "*", only if

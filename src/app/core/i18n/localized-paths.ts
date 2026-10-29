@@ -10,7 +10,8 @@ import { Lang } from './i18n.model';
  */
 
 /** The site's pages, by a stable English name. */
-export type PageId = 'today' | 'zones' | 'sea' | 'plans' | 'wind' | 'about' | 'legal' | 'feedback';
+export type PageId =
+  'today' | 'zones' | 'sea' | 'plans' | 'wind' | 'about' | 'legal' | 'feedback' | 'widget';
 
 /** Each place has two pages: its weather (as Hoy) and its sea (as Mar). */
 export type ZoneView = 'weather' | 'sea';
@@ -25,6 +26,9 @@ export const PAGE_SLUGS: Readonly<Record<PageId, Readonly<Record<Lang, string>>>
   about: { es: 'sobre', en: 'about' },
   legal: { es: 'legal', en: 'legal' },
   feedback: { es: 'mejorar', en: 'feedback' },
+  // Where the widget is chosen and its code copied. The card itself is
+  // /widget/{zona}, served by the Worker (server/worker.ts), in every language.
+  widget: { es: 'para-tu-web', en: 'for-your-website' },
 };
 
 /** The word before a place's name: /tiempo/famara, /en/weather/famara. */

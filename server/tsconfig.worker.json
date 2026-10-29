@@ -1,0 +1,13 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "module": "preserve",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    // The web's code (src/) follows the app's rules, not Node's type stripping.
+    "verbatimModuleSyntax": false,
+    "erasableSyntaxOnly": false
+  },
+  "include": ["worker.ts"],
+  "exclude": []
+}

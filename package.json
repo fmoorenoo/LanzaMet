@@ -11,7 +11,7 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "test:api": "node --test server/aemet.test.ts server/api.test.ts server/open-meteo.test.ts",
-    "typecheck:api": "tsc -p server/tsconfig.json",
+    "typecheck:api": "tsc -p server/tsconfig.json && tsc -p server/tsconfig.worker.json",
     "verify:sources": "node scripts/verify-sources.ts",
     "lint": "ng lint",
     "format": "prettier --write \"src/**/*.{ts,html,scss}\" \"server/*.ts\"",

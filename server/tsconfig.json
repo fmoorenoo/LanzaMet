@@ -12,5 +12,7 @@
     "verbatimModuleSyntax": true,
     "skipLibCheck": true
   },
-  "include": ["*.ts"]
+  "include": ["*.ts"],
+  // It imports the web's own code, which only a bundler resolves: tsconfig.worker.json.
+  "exclude": ["worker.ts"]
 }

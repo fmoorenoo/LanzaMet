@@ -332,6 +332,16 @@ Auditoría completa, plan y estado de cada tarea en [`docs/seo-audit/`](docs/seo
 - **`public/robots.txt`** abierto, `/api/` incluido (Google lo llama al renderizar). El **sitemap** lo escribe `npm run build:prod` con todas las páginas prerenderizadas indexables (25 en español y 25 en inglés), y comprueba que cada una lleve su canonical.
 - Search Console y Bing Webmaster Tools dados de alta (27-10-2026).
 
+## Widget para otras webs
+
+Una tarjeta con el tiempo de una zona ahora, para que alojamientos, escuelas o bares la pongan en su web: `https://lanzamet.com/widget/{zona}?lang=es|en&theme=auto|light|dark`. Se elige y se copia el código en `/para-tu-web` (`/en/for-your-website`, `features/widget`), enlazada desde Sobre.
+
+- **La sirve el Worker** (`server/worker.ts`, la entrada de Wrangler, que reúne la API y el widget): HTML de unos 3 KB sin scripts, fuentes, imágenes ni cookies. Lleva la temperatura, el cielo, el veredicto, el viento y el mar, y un solo enlace a la página de la zona en su idioma. La tarjeta se dibuja como mucho cada 10 minutos.
+- **Las mismas reglas que la web**: `src/app/widget/widget-card.ts` usa los mapeadores y las reglas de `core/insights`, sin Angular, y las mismas consultas a Open-Meteo (`core/data/http/open-meteo.queries.ts`), así que comparte con la web la copia en caché de cada respuesta y no gasta peticiones de más.
+- **Cabeceras propias**: `frame-ancestors *` (cualquier web puede incrustarla), `default-src 'none'` y `X-Robots-Tag: noindex`. Las del resto de la web (`public/_headers`) siguen prohibiendo que se la incruste.
+- **El código que se copia** es un `<iframe>` y, debajo, una línea visible con el nombre de la marca enlazado («El tiempo en Famara, por LanzaMet»). Va sin palabras clave en el enlace, como pide Google para los enlaces que se reparten con un widget.
+- `npm run api` y `npm run test:api` siguen ejecutando `api.ts` con Node. El widget se prueba con `npm run preview`. `npm run typecheck:api` comprueba los dos (`server/tsconfig.worker.json`).
+
 ## Arquitectura
 
 ```
