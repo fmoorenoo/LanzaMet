@@ -9,22 +9,15 @@ import {
 } from '@angular/router';
 import { filter } from 'rxjs';
 import { LOCATIONS } from '../data/locations';
+import { langOfPath, readPath, zonePath, ZoneView } from '../i18n/localized-paths';
 import { Location, LocationId } from '../models';
 import { LocationsStore } from './locations.store';
 
 /** The route parameter that names a place: /tiempo/:zona, /mar/:zona. */
 export const ZONE_PARAM = 'zona';
 
-/** Each place has two pages: its weather (as Hoy) and its sea (as Mar). */
-export type ZoneView = 'weather' | 'sea';
-
-const VIEW_PATH: Readonly<Record<ZoneView, string>> = { weather: 'tiempo', sea: 'mar' };
-
 export const zoneById = (id: string | undefined): Location | null =>
   LOCATIONS.find((l) => l.id === id) ?? null;
-
-/** /tiempo/famara, /mar/famara */
-export const zonePath = (view: ZoneView, id: LocationId): string => `/${VIEW_PATH[view]}/${id}`;
 
 /**
  * Where a place is, for its pages' titles and descriptions: "Teguise,
@@ -73,10 +66,11 @@ export class ZoneNavigation {
 
   /** Which of a place's pages is on screen: Hoy counts as weather, Mar as sea. */
   view(): ZoneView | null {
-    const path = this.router.url.split(/[?#]/)[0];
-    if (path === '/' || path.startsWith('/tiempo/')) return 'weather';
-    if (path === '/mar' || path.startsWith('/mar/')) return 'sea';
-    return null;
+    const address = readPath(this.router.url);
+    if (!address) return null;
+    if ('view' in address) return address.view;
+    if (address.page === 'today') return 'weather';
+    return address.page === 'sea' ? 'sea' : null;
   }
 
   /**
@@ -87,12 +81,17 @@ export class ZoneNavigation {
   switchTo(id: LocationId): void {
     this.locations.select(id);
     const view = this.view();
-    if (view) void this.router.navigateByUrl(zonePath(view, id), { replaceUrl: true });
+    if (view) void this.router.navigateByUrl(this.pathOf(view, id), { replaceUrl: true });
   }
 
   /** A place's page, opened from elsewhere (a card, a plan). */
   open(id: LocationId, view: ZoneView = 'weather'): void {
     this.locations.select(id);
-    void this.router.navigateByUrl(zonePath(view, id));
+    void this.router.navigateByUrl(this.pathOf(view, id));
+  }
+
+  /** A place's page in the language on screen. */
+  private pathOf(view: ZoneView, id: LocationId): string {
+    return zonePath(view, id, langOfPath(this.router.url));
   }
 }

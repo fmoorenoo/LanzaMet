@@ -39,7 +39,7 @@
     <a
       id="about-link"
       class="sheet-link about-link"
-      routerLink="/sobre"
+      [routerLink]="'about' | path"
       (click)="ui.settingsOpen.set(false)"
     >
       <lm-icon name="info" />
@@ -52,7 +52,7 @@
     <a
       id="feedback-link"
       class="sheet-link feedback-link"
-      routerLink="/mejorar"
+      [routerLink]="'feedback' | path"
       (click)="ui.settingsOpen.set(false)"
     >
       <lm-icon name="feedback" />
@@ -65,7 +65,7 @@
     <a
       id="legal-link"
       class="sheet-link legal-link"
-      routerLink="/legal"
+      [routerLink]="'legal' | path"
       (click)="ui.settingsOpen.set(false)"
     >
       <lm-icon name="privacy" />

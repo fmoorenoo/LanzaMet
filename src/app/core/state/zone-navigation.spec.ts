@@ -13,8 +13,8 @@ import {
   zoneArea,
   zoneById,
   ZoneNavigation,
-  zonePath,
 } from './zone-navigation';
+import { zonePath } from '../i18n/localized-paths';
 
 @Component({ template: '' })
 class Blank {}
@@ -27,6 +27,26 @@ describe('zone addresses', () => {
       providers: [
         { provide: LocationSource, useValue: { list: () => of(LOCATIONS) } },
         provideRouter([
+          {
+            path: 'en',
+            children: [
+              { path: '', component: Blank },
+              { path: 'sea', component: Blank },
+              {
+                path: `weather/:${ZONE_PARAM}`,
+                canMatch: [knownZone],
+                canActivate: [selectZone],
+                component: Blank,
+              },
+              {
+                path: `sea/:${ZONE_PARAM}`,
+                canMatch: [knownZone],
+                canActivate: [selectZone],
+                component: Blank,
+              },
+              { path: '**', component: Blank, data: { notFound: true } },
+            ],
+          },
           { path: '', component: Blank },
           { path: 'mar', component: Blank },
           { path: 'zonas', component: Blank },
@@ -58,8 +78,9 @@ describe('zone addresses', () => {
   }
 
   it('builds each place’s two addresses and says where it is', () => {
-    expect(zonePath('weather', 'famara')).toBe('/tiempo/famara');
-    expect(zonePath('sea', 'famara')).toBe('/mar/famara');
+    expect(zonePath('weather', 'famara', 'es')).toBe('/tiempo/famara');
+    expect(zonePath('sea', 'famara', 'es')).toBe('/mar/famara');
+    expect(zonePath('weather', 'famara', 'en')).toBe('/en/weather/famara');
     expect(zoneArea(zoneById('famara')!)).toBe('Teguise, Lanzarote');
     expect(zoneArea(zoneById('arrecife')!)).toBe('Lanzarote');
   });
@@ -80,6 +101,9 @@ describe('zone addresses', () => {
     const { harness, router } = await setUp();
     await harness.navigateByUrl('/tiempo/atlantida');
     expect(router.routerState.snapshot.root.firstChild?.data['notFound']).toBe(true);
+
+    await harness.navigateByUrl('/en/weather/atlantida');
+    expect(router.routerState.snapshot.root.firstChild?.firstChild?.data['notFound']).toBe(true);
   });
 
   it('moves the address with the place on a weather or sea page, and only there', async () => {
@@ -103,5 +127,21 @@ describe('zone addresses', () => {
     zones.open('la-santa', 'sea');
     await harness.fixture.whenStable();
     expect(router.url).toBe('/mar/la-santa');
+  });
+
+  it('keeps the address in English on an English page', async () => {
+    const { harness, router, zones, locations } = await setUp();
+    await harness.navigateByUrl('/en');
+    expect(zones.view()).toBe('weather');
+    zones.switchTo('famara');
+    await harness.fixture.whenStable();
+    expect(router.url).toBe('/en/weather/famara');
+
+    await harness.navigateByUrl('/en/sea');
+    zones.switchTo('orzola');
+    await harness.fixture.whenStable();
+    expect(router.url).toBe('/en/sea/orzola');
+    expect(zones.routeZone()?.name).toBe('Órzola');
+    expect(locations.selected()?.id).toBe('orzola');
   });
 });

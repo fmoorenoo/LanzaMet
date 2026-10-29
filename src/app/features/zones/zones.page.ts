@@ -1,8 +1,8 @@
 import { Component, computed, inject, linkedSignal } from '@angular/core';
-import { zonePath } from '../../core/state/zone-navigation';
 import { RouterLink } from '@angular/router';
 import { msg } from '../../core/i18n/i18n.model';
 import { I18n } from '../../core/i18n/i18n.store';
+import { zonePath } from '../../core/i18n/localized-paths';
 import { TranslatePipe } from '../../core/i18n/t.pipe';
 import { islandSummary, zoneHeadline } from '../../core/insights/island.insight';
 import { stepsFrom, zoneAt } from '../../core/insights/moment.insight';
@@ -144,7 +144,7 @@ export class ZonesPage {
   );
 
   /** A place's weather page, for the cards' links. */
-  protected readonly weatherPath = (id: LocationId) => zonePath('weather', id);
+  protected readonly weatherPath = (id: LocationId) => zonePath('weather', id, this.i18n.lang());
 
   protected toggleFavorite(id: LocationId): void {
     this.locations.toggleFavorite(id);

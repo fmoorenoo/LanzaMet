@@ -33,7 +33,7 @@
   </li>
 
   <li class="row-wrap" data-condition="sea">
-    <a class="row is-link condition-row" routerLink="/mar">
+    <a class="row is-link condition-row" [routerLink]="'sea' | path">
       <span
         class="gauge sea sea-gauge"
         [class.is-empty]="v.sea.status !== 'ready'"
@@ -74,7 +74,7 @@
   </li>
 
   <li class="row-wrap" data-condition="tide">
-    <a class="row is-link condition-row" routerLink="/mar">
+    <a class="row is-link condition-row" [routerLink]="'sea' | path">
       <span class="gauge tide tide-gauge" [class.is-empty]="!v.tide.reading" aria-hidden="true">
         <span class="tide-tube">
           <span class="tide-water" [style.transform]="tideFill()"></span>

@@ -3,6 +3,7 @@ import { computed, effect, inject, PLATFORM_ID, Service, signal } from '@angular
 import { isCrawler } from '../seo/crawler';
 import { readStored, writeStored } from '../utils/storage';
 import { DEFAULT_LANG, isLang, Lang, LANGS, MessageKey, Msg } from './i18n.model';
+import { langOfPath } from './localized-paths';
 import { LOCALES, translate } from './translate';
 
 /**
@@ -20,12 +21,16 @@ export function detectLang(preferred: readonly string[]): Lang {
 const isTrue = (value: unknown): value is true => value === true;
 
 /**
- * The interface language. Every address opens in Spanish, so a page reads the
- * same for every visitor and for search engines (which send no language
- * preference). A choice made in Settings, or from the suggestion, is
- * remembered and always wins. The browser's preferences only decide whether
- * to suggest the other language. Changing it re-renders every text at once,
- * without reloading: templates and computed values read `lang` through `t()`.
+ * The interface language. The address says it: Spanish at the root, English
+ * under /en (see localized-paths.ts), so a page reads the same for every
+ * visitor and for search engines, and is prerendered in its own language.
+ * The routes set it before each page is built (`speak` in lang-route.ts).
+ *
+ * A choice made in Settings, or from the suggestion, is remembered: it opens
+ * the site in that language next time (lang-route.ts). The browser's
+ * preferences only decide whether to suggest the other language. Templates
+ * and computed values read `lang` through `t()`, so a change re-renders
+ * every text at once.
  */
 @Service()
 export class I18n {
@@ -38,12 +43,14 @@ export class I18n {
   private readonly noVisitor =
     !isPlatformBrowser(inject(PLATFORM_ID)) || isCrawler(globalThis.navigator?.userAgent);
 
+  /** From the address, before the first frame; the routes keep it in step afterwards. */
+  private readonly pageLang = signal<Lang>(langOfPath(this.document.location?.pathname ?? '/'));
   /** The visitor's own choice; null until they make one. */
   private readonly chosen = signal<Lang | null>(readStored('lang', isLang));
   private readonly suggestionDismissed = signal(readStored('langSuggestion', isTrue) ?? false);
 
   readonly langs = LANGS;
-  readonly lang = computed<Lang>(() => this.chosen() ?? DEFAULT_LANG);
+  readonly lang = this.pageLang.asReadonly();
   /** BCP 47 locale for numbers and dates ("es-ES", "en-GB"). */
   readonly locale = computed(() => LOCALES[this.lang()]);
 
@@ -73,8 +80,18 @@ export class I18n {
     return translate(message, this.lang());
   }
 
-  /** A choice made by the visitor: applied at once and remembered on this device. */
-  use(lang: Lang): void {
+  /** The language of the page about to be shown (set by its route). */
+  follow(lang: Lang): void {
+    this.pageLang.set(lang);
+  }
+
+  /** The visitor's remembered choice; never for a crawler or a prerendered page. */
+  remembered(): Lang | null {
+    return this.noVisitor ? null : this.chosen();
+  }
+
+  /** A choice made by the visitor, remembered on this device (LanguageLinks moves to its pages). */
+  remember(lang: Lang): void {
     this.chosen.set(lang);
     writeStored('lang', lang);
   }

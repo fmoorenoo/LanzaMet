@@ -1,5 +1,10 @@
 <nav id="main-navigation" class="bar main-navigation" [attr.aria-label]="'nav.label' | t">
-  <a id="brand-link" class="brand brand-link" routerLink="/" [attr.aria-label]="'app.home' | t">
+  <a
+    id="brand-link"
+    class="brand brand-link"
+    [routerLink]="'today' | path"
+    [attr.aria-label]="'app.home' | t"
+  >
     <lm-brand-mark />
     <span class="brand-name">{{ 'app.brand' | t }}</span>
   </a>
@@ -14,13 +19,13 @@
       [style.--i]="capsuleIndex()"
     ></span>
     <ul class="tabs nav-tabs">
-      @for (item of items; track item.path; let i = $index) {
+      @for (item of items; track item.id; let i = $index) {
         <li>
           <!-- Active by section, not by exact address: Hoy covers /tiempo/:zona, Mar covers /mar/:zona. -->
           <a
             class="tab nav-tab"
             [attr.data-route]="item.id"
-            [routerLink]="item.path"
+            [routerLink]="item.id | path"
             [class.is-active]="activeIndex() === i"
             [attr.aria-current]="activeIndex() === i ? 'page' : null"
           >

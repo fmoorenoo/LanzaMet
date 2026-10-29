@@ -4,7 +4,7 @@ import { of } from 'rxjs';
 import { LocationSource } from '../../core/data/data-sources';
 import { ZONE_GUIDE } from '../../core/data/zone-guide';
 import { LOCATIONS } from '../../core/data/locations';
-import { ZoneView } from '../../core/state/zone-navigation';
+import { ZoneView } from '../../core/i18n/localized-paths';
 import { ZoneAbout } from './zone-about';
 
 function render(id: string, view: ZoneView) {

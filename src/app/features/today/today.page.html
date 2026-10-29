@@ -48,7 +48,7 @@
         <h2 timelineTitle id="hours-title" class="t-title">{{ titles().hours | t }}</h2>
       </lm-hour-timeline>
       <!-- The same wind across the island, a quiet link under the hours. -->
-      <a id="island-wind-link" class="btn btn--quiet island-wind-link" routerLink="/viento">
+      <a id="island-wind-link" class="btn btn--quiet island-wind-link" [routerLink]="'wind' | path">
         {{ 'today.windIsland' | t }}
         <lm-icon name="chevron-right" />
       </a>
@@ -72,7 +72,7 @@
       <h2 id="plans-title" class="t-title">{{ titles().plans | t }}</h2>
       <!-- Dónde ir is about today: the link only stands beside today's plans. -->
       @if (days.isToday()) {
-        <a id="all-plans-link" class="btn btn--quiet" routerLink="/donde-ir">
+        <a id="all-plans-link" class="btn btn--quiet" [routerLink]="'plans' | path">
           {{ 'common.seeAll' | t }}
         </a>
       }
@@ -152,7 +152,10 @@
     <section id="daily-forecast" class="block today-section" aria-labelledby="days-title">
       <!-- Each device remembers its own place: the title says whose week this is. -->
       <h2 id="days-title" class="t-title">
-        <span>{{ 'today.days' | t }} <span class="days-place t-small t-muted">{{ place.name }}</span></span>
+        <span
+          >{{ 'today.days' | t }}
+          <span class="days-place t-small t-muted">{{ place.name }}</span></span
+        >
       </h2>
       <lm-day-list
         [days]="forecastData.daily"

@@ -99,6 +99,11 @@ const prerendered = Object.keys(
 if (prerendered.length < 2) fail('No se ha prerenderizado ninguna página.');
 /** Indexable pages, for the sitemap written below. */
 const indexed: string[] = [];
+/** Each indexable page's language versions (hreflang → address), checked both ways below. */
+const versions = new Map<string, Record<string, string>>();
+const ORIGIN = 'https://lanzamet.com';
+/** English under /en, Spanish everywhere else (src/app/core/i18n/localized-paths.ts). */
+const langOf = (route: string) => (/^\/en(?:[/?#]|$)/.test(route) ? 'en' : 'es');
 
 for (const route of prerendered) {
   const file = route === '/' ? 'index.html' : `${route.slice(1)}/index.html`;
@@ -110,21 +115,44 @@ for (const route of prerendered) {
   if (/<script(?![^>]*\bsrc=)(?![^>]*type="application\/(?:ld\+)?json")[^>]*>/i.test(html)) {
     fail(`${file} tiene un script en línea: la Content-Security-Policy lo bloquearía.`);
   }
-  if (!/<html[^>]*\blang="es"/.test(html)) fail(`${file} no está en español (<html lang="es">).`);
+  const lang = langOf(route);
+  if (!new RegExp(`<html[^>]*\\blang="${lang}"`).test(html)) {
+    fail(`${file} no está en su idioma (<html lang="${lang}">).`);
+  }
+  // Every link inside the site stays in the page's language; only the way to
+  // the other language (marked with hreflang) leaves it.
+  for (const [anchor, href] of html.matchAll(/<a\b[^>]*\bhref="(\/[^"]*)"[^>]*>/g)) {
+    if (langOf(href) !== lang && !/\bhreflang=/.test(anchor)) {
+      fail(`${file} enlaza ${href}, que está en otro idioma.`);
+    }
+  }
   // Pages are written at build time: no visitor's language suggestion, no weather of that moment.
   if (html.includes('language-suggestion')) fail(`${file} lleva la sugerencia de idioma.`);
   if (/id="current-temperature"/.test(html))
     fail(`${file} lleva datos del tiempo del momento del build.`);
   const indexable = !/<meta name="robots" content="noindex"/.test(html);
   if (indexable) {
-    if (
-      !html.includes(
-        `<link rel="canonical" href="https://lanzamet.com${route === '/' ? '/' : route}">`,
-      )
-    ) {
+    if (!html.includes(`<link rel="canonical" href="${ORIGIN}${route === '/' ? '/' : route}">`)) {
       fail(`${file} no lleva su dirección canónica.`);
     }
     indexed.push(route);
+    // Its version in each language, itself among them, and Spanish for everyone else.
+    const alternates: Record<string, string> = {};
+    for (const [, hreflang, href] of html.matchAll(
+      /<link rel="alternate" hreflang="([^"]+)" href="([^"]+)">/g,
+    )) {
+      alternates[hreflang] = href;
+    }
+    if (Object.keys(alternates).sort().join() !== 'en,es,x-default') {
+      fail(`${file} no lleva sus versiones es, en y x-default (hreflang).`);
+    }
+    if (alternates[lang] !== `${ORIGIN}${route}`) {
+      fail(`${file} no se nombra a sí misma entre sus versiones (hreflang).`);
+    }
+    if (alternates['x-default'] !== alternates['es']) {
+      fail(`${file}: x-default no es la versión en español.`);
+    }
+    versions.set(route, alternates);
     // The link preview's picture exists, and the structured data is valid JSON.
     const image = /<meta property="og:image" content="https:\/\/lanzamet\.com\/([^"]+)"/.exec(html);
     if (!image) fail(`${file} no lleva imagen para compartir (og:image).`);
@@ -141,18 +169,47 @@ for (const route of prerendered) {
     }
   }
 }
+// ── hreflang: each version names the others, and they name it back ──────
+for (const [route, alternates] of versions) {
+  for (const [hreflang, href] of Object.entries(alternates)) {
+    const other = href.slice(ORIGIN.length) || '/';
+    const back = versions.get(other);
+    if (!back)
+      fail(`${route} da como versión ${hreflang} ${href}, que no es una página indexable.`);
+    if (JSON.stringify(back) !== JSON.stringify(alternates)) {
+      fail(`${route} y ${other} no se nombran entre sí igual (hreflang).`);
+    }
+  }
+}
+
 // ── Sitemap: every prerendered page that may be indexed, and only those ──
 // No <lastmod>: the weather on them changes every hour, their text rarely,
 // and a date that always says "today" is one search engines learn to ignore.
-const order = ['/', '/zonas', '/mar', '/donde-ir', '/tiempo/', '/mar/', '/sobre', '/legal'];
+// The language versions are named in each page's <head> (hreflang), not here
+// as well. Spanish first, then English, each in the same order.
+const ORDER: Record<string, string[]> = {
+  es: ['/', '/zonas', '/mar', '/donde-ir', '/tiempo/', '/mar/', '/sobre', '/legal'],
+  en: [
+    '/en',
+    '/en/places',
+    '/en/sea',
+    '/en/where-to-go',
+    '/en/weather/',
+    '/en/sea/',
+    '/en/about',
+    '/en/legal',
+  ],
+};
 const rank = (route: string) => {
+  const lang = langOf(route);
+  const order = ORDER[lang];
   const i = order.findIndex((p) =>
     p.endsWith('/') && p !== '/' ? route.startsWith(p) : route === p,
   );
-  return i === -1 ? order.length : i;
+  return (lang === 'es' ? 0 : order.length + 1) + (i === -1 ? order.length : i);
 };
 indexed.sort((a, b) => rank(a) - rank(b) || a.localeCompare(b));
-const urls = indexed.map((route) => `  <url><loc>https://lanzamet.com${route}</loc></url>`);
+const urls = indexed.map((route) => `  <url><loc>${ORIGIN}${route}</loc></url>`);
 writeFileSync(
   join(dir, 'sitemap.xml'),
   [
@@ -175,6 +232,8 @@ for (const marker of ['lm-demo-controls', 'Puerto de Arrecife']) {
 if (key && !scripts.includes(key)) fail('La clave de Web3Forms no ha llegado a la build.');
 
 console.log('\n✓ Build de producción lista en dist/lanzamet/browser');
+const inEnglish = indexed.filter((route) => langOf(route) === 'en').length;
 console.log(`  Páginas prerenderizadas: ${prerendered.length}; en el sitemap: ${indexed.length}`);
+console.log(`    en español: ${indexed.length - inEnglish}; en inglés: ${inEnglish}`);
 console.log(`  Ayúdanos: ${key ? 'clave de Web3Forms incluida' : 'SIN clave (no enviará nada)'}`);
 console.log(`  Enlace al compartir: ${publicUrl || 'la dirección desde la que se abra la web'}`);

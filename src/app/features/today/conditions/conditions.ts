@@ -2,6 +2,7 @@ import { DOCUMENT } from '@angular/common';
 import { Component, computed, inject, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { msg } from '../../../core/i18n/i18n.model';
+import { PathPipe } from '../../../core/i18n/path.pipe';
 import { TranslatePipe } from '../../../core/i18n/t.pipe';
 import { SeaReading } from '../../../core/insights/sea.insight';
 import { TideReading } from '../../../core/insights/tide.insight';
@@ -33,7 +34,7 @@ const WAVE_AMPLITUDE = [0.8, 2, 3.4, 5, 6.6];
 /** Wind, sea and tide — each as a word first, a number second, and a tiny gauge. */
 @Component({
   selector: 'lm-conditions',
-  imports: [RouterLink, Icon, TranslatePipe],
+  imports: [RouterLink, Icon, TranslatePipe, PathPipe],
   templateUrl: './conditions.html',
   styleUrl: './conditions.scss',
   host: { class: 'current-conditions' },

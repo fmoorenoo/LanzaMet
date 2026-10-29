@@ -1,7 +1,9 @@
 import { DOCUMENT } from '@angular/common';
 import { Component, computed, effect, inject, signal } from '@angular/core';
+import { Router, RouterLink } from '@angular/router';
 import { Lang, MessageKey } from '../../core/i18n/i18n.model';
 import { I18n } from '../../core/i18n/i18n.store';
+import { LanguageLinks } from '../../core/i18n/language-links';
 import { translate } from '../../core/i18n/translate';
 import { Icon } from '../../shared/ui/icon/icon';
 import { Tooltip } from '../../shared/ui/tooltip/tooltip';
@@ -10,15 +12,16 @@ import { Tooltip } from '../../shared/ui/tooltip/tooltip';
 const QUIET_MS = 1500;
 
 /**
- * Every page opens in Spanish. When the browser prefers the other language,
- * this small card offers it, written in that language, so whoever needs it
- * can read it. It never takes the focus; choosing or closing it is remembered.
+ * Every page is in the language of its address. When the browser prefers the
+ * other one, this small card offers the same page in it, written in that
+ * language, so whoever needs it can read it. Its action is a link to that
+ * page. It never takes the focus; choosing or closing it is remembered.
  * It looks like the install invite and sits where it does (the invite waits
  * while this is open).
  */
 @Component({
   selector: 'lm-language-suggestion',
-  imports: [Icon, Tooltip],
+  imports: [RouterLink, Icon, Tooltip],
   template: `
     @if (shown(); as lang) {
       <aside
@@ -31,15 +34,16 @@ const QUIET_MS = 1500;
         <span class="badge" aria-hidden="true"><lm-icon name="languages" /></span>
         <div class="text">
           <p class="title">{{ text(lang, 'langSuggest.title') }}</p>
-          <button
+          <a
             id="language-suggestion-button"
-            type="button"
             class="btn btn--primary action"
+            [routerLink]="target(lang)"
+            [attr.hreflang]="lang"
             (click)="accept(lang)"
             (keydown.escape)="dismiss()"
           >
             {{ text(lang, 'langSuggest.action') }}
-          </button>
+          </a>
         </div>
         <button
           type="button"
@@ -74,6 +78,8 @@ const QUIET_MS = 1500;
 })
 export class LanguageSuggestion {
   private readonly i18n = inject(I18n);
+  private readonly links = inject(LanguageLinks);
+  private readonly router = inject(Router);
   private readonly document = inject(DOCUMENT);
 
   private readonly ready = signal(false);
@@ -92,9 +98,15 @@ export class LanguageSuggestion {
     return translate(key, lang);
   }
 
+  /** The page on screen in the offered language (a tree: it may carry ?dia= and an anchor). */
+  protected target(lang: Lang) {
+    return this.router.parseUrl(this.links.linkTo(lang));
+  }
+
+  /** The link moves to the page; the choice is remembered. */
   protected accept(lang: Lang): void {
     this.returnFocus();
-    this.i18n.use(lang);
+    this.i18n.remember(lang);
   }
 
   protected dismiss(): void {

@@ -11,11 +11,12 @@ import {
   windTint,
 } from '../../core/insights/wind.insight';
 import { Msg, msg } from '../../core/i18n/i18n.model';
+import { I18n } from '../../core/i18n/i18n.store';
+import { zonePath } from '../../core/i18n/localized-paths';
 import { TranslatePipe } from '../../core/i18n/t.pipe';
 import { ForecastStore } from '../../core/state/forecast.store';
 import { IslandStore } from '../../core/state/island.store';
 import { LocationsStore } from '../../core/state/locations.store';
-import { zonePath } from '../../core/state/zone-navigation';
 import { DataCredit } from '../../shared/ui/data-credit/data-credit';
 import { Icon } from '../../shared/ui/icon/icon';
 import { StatusMessage } from '../../shared/ui/status-message/status-message';
@@ -83,6 +84,7 @@ export class WindPage {
   protected readonly forecast = inject(ForecastStore);
   protected readonly ui = inject(UiStore);
   private readonly locations = inject(LocationsStore);
+  private readonly i18n = inject(I18n);
 
   protected readonly isDemo = inject(DATA_MODE) === 'demo';
   protected readonly place = this.locations.selected;
@@ -99,7 +101,7 @@ export class WindPage {
         return {
           id: location.id,
           name: location.name,
-          path: zonePath('weather', location.id),
+          path: zonePath('weather', location.id, this.i18n.lang()),
           speed: Math.round(wind.speedKmh),
           level: reading.level,
           words: reading.level > 0 ? reading.labelFrom : reading.label,

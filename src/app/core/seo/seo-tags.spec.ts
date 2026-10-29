@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { provideRouter } from '@angular/router';
+import { provideRouter, Route } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
-import { I18n } from '../i18n/i18n.store';
+import { speak } from '../i18n/lang-route';
 import { canonicalUrl, SeoTags } from './seo-tags';
 
 @Component({ template: '' })
@@ -14,6 +14,19 @@ const description = () =>
   document.head.querySelector<HTMLMetaElement>('meta[name="description"]')?.content ?? null;
 const robots = () =>
   document.head.querySelector<HTMLMetaElement>('meta[name="robots"]')?.content ?? null;
+const alternates = () =>
+  Object.fromEntries(
+    [...document.head.querySelectorAll<HTMLLinkElement>('link[rel="alternate"][hreflang]')].map(
+      (link) => [link.hreflang, link.href],
+    ),
+  );
+
+const sea: Route = {
+  title: 'seo.title.sea',
+  component: Blank,
+  data: { description: 'seo.description.sea', crumb: 'nav.sea', image: 'sea' },
+};
+const notFound: Route = { path: '**', component: Blank, data: { noindex: true } };
 
 describe('canonicalUrl', () => {
   it('keeps only the path, on the public domain', () => {
@@ -28,6 +41,7 @@ describe('canonicalUrl', () => {
 describe('SeoTags', () => {
   afterEach(() => {
     document.head.querySelector('link[rel="canonical"]')?.remove();
+    document.head.querySelectorAll('link[rel="alternate"]').forEach((l) => l.remove());
     document.head.querySelector('meta[name="robots"]')?.remove();
     document.head.querySelector('meta[name="description"]')?.remove();
     document.head
@@ -41,14 +55,16 @@ describe('SeoTags', () => {
     TestBed.configureTestingModule({
       providers: [
         provideRouter([
-          { path: '', component: Blank },
           {
-            path: 'mar',
-            title: 'seo.title.sea',
-            component: Blank,
-            data: { description: 'seo.description.sea', crumb: 'nav.sea', image: 'sea' },
+            path: 'en',
+            canActivateChild: [speak('en')],
+            children: [{ path: '', component: Blank }, { ...sea, path: 'sea' }, notFound],
           },
-          { path: '**', component: Blank, data: { noindex: true } },
+          {
+            path: '',
+            canActivateChild: [speak('es')],
+            children: [{ path: '', component: Blank }, { ...sea, path: 'mar' }, notFound],
+          },
         ]),
       ],
     });
@@ -78,17 +94,43 @@ describe('SeoTags', () => {
     expect(canonical()).toBe('https://lanzamet.com/mar');
   });
 
-  it('describes each page in the language on screen, and the site where a page has no summary', async () => {
+  it('describes each page in the language of its address, and the site where a page has no summary', async () => {
     const harness = await setUp();
     await harness.navigateByUrl('/mar');
     expect(description()).toMatch(/^Pleamar y bajamar estimadas/);
 
-    TestBed.inject(I18n).use('en');
-    TestBed.tick();
+    await harness.navigateByUrl('/en/sea');
     expect(description()).toMatch(/^Estimated high and low tides/);
+    expect(canonical()).toBe('https://lanzamet.com/en/sea');
 
-    await harness.navigateByUrl('/');
+    await harness.navigateByUrl('/en');
     expect(description()).toMatch(/^How the day looks in Lanzarote/);
+    expect(canonical()).toBe('https://lanzamet.com/en');
+  });
+
+  it('names the page in each language from both versions, and none out of the index', async () => {
+    const harness = await setUp();
+    const both = {
+      es: 'https://lanzamet.com/mar',
+      en: 'https://lanzamet.com/en/sea',
+      'x-default': 'https://lanzamet.com/mar',
+    };
+    await harness.navigateByUrl('/mar?dia=2026-10-28');
+    expect(alternates()).toEqual(both);
+
+    await harness.navigateByUrl('/en/sea');
+    expect(alternates()).toEqual(both);
+    expect(document.head.querySelectorAll('link[rel="alternate"]')).toHaveLength(3);
+
+    await harness.navigateByUrl('/en');
+    expect(alternates()).toEqual({
+      es: 'https://lanzamet.com/',
+      en: 'https://lanzamet.com/en',
+      'x-default': 'https://lanzamet.com/',
+    });
+
+    await harness.navigateByUrl('/en/no-such-page');
+    expect(alternates()).toEqual({});
   });
 
   it('gives each page a link preview and structured data, and none to a page out of the index', async () => {
@@ -111,5 +153,16 @@ describe('SeoTags', () => {
     await harness.navigateByUrl('/no-existe');
     expect(document.getElementById('structured-data')).toBeNull();
     expect(og('og:image')).toBe('https://lanzamet.com/og/home.jpg');
+
+    // In English: its own picture (the words are in the image) and its own home page.
+    await harness.navigateByUrl('/en/sea');
+    expect(og('og:image')).toBe('https://lanzamet.com/og/en/sea.jpg');
+    expect(og('og:locale')).toBe('en_GB');
+    const en = JSON.parse(document.getElementById('structured-data')?.textContent ?? 'null');
+    const enPage = en['@graph'].find((n: { '@type': string }) => n['@type'] === 'WebPage');
+    expect(enPage.breadcrumb.itemListElement[0]).toMatchObject({
+      name: 'Home',
+      item: 'https://lanzamet.com/en',
+    });
   });
 });

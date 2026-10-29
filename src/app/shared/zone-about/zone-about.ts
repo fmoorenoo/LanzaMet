@@ -1,11 +1,13 @@
-import { Component, computed, input } from '@angular/core';
+import { Component, computed, inject, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { webcamFor } from '../../core/data/webcams';
 import { ZONE_GUIDE } from '../../core/data/zone-guide';
 import { MessageKey, msg } from '../../core/i18n/i18n.model';
+import { I18n } from '../../core/i18n/i18n.store';
+import { zonePath, ZoneView } from '../../core/i18n/localized-paths';
 import { TranslatePipe } from '../../core/i18n/t.pipe';
 import { Location } from '../../core/models';
-import { zoneById, zonePath, ZoneView } from '../../core/state/zone-navigation';
+import { zoneById } from '../../core/state/zone-navigation';
 import { distanceKm } from '../../core/utils/geo';
 import { Icon } from '../ui/icon/icon';
 import { WebcamLink } from '../ui/webcam-link/webcam-link';
@@ -179,6 +181,7 @@ export class ZoneAbout {
   /** Which of the place's pages this is: the block leads to the other one. */
   readonly view = input.required<ZoneView>();
 
+  private readonly i18n = inject(I18n);
   private readonly guide = computed(() => ZONE_GUIDE[this.location().id] ?? null);
 
   protected readonly about = computed(() => `zone.about.${this.location().id}` as MessageKey);
@@ -203,12 +206,16 @@ export class ZoneAbout {
   );
 
   protected readonly otherPage = computed(() =>
-    zonePath(this.view() === 'weather' ? 'sea' : 'weather', this.location().id),
+    zonePath(this.view() === 'weather' ? 'sea' : 'weather', this.location().id, this.i18n.lang()),
   );
   protected readonly nearby = computed(() =>
     (this.guide()?.nearby ?? [])
       .map((id) => zoneById(id))
       .filter((zone) => zone !== null)
-      .map((zone) => ({ id: zone.id, name: zone.name, path: zonePath(this.view(), zone.id) })),
+      .map((zone) => ({
+        id: zone.id,
+        name: zone.name,
+        path: zonePath(this.view(), zone.id, this.i18n.lang()),
+      })),
   );
 }

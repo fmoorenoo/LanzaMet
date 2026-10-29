@@ -2,6 +2,7 @@ import { NgOptimizedImage } from '@angular/common';
 import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { MessageKey } from '../../core/i18n/i18n.model';
+import { PathPipe } from '../../core/i18n/path.pipe';
 import { TranslatePipe } from '../../core/i18n/t.pipe';
 import { Icon } from '../../shared/ui/icon/icon';
 
@@ -28,7 +29,7 @@ const METHODS: readonly Method[] = [
 @Component({
   selector: 'lm-about-page',
   host: { id: 'about-page', class: 'page about-page' },
-  imports: [RouterLink, NgOptimizedImage, Icon, TranslatePipe],
+  imports: [RouterLink, NgOptimizedImage, Icon, TranslatePipe, PathPipe],
   templateUrl: './about.page.html',
   styleUrl: './about.page.scss',
 })

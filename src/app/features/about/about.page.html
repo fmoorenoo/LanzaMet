@@ -75,12 +75,12 @@
   </section>
 
   <nav class="next" [attr.aria-label]="'settings.more' | t">
-    <a id="about-legal-link" class="next-link" routerLink="/legal">
+    <a id="about-legal-link" class="next-link" [routerLink]="'legal' | path">
       <lm-icon name="privacy" />
       <span>{{ 'about.more' | t }}</span>
       <lm-icon class="chevron" name="chevron-right" />
     </a>
-    <a id="about-feedback-link" class="next-link" routerLink="/mejorar">
+    <a id="about-feedback-link" class="next-link" [routerLink]="'feedback' | path">
       <lm-icon name="feedback" />
       <span>{{ 'about.feedback' | t }}</span>
       <lm-icon class="chevron" name="chevron-right" />

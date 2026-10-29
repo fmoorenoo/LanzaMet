@@ -3,7 +3,8 @@ import { effect, inject, Service, signal } from '@angular/core';
 import { Meta } from '@angular/platform-browser';
 import { NavigationEnd, Router } from '@angular/router';
 import { filter } from 'rxjs';
-import { Lang, MessageKey, msg } from '../i18n/i18n.model';
+import { Lang, LANGS, MessageKey, msg } from '../i18n/i18n.model';
+import { alternatePath, PageId, pagePath } from '../i18n/localized-paths';
 import { Location } from '../models';
 import { zoneArea, zoneOfState } from '../state/zone-navigation';
 import { I18n } from '../i18n/i18n.store';
@@ -14,7 +15,10 @@ import { jsonLd, structuredData } from './structured-data';
 /** The site's one public address, when the build doesn't name it (`PUBLIC_URL`). */
 export const SITE_ORIGIN = 'https://lanzamet.com';
 
-/** Preview images for links (public/og/*.jpg), 1200 × 630, one per section. */
+/**
+ * Preview images for links, 1200 × 630, one per section, with their words in
+ * each language: public/og/*.jpg in Spanish, public/og/en/*.jpg in English.
+ */
 export type OgImage = 'home' | 'zones' | 'sea' | 'plans' | 'wind' | 'about';
 
 /** What a route tells search engines about itself, in its `data`. */
@@ -26,7 +30,7 @@ export interface SeoRouteData {
   /** The page's short name in breadcrumbs (none for the home page); a place's page uses the place's name. */
   readonly crumb?: MessageKey;
   /** The page a place's page hangs from in breadcrumbs: Zonas for its weather, Mar for its sea. */
-  readonly parent?: { readonly label: MessageKey; readonly path: string };
+  readonly parent?: { readonly label: MessageKey; readonly page: PageId };
   /** The picture shown when the page is shared; the home page's by default. */
   readonly image?: OgImage;
   /** The About page describes the site itself (schema.org AboutPage). */
@@ -40,6 +44,9 @@ export function canonicalUrl(origin: string, url: string): string {
 }
 
 const OG_LOCALE: Readonly<Record<Lang, string>> = { es: 'es_ES', en: 'en_GB' };
+const OG_DIR: Readonly<Record<Lang, string>> = { es: 'og', en: 'og/en' };
+/** Search engines without a language match get the Spanish page. */
+const X_DEFAULT: Lang = 'es';
 const LD_ID = 'structured-data';
 
 interface Page {
@@ -54,7 +61,7 @@ interface Page {
 /**
  * Tags that tell search engines and link previews about each page: its
  * description, canonical address and `noindex` where it must not be listed;
- * Open Graph and Twitter tags for previews in WhatsApp and social networks;
+ * the same page in the other language (`hreflang`); Open Graph and Twitter tags for previews in WhatsApp and social networks;
  * and schema.org data (JSON-LD). All of it in the language on screen,
  * following every navigation, and written into prerendered pages too.
  */
@@ -106,12 +113,18 @@ export class SeoTags {
     // A page kept out of the index names no canonical address and no structured data.
     const canonical = noindex ? null : canonicalUrl(this.origin, url);
     this.setCanonical(canonical);
+    this.setAlternates(noindex ? null : url);
 
     const name = translate(msg(title ?? 'app.brand', params), lang);
     const last = zone?.name ?? (data.crumb ? translate(data.crumb, lang) : null);
     const crumbs = [
       ...(data.parent
-        ? [{ name: translate(data.parent.label, lang), url: this.origin + data.parent.path }]
+        ? [
+            {
+              name: translate(data.parent.label, lang),
+              url: this.origin + pagePath(data.parent.page, lang),
+            },
+          ]
         : []),
       ...(last && canonical ? [{ name: last, url: canonical }] : []),
     ];
@@ -133,6 +146,7 @@ export class SeoTags {
               longitude: zone.position.longitude,
             },
             home: translate('seo.crumb.home', lang),
+            homeUrl: canonicalUrl(this.origin, pagePath('today', lang)),
             type: data.about ? 'AboutPage' : 'WebPage',
           }),
     );
@@ -147,7 +161,7 @@ export class SeoTags {
     lang: Lang,
   ): void {
     const other: Lang = lang === 'es' ? 'en' : 'es';
-    const imageUrl = `${this.origin}/og/${image}.jpg`;
+    const imageUrl = `${this.origin}/${OG_DIR[lang]}/${image}.jpg`;
     const tags: Record<string, string> = {
       'og:type': 'website',
       'og:site_name': 'LanzaMet',
@@ -190,6 +204,33 @@ export class SeoTags {
       this.document.head.appendChild(script);
     }
     script.textContent = jsonLd(data);
+  }
+
+  /**
+   * The page in each language, itself included, and the Spanish one for
+   * everyone else (x-default). Every version lists the same set, so each
+   * points back to the other, as search engines require. None on a page
+   * kept out of the index.
+   */
+  private setAlternates(url: string | null): void {
+    for (const link of this.document.head.querySelectorAll('link[rel="alternate"][hreflang]')) {
+      link.remove();
+    }
+    if (url === null) return;
+    const versions: [string, Lang][] = [
+      ...LANGS.map((l): [string, Lang] => [l, l]),
+      ['x-default', X_DEFAULT],
+    ];
+    for (const [hreflang, lang] of versions) {
+      const path = alternatePath(url, lang);
+      if (path === null) continue;
+      // Attributes rather than properties: the same code writes prerendered pages.
+      const link = this.document.createElement('link');
+      link.setAttribute('rel', 'alternate');
+      link.setAttribute('hreflang', hreflang);
+      link.setAttribute('href', canonicalUrl(this.origin, path));
+      this.document.head.appendChild(link);
+    }
   }
 
   private setCanonical(href: string | null): void {

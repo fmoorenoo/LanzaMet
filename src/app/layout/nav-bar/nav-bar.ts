@@ -4,6 +4,8 @@ import { NavigationEnd, Router, RouterLink } from '@angular/router';
 import { delay, filter, map, take } from 'rxjs';
 import { DATA_MODE } from '../../core/data/http/data-config';
 import { MessageKey } from '../../core/i18n/i18n.model';
+import { PageId, readPath } from '../../core/i18n/localized-paths';
+import { PathPipe } from '../../core/i18n/path.pipe';
 import { TranslatePipe } from '../../core/i18n/t.pipe';
 import { Icon } from '../../shared/ui/icon/icon';
 import { IconName } from '../../shared/ui/icon/icons';
@@ -12,9 +14,8 @@ import { RouteTransitions } from '../route-transitions';
 import { UiStore } from '../ui.store';
 
 interface NavItem {
-  /** Stable English name for the route, exposed as `data-route`. */
-  readonly id: string;
-  readonly path: string;
+  /** The page, by its stable English name, also exposed as `data-route`. */
+  readonly id: PageId;
   readonly label: MessageKey;
   readonly icon: IconName;
 }
@@ -25,7 +26,7 @@ interface NavItem {
  */
 @Component({
   selector: 'lm-nav-bar',
-  imports: [RouterLink, Icon, BrandMark, TranslatePipe],
+  imports: [RouterLink, Icon, BrandMark, TranslatePipe, PathPipe],
   templateUrl: './nav-bar.html',
   styleUrl: './nav-bar.scss',
 })
@@ -35,10 +36,10 @@ export class NavBar {
   private readonly router = inject(Router);
 
   protected readonly items: readonly NavItem[] = [
-    { id: 'today', path: '/', label: 'nav.today', icon: 'today' },
-    { id: 'zones', path: '/zonas', label: 'nav.zones', icon: 'zones' },
-    { id: 'sea', path: '/mar', label: 'nav.sea', icon: 'sea' },
-    { id: 'plans', path: '/donde-ir', label: 'nav.plans', icon: 'plans' },
+    { id: 'today', label: 'nav.today', icon: 'today' },
+    { id: 'zones', label: 'nav.zones', icon: 'zones' },
+    { id: 'sea', label: 'nav.sea', icon: 'sea' },
+    { id: 'plans', label: 'nav.plans', icon: 'plans' },
     // "Ayúdanos" (/mejorar) is reached from Settings: a rare action, not a tab.
   ];
 
@@ -52,10 +53,15 @@ export class NavBar {
 
   /** Hoy is also each place's weather (/tiempo/:zona); Mar, each place's sea (/mar/:zona). */
   protected readonly activeIndex = computed(() => {
-    const path = this.url().split(/[?#]/)[0];
-    return this.items.findIndex((item) =>
-      item.path === '/' ? path === '/' || path.startsWith('/tiempo/') : path.startsWith(item.path),
-    );
+    const address = readPath(this.url());
+    const page: PageId | null = !address
+      ? null
+      : 'view' in address
+        ? address.view === 'weather'
+          ? 'today'
+          : 'sea'
+        : address.page;
+    return this.items.findIndex((item) => item.id === page);
   });
 
   /**

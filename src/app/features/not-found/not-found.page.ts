@@ -1,22 +1,24 @@
 import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { MessageKey } from '../../core/i18n/i18n.model';
+import { PageId } from '../../core/i18n/localized-paths';
+import { PathPipe } from '../../core/i18n/path.pipe';
 import { TranslatePipe } from '../../core/i18n/t.pipe';
 import { Icon } from '../../shared/ui/icon/icon';
 import { IconName } from '../../shared/ui/icon/icons';
 
 interface Way {
-  readonly path: string;
+  readonly page: PageId;
   readonly label: MessageKey;
   readonly icon: IconName;
 }
 
 /** The four tabs, the same words and icons as the navigation. */
 const WAYS: readonly Way[] = [
-  { path: '/', label: 'nav.today', icon: 'today' },
-  { path: '/zonas', label: 'nav.zones', icon: 'zones' },
-  { path: '/mar', label: 'nav.sea', icon: 'sea' },
-  { path: '/donde-ir', label: 'nav.plans', icon: 'plans' },
+  { page: 'today', label: 'nav.today', icon: 'today' },
+  { page: 'zones', label: 'nav.zones', icon: 'zones' },
+  { page: 'sea', label: 'nav.sea', icon: 'sea' },
+  { page: 'plans', label: 'nav.plans', icon: 'plans' },
 ];
 
 /**
@@ -27,7 +29,7 @@ const WAYS: readonly Way[] = [
 @Component({
   selector: 'lm-not-found-page',
   host: { id: 'not-found-page', class: 'page not-found-page' },
-  imports: [RouterLink, Icon, TranslatePipe],
+  imports: [RouterLink, Icon, TranslatePipe, PathPipe],
   template: `
     <header id="not-found-header" class="page-head page-header">
       <h1 class="t-display">{{ 'route.notFound' | t }}</h1>
@@ -37,9 +39,13 @@ const WAYS: readonly Way[] = [
     <nav class="content" aria-labelledby="not-found-next">
       <p id="not-found-next" class="t-muted">{{ 'notFound.next' | t }}</p>
       <ul class="ways" role="list">
-        @for (way of ways; track way.path) {
+        @for (way of ways; track way.page) {
           <li>
-            <a class="btn btn--quiet way" [routerLink]="way.path" [attr.data-route]="way.path">
+            <a
+              class="btn btn--quiet way"
+              [routerLink]="way.page | path"
+              [attr.data-route]="way.page"
+            >
               <lm-icon [name]="way.icon" />
               {{ way.label | t }}
             </a>

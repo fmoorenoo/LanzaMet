@@ -1,7 +1,7 @@
 import { DOCUMENT } from '@angular/common';
 import { Component, computed, DestroyRef, inject, input, signal } from '@angular/core';
 import { LocationsStore } from '../../../core/state/locations.store';
-import { zonePath } from '../../../core/state/zone-navigation';
+import { zonePath } from '../../../core/i18n/localized-paths';
 import { DATA_MODE } from '../../../core/data/http/data-config';
 import { Lang } from '../../../core/i18n/i18n.model';
 import { I18n } from '../../../core/i18n/i18n.store';
@@ -60,10 +60,15 @@ export class ShareWeather {
     this.document.defaultView?.location ?? null,
   );
   private readonly locations = inject(LocationsStore);
-  /** The shared place's own page (/tiempo/famara), so the link opens on that place. */
+  /**
+   * The shared place's own page, in the language on screen (/tiempo/famara,
+   * /en/weather/famara), so the link opens on that place, in those words.
+   */
   private readonly link = computed(() => {
     const id = this.locations.selected()?.id;
-    return this.origin && id ? this.origin + zonePath('weather', id) : this.origin;
+    return this.origin && id
+      ? this.origin + zonePath('weather', id, this.i18n.lang())
+      : this.origin;
   });
 
   protected readonly canCopyImage =

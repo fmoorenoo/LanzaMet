@@ -11,6 +11,7 @@ import { ZoneNavigation } from '../../core/state/zone-navigation';
 import { ZoneAbout } from '../../shared/zone-about/zone-about';
 import { RouterLink } from '@angular/router';
 import { msg, Msg } from '../../core/i18n/i18n.model';
+import { PathPipe } from '../../core/i18n/path.pipe';
 import { TranslatePipe } from '../../core/i18n/t.pipe';
 import { readSea } from '../../core/insights/sea.insight';
 import { readUv, skyPhrase } from '../../core/insights/sky.insight';
@@ -107,6 +108,7 @@ function sunLineOf(day: DailyForecast): Msg | null {
     WebcamLink,
     ZoneAbout,
     TranslatePipe,
+    PathPipe,
   ],
   templateUrl: './today.page.html',
   styleUrl: './today.page.scss',

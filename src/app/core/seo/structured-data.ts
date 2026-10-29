@@ -25,6 +25,8 @@ export interface PageFacts {
   readonly place: ZonePlace | null;
   /** The home page's short name ("Inicio"). */
   readonly home: string;
+  /** The home page in the page's language (https://lanzamet.com/, …/en). */
+  readonly homeUrl: string;
   /** Schema.org type of the page: the About page describes the site itself. */
   readonly type: 'WebPage' | 'AboutPage';
 }
@@ -62,7 +64,7 @@ export function structuredData(page: PageFacts): object {
           : LANZAROTE,
   };
   if (page.crumbs.length > 0) {
-    const way = [{ name: page.home, url: `${page.origin}/` }, ...page.crumbs];
+    const way = [{ name: page.home, url: page.homeUrl }, ...page.crumbs];
     webPage['breadcrumb'] = {
       '@type': 'BreadcrumbList',
       itemListElement: way.map((step, i) => ({
@@ -82,7 +84,8 @@ export function structuredData(page: PageFacts): object {
         '@id': id('website'),
         url: `${page.origin}/`,
         name: 'LanzaMet',
-        inLanguage,
+        // One site, in both languages (each page says its own).
+        inLanguage: ['es-ES', 'en-GB'],
         publisher: { '@id': id('organization') },
       },
       {

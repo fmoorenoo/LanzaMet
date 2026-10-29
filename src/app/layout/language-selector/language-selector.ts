@@ -1,6 +1,7 @@
 import { Component, computed, inject } from '@angular/core';
 import { Lang } from '../../core/i18n/i18n.model';
 import { I18n } from '../../core/i18n/i18n.store';
+import { LanguageLinks } from '../../core/i18n/language-links';
 import { TranslatePipe } from '../../core/i18n/t.pipe';
 import { Icon } from '../../shared/ui/icon/icon';
 
@@ -16,7 +17,8 @@ const OPTIONS: readonly LanguageOption[] = [
 ];
 
 /**
- * Spanish or English, switched at once and remembered. Real radio buttons
+ * Spanish or English: the page moves to its address in that language
+ * (LanguageLinks), and the choice is remembered. Real radio buttons
  * (arrow keys move between them); a thumb glides behind the chosen one. The
  * legend always carries both words, so it reads in either language.
  */
@@ -43,7 +45,7 @@ const OPTIONS: readonly LanguageOption[] = [
               name="language"
               [value]="option.lang"
               [checked]="i18n.lang() === option.lang"
-              (change)="i18n.use(option.lang)"
+              (change)="links.switchTo(option.lang)"
             />
             <span class="lang-name">{{ option.name }}</span>
           </label>
@@ -150,6 +152,7 @@ const OPTIONS: readonly LanguageOption[] = [
 })
 export class LanguageSelector {
   protected readonly i18n = inject(I18n);
+  protected readonly links = inject(LanguageLinks);
   protected readonly options = OPTIONS;
 
   protected readonly index = computed(() =>

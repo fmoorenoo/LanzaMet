@@ -4,6 +4,7 @@ import { DATA_MODE } from '../../core/data/http/data-config';
 import { WEBCAM_PROVIDERS } from '../../core/data/webcams';
 import { msg, MessageKey } from '../../core/i18n/i18n.model';
 import { I18n } from '../../core/i18n/i18n.store';
+import { PathPipe } from '../../core/i18n/path.pipe';
 import { TranslatePipe } from '../../core/i18n/t.pipe';
 import { OfficialStore } from '../../core/state/official.store';
 import { SectionStatus } from '../../core/state/section-state';
@@ -38,7 +39,7 @@ const TERMS: readonly MessageKey[] = [
 @Component({
   selector: 'lm-legal-page',
   host: { id: 'legal-page', class: 'page legal-page' },
-  imports: [RouterLink, Icon, TranslatePipe],
+  imports: [RouterLink, Icon, TranslatePipe, PathPipe],
   templateUrl: './legal.page.html',
   styleUrl: './legal.page.scss',
 })

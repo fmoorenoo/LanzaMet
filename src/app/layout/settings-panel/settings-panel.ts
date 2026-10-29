@@ -3,6 +3,7 @@ import { Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { DATA_MODE } from '../../core/data/http/data-config';
 import { MessageKey } from '../../core/i18n/i18n.model';
+import { PathPipe } from '../../core/i18n/path.pipe';
 import { TranslatePipe } from '../../core/i18n/t.pipe';
 import { InstallStore } from '../../core/pwa/install.store';
 import { ThemePreference, ThemeStore } from '../../core/state/theme.store';
@@ -22,6 +23,7 @@ import { DEMO_CONTROLS } from './demo-controls.token';
     RouterLink,
     Icon,
     TranslatePipe,
+    PathPipe,
     LanguageSelector,
     InstallOption,
   ],

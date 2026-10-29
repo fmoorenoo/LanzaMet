@@ -9,6 +9,7 @@ const facts = (overrides: Partial<PageFacts> = {}): PageFacts => ({
   crumbs: [{ name: 'Mar', url: 'https://lanzamet.com/mar' }],
   place: null,
   home: 'Inicio',
+  homeUrl: 'https://lanzamet.com/',
   type: 'WebPage',
   ...overrides,
 });
@@ -20,7 +21,11 @@ const node = (data: object, type: string) => graph(data).find((n) => n['@type'] 
 describe('structuredData', () => {
   it('names the site, the organisation behind it, its founder and his studio', () => {
     const data = structuredData(facts());
-    expect(node(data, 'WebSite')).toMatchObject({ name: 'LanzaMet', url: 'https://lanzamet.com/' });
+    expect(node(data, 'WebSite')).toMatchObject({
+      name: 'LanzaMet',
+      url: 'https://lanzamet.com/',
+      inLanguage: ['es-ES', 'en-GB'],
+    });
     expect(node(data, 'Organization')).toMatchObject({
       name: 'LanzaMet',
       logo: { url: 'https://lanzamet.com/icons/icon-512.png' },
@@ -58,6 +63,30 @@ describe('structuredData', () => {
     expect(about).toMatchObject({
       inLanguage: 'en-GB',
       about: { '@id': 'https://lanzamet.com/#organization' },
+    });
+  });
+
+  it('starts an English page’s breadcrumb at the English home page', () => {
+    const page = node(
+      structuredData(
+        facts({
+          url: 'https://lanzamet.com/en/sea',
+          lang: 'en',
+          crumbs: [{ name: 'Sea', url: 'https://lanzamet.com/en/sea' }],
+          home: 'Home',
+          homeUrl: 'https://lanzamet.com/en',
+        }),
+      ),
+      'WebPage',
+    );
+    expect(page).toMatchObject({
+      inLanguage: 'en-GB',
+      breadcrumb: {
+        itemListElement: [
+          { position: 1, name: 'Home', item: 'https://lanzamet.com/en' },
+          { position: 2, name: 'Sea', item: 'https://lanzamet.com/en/sea' },
+        ],
+      },
     });
   });
 

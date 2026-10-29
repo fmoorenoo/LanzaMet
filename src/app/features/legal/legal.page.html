@@ -109,7 +109,7 @@
   <section id="legal-contact" class="section" aria-labelledby="legal-contact-title">
     <h2 id="legal-contact-title" class="t-title">{{ 'legal.contact' | t }}</h2>
     <p class="t-muted">{{ 'legal.contact.text' | t }}</p>
-    <a id="legal-contact-link" class="btn contact-link" routerLink="/mejorar">
+    <a id="legal-contact-link" class="btn contact-link" [routerLink]="'feedback' | path">
       {{ 'legal.contact.link' | t }}
     </a>
   </section>

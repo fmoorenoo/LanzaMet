@@ -8,6 +8,7 @@ import { ThemeStore } from './core/state/theme.store';
 import { SeoTags } from './core/seo/seo-tags';
 import { ZoneNavigation } from './core/state/zone-navigation';
 import { DayPicker } from './layout/day-picker/day-picker';
+import { LanguageLink } from './layout/language-link/language-link';
 import { LocationPicker } from './layout/location-picker/location-picker';
 import { NavBar } from './layout/nav-bar/nav-bar';
 import { SettingsPanel } from './layout/settings-panel/settings-panel';
@@ -23,6 +24,7 @@ import { lazyComponent } from './shared/lazy-component';
     LocationPicker,
     DayPicker,
     SettingsPanel,
+    LanguageLink,
     TranslatePipe,
   ],
   templateUrl: './app.html',
