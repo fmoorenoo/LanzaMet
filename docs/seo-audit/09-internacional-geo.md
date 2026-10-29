@@ -21,7 +21,7 @@
 
 | ES (raíz) | EN | DE (fase 3, parcial) |
 |---|---|---|
-| `/` | `/en/` | `/de/` |
+| `/` | `/en` | `/de` |
 | `/zonas` | `/en/places` | — |
 | `/mar` | `/en/sea` | `/de/meer` |
 | `/donde-ir` | `/en/where-to-go` | `/de/wohin-heute` |
@@ -34,6 +34,7 @@
 | `/sobre` | `/en/about` | — |
 
 - Slugs traducidos (mejor para el usuario y para el CTR). Los slugs de zona no se traducen.
+- Sin barra final, como el resto de la web (`html_handling: drop-trailing-slash`): `/en/` redirige a `/en`. Implementado así en B-18 (`15-plan-ingles.md`).
 - **Sin redirecciones automáticas por idioma**. Un visitante con el navegador en inglés que llega a `/` ve español y un aviso discreto: «Read this page in English →». Lo mismo al revés. La elección en Ajustes navega a la URL equivalente y se guarda.
 - `<html lang>` fijo por URL, en el HTML prerenderizado.
 

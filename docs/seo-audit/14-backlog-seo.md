@@ -208,7 +208,7 @@ La «Prueba de URL publicada» de Search Console en `/`, `/mar` y `/zonas` mostr
 |---|---|---|---|---|---|
 | B-16 | Página `/calima` (dato CAMS de `forecast` de polvo, umbral explicado, avisos, qué es) | M | B-10 | `features/calima/*`, `core/insights/sky.insight.ts`, rutas, mensajes | Muestra el estado actual y los próximos días con fuente; consejos de salud solo enlazados a la autoridad |
 | B-17 | Página `/avisos` (avisos activos, niveles, «sin avisos» con hora) | M | B-10 | `features/warnings/*`, `core/state/official.store.ts`, `shared/ui/warning-banner` (enlace) | Refleja `/api/avisos`; enlace a AEMET; estado vacío claro |
-| B-18 | Inglés en `/en/…` con `hreflang` | L | B-10, B-11 | rutas (prefijo `en`), `I18n` (el idioma sale de la URL), selector de idioma (navega a la URL equivalente), `SeoService`, sitemap | `09` §A.6 |
+| B-18 ✅ (29-10-2026, sin publicar) | Inglés en `/en/…` con `hreflang` (plan y estado: `15-plan-ingles.md`) | L | B-10, B-11 | rutas (prefijo `en`), `I18n` (el idioma sale de la URL), selector de idioma (navega a la URL equivalente), `SeoService`, sitemap | `09` §A.6 |
 | B-19 | `/clima/{mes}` ES y EN con normales reales | L | B-10; fuente verificada | Script de build que descarga y fija los datos (AEMET OpenData normales o Open-Meteo Historical), `features/climate/*` | Cada cifra con fuente y periodo; sin datos inventados |
 | B-20 | Guías: viento en Lanzarote; cómo leemos la marea | M | B-10 | `features/guides/*`, mensajes | Fecha de revisión; enlazadas desde `/viento` y `/mar` |
 | B-21 | Temperatura del agua: H2 y ancla `#temperatura-agua` en `/mar` y `/mar/{zona}` | S | B-07 | `sea.page.html` | El H2 existe y el ancla funciona |

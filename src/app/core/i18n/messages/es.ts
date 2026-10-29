@@ -649,6 +649,8 @@ export const es = {
     'Los datos pertenecen a sus fuentes y se usan con sus licencias, que se citan en esta página. Los enlaces a otras webs llevan a sitios que no controlamos.',
   'legal.terms.changes':
     'Podemos cambiar la web o estas condiciones, o dejar de ofrecerla, en cualquier momento. Las que valen son siempre las de esta página.',
+  'legal.terms.language':
+    'Estos textos están en español y en inglés. Si alguna vez no dicen lo mismo, vale la versión en español.',
   'legal.contact': 'Contacto',
   'legal.contact.text':
     'Para cualquier duda sobre estos textos o sobre tus datos, escríbenos desde Ayúdanos.',

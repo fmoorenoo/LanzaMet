@@ -33,6 +33,7 @@ const TERMS: readonly MessageKey[] = [
   'legal.terms.responsibility',
   'legal.terms.thirdParty',
   'legal.terms.changes',
+  'legal.terms.language',
 ];
 
 /** Everything legal in one place: privacy, terms of use, the data's sources and licences, and contact. */

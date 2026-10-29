@@ -644,6 +644,8 @@ export const en: Messages = {
     'The data belongs to its sources and is used under their licences, credited on this page. Links to other websites lead to sites we do not control.',
   'legal.terms.changes':
     'We may change the site or these terms, or stop offering it, at any time. The terms that apply are always the ones on this page.',
+  'legal.terms.language':
+    'These texts are in Spanish and in English. Should the two ever differ, the Spanish version prevails.',
   'legal.contact': 'Contact',
   'legal.contact.text':
     'For any question about these texts or about your data, write to us from Help us.',
