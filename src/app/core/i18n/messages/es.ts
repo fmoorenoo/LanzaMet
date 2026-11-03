@@ -57,8 +57,8 @@ export const es = {
   'seo.heading.today': 'El tiempo en Lanzarote hoy',
   'seo.crumb.home': 'Inicio',
   // A place's two pages: its weather (/tiempo/:zona) and its sea (/mar/:zona).
-  'seo.title.weatherZone': 'Tiempo en {place} (Lanzarote) hoy: viento y mar',
-  'seo.title.seaZone': 'Mareas y olas en {place} (Lanzarote) hoy',
+  'seo.title.weatherZone': 'Tiempo en {place} hoy: viento y mar en Lanzarote',
+  'seo.title.seaZone': 'Mareas en {place} hoy: olas y pleamar en Lanzarote',
   'seo.description.weatherZone':
     'Previsión para {place} ({area}) hoy y mañana: temperatura, viento y rachas, olas de su costa y marea estimada. Hora a hora y 7 días.',
   'seo.description.seaZone':

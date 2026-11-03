@@ -73,7 +73,7 @@ Titles: unos 60 caracteres como máximo. Descriptions: unos 155. H1: estable, vi
 
 ### 4.2 `/tiempo/{zona}` — ej. `/tiempo/famara`
 
-- **Title**: `Tiempo en Famara (Lanzarote) hoy: viento y mar · LanzaMet`
+- **Title**: `Tiempo en Famara hoy: viento y mar en Lanzarote · LanzaMet`
 - **Description**: `Previsión para Famara hoy y mañana: temperatura, viento y rachas, oleaje de la costa noroeste y marea estimada. Hora a hora y 7 días.`
 - **H1**: `El tiempo en Famara, Lanzarote`
 - **Contenido estable propio** (prerenderizado, 80-150 palabras por zona, escrito a mano a partir de `locations.ts` y del README): municipio (Teguise), costa a la que mira (noroeste), qué significa para el viento y el mar, de qué celda del modelo sale el mar y a cuántos km está, si hay estación AEMET cercana («Medido») o por qué no, webcam enlazada, zonas que comparten celda del modelo y cómo se dice. Ejemplo de la información diferencial ya documentada: «El tiempo de Famara y La Santa sale de la misma celda del modelo; el mar no» (README, tabla de puntos de consulta).
@@ -95,7 +95,7 @@ Titles: unos 60 caracteres como máximo. Descriptions: unos 155. H1: estable, vi
 
 ### 4.4 `/mar/{zona}` — ej. `/mar/orzola`
 
-- **Title**: `Mareas y olas en Órzola (Lanzarote) hoy · LanzaMet`
+- **Title**: `Mareas en Órzola hoy: olas y pleamar en Lanzarote · LanzaMet`
 - **H1**: `Mareas y estado del mar en Órzola`
 - **Contenido estable**: punto de mar (29,292 / −13,458, a ~8 km), orientación (norte), mar de fondo típico del norte en invierno (como explicación general, sin cifras inventadas). Para Órzola: H2 «El mar entre Órzola y La Graciosa», que aclara que el punto del modelo está mar adentro y que el estado del estrecho de El Río puede diferir; enlace a la naviera solo como referencia y a AEMET costeros.
 - **Datos estructurados**: `Place` + `BreadcrumbList`.

@@ -10,8 +10,8 @@ Estado actual verificado en el DOM renderizado (27-10-2026) y propuesta por pág
 | `/zonas` | Zonas · LanzaMet | El tiempo por zonas en Lanzarote: mapa de hoy · LanzaMet | Lanzarote weather by area: today's map · LanzaMet |
 | `/mar` | Mar y mareas · LanzaMet | Mareas en Lanzarote hoy: pleamar, bajamar y olas · LanzaMet | Lanzarote tide times and sea today · LanzaMet |
 | `/donde-ir` | ¿Dónde ir hoy? · LanzaMet | Playas sin viento hoy en Lanzarote: dónde ir · LanzaMet | Where to go in Lanzarote today: sheltered beaches · LanzaMet |
-| `/tiempo/{zona}` | — | Tiempo en {Zona} (Lanzarote) hoy: viento y mar · LanzaMet | {Zone} weather today, Lanzarote: wind and sea · LanzaMet |
-| `/mar/{zona}` | — | Mareas y olas en {Zona} (Lanzarote) hoy · LanzaMet | {Zone} tide times and waves today · LanzaMet |
+| `/tiempo/{zona}` | — | Tiempo en {Zona} hoy: viento y mar en Lanzarote · LanzaMet | {Zone} weather today, Lanzarote: wind and sea · LanzaMet |
+| `/mar/{zona}` | — | Mareas en {Zona} hoy: olas y pleamar en Lanzarote · LanzaMet | {Zone} tide times and waves today · LanzaMet |
 | `/viento` | — | Viento en Lanzarote hoy: rachas y dónde sopla menos · LanzaMet | Lanzarote wind today: gusts and sheltered spots · LanzaMet |
 | `/calima` | — | Calima en Lanzarote hoy: polvo y avisos · LanzaMet | Calima in Lanzarote today: Saharan dust · LanzaMet |
 | `/avisos` | — | Avisos meteorológicos en Lanzarote hoy · LanzaMet | Weather warnings in Lanzarote today · LanzaMet |
