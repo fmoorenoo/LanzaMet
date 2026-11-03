@@ -5,16 +5,20 @@ import { IslandStore } from '../../core/state/island.store';
 import { DataCredit } from '../../shared/ui/data-credit/data-credit';
 import { StatusMessage } from '../../shared/ui/status-message/status-message';
 import { PlanCard } from './plan-card/plan-card';
+import { WindGuide } from './wind-guide/wind-guide';
+import { ZonesNow } from './zones-now/zones-now';
 
 /**
  * Where to go today, as a way of discovering the island: the best idea first
  * and wide, the others as postcards of their places, each with the facts to
- * compare (temperature, wind, sea). Suggestions, never guarantees.
+ * compare (temperature, wind, sea). Suggestions, never guarantees. Below them,
+ * every place in one table and the fixed guide to windy days: the part of the
+ * page that is the same every day, and so the one search engines can rely on.
  */
 @Component({
   selector: 'lm-plans-page',
   host: { id: 'plans-page', class: 'page plans-page' },
-  imports: [PlanCard, StatusMessage, DataCredit, TranslatePipe],
+  imports: [PlanCard, ZonesNow, WindGuide, StatusMessage, DataCredit, TranslatePipe],
   template: `
     <header id="plans-header" class="page-head page-header">
       <!-- Reads "¿Dónde ir hoy en Lanzarote?"; the place is only for screen readers and search engines. -->
@@ -65,6 +69,10 @@ import { PlanCard } from './plan-card/plan-card';
           <div class="skeleton lead-skeleton" [attr.aria-label]="'plans.loading' | t"></div>
         }
       }
+
+      <!-- Every place at once, then what usually happens on each kind of day. -->
+      <lm-zones-now />
+      <lm-wind-guide />
 
       <footer id="plans-footer" class="page-foot">
         <lm-data-credit kind="island" [updatedAt]="island.updatedAt()" />

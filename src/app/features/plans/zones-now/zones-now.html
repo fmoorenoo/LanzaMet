@@ -1,0 +1,75 @@
+<section id="zones-now" class="block" aria-labelledby="zones-now-title">
+  <div class="head">
+    <h2 id="zones-now-title" class="t-title">{{ 'plans.zones.title' | t }}</h2>
+    <p id="zones-now-hint" class="t-small t-muted">{{ 'plans.zones.hint' | t }}</p>
+  </div>
+
+  <div class="frame">
+    <table
+      class="zones-table t-num"
+      aria-labelledby="zones-now-title"
+      aria-describedby="zones-now-hint"
+      [attr.aria-busy]="loading()"
+    >
+      <thead>
+        <tr>
+          <th scope="col">{{ 'plans.zones.place' | t }}</th>
+          <th scope="col">{{ 'plans.zones.wind' | t }}</th>
+          <th scope="col">{{ 'plans.zones.sea' | t }}</th>
+          <th scope="col" class="water">{{ 'plans.zones.water' | t }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (row of rows(); track row.id) {
+          <tr [attr.data-location-id]="row.id">
+            <th scope="row">
+              <a class="place" [routerLink]="row.path">{{ row.name }}</a>
+            </th>
+            @if (row.now; as now) {
+              <td>
+                <span class="wind" [style.--wind-hue]="now.hue" [style.--wind-tint]="now.tint">
+                  <span class="dot" aria-hidden="true"></span>
+                  <span class="main">{{ now.windKmh }} {{ 'wind.unit' | t }}</span>
+                </span>
+                <span class="sub">{{ now.windWord | t }}</span>
+              </td>
+              <td>
+                @if (now.seaWord) {
+                  <span class="main">{{ now.waves | t }}</span>
+                  <span class="sub">{{ now.seaWord | t }}</span>
+                } @else {
+                  <span class="none">{{ 'plans.zones.none' | t }}</span>
+                }
+              </td>
+              <td class="water">
+                @if (now.water) {
+                  <span class="main">{{ now.water | t }}</span>
+                } @else {
+                  <span class="none">{{ 'plans.zones.none' | t }}</span>
+                }
+              </td>
+            } @else if (loading()) {
+              @for (cell of [1, 2, 3]; track cell) {
+                <td [class.water]="cell === 3">
+                  <span class="skeleton cell-skeleton" aria-hidden="true"></span>
+                </td>
+              }
+            } @else {
+              @for (cell of [1, 2, 3]; track cell) {
+                <td [class.water]="cell === 3">
+                  <span class="none">{{ 'plans.zones.none' | t }}</span>
+                </td>
+              }
+            }
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <!-- The wind hour by hour lives in Viento: a quiet link, as under Hoy's hours. -->
+  <a id="zones-now-wind-link" class="btn btn--quiet more-link" [routerLink]="'wind' | path">
+    {{ 'plans.zones.windHours' | t }}
+    <lm-icon name="chevron-right" />
+  </a>
+</section>

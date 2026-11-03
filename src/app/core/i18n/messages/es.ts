@@ -846,6 +846,53 @@ export const es = {
   'plans.more': 'Más ideas',
   'plans.now': 'Ahora en {place}',
   'plans.loading': 'Cargando sugerencias',
+  // Every place at once, from the most sheltered to the roughest.
+  'plans.zones.title': 'Cómo está cada zona ahora',
+  'plans.zones.hint':
+    'De la más resguardada a la que más viento u olas tiene. Toca una para ver su día.',
+  'plans.zones.place': 'Zona',
+  'plans.zones.wind': 'Viento',
+  'plans.zones.sea': 'Mar',
+  'plans.zones.water': 'Agua',
+  'plans.zones.waves': '{height} m',
+  // The sea in one or two words, under the column "Mar" (the full labels don't fit a phone).
+  'plans.zones.sea.0': 'Plano',
+  'plans.zones.sea.1': 'En calma',
+  'plans.zones.sea.2': 'Algo de mar',
+  'plans.zones.sea.3': 'Movido',
+  'plans.zones.sea.4': 'Bravo',
+  'plans.zones.temp': '{temp}°',
+  'plans.zones.none': 'Sin dato',
+  'plans.zones.windHours': 'El viento de cada zona, hora a hora',
+  // The fixed guide: what usually happens on each kind of day.
+  'plans.guide.title': 'Dónde ir cuando hace viento',
+  'plans.guide.answer':
+    'Casi siempre, al sur: Playa Blanca, las playas de Papagayo y Puerto del Carmen. El viento de Lanzarote suele ser el alisio, que llega del nordeste, y la propia isla resguarda esa costa. Pero no todos los días son iguales:',
+  'plans.guide.today': 'Hoy',
+  'plans.guide.label.better': 'Mejor',
+  'plans.guide.label.windier': 'Más viento',
+  'plans.guide.label.calmerSea': 'Mar más tranquilo',
+  'plans.guide.label.bigWaves': 'Olas grandes',
+  'plans.guide.label.goodFor': 'Buen día para',
+  'plans.guide.alisio.title': 'Alisio del nordeste',
+  'plans.guide.alisio.when': 'Lo más habitual, sobre todo en verano y por la tarde.',
+  'plans.guide.alisio.better': 'Playa Blanca, Papagayo y Puerto del Carmen.',
+  'plans.guide.alisio.windier': 'Costa Teguise, Famara y Órzola.',
+  'plans.guide.swell.title': 'Mar de fondo del norte',
+  'plans.guide.swell.when':
+    'Sobre todo en invierno: llegan olas grandes del Atlántico aunque no sople el viento.',
+  'plans.guide.swell.calmer': 'Playa Blanca, Puerto del Carmen y Arrecife.',
+  'plans.guide.swell.waves': 'Famara, La Santa y Órzola.',
+  'plans.guide.south.title': 'Viento del sur o del este',
+  'plans.guide.south.when': 'Pocos días al año, a menudo con calima.',
+  'plans.guide.south.better': 'Famara y La Santa.',
+  'plans.guide.south.windier': 'Puerto del Carmen, Arrecife y Costa Teguise.',
+  'plans.guide.calm.title': 'Calma en toda la isla',
+  'plans.guide.calm.when': 'Viento flojo en todas partes.',
+  'plans.guide.calm.goodFor':
+    'Famara, Costa Teguise y Arrieta, que con alisio suelen tener viento.',
+  'plans.guide.note':
+    'Es lo que suele pasar, no una garantía: el viento cambia de una cala a otra. La tabla de arriba dice cómo está cada zona ahora.',
 
   // ── Feedback ─────────────────────────────────────────────────
   'feedback.lead':
